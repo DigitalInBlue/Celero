@@ -2,7 +2,7 @@ Celero
 
 C++ Benchmarking Library
 
-Copyright 2012 John Farrier 
+Copyright 2013 John Farrier 
 
 Apache 2.0 License
 
