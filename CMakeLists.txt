@@ -19,6 +19,8 @@ include(CheckIncludeFile)
 #
 
 option(CELERO_COMPILE_DYNAMIC_LIBRARIES "Set to ON to build Celero for dynamic linking.  Use OFF for static." ON)
+option(CELERO_RUN_EXAMPLE_ON_BUILD "Set to ON to automatically run the example after a successful build." ON)
+option(CELERO_USE_FOLDERS "Enable to put Celero in its own solution folder under Visual Studio" OFF)
 
 if(CELERO_COMPILE_DYNAMIC_LIBRARIES)
 	SET(CELERO_USER_DEFINED_SHARED_OR_STATIC "SHARED")
@@ -73,22 +75,19 @@ add_definitions("/W4 /D_CRT_SECURE_NO_WARNINGS /wd4251 /nologo")
 
 
 # Project Name
-PROJECT(Celero)
+PROJECT(celero)
 
 #
 # Install Locations
 #
 
-#set(EXECUTABLE_OUTPUT_PATH ${Celero_BINARY_DIR}/bin)
-#set(LIBRARY_OUTPUT_PATH ${Celero_BINARY_DIR}/bin)
-
 #
 # include path to be used by all projects
 #
 
-SET(HEADER_PATH ${Celero_SOURCE_DIR}/include)
+SET(HEADER_PATH ${celero_SOURCE_DIR}/include)
 
-set(PROJECT_NAME Celero)
+set(PROJECT_NAME celero)
 
 if(CELERO_COMPILE_DYNAMIC_LIBRARIES)
 	add_definitions(-DCELERO_EXPORTS)
@@ -129,13 +128,13 @@ set(TARGET_SRC
 )
 
 set(TARGET_LIBRARIES ${SYSLIBS})
-add_library(${PROJECT_NAME} ${USER_DEFINED_SHARED_OR_STATIC} ${TARGET_SRC} ${TARGET_H})
+add_library(${PROJECT_NAME} ${CELERO_USER_DEFINED_SHARED_OR_STATIC} ${TARGET_SRC} ${TARGET_H})
 include_directories(${HEADER_PATH})
 
 # --------------------------------------------------------------------------- #
 # --------------------------------------------------------------------------- #
 
-SET(PROJECT_TEST_NAME CeleroTest)
+SET(PROJECT_TEST_NAME celeroTest)
 
 #
 # Add Sources
@@ -148,8 +147,8 @@ add_executable(${PROJECT_TEST_NAME}
 # Celero Project Dependencies
 #
 
-add_dependencies(${PROJECT_TEST_NAME} Celero)
-target_link_libraries(${PROJECT_TEST_NAME} Celero)
+add_dependencies(${PROJECT_TEST_NAME} celero)
+target_link_libraries(${PROJECT_TEST_NAME} celero)
 
 #
 # Broiler Plate
@@ -161,4 +160,16 @@ if(MSVC)
 endif()
 
 include_directories(${HEADER_PATH})
-add_custom_command(TARGET ${PROJECT_TEST_NAME} POST_BUILD COMMAND $<TARGET_FILE:${PROJECT_TEST_NAME}>)
+
+if(CELERO_RUN_EXAMPLE_ON_BUILD)
+	add_custom_command(TARGET ${PROJECT_TEST_NAME} POST_BUILD COMMAND $<TARGET_FILE:${PROJECT_TEST_NAME}>)
+endif()
+
+#
+# Optional
+#
+
+if(CELERO_USE_FOLDERS)
+	set_property(TARGET celero PROPERTY FOLDER "Celero")
+	set_property(TARGET celeroTest PROPERTY FOLDER "Celero")
+endif()
