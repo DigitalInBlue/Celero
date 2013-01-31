@@ -7,6 +7,8 @@
 #include <celero/Timer.h>
 #include <celero/Export.h>
 
+#include <vector>
+
 namespace celero
 {
 	///
@@ -31,6 +33,11 @@ namespace celero
 			virtual void SetUp();
 		
 			///
+			/// Set up the test fixture before benchmark execution.
+			///
+			virtual void SetUp(const uint32_t problemSetValue);
+		
+			///
 			/// Called after test completion to destroy the fixture.
 			///
 			virtual void TearDown();
@@ -40,11 +47,28 @@ namespace celero
 			///
 			/// \return Returns the number of microseconds the run took.
 			///
-			int64_t Run(const uint64_t calls);
+			std::pair<int64_t, int32_t> Run(const uint64_t calls, const size_t problemSetValueIndex);
+
+			///
+			///
+			///
+			size_t getProblemSetSize() const;
+
+			///
+			///
+			///
+			int32_t getProblemSetValue(const size_t x) const;
 
 		protected:
+			///
+			/// Implemented by the classes that are built via macros.
+			///
+			virtual void setProblemSetSize(const size_t) {};
+
 			/// Executed for each operation the benchmarking test is run.
 			virtual void UserBenchmark();
+
+			std::vector<uint32_t> ProblemSetValues;
 
 		private:
 	};

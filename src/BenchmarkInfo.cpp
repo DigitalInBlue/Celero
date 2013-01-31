@@ -13,10 +13,14 @@ class BenchmarkInfo::Impl
 			groupName(),
 			benchmarkName(),
 			samples(0),
+			resetSamples(0),
 			calls(0),
+			resetCalls(0),
 			baselineUnit(1),
 			bestRunTime(UINT64_MAX),
 			totalRunTime(0),
+			problemSetSize(0),
+			problemSetSizeIndex(0),
 			factory()
 		{
 		}
@@ -25,10 +29,14 @@ class BenchmarkInfo::Impl
 			groupName(groupName),
 			benchmarkName(benchmarkName),
 			samples(samples),
+			resetSamples(samples),
 			calls(calls),
+			resetCalls(calls),
 			baselineUnit(1),
 			bestRunTime(UINT64_MAX),
 			totalRunTime(0),
+			problemSetSize(0),
+			problemSetSizeIndex(0),
 			factory(testFactory)
 		{
 		}
@@ -41,9 +49,11 @@ class BenchmarkInfo::Impl
 
 		/// Test samples completed
 		uint64_t samples;
+		uint64_t resetSamples;
 		
 		/// Calls per test run
 		uint64_t calls;
+		uint64_t resetCalls;
 
 		/// The number of microseconds making up one baseline unit
 		uint64_t baselineUnit;
@@ -53,6 +63,9 @@ class BenchmarkInfo::Impl
 
 		/// The best run time for this test
 		uint64_t totalRunTime;
+
+		size_t problemSetSize;
+		size_t problemSetSizeIndex;
 		
 		/// The factory to associate with this benchmark.
 		std::shared_ptr<Factory> factory;
@@ -66,6 +79,15 @@ BenchmarkInfo::BenchmarkInfo(const std::string& groupName, const std::string& be
 
 BenchmarkInfo::~BenchmarkInfo()
 {
+}
+
+void BenchmarkInfo::reset()
+{
+	this->pimpl->samples = this->pimpl->resetSamples;
+	this->pimpl->calls = this->pimpl->resetCalls;
+	this->pimpl->baselineUnit = 1;
+	this->pimpl->bestRunTime = UINT64_MAX;
+	this->pimpl->totalRunTime = 0;
 }
 
 std::string BenchmarkInfo::getGroupName() const
@@ -133,6 +155,13 @@ std::string BenchmarkInfo::get() const
 		output += " calls per run.";
 	}
 
+	if(this->getProblemSetSize() > 0)
+	{
+		// Leave it zero based.  We're obviously C++ programmers.
+		output += " Problem Set " + std::to_string(this->getProblemSetSizeIndex());
+		output += " of " + std::to_string(this->getProblemSetSize() - 1) + ".";
+	}
+
 	return std::move(output);
 }
 
@@ -181,4 +210,24 @@ double BenchmarkInfo::getUsPerOp() const
 double BenchmarkInfo::getOpsPerSecond() const
 {
 	return celero::UsPerSec / this->getUsPerOp();
+}
+
+void BenchmarkInfo::setProblemSetSize(const size_t x)
+{
+	this->pimpl->problemSetSize = x;
+}
+
+size_t BenchmarkInfo::getProblemSetSize() const
+{
+	return this->pimpl->problemSetSize;
+}
+
+size_t BenchmarkInfo::getProblemSetSizeIndex() const
+{
+	return this->pimpl->problemSetSizeIndex;
+}
+
+void BenchmarkInfo::incrementProblemSetSizeIndex()
+{
+	this->pimpl->problemSetSizeIndex++;
 }

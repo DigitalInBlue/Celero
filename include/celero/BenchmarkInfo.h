@@ -30,7 +30,14 @@ namespace celero
 			BenchmarkInfo(const std::string& groupName, const std::string& benchmarkName, const uint64_t samples, const uint64_t calls, std::shared_ptr<Factory> testFactory);
 			
 			///
+			/// \brief	Overloaded constructor.
 			///
+			/// \param groupName Name of the test group.
+			/// \param benchmarkName Name of the test.
+			/// \param samples Number of samples for the test.
+			/// \param calls Number of calls per run.
+			/// \param baselineName The baseline test associated with this benchmark.
+			/// \param testFactory Test factory implementation for the test.
 			///
 			BenchmarkInfo(const std::string& groupName, const std::string& benchmarkName, const uint64_t samples, const uint64_t calls, const std::string& baselineName, std::shared_ptr<Factory> testFactory);
 		
@@ -38,6 +45,11 @@ namespace celero
 			///
 			///
 			~BenchmarkInfo();
+
+			///
+			///
+			///
+			void reset();
 
 			///
 			///
@@ -126,6 +138,11 @@ namespace celero
 			///	An operation is defined as one operation of one run.
 			///
 			double getOpsPerSecond() const;
+
+			void setProblemSetSize(const size_t x);
+			size_t getProblemSetSize() const;
+			size_t getProblemSetSizeIndex() const;
+			void incrementProblemSetSizeIndex();
 
 		private:
 			///

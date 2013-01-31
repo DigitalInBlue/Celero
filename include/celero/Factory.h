@@ -8,15 +8,15 @@ namespace celero
 {
 	class TestFixture;
 
-    ///
-    /// \class Factory
-    ///
-    /// \author	John Farrier
-    ///
+	///
+	/// \class Factory
+	///
+	/// \author	John Farrier
+	///
 	/// Pure Virtual Base class for benchmarks.
-    ///
-    class CELERO_EXPORT Factory
-    {
+	///
+	class CELERO_EXPORT Factory
+	{
 		public:
 			///
 			/// \brief	Default Constructor
@@ -30,13 +30,13 @@ namespace celero
 			///
 			virtual ~Factory()
 			{
-            }
+			}
 
 			///
 			/// \brief	Pure virtual function.
 			///
 			virtual std::shared_ptr<TestFixture> Create() = 0;
-    };
+	};
 }
 
 #endif

@@ -5,6 +5,7 @@
 #include <celero/Utilities.h>
 #include <celero/Executor.h>
 #include <celero/Print.h>
+#include <celero/ResultTable.h>
 
 #include <iostream>
 #include <algorithm>
@@ -25,8 +26,13 @@ std::shared_ptr<celero::BenchmarkInfo> celero::RegisterBaseline(const char* grou
 	return info;
 }
 
-void celero::Run(int, char**)
+void celero::Run(int argc, char** argv)
 {
+	if(argc > 1)
+	{
+		celero::ResultTable::Instance().setFileName(argv[1]);
+	}
+
 	// Initial output
 	print::GreenBar("");
 	std::cout << std::fixed;

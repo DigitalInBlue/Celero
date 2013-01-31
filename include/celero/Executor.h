@@ -13,8 +13,8 @@ namespace celero
 		void Execute(std::shared_ptr<BenchmarkInfo> x);
 
 		void RunAll();
-		void RunAllBaselines();
-		void RunAllTests();
+		bool RunAllBaselines();
+		bool RunAllTests();
 
 		void RunGroup(const std::string& x);
 

@@ -22,7 +22,6 @@ class celero::TestVector::Impl
 		{
 		}
 
-
 		mutable std::mutex testVectorMutex;
 		std::vector<std::shared_ptr<BenchmarkInfo>> testVector;
 

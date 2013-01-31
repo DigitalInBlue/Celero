@@ -110,6 +110,7 @@ set(TARGET_H
 	include/celero/Pimpl.h
 	include/celero/PimplImpl.h
 	include/celero/Print.h
+	include/celero/ResultTable.h
 	include/celero/TestFixture.h
 	include/celero/TestVector.h
 	include/celero/Timer.h
@@ -122,6 +123,7 @@ set(TARGET_SRC
 	src/Console.cpp
 	src/Executor.cpp
 	src/Print.cpp
+	src/ResultTable.cpp
 	src/TestVector.cpp
 	src/TestFixture.cpp
 	src/Timer.cpp
@@ -134,14 +136,15 @@ include_directories(${HEADER_PATH})
 # --------------------------------------------------------------------------- #
 # --------------------------------------------------------------------------- #
 
-SET(PROJECT_TEST_NAME celeroTest)
+SET(PROJECT_TEST_NAME celeroDemo)
 
 #
 # Add Sources
 #
 
 add_executable(${PROJECT_TEST_NAME} 
-  src/CeleroTest.cpp)
+  src/DemoSimple.cpp
+  src/DemoSort.cpp)
 
 #
 # Celero Project Dependencies

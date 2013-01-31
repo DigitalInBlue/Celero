@@ -109,6 +109,8 @@ namespace celero
 		protected:																\
 			virtual void UserBenchmark();										\
 																				\
+			virtual void setProblemSetSize(const size_t x) { info->setProblemSetSize(x); } \
+																				\
 		private:																\
 			static const std::shared_ptr<::celero::BenchmarkInfo> info;			\
 	};																			\
@@ -156,6 +158,8 @@ namespace celero
 																				\
 		protected:																\
 			virtual void UserBenchmark();										\
+																				\
+			virtual void setProblemSetSize(const size_t x) { info->setProblemSetSize(x); } \
 																				\
 		private:																\
 			static const std::shared_ptr<::celero::BenchmarkInfo> info;			\

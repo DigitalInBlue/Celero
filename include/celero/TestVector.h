@@ -19,8 +19,6 @@ namespace celero
 	class TestVector
 	{
 		public:
-			TestVector();
-
 			static TestVector& Instance();
 
 			void pushBackTest(std::shared_ptr<BenchmarkInfo> x);
@@ -33,6 +31,11 @@ namespace celero
 			std::shared_ptr<BenchmarkInfo> getBaseline(const std::string& groupName);
 
 		private:
+			///
+			/// Default Constructor
+			///
+			TestVector();
+
 			///
 			/// \brief	Pimpl Idiom
 			///
