@@ -144,7 +144,8 @@ SET(PROJECT_TEST_NAME celeroDemo)
 
 add_executable(${PROJECT_TEST_NAME} 
   src/DemoSimple.cpp
-  src/DemoSort.cpp)
+  src/DemoSort.cpp
+  src/DemoTransform.cpp)
 
 #
 # Celero Project Dependencies
