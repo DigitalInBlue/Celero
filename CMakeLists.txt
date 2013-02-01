@@ -59,7 +59,6 @@ endif()
 
 message (STATUS "SYSTEM: ${CMAKE_SYSTEM_NAME}")
 if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
-    message (STATUS "I'm home")
     EXEC_PROGRAM(xcrun ARGS -find clang++ OUTPUT_VARIABLE XCODE_CLANG_PATH)
     set (XCODE_CLANG_PATH "${XCODE_CLANG_PATH}" CACHE STRING "Xcode clang path")
     set (CMAKE_CXX_COMPILER "${XCODE_CLANG_PATH}")
