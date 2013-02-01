@@ -183,5 +183,6 @@ cmake_install.cmake
 # PRODUCTS
 #############
 celeroDemo
-libcelero.a
+lib*.a
+lib*.so
 
