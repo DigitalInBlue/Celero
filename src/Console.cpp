@@ -6,9 +6,11 @@ using namespace celero;
 	#include <Windows.h>
 	#include <stdio.h>
 #else
+    #include <iostream>
 	#include <curses.h>
 #endif
 
+#ifdef WIN32
 auto WinColor() -> decltype(GetStdHandle(STD_OUTPUT_HANDLE))
 {
 	auto h = GetStdHandle(STD_OUTPUT_HANDLE); 
@@ -16,6 +18,7 @@ auto WinColor() -> decltype(GetStdHandle(STD_OUTPUT_HANDLE))
 	GetConsoleScreenBufferInfo(h, &csbiInfo); 
 	return h;
 }
+#endif
 
 void Red()
 {

@@ -1,6 +1,11 @@
 #include <celero/Celero.h>
 #include <algorithm>
 
+#ifndef WIN32
+#include <cmath>
+#include <cstdlib>
+#endif
+
 class DemoSortFixture : public celero::TestFixture
 {
 	public:
