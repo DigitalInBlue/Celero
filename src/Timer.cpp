@@ -3,6 +3,7 @@
 #ifdef WIN32
 	#include <Windows.h>
 #else
+	#include <sys/time.h>
 #endif
 
 uint64_t celero::timer::GetSystemTime()

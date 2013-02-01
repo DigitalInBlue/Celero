@@ -170,3 +170,19 @@ pip-log.txt
 *.png
 *.xcf
 [Bb]uild
+
+#############
+## CMake
+#############
+CMakeCache.txt
+CMakeFiles/
+Makefile
+cmake_install.cmake
+
+#############
+# PRODUCTS
+#############
+celeroDemo
+lib*.a
+lib*.so
+

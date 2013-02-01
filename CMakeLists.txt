@@ -9,6 +9,8 @@
 #
 
 CMAKE_MINIMUM_REQUIRED(VERSION 2.8)
+# Project Name
+PROJECT(celero)
 
 include(CheckFunctionExists)
 include(CheckCXXSourceCompiles)
@@ -45,6 +47,8 @@ if(MSVC)
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}" CACHE STRING "Compiler Flags for All Builds" FORCE) 
   set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG}" CACHE STRING "Compiler Flags for Debug Builds" FORCE) 
   set(CMAKE_CXX_FLAGS_RELEASE  "${CMAKE_CXX_FLAGS_RELEASE}" CACHE STRING "Compiler Flags for Release Builds" FORCE) 
+
+  add_definitions("/D_CRT_SECURE_NO_WARNINGS /wd4251 /nologo")
 endif() 
  
 if(BORLAND) 
@@ -52,6 +56,15 @@ if(BORLAND)
   set(CMAKE_CXX_FLAGS_DEBUG "" CACHE STRING "Compiler Flags for Debug Builds" FORCE)  
   set(CMAKE_CXX_FLAGS_RELEASE  "" CACHE STRING "Compiler Flags for Release Builds" FORCE) 
 endif() 
+
+message (STATUS "SYSTEM: ${CMAKE_SYSTEM_NAME}")
+if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+    EXEC_PROGRAM(xcrun ARGS -find clang++ OUTPUT_VARIABLE XCODE_CLANG_PATH)
+    set (XCODE_CLANG_PATH "${XCODE_CLANG_PATH}" CACHE STRING "Xcode clang path")
+    set (CMAKE_CXX_COMPILER "${XCODE_CLANG_PATH}")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libc++") 
+    set (CMAKE_COMPILER_IS_GNUCXX 1)
+endif()
  
 if(CMAKE_COMPILER_IS_GNUCXX) 
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -std=gnu++11 -Wall" CACHE STRING "Compiler Flags for All Builds" FORCE) 
@@ -68,14 +81,11 @@ set(CMAKE_RELEASE_POSTFIX        ""  CACHE STRING "add a postfix, usually empty 
 set(CMAKE_RELWITHDEBINFO_POSTFIX ""  CACHE STRING "add a postfix, usually empty on windows")
 set(CMAKE_MINSIZEREL_POSTFIX     ""  CACHE STRING "add a postfix, usually empty on windows")
 
-add_definitions("/W4 /D_CRT_SECURE_NO_WARNINGS /wd4251 /nologo")
 
 # --------------------------------------------------------------------------- #
 # --------------------------------------------------------------------------- #
 
 
-# Project Name
-PROJECT(celero)
 
 #
 # Install Locations
