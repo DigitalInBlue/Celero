@@ -1,5 +1,10 @@
 #include <celero/Celero.h>
 
+#ifndef WIN32
+#include <cmath>
+#include <cstdlib>
+#endif
+
 CELERO_MAIN;
 
 // Run an automatic baseline.  

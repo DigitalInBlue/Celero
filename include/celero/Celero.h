@@ -112,11 +112,11 @@ namespace celero
 			virtual void setProblemSetSize(const size_t x) { info->setProblemSetSize(x); } \
 																				\
 		private:																\
-			static const std::shared_ptr<::celero::BenchmarkInfo> info;			\
+			static const std::shared_ptr< ::celero::BenchmarkInfo> info;			\
 	};																			\
 																				\
-	const std::shared_ptr<::celero::BenchmarkInfo> BENCHMARK_CLASS_NAME(groupName, benchmarkName)::info = \
-		::celero::RegisterTest(#groupName, #benchmarkName, samples, calls, std::make_shared<::celero::GenericFactory<BENCHMARK_CLASS_NAME(groupName, benchmarkName)>>()); \
+	const std::shared_ptr< ::celero::BenchmarkInfo> BENCHMARK_CLASS_NAME(groupName, benchmarkName)::info = \
+		::celero::RegisterTest(#groupName, #benchmarkName, samples, calls, std::make_shared< ::celero::GenericFactory<BENCHMARK_CLASS_NAME(groupName, benchmarkName)>>()); \
 																				\
 	void BENCHMARK_CLASS_NAME(groupName, benchmarkName)::UserBenchmark()
 
@@ -162,11 +162,11 @@ namespace celero
 			virtual void setProblemSetSize(const size_t x) { info->setProblemSetSize(x); } \
 																				\
 		private:																\
-			static const std::shared_ptr<::celero::BenchmarkInfo> info;			\
+			static const std::shared_ptr< ::celero::BenchmarkInfo> info;			\
 	};																			\
 																				\
-	const std::shared_ptr<::celero::BenchmarkInfo> BASELINE_CLASS_NAME(groupName, baselineName)::info = \
-		::celero::RegisterBaseline(#groupName, #baselineName, samples, calls, std::make_shared<::celero::GenericFactory<BASELINE_CLASS_NAME(groupName, baselineName)>>()); \
+	const std::shared_ptr< ::celero::BenchmarkInfo> BASELINE_CLASS_NAME(groupName, baselineName)::info = \
+		::celero::RegisterBaseline(#groupName, #baselineName, samples, calls, std::make_shared< ::celero::GenericFactory<BASELINE_CLASS_NAME(groupName, baselineName)>>()); \
 																				\
 	void BASELINE_CLASS_NAME(groupName, baselineName)::UserBenchmark()
 

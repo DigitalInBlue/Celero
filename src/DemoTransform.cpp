@@ -3,6 +3,11 @@
 #include <algorithm>
 #include <functional>
 
+#ifndef WIN32
+#include <cstdlib>
+#include <cmath>
+#endif
+
 class DemoTransformFixture : public celero::TestFixture
 {
 	public:
