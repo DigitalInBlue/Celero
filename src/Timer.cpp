@@ -8,10 +8,11 @@
 
 uint64_t celero::timer::GetSystemTime()
 {
+	/// \todo	Replace celero::timer::GetSystemTime() with std::chrono
 	#ifdef WIN32
 		LARGE_INTEGER timeStorage;
 		QueryPerformanceCounter(&timeStorage);
-		return timeStorage.QuadPart;
+		return static_cast<uint64_t>(timeStorage.QuadPart);
 	#else
 		timeval timeStorage;
 		gettimeofday(&timeStorage, nullptr);
@@ -21,6 +22,7 @@ uint64_t celero::timer::GetSystemTime()
 
 double celero::timer::GetSystemTime(uint64_t x)
 {
+	/// \todo	Replace celero::timer::GetSystemTime(uint64_t x) with std::chrono
 	#ifdef WIN32
 		static LARGE_INTEGER frequency;
 		QueryPerformanceFrequency(&frequency);
