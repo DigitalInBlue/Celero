@@ -8,6 +8,27 @@
 #include <cmath>
 #endif
 
+///
+/// \class	DemoTransformFixture
+///	\autho	John Farrier
+/// 
+///	\brief	A Celero Test Fixture for array transforms.
+///
+/// This test fixture will build a problem set of powers of two.  When executed,
+/// the selected problem set is used to create an array of the given size, then
+/// push random integers into the array.  Each transform function will then
+/// modify the randomly generated array for timing.
+///
+///	This demo highlights how to use the ProblemSetValues to build automatic
+/// test cases which can scale.  These test cases should ideally be written
+/// to a file when executed.  The resulting CSV file can be easily plotted
+/// in an application such as Microsoft Excel to show how various
+/// tests performed as their problem set scaled.
+///
+/// \code
+/// > celeroDemo outfile.csv
+/// \endcode
+///
 class DemoTransformFixture : public celero::TestFixture
 {
 	public:
@@ -19,18 +40,18 @@ class DemoTransformFixture : public celero::TestFixture
 		DemoTransformFixture()
 		{
 			// We will run some total number of sets of tests all together. Each one growing by a power of 2.
-			const int totalNumberOfTests = 9;
+			const int totalNumberOfTests = 12;
 
 			for(int i = 0; i < totalNumberOfTests; i++)
 			{
 				// ProblemSetValues is part of the base class and allows us to specify
 				// some values to control various test runs to end up building a nice graph.
-				this->ProblemSetValues.push_back(pow(2, i));
+				this->ProblemSetValues.push_back(static_cast<int32_t>(pow(2, i+1)));
 			}
 		}
 
 		/// Before each run, build a vector of random integers.
-		virtual void SetUp(const uint32_t problemSetValue)
+		virtual void SetUp(const int32_t problemSetValue)
 		{
 			this->arraySize = problemSetValue;
 
