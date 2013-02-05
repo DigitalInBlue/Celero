@@ -72,6 +72,11 @@ class BenchmarkInfo::Impl
 
 };
 
+BenchmarkInfo::BenchmarkInfo() : 
+	pimpl()
+{
+}
+
 BenchmarkInfo::BenchmarkInfo(const std::string& groupName, const std::string& benchmarkName, const uint64_t samples, const uint64_t calls, std::shared_ptr<Factory> testFactory) :
 	pimpl(groupName, benchmarkName, samples, calls, testFactory)
 {
