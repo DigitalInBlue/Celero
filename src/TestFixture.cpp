@@ -19,7 +19,7 @@ void TestFixture::SetUp()
 {
 }
 
-void TestFixture::SetUp(const uint32_t)
+void TestFixture::SetUp(const int32_t)
 {
 	// There is no SetUp override specified, but problem set sizes were used.
 	std::cerr << "There is no SetUp override specified, but a problem set was use.\n";
@@ -30,7 +30,7 @@ void TestFixture::TearDown()
 {
 }
 	
-std::pair<int64_t, int32_t> TestFixture::Run(const uint64_t calls, const size_t problemSetValueIndex)
+std::pair<uint64_t, int32_t> TestFixture::Run(const uint64_t calls, const size_t problemSetValueIndex)
 {
 	this->setProblemSetSize(this->getProblemSetSize());
 

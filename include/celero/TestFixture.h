@@ -35,7 +35,7 @@ namespace celero
 			///
 			/// Set up the test fixture before benchmark execution.
 			///
-			virtual void SetUp(const uint32_t problemSetValue);
+			virtual void SetUp(const int32_t problemSetValue);
 		
 			///
 			/// Called after test completion to destroy the fixture.
@@ -47,7 +47,7 @@ namespace celero
 			///
 			/// \return Returns the number of microseconds the run took.
 			///
-			std::pair<int64_t, int32_t> Run(const uint64_t calls, const size_t problemSetValueIndex);
+			std::pair<uint64_t, int32_t> Run(const uint64_t calls, const size_t problemSetValueIndex);
 
 			///
 			///
@@ -68,7 +68,7 @@ namespace celero
 			/// Executed for each operation the benchmarking test is run.
 			virtual void UserBenchmark();
 
-			std::vector<uint32_t> ProblemSetValues;
+			std::vector<int32_t> ProblemSetValues;
 
 		private:
 	};
