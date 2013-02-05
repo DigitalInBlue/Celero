@@ -19,6 +19,11 @@ namespace celero
 	{
 		public:
 			///
+			/// \brief	Default constructor
+			///
+			BenchmarkInfo();
+
+			///
 			/// \brief	Overloaded constructor.
 			///
 			/// \param groupName Name of the test group.
@@ -30,19 +35,7 @@ namespace celero
 			BenchmarkInfo(const std::string& groupName, const std::string& benchmarkName, const uint64_t samples, const uint64_t calls, std::shared_ptr<Factory> testFactory);
 			
 			///
-			/// \brief	Overloaded constructor.
-			///
-			/// \param groupName Name of the test group.
-			/// \param benchmarkName Name of the test.
-			/// \param samples Number of samples for the test.
-			/// \param calls Number of calls per run.
-			/// \param baselineName The baseline test associated with this benchmark.
-			/// \param testFactory Test factory implementation for the test.
-			///
-			BenchmarkInfo(const std::string& groupName, const std::string& benchmarkName, const uint64_t samples, const uint64_t calls, const std::string& baselineName, std::shared_ptr<Factory> testFactory);
-		
-			///
-			///
+			/// \brief	Default destructor.
 			///
 			~BenchmarkInfo();
 
