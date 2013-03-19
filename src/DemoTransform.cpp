@@ -26,7 +26,7 @@
 /// tests performed as their problem set scaled.
 ///
 /// \code
-/// > celeroDemo outfile.csv
+/// celeroDemo outfile.csv
 /// \endcode
 ///
 class DemoTransformFixture : public celero::TestFixture
@@ -60,7 +60,7 @@ class DemoTransformFixture : public celero::TestFixture
 				this->arrayIn.push_back(rand());
 			}
 
-			this->arrayOut.reserve(this->arraySize);
+			this->arrayOut.resize(this->arraySize);
 		}
 
 		/// After each run, clear the vector of random integers.
