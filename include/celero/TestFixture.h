@@ -13,6 +13,7 @@ namespace celero
 {
 	///
 	/// \class TestFixture
+	/// \author John Farrier
 	///
 	class CELERO_EXPORT TestFixture
 	{

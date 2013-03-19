@@ -7,7 +7,7 @@ namespace celero
 {
 	///
 	/// \namespace console
-		/// \author	John farrier
+	/// \author	John farrier
 	///
 	namespace console
 	{

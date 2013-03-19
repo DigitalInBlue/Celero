@@ -12,9 +12,9 @@ namespace celero
 	///
 	/// \class TestVector
 	///
-	/// \brief	Don't give me crap about a static global...
-	///
 	/// \author	John Farrier
+	///
+	/// \brief	Don't give me crap about a static global...
 	///
 	class TestVector
 	{

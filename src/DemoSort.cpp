@@ -24,7 +24,7 @@
 /// tests performed as their problem set scaled.
 ///
 /// \code
-/// > celeroDemo outfile.csv
+/// celeroDemo outfile.csv
 /// \endcode
 ///
 class DemoSortFixture : public celero::TestFixture
@@ -65,7 +65,7 @@ class DemoSortFixture : public celero::TestFixture
 		int arraySize;
 };
 
-// For a baseline, I'll chose Bubble Sort.
+// For a baseline, I'll choose Bubble Sort.
 BASELINE_F(DemoSort, BubbleSort, DemoSortFixture, 0, 10000)
 {
 	for(int x = 0; x < this->arraySize; x++)

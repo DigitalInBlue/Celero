@@ -10,7 +10,7 @@ namespace celero
 	///
 	/// \func DoNotOptimizeAway
 	///
-	/// From Andrei Alexandrescu
+	/// \author Andrei Alexandrescu
 	///
 	template<class T> void DoNotOptimizeAway(T&& datum) 
 	{

@@ -11,8 +11,8 @@ namespace celero
 	///
 	/// \author	John farrier
 	///
-    template<class T> class GenericFactory : public Factory
-    {
+	template<class T> class GenericFactory : public Factory
+	{
 		public:
 			///
 			/// \brief	Default Constructor
@@ -35,7 +35,7 @@ namespace celero
 			{
 				return std::make_shared<T>();
 			}
-    };
+	};
 }
 
 #endif
