@@ -1,6 +1,8 @@
 #ifndef _CELERO_TESTFIXTURE_H_
 #define _CELERO_TESTFIXTURE_H_
 
+// www.helleboreconsulting.com
+
 #include <cstddef>
 #include <stdint.h>
 
@@ -13,6 +15,7 @@ namespace celero
 {
 	///
 	/// \class TestFixture
+	///
 	/// \author John Farrier
 	///
 	class CELERO_EXPORT TestFixture

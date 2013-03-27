@@ -1,6 +1,8 @@
 #ifndef _CELERO_TIMER_H_
 #define _CELERO_TIMER_H_
 
+// www.helleboreconsulting.com
+
 #include <stdint.h>
 
 namespace celero

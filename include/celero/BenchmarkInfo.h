@@ -1,6 +1,8 @@
 #ifndef _CELERO_BENCHMARKINFO_H_
 #define _CELERO_BENCHMARKINFO_H_
 
+// www.helleboreconsulting.com
+
 #include <string>
 
 #include <celero/Export.h>
@@ -132,9 +134,24 @@ namespace celero
 			///
 			double getOpsPerSecond() const;
 
+			///
+			///
+			///
 			void setProblemSetSize(const size_t x);
+			
+			///
+			///
+			///
 			size_t getProblemSetSize() const;
+			
+			///
+			///
+			///
 			size_t getProblemSetSizeIndex() const;
+			
+			///
+			///
+			///
 			void incrementProblemSetSizeIndex();
 
 		private:

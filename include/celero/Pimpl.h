@@ -1,6 +1,8 @@
 #ifndef _CELERO_PIMPL_H_
 #define _CELERO_PIMPL_H_
  
+// www.helleboreconsulting.com
+
 #include <memory>
  
 namespace celero

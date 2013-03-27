@@ -1,6 +1,8 @@
 #ifndef _CELERO_UTILITIES_H_
 #define _CELERO_UTILITIES_H_
 
+// www.helleboreconsulting.com
+
 #ifndef WIN32
 #include <unistd.h>
 #endif

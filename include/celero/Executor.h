@@ -1,6 +1,8 @@
 #ifndef _CELERO_EXECUTOR_H_
 #define _CELERO_EXECUTOR_H_
  
+// www.helleboreconsulting.com
+
 #include <string>
 #include <memory>
  

@@ -1,26 +1,17 @@
 #ifndef _CELERO_PIMPLIMPL_H_
 #define _CELERO_PIMPLIMPL_H_
  
+// www.helleboreconsulting.com
+
 #include <memory>
 #include <utility>
 
 namespace celero
 {
 	template<typename T> Pimpl<T>::Pimpl() : 
-	// JEF // _pimpl{ new T{} } 
 		_pimpl(new T()) 
 	{
 	}
-
-	/*
-	template<typename T>
-	template<typename ...Args>
-	Pimpl<T>::Pimpl( Args&& ...args ) : 
-	// JEF // _pimpl{ new T{ std::forward<Args>(args)... } } 
-		_pimpl(new T(std::forward<Args>(args)...)) 
-	{
-	}
-	*/
 
 	template<typename T> 
 	template<typename Arg1>

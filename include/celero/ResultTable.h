@@ -1,6 +1,8 @@
 #ifndef _CELERO_RESULTTABLE_H_
 #define _CELERO_RESULTTABLE_H_
 
+// www.helleboreconsulting.com
+
 #include <celero/Pimpl.h>
 #include <string>
 

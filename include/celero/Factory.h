@@ -1,6 +1,8 @@
 #ifndef _CELERO_FACTORY_H_
 #define _CELERO_FACTORY_H_
 
+// www.helleboreconsulting.com
+
 #include <celero/Export.h>
 #include <memory>
 

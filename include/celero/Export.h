@@ -1,6 +1,8 @@
 #ifndef _CELERO_EXPORT_H_
 #define _CELERO_EXPORT_H_
 
+// www.helleboreconsulting.com
+
 ///
 ///	\author	John Farrier
 ///

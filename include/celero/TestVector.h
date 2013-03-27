@@ -1,6 +1,8 @@
 #ifndef _CELERO_TESTVECTOR_H_
 #define _CELERO_TESTVECTOR_H_
 
+// www.helleboreconsulting.com
+
 #include <celero/Export.h>
 #include <celero/Pimpl.h>
 #include <functional>

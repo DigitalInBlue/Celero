@@ -1,18 +1,22 @@
 #ifndef _CELERO_CONSOLE_H_
 #define _CELERO_CONSOLE_H_
 
+// www.helleboreconsulting.com
+
 #include <celero/Export.h>
 
 namespace celero
 {
 	///
 	/// \namespace console
+	///
 	/// \author	John farrier
 	///
 	namespace console
 	{
 		///
 		/// \enum ConsoleColor
+		///
 		/// \author	John farrier
 		///
 		enum ConsoleColor

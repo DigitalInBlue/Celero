@@ -1,6 +1,8 @@
 #ifndef _CELERO_GENERICFACTORY_H_
 #define _CELERO_GENERICFACTORY_H_
 
+// www.helleboreconsulting.com
+
 #include <celero/Factory.h>
 #include <celero/Export.h>
 
