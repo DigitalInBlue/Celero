@@ -1,10 +1,11 @@
-Celero
+#Celero
 
-C++ Benchmarking Library
+###C++ Benchmarking Library
 
 Copyright 2013 John Farrier 
-
 Apache 2.0 License
+
+##Overview
 
 Developing consistent and meaningful benchmark results for code is a complex
 task. Measurement tools exist (Intel® VTune™ Amplifier, SmartBear AQTime, 
