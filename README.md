@@ -24,3 +24,5 @@ Once Celero is added to your project. You can create dedicated benchmark
 projects and source files. For convenience, there is single header file and a 
 CELERO_MAIN macro that can be used to provide a main() for your benchmark 
 project that will automatically execute all of your benchmark tests.
+
+![Image](https://d2weczhvl823v0.cloudfront.net/DigitalInBlue/Celero/trend.png?raw=true)
