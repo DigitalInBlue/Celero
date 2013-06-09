@@ -59,11 +59,11 @@ endif()
 
 message (STATUS "SYSTEM: ${CMAKE_SYSTEM_NAME}")
 if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
-    EXEC_PROGRAM(xcrun ARGS -find clang++ OUTPUT_VARIABLE XCODE_CLANG_PATH)
-    set (XCODE_CLANG_PATH "${XCODE_CLANG_PATH}" CACHE STRING "Xcode clang path")
-    set (CMAKE_CXX_COMPILER "${XCODE_CLANG_PATH}")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libc++") 
-    set (CMAKE_COMPILER_IS_GNUCXX 1)
+	EXEC_PROGRAM(xcrun ARGS -find clang++ OUTPUT_VARIABLE XCODE_CLANG_PATH)
+	set (XCODE_CLANG_PATH "${XCODE_CLANG_PATH}" CACHE STRING "Xcode clang path")
+	set (CMAKE_CXX_COMPILER "${XCODE_CLANG_PATH}")
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libc++") 
+	set (CMAKE_COMPILER_IS_GNUCXX 1)
 endif()
  
 if(CMAKE_COMPILER_IS_GNUCXX) 
@@ -153,6 +153,7 @@ SET(PROJECT_TEST_NAME celeroDemo)
 #
 
 add_executable(${PROJECT_TEST_NAME} 
+  src/DemoComparison.cpp
   src/DemoSimple.cpp
   src/DemoSort.cpp
   src/DemoTransform.cpp)
