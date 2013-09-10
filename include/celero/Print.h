@@ -1,5 +1,5 @@
-#ifndef _CELERO_PRINT_H_
-#define _CELERO_PRINT_H_
+#ifndef H_CELERO_PRINT_H
+#define H_CELERO_PRINT_H
  
 // www.helleboreconsulting.com
 

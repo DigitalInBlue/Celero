@@ -186,5 +186,5 @@ endif()
 
 if(CELERO_USE_FOLDERS)
 	set_property(TARGET celero PROPERTY FOLDER "Celero")
-	set_property(TARGET celeroTest PROPERTY FOLDER "Celero")
+	set_property(TARGET celeroDemo PROPERTY FOLDER "Celero")
 endif()

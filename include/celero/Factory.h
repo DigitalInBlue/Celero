@@ -1,5 +1,5 @@
-#ifndef _CELERO_FACTORY_H_
-#define _CELERO_FACTORY_H_
+#ifndef H_CELERO_FACTORY_H
+#define H_CELERO_FACTORY_H
 
 // www.helleboreconsulting.com
 

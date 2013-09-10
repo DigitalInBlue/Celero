@@ -1,5 +1,5 @@
-#ifndef _CELERO_EXECUTOR_H_
-#define _CELERO_EXECUTOR_H_
+#ifndef H_CELERO_EXECUTOR_H
+#define H_CELERO_EXECUTOR_H
  
 // www.helleboreconsulting.com
 

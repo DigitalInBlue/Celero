@@ -1,5 +1,5 @@
-#ifndef _CELERO_TESTVECTOR_H_
-#define _CELERO_TESTVECTOR_H_
+#ifndef H_CELERO_TESTVECTOR_H
+#define H_CELERO_TESTVECTOR_H
 
 // www.helleboreconsulting.com
 

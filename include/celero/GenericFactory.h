@@ -1,5 +1,5 @@
-#ifndef _CELERO_GENERICFACTORY_H_
-#define _CELERO_GENERICFACTORY_H_
+#ifndef H_CELERO_GENERICFACTORY_H
+#define H_CELERO_GENERICFACTORY_H
 
 // www.helleboreconsulting.com
 

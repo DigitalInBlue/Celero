@@ -1,5 +1,5 @@
-#ifndef _CELERO_BENCHMARKINFO_H_
-#define _CELERO_BENCHMARKINFO_H_
+#ifndef H_CELERO_BENCHMARKINFO_H
+#define H_CELERO_BENCHMARKINFO_H
 
 // www.helleboreconsulting.com
 
@@ -166,4 +166,5 @@ namespace celero
 			Pimpl<Impl> pimpl;	
 	};
 }
+
 #endif

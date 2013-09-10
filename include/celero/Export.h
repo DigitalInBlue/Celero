@@ -1,5 +1,5 @@
-#ifndef _CELERO_EXPORT_H_
-#define _CELERO_EXPORT_H_
+#ifndef H_CELERO_EXPORT_H
+#define H_CELERO_EXPORT_H
 
 // www.helleboreconsulting.com
 

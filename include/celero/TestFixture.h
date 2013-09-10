@@ -1,5 +1,5 @@
-#ifndef _CELERO_TESTFIXTURE_H_
-#define _CELERO_TESTFIXTURE_H_
+#ifndef H_CELERO_TESTFIXTURE_H
+#define H_CELERO_TESTFIXTURE_H
 
 // www.helleboreconsulting.com
 

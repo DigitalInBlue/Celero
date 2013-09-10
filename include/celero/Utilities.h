@@ -1,5 +1,5 @@
-#ifndef _CELERO_UTILITIES_H_
-#define _CELERO_UTILITIES_H_
+#ifndef H_CELERO_UTILITIES_H
+#define H_CELERO_UTILITIES_H
 
 // www.helleboreconsulting.com
 

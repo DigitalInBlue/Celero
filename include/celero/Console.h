@@ -1,5 +1,5 @@
-#ifndef _CELERO_CONSOLE_H_
-#define _CELERO_CONSOLE_H_
+#ifndef H_CELERO_CONSOLE_H
+#define H_CELERO_CONSOLE_H
 
 // www.helleboreconsulting.com
 

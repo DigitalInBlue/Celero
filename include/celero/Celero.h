@@ -1,5 +1,5 @@
-#ifndef _CELERO_CELERO_H_
-#define _CELERO_CELERO_H_
+#ifndef H_CELERO_CELERO_H
+#define H_CELERO_CELERO_H
 
 // www.helleboreconsulting.com
 

@@ -1,5 +1,5 @@
-#ifndef _CELERO_PIMPL_H_
-#define _CELERO_PIMPL_H_
+#ifndef H_CELERO_PIMPL_H
+#define H_CELERO_PIMPL_H
  
 // www.helleboreconsulting.com
 

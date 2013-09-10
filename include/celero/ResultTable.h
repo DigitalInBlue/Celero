@@ -1,5 +1,5 @@
-#ifndef _CELERO_RESULTTABLE_H_
-#define _CELERO_RESULTTABLE_H_
+#ifndef H_CELERO_RESULTTABLE_H
+#define H_CELERO_RESULTTABLE_H
 
 // www.helleboreconsulting.com
 
