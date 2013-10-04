@@ -4,6 +4,8 @@
 #include <celero/PimplImpl.h>
 #include <celero/Utilities.h>
 
+#include <algorithm>
+
 using namespace celero;
 
 class BenchmarkInfo::Impl
