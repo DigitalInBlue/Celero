@@ -25,10 +25,12 @@ namespace celero
 
 			void pushBackTest(std::shared_ptr<BenchmarkInfo> x);
 			size_t getTestSize() const;
+			size_t getTestSize(const std::string& groupName) const;
 			void forEachTest(std::function<void(std::shared_ptr<BenchmarkInfo>)> f);
 
 			void pushBackBaseline(std::shared_ptr<BenchmarkInfo> x);
 			size_t getBaselineSize() const;
+			size_t getBaselineSize(const std::string& groupName) const;
 			void forEachBaseline(std::function<void(std::shared_ptr<BenchmarkInfo>)> f);
 			std::shared_ptr<BenchmarkInfo> getBaseline(const std::string& groupName);
 

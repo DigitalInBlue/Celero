@@ -22,7 +22,9 @@ namespace celero
 			static ResultTable& Instance();
 
 			///
+			/// Specify a file name for a results output file.
 			///
+			/// \param x	The name of the output file in which to store Celero's results.
 			///
 			void setFileName(const std::string& x);
 

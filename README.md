@@ -25,4 +25,11 @@ projects and source files. For convenience, there is single header file and a
 CELERO_MAIN macro that can be used to provide a main() for your benchmark 
 project that will automatically execute all of your benchmark tests.
 
-![Image](https://d2weczhvl823v0.cloudfront.net/DigitalInBlue/Celero/trend.png?raw=true)
+#Command Line
+<celeroOutputExecutable> [-g groupNameToRun] [-o outputFileToWriteResultsTo] [-h]
+
+-g	Use this option to run only one benchmark group out of all benchmarks 
+contained within a test executable.
+
+Example: celeroDemo -g DemoSimple -o SimpleResults.txt
+

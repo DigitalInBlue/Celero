@@ -51,6 +51,21 @@ size_t TestVector::getTestSize() const
 	return this->pimpl->testVector.size();
 }
 
+size_t TestVector::getTestSize(const std::string& groupName) const
+{
+	size_t testSize = 0;
+	std::lock_guard<std::mutex> mutexLock(this->pimpl->testVectorMutex);
+	for(auto test : this->pimpl->testVector)
+	{
+		if(test->getGroupName() == groupName)
+		{
+			testSize++;
+		}
+	}
+
+	return testSize;
+}
+
 void TestVector::forEachTest(std::function<void(std::shared_ptr<BenchmarkInfo>)> f)
 {
 	std::lock_guard<std::mutex> mutexLock(this->pimpl->testVectorMutex);
@@ -69,6 +84,22 @@ size_t TestVector::getBaselineSize() const
 	return this->pimpl->baselineVector.size();
 }
 
+size_t TestVector::getBaselineSize(const std::string& groupName) const
+{
+	size_t testSize = 0;
+	std::lock_guard<std::mutex> mutexLock(this->pimpl->baselineVectorMutex);
+
+	for(auto test : this->pimpl->baselineVector)
+	{
+		if(test->getGroupName() == groupName)
+		{
+			testSize++;
+		}
+	}
+
+	return testSize;
+}
+
 void TestVector::forEachBaseline(std::function<void(std::shared_ptr<BenchmarkInfo>)> f)
 {
 	std::lock_guard<std::mutex> mutexLock(this->pimpl->baselineVectorMutex);
@@ -77,7 +108,7 @@ void TestVector::forEachBaseline(std::function<void(std::shared_ptr<BenchmarkInf
 
 std::shared_ptr<BenchmarkInfo> TestVector::getBaseline(const std::string& groupName)
 {
-	std::lock_guard<std::mutex> mutexLock(this->pimpl->baselineVectorMutex);
+	// std::lock_guard<std::mutex> mutexLock(this->pimpl->baselineVectorMutex);
 	auto it = std::find_if(this->pimpl->baselineVector.begin(), this->pimpl->baselineVector.end(), 
 		[&groupName](std::shared_ptr<BenchmarkInfo> td)
 		{

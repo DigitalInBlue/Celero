@@ -25,8 +25,7 @@ void executor::Execute(std::shared_ptr<BenchmarkInfo> x)
 	};
 
 	auto temp = x->getFactory()->Create();
-
-	size_t problemSetIndex = x->getProblemSetSizeIndex();
+	auto problemSetIndex = x->getProblemSetSizeIndex();
 
 	if(x->getSamples() > 0)
 	{
@@ -52,7 +51,7 @@ void executor::Execute(std::shared_ptr<BenchmarkInfo> x)
 
 void executor::RunAll()
 {
-	bool moreProblemSetsLeft = true;
+	auto moreProblemSetsLeft = true;
 
 	while(moreProblemSetsLeft == true)
 	{
@@ -81,7 +80,7 @@ bool executor::RunAllBaselines()
 {
 	print::StageBanner("Baselining");
 
-	bool moreProblemSetsLeft = false;
+	auto moreProblemSetsLeft = false;
 
 	// Run through all the tests in ascending order.
 	celero::TestVector::Instance().forEachBaseline(
@@ -111,7 +110,7 @@ bool executor::RunAllTests()
 {
 	print::StageBanner("Benchmarking");
 
-	bool moreProblemSetsLeft = false;
+	auto moreProblemSetsLeft = false;
 
 	// Run through all the tests in ascending order.
 	celero::TestVector::Instance().forEachTest(
@@ -139,17 +138,89 @@ bool executor::RunAllTests()
 
 void executor::RunGroup(const std::string& x)
 {
-	executor::RunBaseline(x);
-	
-	// Run tests...
+	if(x.empty() == false)
+	{
+		auto moreProblemSetsLeft = true;
+
+		executor::RunBaseline(x);
+
+		while(moreProblemSetsLeft == true)
+		{
+			moreProblemSetsLeft = false;
+			print::StageBanner("Benchmarking");
+
+			// Run through all the tests in ascending order.
+			celero::TestVector::Instance().forEachTest(
+				[&moreProblemSetsLeft, &x](std::shared_ptr<BenchmarkInfo> info)
+			{
+				if(info != nullptr && info->getGroupName() == x)
+				{
+					if(info->getProblemSetSizeIndex() < info->getProblemSetSize() || info->getProblemSetSizeIndex() == 0)
+					{
+						// Describe the beginning of the run.
+						print::Run(info);
+				
+						Execute(info);
+
+						// Describe the end of the run.
+						print::Done(info);
+
+						print::Baseline(info);
+
+						info->incrementProblemSetSizeIndex();
+						moreProblemSetsLeft |= (info->getProblemSetSizeIndex() < info->getProblemSetSize());
+					}
+				}
+			});
+
+			// Reset all baseline data.
+			celero::TestVector::Instance().forEachBaseline(
+				[](std::shared_ptr<BenchmarkInfo> info)
+			{
+				info->reset();
+			});
+
+			// Reset all benchmark data.
+			celero::TestVector::Instance().forEachTest(
+				[](std::shared_ptr<BenchmarkInfo> info)
+			{
+				info->reset();
+			});
+		}
+	}
 }
 
 void executor::Run(const std::string&, const std::string&)
 {
 }
 
-void executor::RunBaseline(const std::string&)
+void executor::RunBaseline(const std::string& x)
 {
+	if(x.empty() == false)
+	{
+		print::StageBanner("Baselining");
+
+		// Run through all the tests in ascending order.
+		auto info = celero::TestVector::Instance().getBaseline(x);
+
+		if(info != nullptr && info->getGroupName() == x)
+		{
+			if(info->getProblemSetSizeIndex() < info->getProblemSetSize() || info->getProblemSetSizeIndex() == 0)
+			{
+				// Describe the beginning of the run.
+				print::Run(info);
+				
+				Execute(info);
+
+				// Describe the end of the run.
+				print::Done(info);
+
+				info->setBaselineUnit(info->getRunTime());
+
+				info->incrementProblemSetSizeIndex();
+			}
+		}
+	}
 }
 
 void executor::RunTest(const std::string&, const std::string&)
