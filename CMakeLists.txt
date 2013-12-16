@@ -85,8 +85,6 @@ set(CMAKE_MINSIZEREL_POSTFIX     ""  CACHE STRING "add a postfix, usually empty 
 # --------------------------------------------------------------------------- #
 # --------------------------------------------------------------------------- #
 
-
-
 #
 # Install Locations
 #
@@ -146,17 +144,119 @@ include_directories(${HEADER_PATH})
 # --------------------------------------------------------------------------- #
 # --------------------------------------------------------------------------- #
 
-SET(PROJECT_TEST_NAME celeroDemo)
+SET(PROJECT_TEST_NAME celeroDemoComparison)
 
 #
 # Add Sources
 #
 
 add_executable(${PROJECT_TEST_NAME} 
-  src/DemoComparison.cpp
-  src/DemoSimple.cpp
-  src/DemoSort.cpp
-  src/DemoTransform.cpp)
+  examples/DemoComparison.cpp
+  )
+
+#
+# Celero Project Dependencies
+#
+
+add_dependencies(${PROJECT_TEST_NAME} celero)
+target_link_libraries(${PROJECT_TEST_NAME} celero)
+
+#
+# Broiler Plate
+#
+
+# VS2012 doesn't support true variadic templates
+if(MSVC) 
+  add_definitions( /D _VARIADIC_MAX=10 )
+endif()
+
+include_directories(${HEADER_PATH})
+
+if(CELERO_RUN_EXAMPLE_ON_BUILD)
+	add_custom_command(TARGET ${PROJECT_TEST_NAME} POST_BUILD COMMAND $<TARGET_FILE:${PROJECT_TEST_NAME}>)
+endif()
+
+# --------------------------------------------------------------------------- #
+# --------------------------------------------------------------------------- #
+
+SET(PROJECT_TEST_NAME celeroDemoSimple)
+
+#
+# Add Sources
+#
+
+add_executable(${PROJECT_TEST_NAME} 
+  examples/DemoSimple.cpp
+  )
+
+#
+# Celero Project Dependencies
+#
+
+add_dependencies(${PROJECT_TEST_NAME} celero)
+target_link_libraries(${PROJECT_TEST_NAME} celero)
+
+#
+# Broiler Plate
+#
+
+# VS2012 doesn't support true variadic templates
+if(MSVC) 
+  add_definitions( /D _VARIADIC_MAX=10 )
+endif()
+
+include_directories(${HEADER_PATH})
+
+if(CELERO_RUN_EXAMPLE_ON_BUILD)
+	add_custom_command(TARGET ${PROJECT_TEST_NAME} POST_BUILD COMMAND $<TARGET_FILE:${PROJECT_TEST_NAME}>)
+endif()
+
+# --------------------------------------------------------------------------- #
+# --------------------------------------------------------------------------- #
+
+SET(PROJECT_TEST_NAME celeroDemoSort)
+
+#
+# Add Sources
+#
+
+add_executable(${PROJECT_TEST_NAME} 
+  examples/DemoSort.cpp
+  )
+
+#
+# Celero Project Dependencies
+#
+
+add_dependencies(${PROJECT_TEST_NAME} celero)
+target_link_libraries(${PROJECT_TEST_NAME} celero)
+
+#
+# Broiler Plate
+#
+
+# VS2012 doesn't support true variadic templates
+if(MSVC) 
+  add_definitions( /D _VARIADIC_MAX=10 )
+endif()
+
+include_directories(${HEADER_PATH})
+
+if(CELERO_RUN_EXAMPLE_ON_BUILD)
+	add_custom_command(TARGET ${PROJECT_TEST_NAME} POST_BUILD COMMAND $<TARGET_FILE:${PROJECT_TEST_NAME}>)
+endif()
+
+# --------------------------------------------------------------------------- #
+# --------------------------------------------------------------------------- #
+
+SET(PROJECT_TEST_NAME celeroDemoTransform)
+
+#
+# Add Sources
+#
+
+add_executable(${PROJECT_TEST_NAME} 
+  examples/DemoTransform.cpp)
 
 #
 # Celero Project Dependencies
