@@ -96,7 +96,7 @@ bool executor::RunAllBaselines()
 			// Describe the end of the run.
 			print::Done(info);
 
-			info->setBaselineUnit(info->getRunTime());
+			info->setBaselineUnit(info->getUsPerOp());
 
 			info->incrementProblemSetSizeIndex();
 			moreProblemSetsLeft |= (info->getProblemSetSizeIndex() < info->getProblemSetSize());
@@ -215,7 +215,7 @@ void executor::RunBaseline(const std::string& x)
 				// Describe the end of the run.
 				print::Done(info);
 
-				info->setBaselineUnit(info->getRunTime());
+				info->setBaselineUnit(info->getUsPerOp());
 
 				info->incrementProblemSetSizeIndex();
 			}

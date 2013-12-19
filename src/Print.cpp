@@ -64,7 +64,7 @@ void print::Baseline(std::shared_ptr<BenchmarkInfo> x)
 			celero::console::SetConsoleColor(celero::console::ConsoleColor_Cyan);
 			std::cout << "[ BASELINE ] ";
 			std::cout << x->getShort() << " ";
-			const auto baselineOps = static_cast<double>(x->getRunTime())/static_cast<double>(baselineTest->getBaselineUnit());
+			const auto baselineOps = static_cast<double>(x->getUsPerOp())/static_cast<double>(baselineTest->getBaselineUnit());
 			std::cout << baselineOps << std::endl;
 			celero::console::SetConsoleColor(celero::console::ConsoleColor_Default);
 		}

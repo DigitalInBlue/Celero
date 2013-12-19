@@ -89,12 +89,12 @@ namespace celero
 			///
 			///
 			///
-			void setBaselineUnit(const uint64_t x);
+			void setBaselineUnit(const double x);
 			
 			///
 			///
 			///
-			uint64_t getBaselineUnit() const;
+			double getBaselineUnit() const;
 
 			///
 			/// \brief	Sets the test's best run time.

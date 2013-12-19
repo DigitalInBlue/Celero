@@ -179,12 +179,12 @@ std::string BenchmarkInfo::getShort() const
 	return std::move(output);
 }
 
-void BenchmarkInfo::setBaselineUnit(const uint64_t x)
+void BenchmarkInfo::setBaselineUnit(const double x)
 {
 	this->pimpl->baselineUnit = x;
 }
 
-uint64_t BenchmarkInfo::getBaselineUnit() const
+double BenchmarkInfo::getBaselineUnit() const
 {
 	return this->pimpl->baselineUnit;
 }
