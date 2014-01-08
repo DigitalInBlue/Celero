@@ -49,6 +49,9 @@ class BenchmarkInfo::Impl
 		/// Test name
 		std::string benchmarkName;
 
+		/// The number of microseconds per test (which makes up one baseline unit).
+		double baselineUnit;
+
 		/// Test samples completed
 		uint64_t samples;
 		uint64_t resetSamples;
@@ -56,9 +59,6 @@ class BenchmarkInfo::Impl
 		/// Calls per test run
 		uint64_t calls;
 		uint64_t resetCalls;
-
-		/// The number of microseconds making up one baseline unit
-		uint64_t baselineUnit;
 
 		/// The best run time for this test
 		uint64_t bestRunTime;
@@ -155,7 +155,7 @@ std::string BenchmarkInfo::get() const
 
 	if(this->getOps() == 1)
 	{
-		output += " operation per run.";
+		output += " call per run.";
 	}
 	else
 	{
@@ -169,14 +169,12 @@ std::string BenchmarkInfo::get() const
 		output += " of " + std::to_string(this->getProblemSetSize() - 1) + ".";
 	}
 
-	return std::move(output);
+	return output;
 }
 
 std::string BenchmarkInfo::getShort() const
 {
-	std::string output;
-	output += this->getGroupName() + "." + this->getTestName();
-	return std::move(output);
+	return this->getGroupName() + "." + this->getTestName();
 }
 
 void BenchmarkInfo::setBaselineUnit(const double x)

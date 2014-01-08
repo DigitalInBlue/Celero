@@ -23,7 +23,7 @@ std::map<std::string, std::string> MakeArgMap(std::vector<std::string>& argv)
 		args.insert(std::make_pair(argv[i], argv[i+1]));
 	}
 
-	return std::move(args);
+	return args;
 }
 
 std::shared_ptr<celero::BenchmarkInfo> celero::RegisterTest(const char* groupName, const char* benchmarkName, const uint64_t samples, const uint64_t calls, std::shared_ptr<celero::Factory> testFactory)
