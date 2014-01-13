@@ -1,5 +1,5 @@
-#ifndef H_CELERO_RESULTTABLE_H
-#define H_CELERO_RESULTTABLE_H
+#ifndef H_CELERO_JUNIT_H
+#define H_CELERO_JUNIT_H
 
 // www.helleboreconsulting.com
 
@@ -8,18 +8,20 @@
 
 namespace celero
 {
+	class BenchmarkInfo;
+
 	///
-	/// \class ResultTable
+	/// \class JUnit
 	///
 	/// \author	John Farrier
 	///
-	class ResultTable
+	class JUnit
 	{
 		public:
 			///
 			/// Singleton 
 			///
-			static ResultTable& Instance();
+			static JUnit& Instance();
 
 			///
 			/// Specify a file name for a results output file.
@@ -31,7 +33,7 @@ namespace celero
 			///
 			///
 			///
-			void add(const std::string& groupName, const std::string& runName, const uint32_t runSize, const double usPerCall);
+			void add(celero::BenchmarkInfo x);
 
 			///
 			///
@@ -42,12 +44,12 @@ namespace celero
 			///
 			/// Default Constructor
 			///
-			ResultTable();
+			JUnit();
 
 			///
 			/// Default Destructor
 			///
-			~ResultTable();
+			~JUnit();
 
 			///
 			/// \brief	Pimpl Idiom

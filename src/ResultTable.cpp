@@ -68,7 +68,7 @@ void ResultTable::add(const std::string& groupName, const std::string& runName, 
 	it2->second.push_back(measurements);
 }
 
-void ResultTable::print()
+void ResultTable::save()
 {
 	if(this->pimpl->os.is_open() == true)
 	{

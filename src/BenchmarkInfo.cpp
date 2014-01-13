@@ -2,6 +2,7 @@
 #include <celero/TestFixture.h>
 #include <celero/Factory.h>
 #include <celero/PimplImpl.h>
+#include <celero/TestVector.h>
 #include <celero/Utilities.h>
 
 #include <algorithm>
@@ -27,7 +28,7 @@ class BenchmarkInfo::Impl
 		{
 		}
 
-		Impl(const std::string& groupName, const std::string& benchmarkName, const uint64_t samples, const uint64_t calls, std::shared_ptr<Factory> testFactory) :
+		Impl(const std::string& groupName, const std::string& benchmarkName, const uint64_t samples, const uint64_t calls, std::shared_ptr<Factory> testFactory, double pBaselineTarget) :
 			groupName(groupName),
 			benchmarkName(benchmarkName),
 			samples(samples),
@@ -35,11 +36,33 @@ class BenchmarkInfo::Impl
 			calls(calls),
 			resetCalls(calls),
 			baselineUnit(1),
+			savedBaselineMeasurement(0),
+			baselineTarget(pBaselineTarget),
 			bestRunTime(UINT64_MAX),
 			totalRunTime(0),
 			problemSetSize(0),
 			problemSetSizeIndex(0),
-			factory(testFactory)
+			factory(testFactory),
+			lockedBaseline(false)
+		{
+		}
+
+		Impl(const BenchmarkInfo& other) : 
+			groupName(other.pimpl->groupName),
+			benchmarkName(other.pimpl->benchmarkName),
+			samples(other.pimpl->samples),
+			resetSamples(other.pimpl->resetSamples),
+			calls(other.pimpl->calls),
+			resetCalls(other.pimpl->resetCalls),
+			baselineUnit(other.pimpl->baselineUnit),
+			savedBaselineMeasurement(other.pimpl->savedBaselineMeasurement),
+			baselineTarget(other.pimpl->baselineTarget),
+			bestRunTime(other.pimpl->bestRunTime),
+			totalRunTime(other.pimpl->totalRunTime),
+			problemSetSize(other.pimpl->problemSetSize),
+			problemSetSizeIndex(other.pimpl->problemSetSizeIndex),
+			factory(other.pimpl->factory),
+			lockedBaseline(other.pimpl->lockedBaseline)
 		{
 		}
 
@@ -51,6 +74,10 @@ class BenchmarkInfo::Impl
 
 		/// The number of microseconds per test (which makes up one baseline unit).
 		double baselineUnit;
+		double savedBaselineMeasurement;
+
+		/// Used to pass/fail benchmarks when outputting JUnit.
+		double baselineTarget;
 
 		/// Test samples completed
 		uint64_t samples;
@@ -72,6 +99,7 @@ class BenchmarkInfo::Impl
 		/// The factory to associate with this benchmark.
 		std::shared_ptr<Factory> factory;
 
+		bool lockedBaseline;
 };
 
 BenchmarkInfo::BenchmarkInfo() : 
@@ -79,8 +107,13 @@ BenchmarkInfo::BenchmarkInfo() :
 {
 }
 
-BenchmarkInfo::BenchmarkInfo(const std::string& groupName, const std::string& benchmarkName, const uint64_t samples, const uint64_t calls, std::shared_ptr<Factory> testFactory) :
-	pimpl(groupName, benchmarkName, samples, calls, testFactory)
+BenchmarkInfo::BenchmarkInfo(const std::string& groupName, const std::string& benchmarkName, const uint64_t samples, const uint64_t calls, std::shared_ptr<Factory> testFactory, double baselineTarget) :
+	pimpl(groupName, benchmarkName, samples, calls, testFactory, baselineTarget)
+{
+}
+
+BenchmarkInfo::BenchmarkInfo(const BenchmarkInfo& other) : 
+	pimpl(other)
 {
 }
 
@@ -185,6 +218,39 @@ void BenchmarkInfo::setBaselineUnit(const double x)
 double BenchmarkInfo::getBaselineUnit() const
 {
 	return this->pimpl->baselineUnit;
+}
+
+void BenchmarkInfo::saveBaselineMeasurement()
+{
+	this->pimpl->savedBaselineMeasurement = this->getBaselineMeasurement();
+	this->pimpl->lockedBaseline = true;
+}
+
+double BenchmarkInfo::getBaselineMeasurement() const
+{	
+	if(this->pimpl->lockedBaseline == false)
+	{
+		auto baselineGroupName = this->getGroupName();
+	
+		if(baselineGroupName.empty() == false)
+		{
+			auto baselineTest = celero::TestVector::Instance().getBaseline(baselineGroupName);
+
+			if(baselineTest != nullptr)
+			{
+				return (this->getUsPerOp()/baselineTest->getBaselineUnit());
+			}
+		}
+
+		return -1.0;
+	}
+
+	return this->pimpl->savedBaselineMeasurement;
+}
+
+double BenchmarkInfo::getBaselineTarget() const
+{
+	return this->pimpl->baselineTarget;
 }
 
 void BenchmarkInfo::setRunTime(const uint64_t runTime)

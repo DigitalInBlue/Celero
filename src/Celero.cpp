@@ -6,6 +6,7 @@
 #include <celero/Executor.h>
 #include <celero/Print.h>
 #include <celero/ResultTable.h>
+#include <celero/JUnit.h>
 
 #include <iostream>
 #include <algorithm>
@@ -26,9 +27,9 @@ std::map<std::string, std::string> MakeArgMap(std::vector<std::string>& argv)
 	return args;
 }
 
-std::shared_ptr<celero::BenchmarkInfo> celero::RegisterTest(const char* groupName, const char* benchmarkName, const uint64_t samples, const uint64_t calls, std::shared_ptr<celero::Factory> testFactory)
+std::shared_ptr<celero::BenchmarkInfo> celero::RegisterTest(const char* groupName, const char* benchmarkName, const uint64_t samples, const uint64_t calls, std::shared_ptr<celero::Factory> testFactory, const double target)
 {
-	auto info = std::make_shared<celero::BenchmarkInfo>(groupName, benchmarkName, samples, calls, testFactory);
+	auto info = std::make_shared<celero::BenchmarkInfo>(groupName, benchmarkName, samples, calls, testFactory, target);
 	celero::TestVector::Instance().pushBackTest(info);
 	return info;
 }
@@ -60,6 +61,13 @@ void celero::Run(int argc, char** argv)
 	if(outputSpecified != args.end())
 	{
 		celero::ResultTable::Instance().setFileName(outputSpecified->second);
+	}
+
+	// Has a JUnit output file been specified?
+	auto junitSpecified = args.find("-xml");
+	if(junitSpecified != args.end())
+	{
+		celero::JUnit::Instance().setFileName(junitSpecified->second);
 	}
 
 	// Initial output

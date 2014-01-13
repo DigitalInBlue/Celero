@@ -6,6 +6,7 @@
 #include <celero/Executor.h>
 #include <celero/Print.h>
 #include <celero/ResultTable.h>
+#include <celero/JUnit.h>
 
 #include <iostream>
 
@@ -47,6 +48,7 @@ void executor::Execute(std::shared_ptr<BenchmarkInfo> x)
 	}
 
 	ResultTable::Instance().add(x->getGroupName(), x->getTestName(), temp->getProblemSetValue(problemSetIndex), x->getUsPerOp());
+	JUnit::Instance().add(*x);
 }
 
 void executor::RunAll()
@@ -73,7 +75,8 @@ void executor::RunAll()
 		});
 	}
 
-	ResultTable::Instance().print();
+	ResultTable::Instance().save();
+	JUnit::Instance().save();
 }
 
 bool executor::RunAllBaselines()

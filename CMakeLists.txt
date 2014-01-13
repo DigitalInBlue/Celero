@@ -9,6 +9,7 @@
 #
 
 CMAKE_MINIMUM_REQUIRED(VERSION 2.8)
+
 # Project Name
 PROJECT(celero)
 
@@ -115,6 +116,7 @@ set(TARGET_H
 	include/celero/Export.h
 	include/celero/Factory.h
 	include/celero/GenericFactory.h
+	include/celero/JUnit.h
 	include/celero/Pimpl.h
 	include/celero/PimplImpl.h
 	include/celero/Print.h
@@ -130,6 +132,7 @@ set(TARGET_SRC
 	src/Celero.cpp
 	src/Console.cpp
 	src/Executor.cpp
+	src/JUnit.cpp
 	src/Print.cpp
 	src/ResultTable.cpp
 	src/TestVector.cpp
@@ -187,6 +190,41 @@ SET(PROJECT_TEST_NAME celeroDemoSimple)
 
 add_executable(${PROJECT_TEST_NAME} 
   examples/DemoSimple.cpp
+  )
+
+#
+# Celero Project Dependencies
+#
+
+add_dependencies(${PROJECT_TEST_NAME} celero)
+target_link_libraries(${PROJECT_TEST_NAME} celero)
+
+#
+# Broiler Plate
+#
+
+# VS2012 doesn't support true variadic templates
+if(MSVC) 
+  add_definitions( /D _VARIADIC_MAX=10 )
+endif()
+
+include_directories(${HEADER_PATH})
+
+if(CELERO_RUN_EXAMPLE_ON_BUILD)
+	add_custom_command(TARGET ${PROJECT_TEST_NAME} POST_BUILD COMMAND $<TARGET_FILE:${PROJECT_TEST_NAME}>)
+endif()
+
+# --------------------------------------------------------------------------- #
+# --------------------------------------------------------------------------- #
+
+SET(PROJECT_TEST_NAME celeroDemoJUnit)
+
+#
+# Add Sources
+#
+
+add_executable(${PROJECT_TEST_NAME} 
+  examples/DemoSimpleJunit.cpp
   )
 
 #

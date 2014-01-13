@@ -33,9 +33,15 @@ namespace celero
 			/// \param samples Number of samples for the test.
 			/// \param calls Number of calls per run.
 			/// \param testFactory Test factory implementation for the test.
+			/// \param baselineTarget The highest baseline multiple you want for this test (used to pass/fail test.)
 			///
-			BenchmarkInfo(const std::string& groupName, const std::string& benchmarkName, const uint64_t samples, const uint64_t calls, std::shared_ptr<Factory> testFactory);
+			BenchmarkInfo(const std::string& groupName, const std::string& benchmarkName, const uint64_t samples, const uint64_t calls, std::shared_ptr<Factory> testFactory, double baselineTarget = -1);
 			
+			///
+			///
+			///
+			BenchmarkInfo(const BenchmarkInfo& other);
+
 			///
 			/// \brief	Default destructor.
 			///
@@ -95,6 +101,21 @@ namespace celero
 			///
 			///
 			double getBaselineUnit() const;
+
+			///
+			/// \brief	Compute the baseline measurement of an executed benchmark.
+			///
+			double getBaselineMeasurement() const;
+
+			///
+			/// \brief	References can be cleared out during complex runs.  This saves state for reporting purposes.
+			///
+			void saveBaselineMeasurement();
+
+			///
+			///
+			///
+			double getBaselineTarget() const;
 
 			///
 			/// \brief	Sets the test's best run time.
