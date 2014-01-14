@@ -6,6 +6,7 @@ Copyright 2014 John Farrier
 
 Apache 2.0 License
 
+* This will become a table of contents
 {:toc}
 
 ###Overview
