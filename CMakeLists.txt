@@ -175,9 +175,10 @@ endif()
 
 include_directories(${HEADER_PATH})
 
-if(CELERO_RUN_EXAMPLE_ON_BUILD)
-	add_custom_command(TARGET ${PROJECT_TEST_NAME} POST_BUILD COMMAND $<TARGET_FILE:${PROJECT_TEST_NAME}>)
-endif()
+# Show here how to automate running after a build:
+# if(CELERO_RUN_EXAMPLE_ON_BUILD)
+#	add_custom_command(TARGET ${PROJECT_TEST_NAME} POST_BUILD COMMAND $<TARGET_FILE:${PROJECT_TEST_NAME}>)
+# endif()
 
 # --------------------------------------------------------------------------- #
 # --------------------------------------------------------------------------- #
@@ -210,6 +211,8 @@ endif()
 
 include_directories(${HEADER_PATH})
 
+# Show here how to automate running after a build:
+# Will leave this one operational for demonstrational purposes
 if(CELERO_RUN_EXAMPLE_ON_BUILD)
 	add_custom_command(TARGET ${PROJECT_TEST_NAME} POST_BUILD COMMAND $<TARGET_FILE:${PROJECT_TEST_NAME}>)
 endif()
@@ -245,9 +248,10 @@ endif()
 
 include_directories(${HEADER_PATH})
 
-if(CELERO_RUN_EXAMPLE_ON_BUILD)
-	add_custom_command(TARGET ${PROJECT_TEST_NAME} POST_BUILD COMMAND $<TARGET_FILE:${PROJECT_TEST_NAME}>)
-endif()
+# Show here how to automate running after a build:
+# if(CELERO_RUN_EXAMPLE_ON_BUILD)
+#	add_custom_command(TARGET ${PROJECT_TEST_NAME} POST_BUILD COMMAND $<TARGET_FILE:${PROJECT_TEST_NAME}>)
+# endif()
 
 # --------------------------------------------------------------------------- #
 # --------------------------------------------------------------------------- #
@@ -280,9 +284,10 @@ endif()
 
 include_directories(${HEADER_PATH})
 
-if(CELERO_RUN_EXAMPLE_ON_BUILD)
-	add_custom_command(TARGET ${PROJECT_TEST_NAME} POST_BUILD COMMAND $<TARGET_FILE:${PROJECT_TEST_NAME}>)
-endif()
+# Show here how to automate running after a build:
+# if(CELERO_RUN_EXAMPLE_ON_BUILD)
+#	add_custom_command(TARGET ${PROJECT_TEST_NAME} POST_BUILD COMMAND $<TARGET_FILE:${PROJECT_TEST_NAME}>)
+# endif()
 
 # --------------------------------------------------------------------------- #
 # --------------------------------------------------------------------------- #
@@ -314,9 +319,10 @@ endif()
 
 include_directories(${HEADER_PATH})
 
-if(CELERO_RUN_EXAMPLE_ON_BUILD)
-	add_custom_command(TARGET ${PROJECT_TEST_NAME} POST_BUILD COMMAND $<TARGET_FILE:${PROJECT_TEST_NAME}>)
-endif()
+# Show here how to automate running after a build:
+# if(CELERO_RUN_EXAMPLE_ON_BUILD)
+#	add_custom_command(TARGET ${PROJECT_TEST_NAME} POST_BUILD COMMAND $<TARGET_FILE:${PROJECT_TEST_NAME}>)
+# endif()
 
 #
 # Optional
@@ -324,5 +330,9 @@ endif()
 
 if(CELERO_USE_FOLDERS)
 	set_property(TARGET celero PROPERTY FOLDER "Celero")
-	set_property(TARGET celeroDemo PROPERTY FOLDER "Celero")
+	set_property(TARGET celeroDemoComparison PROPERTY FOLDER "Celero/Demo")
+	set_property(TARGET celeroDemoSimple PROPERTY FOLDER "Celero/Demo")
+	set_property(TARGET celeroDemoJUnit PROPERTY FOLDER "Celero/Demo")
+	set_property(TARGET celeroDemoSort PROPERTY FOLDER "Celero/Demo")
+	set_property(TARGET celeroDemoTransform PROPERTY FOLDER "Celero/Demo")
 endif()
