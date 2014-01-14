@@ -185,6 +185,12 @@ cmake_install.cmake
 # PRODUCTS
 #############
 celeroDemo
+celeroDemoComparison
+celeroDemoJUnit
+celeroDemoSimple
+celeroDemoSort
+celeroDemoTransform
 lib*.a
 lib*.so
+lib*.dylib
 
