@@ -40,7 +40,7 @@ class DemoSortFixture : public celero::TestFixture
 		{
 			// We will run some total number of sets of tests all together. 
 			// Each one growing by a power of 2.
-			const int totalNumberOfTests = 12;
+			const int totalNumberOfTests = 6;
 
 			for(int i = 0; i < totalNumberOfTests; i++)
 			{
