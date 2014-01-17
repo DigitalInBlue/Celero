@@ -12,19 +12,64 @@ namespace celero
 	///
 	/// \func DoNotOptimizeAway
 	///
-	/// \author Andrei Alexandrescu
+	/// Used to prevent compiler optimization of a variable
+	/// that performs no real purpose other than to participate
+	/// in a benchmark
 	///
-	template<class T> void DoNotOptimizeAway(T&& datum) 
+	/// Consider the following trivial benchmark:
+	///
+	/// \code
+	/// BASELINE(...)
+	/// {
+	///     int x = 0;
+	///
+	///     for(int i = 0; i < 64; i++)
+	///     {
+	///         x += i;
+	///     }
+	/// }
+	/// \endcode
+	///
+	/// Using Ubuntu clang v3.0, the resultant assembly is highly optimized
+	/// as one might expect, but not terribly useful for baselining:
+	///
+	/// \verbatim
+	/// movl	$2016, %eax             # imm = 0x7E0
+	/// ret
+	/// \endverbatim
+	///
+	/// Now, replace the inner loop with a call to DoNotOptimizeAway:
+	///
+	/// \code
+	/// DoNotOptimizeAway(x += i);
+	/// \endcode
+	///
+	/// The result is now a loop which is meaningful for establishing a 
+	/// baseline.
+	///
+	/// \verbatim
+	/// xorl	%ecx, %ecx
+	/// xorl	%eax, %eax
+	/// .LBB0_1:                                # =>This Inner Loop Header: Depth=1
+	/// addl	%ecx, %eax
+	/// incl	%ecx
+	/// cmpl	$64, %ecx
+	/// jne	.LBB0_1
+	/// ret
+	/// \endverbatim
+	///
+	/// GCC 4.8 gives similar results.
+	///
+	template<class T> void DoNotOptimizeAway(T&& x) 
 	{
+		// Begin DoNotOptimizeAway 
 		#ifdef WIN32
-		if(_getpid() == 1) 
+			volatile static auto& xPrime = x;
+			xPrime += x;
 		#else
-		if(getpid() == 1) 
+			asm volatile("" : "+r" (x));
 		#endif
-		{
-			const void* p = &datum;
-			putchar(*static_cast<const char*>(p));
-		}
+		// End DoNotOptimizeAway
 	}
 
 	///

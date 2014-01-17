@@ -9,6 +9,8 @@ bin/
 tmp/
 doc/
 build/
+build32/
+build64/
 *.tmp
 *.bak
 *.swp
