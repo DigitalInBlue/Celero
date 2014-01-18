@@ -60,17 +60,22 @@ namespace celero
 	///
 	/// GCC 4.8 gives similar results.
 	///
+	#ifdef WIN32
 	template<class T> void DoNotOptimizeAway(T&& x) 
 	{
 		// Begin DoNotOptimizeAway 
-		#ifdef WIN32
-			volatile static auto& xPrime = x;
-			xPrime += x;
-		#else
-			asm volatile("" : "+r" (x));
-		#endif
+		volatile static T* xPrime = &x;
+		xPrime = &x;
 		// End DoNotOptimizeAway
 	}
+	#else
+	template<class T> void DoNotOptimizeAway(T&& x) 
+	{
+		// Begin DoNotOptimizeAway 
+		asm volatile("" : "+r" (x));
+		// End DoNotOptimizeAway
+	}
+	#endif
 
 	///
 	/// Quick definition of the number of microseconds per second.
