@@ -324,9 +324,45 @@ include_directories(${HEADER_PATH})
 #	add_custom_command(TARGET ${PROJECT_TEST_NAME} POST_BUILD COMMAND $<TARGET_FILE:${PROJECT_TEST_NAME}>)
 # endif()
 
+# --------------------------------------------------------------------------- #
+# --------------------------------------------------------------------------- #
+
+SET(PROJECT_TEST_NAME celeroDemoParameterPassing)
+
 #
+# Add Sources
+#
+
+add_executable(${PROJECT_TEST_NAME} 
+  examples/DemoParameterPassing.cpp)
+
+#
+# Celero Project Dependencies
+#
+
+add_dependencies(${PROJECT_TEST_NAME} celero)
+target_link_libraries(${PROJECT_TEST_NAME} celero)
+
+#
+# Broiler Plate
+#
+
+# VS2012 doesn't support true variadic templates
+if(MSVC) 
+  add_definitions( /D _VARIADIC_MAX=10 )
+endif()
+
+include_directories(${HEADER_PATH})
+
+# Show here how to automate running after a build:
+# if(CELERO_RUN_EXAMPLE_ON_BUILD)
+#	add_custom_command(TARGET ${PROJECT_TEST_NAME} POST_BUILD COMMAND $<TARGET_FILE:${PROJECT_TEST_NAME}>)
+# endif()
+
+
+# --------------------------------------------------------------------------- #
 # Optional
-#
+# --------------------------------------------------------------------------- ##
 
 if(CELERO_USE_FOLDERS)
 	set_property(TARGET celero PROPERTY FOLDER "Celero")
@@ -335,4 +371,5 @@ if(CELERO_USE_FOLDERS)
 	set_property(TARGET celeroDemoJUnit PROPERTY FOLDER "Celero/Demo")
 	set_property(TARGET celeroDemoSort PROPERTY FOLDER "Celero/Demo")
 	set_property(TARGET celeroDemoTransform PROPERTY FOLDER "Celero/Demo")
+	set_property(TARGET celeroDemoParameterPassing PROPERTY FOLDER "Celero/Demo")
 endif()
