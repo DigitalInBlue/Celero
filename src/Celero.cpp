@@ -43,6 +43,8 @@ std::shared_ptr<celero::BenchmarkInfo> celero::RegisterBaseline(const char* grou
 
 void celero::Run(int argc, char** argv)
 {
+	celero::timer::CachePerformanceFrequency();
+
 	// http://www.helleboreconsulting.com/index.php/blog/105-don-t-argue
 	// Convert standard program arguments into a nice STL vector.
 	std::vector<std::string> params(argv, argv + argc);

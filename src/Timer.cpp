@@ -2,6 +2,7 @@
 
 #ifdef WIN32
 	#include <Windows.h>
+	LARGE_INTEGER QPCFrequency;
 #else
 	#include <sys/time.h>
 #endif
@@ -12,7 +13,7 @@ uint64_t celero::timer::GetSystemTime()
 	#ifdef WIN32
 		LARGE_INTEGER timeStorage;
 		QueryPerformanceCounter(&timeStorage);
-		return static_cast<uint64_t>(timeStorage.QuadPart);
+		return timeStorage.QuadPart;
 	#else
 		timeval timeStorage;
 		gettimeofday(&timeStorage, nullptr);
@@ -20,14 +21,19 @@ uint64_t celero::timer::GetSystemTime()
 	#endif
 }
 
-double celero::timer::GetSystemTime(uint64_t x)
+double celero::timer::ConvertSystemTime(uint64_t x)
 {
 	/// \todo	Replace celero::timer::GetSystemTime(uint64_t x) with std::chrono
 	#ifdef WIN32
-		static LARGE_INTEGER frequency;
-		QueryPerformanceFrequency(&frequency);
-		return static_cast<double>(x)/static_cast<double>(frequency.QuadPart);
+		return static_cast<double>(x)/static_cast<double>(QPCFrequency.QuadPart);
 	#else
 		return x * 1.0e-6;
+	#endif
+}
+
+void celero::timer::CachePerformanceFrequency()
+{
+	#ifdef WIN32
+		QueryPerformanceFrequency(&QPCFrequency);
 	#endif
 }

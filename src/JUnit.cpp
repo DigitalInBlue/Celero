@@ -2,6 +2,7 @@
 #include <celero/PimplImpl.h>
 #include <celero/Utilities.h>
 #include <celero/BenchmarkInfo.h>
+#include <celero/Timer.h>
 
 #include <assert.h>
 
@@ -76,7 +77,7 @@ void JUnit::save()
 
 		for(auto i : this->pimpl->results)
 		{
-			double testSuiteTime = 0;
+			uint64_t testSuiteTime = 0;
 			size_t testSuiteFailures = 0;
 
 			auto runs = i.second;
@@ -93,14 +94,14 @@ void JUnit::save()
 
 			*os << "<testsuite errors=\"0\" ";
 			*os << "tests=\"" << i.second.size() << "\" ";
-			*os << "time=\"" << testSuiteTime / celero::UsPerSec << "\" ";
+			*os << "time=\"" << celero::timer::ConvertSystemTime(testSuiteTime) << "\" ";
 			*os << "failures=\"" << testSuiteFailures << "\" ";
 			*os << "name=\"" << i.first << "\">\n";
 			
 			for(auto j : runs)
 			{
 				*os << "\t<testcase ";
-				*os << "time=\"" << j.getRunTime() / celero::UsPerSec << "\" ";
+				*os << "time=\"" << celero::timer::ConvertSystemTime(j.getRunTime()) << "\" ";
 				*os << "name=\"" << j.getTestName() << "#" << j.getProblemSetSize() << "\"";
 								
 				// Compare measured to objective

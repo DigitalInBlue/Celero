@@ -21,22 +21,27 @@ namespace celero
 		///
 		///	\author	John Farrier
 		///
-		///	\return	The time, in microseconds.
+		///	\return	The time, in ticks.
 		///
 		uint64_t GetSystemTime();
 
 		///
-		///	\brief	Retrieves the current time.
+		///	\brief	Converts the gathered system time into seconds.
 		///
 		/// This assumes "x" is a delta and relatively small (easily fits inside of a double).
 		///
 		///	\author	John Farrier
 		///
-		///	\param	x	The time, in microseconds.
+		///	\param	x	The time, in ticks.
 		///
 		///	\return	The time, in seconds.
 		///
-		double GetSystemTime(const uint64_t x);
+		double ConvertSystemTime(const uint64_t x);
+
+		///
+		/// On Windows, this caches the frequency of the high performance clock.
+		///
+		void CachePerformanceFrequency();
 	}
 }
 

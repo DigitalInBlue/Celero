@@ -80,12 +80,12 @@ namespace celero
 	///
 	/// Quick definition of the number of microseconds per second.
 	///
-	const auto UsPerSec(1000000.0);
+	const uint64_t UsPerSec(1000000);
 
 	///
 	/// Define the number of samples to default to for a good stastical sample when automatically timing tests.
 	///
-	const auto StatisticalSample(30);
+	const uint64_t StatisticalSample(30);
 }
 
 #endif

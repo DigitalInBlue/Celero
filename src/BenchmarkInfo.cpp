@@ -275,12 +275,12 @@ uint64_t BenchmarkInfo::getTotalRunTime() const
 
 double BenchmarkInfo::getUsPerOp() const
 {
-	return static_cast<double>(this->getRunTime()) / static_cast<double>(this->getOps());
+	return celero::timer::ConvertSystemTime(this->getRunTime()) / static_cast<double>(this->getOps());
 }
 
 double BenchmarkInfo::getOpsPerSecond() const
 {
-	return celero::UsPerSec / this->getUsPerOp();
+	return 100000.0 / (this->getUsPerOp() * celero::UsPerSec);
 }
 
 void BenchmarkInfo::setProblemSetSize(const size_t x)

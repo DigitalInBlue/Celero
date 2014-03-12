@@ -3,8 +3,10 @@
 #include <celero/BenchmarkInfo.h>
 #include <celero/TestVector.h>
 #include <celero/Utilities.h>
+#include <celero/Timer.h>
 
 #include <iostream>
+#include <chrono>
 
 using namespace celero;
 
@@ -48,8 +50,8 @@ void print::Done(std::shared_ptr<BenchmarkInfo> x)
 	celero::console::SetConsoleColor(celero::console::ConsoleColor_Default);
 	std::cout << "[     DONE ] ";
 	std::cout << x->getShort() << " ";
-	std::cout << " (" << (static_cast<double>(x->getRunTime()) / celero::UsPerSec) << " sec)";
-	std::cout << " [" << x->getOps() << " calls in " << x->getRunTime() << " usec]" << " [" << x->getUsPerOp() << " us/call]" << " [" << x->getOpsPerSecond() << " calls/sec]" << std::endl;
+	std::cout << " (" << celero::timer::ConvertSystemTime(x->getTotalRunTime()) << " sec)";
+	std::cout << " [" << x->getOps() << " calls in " << celero::timer::ConvertSystemTime(x->getRunTime()) << " sec]" << " [" << x->getUsPerOp() << " us/call]" << " [" << x->getOpsPerSecond() << " calls/sec]" << std::endl;
 }
 
 void print::Baseline(std::shared_ptr<BenchmarkInfo> x)

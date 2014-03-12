@@ -15,7 +15,7 @@ using namespace celero;
 void executor::Execute(std::shared_ptr<BenchmarkInfo> x)
 {
 	// Define a small internal function object to use to uniformly execute the tests.
-	std::function<void(const size_t)> testRunner = [x](const size_t problemSetValueIndex)
+	auto testRunner = [x](const size_t problemSetValueIndex)
 	{
 		auto test = x->getFactory()->Create();
 		const auto testTime = test->Run(x->getOps(), problemSetValueIndex);
@@ -38,7 +38,7 @@ void executor::Execute(std::shared_ptr<BenchmarkInfo> x)
 	else
 	{
 		// JEF // Run for at least one second and at least 30 iteratons for good statistical sampling.
-		while((x->getTotalRunTime() < celero::UsPerSec) || (x->getSamples() < celero::StatisticalSample))
+		while((celero::timer::ConvertSystemTime(x->getTotalRunTime()) < 1.0) || (x->getSamples() < celero::StatisticalSample))
 		{
 			x->incrementSamples();
 			testRunner(problemSetIndex);
