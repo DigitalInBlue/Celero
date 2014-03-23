@@ -50,13 +50,39 @@ struct Foo
 		this->nonPodType = std::move(x);
 	}
 
+	void setPODTypeByValue(uint64_t x)
+	{
+		this->podType = x;
+	}
+
+	void setPODTypeByValueWithMove(uint64_t x)
+	{
+		this->podType = std::move(x);
+	}
+
+	void setPODTypeByConstRef(const uint64_t& x)
+	{
+		this->podType = x;
+	}
+
+	void setPODTypeByConstRRef(const uint64_t&& x)
+	{
+		this->podType = x;
+	}
+
+	void setPODTypeByConstRRefWithMove(const uint64_t&& x)
+	{
+		this->podType = std::move(x);
+	}
+
 	std::string nonPodType;
+	uint64_t podType;
 };
 
 #define MY_NUMBER_OF_CALLS_PER_MEASUREMENT 3000000
 #define MY_NUMBER_OF_SAMPLES 100
 
-BASELINE(ParamPassing, Baseline, MY_NUMBER_OF_SAMPLES, MY_NUMBER_OF_CALLS_PER_MEASUREMENT)
+BASELINE(NonPODParamPassing, Baseline, MY_NUMBER_OF_SAMPLES, MY_NUMBER_OF_CALLS_PER_MEASUREMENT)
 {
 	// While we are not measuring the time to construct a "Foo" or create "bar", since
 	// we do this in each of the tests, the time is exactly the same and does not
@@ -68,65 +94,282 @@ BASELINE(ParamPassing, Baseline, MY_NUMBER_OF_SAMPLES, MY_NUMBER_OF_CALLS_PER_ME
 	f.nonPodType = bar;
 }
 
-BENCHMARK(ParamPassing, MoveCopy, MY_NUMBER_OF_SAMPLES, MY_NUMBER_OF_CALLS_PER_MEASUREMENT)
+BENCHMARK(NonPODParamPassing, TypeMoveCopy, MY_NUMBER_OF_SAMPLES, MY_NUMBER_OF_CALLS_PER_MEASUREMENT)
 {
 	Foo f;
 	auto bar = std::string("bar");
 	f.nonPodType = std::move(bar);
 }
 
-BENCHMARK(ParamPassing, NonPODTypeByValue, MY_NUMBER_OF_SAMPLES, MY_NUMBER_OF_CALLS_PER_MEASUREMENT)
+BENCHMARK(NonPODParamPassing, TypeByValue, MY_NUMBER_OF_SAMPLES, MY_NUMBER_OF_CALLS_PER_MEASUREMENT)
 {
 	Foo f;
 	auto bar = std::string("bar");
 	f.setNonPODTypeByValue(bar);
 }
 
-BENCHMARK(ParamPassing, NonPODTypeByMovedValue, MY_NUMBER_OF_SAMPLES, MY_NUMBER_OF_CALLS_PER_MEASUREMENT)
+BENCHMARK(NonPODParamPassing, TypeByMovedValue, MY_NUMBER_OF_SAMPLES, MY_NUMBER_OF_CALLS_PER_MEASUREMENT)
 {
 	Foo f;
 	auto bar = std::string("bar");
 	f.setNonPODTypeByValue(std::move(bar));
 }
 
-BENCHMARK(ParamPassing, NonPODTypeByValueWithMove, MY_NUMBER_OF_SAMPLES, MY_NUMBER_OF_CALLS_PER_MEASUREMENT)
+BENCHMARK(NonPODParamPassing, TypeByValueWithMove, MY_NUMBER_OF_SAMPLES, MY_NUMBER_OF_CALLS_PER_MEASUREMENT)
 {
 	Foo f;
 	auto bar = std::string("bar");
 	f.setNonPODTypeByValue(bar);
 }
 
-BENCHMARK(ParamPassing, NonPODTypeByMoveValueWithMove, MY_NUMBER_OF_SAMPLES, MY_NUMBER_OF_CALLS_PER_MEASUREMENT)
+BENCHMARK(NonPODParamPassing, TypeByMoveValueWithMove, MY_NUMBER_OF_SAMPLES, MY_NUMBER_OF_CALLS_PER_MEASUREMENT)
 {
 	Foo f;
 	auto bar = std::string("bar");
 	f.setNonPODTypeByValue(std::move(bar));
 }
 
-BENCHMARK(ParamPassing, NonPODTypeByConstRef, MY_NUMBER_OF_SAMPLES, MY_NUMBER_OF_CALLS_PER_MEASUREMENT)
+BENCHMARK(NonPODParamPassing, TypeByConstRef, MY_NUMBER_OF_SAMPLES, MY_NUMBER_OF_CALLS_PER_MEASUREMENT)
 {
 	Foo f;
 	auto bar = std::string("bar");
 	f.setNonPODTypeByConstRef(bar);
 }
 
-BENCHMARK(ParamPassing, NonPODTypeByConstRRef, MY_NUMBER_OF_SAMPLES, MY_NUMBER_OF_CALLS_PER_MEASUREMENT)
+BENCHMARK(NonPODParamPassing, TypeByConstRRef, MY_NUMBER_OF_SAMPLES, MY_NUMBER_OF_CALLS_PER_MEASUREMENT)
 {
 	Foo f;
 	auto bar = std::string("bar");
 	f.setNonPODTypeByConstRef(bar);
 }
 
-BENCHMARK(ParamPassing, NonPODTypeByConstRRefWithMove, MY_NUMBER_OF_SAMPLES, MY_NUMBER_OF_CALLS_PER_MEASUREMENT)
+BENCHMARK(NonPODParamPassing, TypeByConstRRefWithMove, MY_NUMBER_OF_SAMPLES, MY_NUMBER_OF_CALLS_PER_MEASUREMENT)
 {
 	Foo f;
 	auto bar = std::string("bar");
 	f.setNonPODTypeByConstRef(bar);
 }
 
-BENCHMARK(ParamPassing, NonPODTypeByMoveConstRRefWithMove, MY_NUMBER_OF_SAMPLES, MY_NUMBER_OF_CALLS_PER_MEASUREMENT)
+BENCHMARK(NonPODParamPassing, TypeByMoveConstRRefWithMove, MY_NUMBER_OF_SAMPLES, MY_NUMBER_OF_CALLS_PER_MEASUREMENT)
 {
 	Foo f;
 	auto bar = std::string("bar");
 	f.setNonPODTypeByConstRef(std::move(bar));
+}
+
+// ---------------------------------------------------------------------------------------
+// Repeat some of the tests above, but use the varible after the use in the "set" function
+// ---------------------------------------------------------------------------------------
+
+BASELINE(NonPODParamPassingUseAfter, Baseline, MY_NUMBER_OF_SAMPLES, MY_NUMBER_OF_CALLS_PER_MEASUREMENT)
+{
+	// While we are not measuring the time to construct a "Foo" or create "bar", since
+	// we do this in each of the tests, the time is exactly the same and does not
+	// change the baseline measurement.  (The only difference in each of these cases
+	// is the part we wish to measure.)
+
+	Foo f;
+	auto bar = std::string("bar");
+	f.nonPodType = bar;
+
+	bar += "food";
+	celero::DoNotOptimizeAway(&bar);
+}
+
+BENCHMARK(NonPODParamPassingUseAfter, TypeByValue, MY_NUMBER_OF_SAMPLES, MY_NUMBER_OF_CALLS_PER_MEASUREMENT)
+{
+	Foo f;
+	auto bar = std::string("bar");
+	f.setNonPODTypeByValue(bar);
+
+	bar += "food";
+	celero::DoNotOptimizeAway(&bar);
+}
+
+BENCHMARK(NonPODParamPassingUseAfter, TypeByValueWithMove, MY_NUMBER_OF_SAMPLES, MY_NUMBER_OF_CALLS_PER_MEASUREMENT)
+{
+	Foo f;
+	auto bar = std::string("bar");
+	f.setNonPODTypeByValue(bar);
+
+	bar += "food";
+	celero::DoNotOptimizeAway(&bar);
+}
+
+BENCHMARK(NonPODParamPassingUseAfter, TypeByConstRef, MY_NUMBER_OF_SAMPLES, MY_NUMBER_OF_CALLS_PER_MEASUREMENT)
+{
+	Foo f;
+	auto bar = std::string("bar");
+	f.setNonPODTypeByConstRef(bar);
+
+	bar += "food";
+	celero::DoNotOptimizeAway(&bar);
+}
+
+BENCHMARK(NonPODParamPassingUseAfter, TypeByConstRRef, MY_NUMBER_OF_SAMPLES, MY_NUMBER_OF_CALLS_PER_MEASUREMENT)
+{
+	Foo f;
+	auto bar = std::string("bar");
+	f.setNonPODTypeByConstRef(bar);
+
+	bar += "food";
+	celero::DoNotOptimizeAway(&bar);
+}
+
+BENCHMARK(NonPODParamPassingUseAfter, TypeByConstRRefWithMove, MY_NUMBER_OF_SAMPLES, MY_NUMBER_OF_CALLS_PER_MEASUREMENT)
+{
+	Foo f;
+	auto bar = std::string("bar");
+	f.setNonPODTypeByConstRef(bar);
+
+	bar += "food";
+	celero::DoNotOptimizeAway(&bar);
+}
+
+// --------------------------------------------------
+// Now repeat all of the tests above with a POD type.
+// --------------------------------------------------
+
+BASELINE(PODParamPassing, Baseline, MY_NUMBER_OF_SAMPLES, MY_NUMBER_OF_CALLS_PER_MEASUREMENT)
+{
+	// While we are not measuring the time to construct a "Foo" or create "bar", since
+	// we do this in each of the tests, the time is exactly the same and does not
+	// change the baseline measurement.  (The only difference in each of these cases
+	// is the part we wish to measure.)
+
+	Foo f;
+	auto bar = uint64_t(2716057);
+	f.podType = bar;
+}
+
+BENCHMARK(PODParamPassing, TypeMoveCopy, MY_NUMBER_OF_SAMPLES, MY_NUMBER_OF_CALLS_PER_MEASUREMENT)
+{
+	Foo f;
+	auto bar = uint64_t(2716057);
+	f.podType = std::move(bar);
+}
+
+BENCHMARK(PODParamPassing, TypeByValue, MY_NUMBER_OF_SAMPLES, MY_NUMBER_OF_CALLS_PER_MEASUREMENT)
+{
+	Foo f;
+	auto bar = uint64_t(2716057);
+	f.setPODTypeByValue(bar);
+}
+
+BENCHMARK(PODParamPassing, TypeByMovedValue, MY_NUMBER_OF_SAMPLES, MY_NUMBER_OF_CALLS_PER_MEASUREMENT)
+{
+	Foo f;
+	auto bar = uint64_t(2716057);
+	f.setPODTypeByValue(std::move(bar));
+}
+
+BENCHMARK(PODParamPassing, TypeByValueWithMove, MY_NUMBER_OF_SAMPLES, MY_NUMBER_OF_CALLS_PER_MEASUREMENT)
+{
+	Foo f;
+	auto bar = uint64_t(2716057);
+	f.setPODTypeByValue(bar);
+}
+
+BENCHMARK(PODParamPassing, TypeByMoveValueWithMove, MY_NUMBER_OF_SAMPLES, MY_NUMBER_OF_CALLS_PER_MEASUREMENT)
+{
+	Foo f;
+	auto bar = uint64_t(2716057);
+	f.setPODTypeByValue(std::move(bar));
+}
+
+BENCHMARK(PODParamPassing, TypeByConstRef, MY_NUMBER_OF_SAMPLES, MY_NUMBER_OF_CALLS_PER_MEASUREMENT)
+{
+	Foo f;
+	auto bar = uint64_t(2716057);
+	f.setPODTypeByConstRef(bar);
+}
+
+BENCHMARK(PODParamPassing, TypeByConstRRef, MY_NUMBER_OF_SAMPLES, MY_NUMBER_OF_CALLS_PER_MEASUREMENT)
+{
+	Foo f;
+	auto bar = uint64_t(2716057);
+	f.setPODTypeByConstRef(bar);
+}
+
+BENCHMARK(PODParamPassing, TypeByConstRRefWithMove, MY_NUMBER_OF_SAMPLES, MY_NUMBER_OF_CALLS_PER_MEASUREMENT)
+{
+	Foo f;
+	auto bar = uint64_t(2716057);
+	f.setPODTypeByConstRef(bar);
+}
+
+BENCHMARK(PODParamPassing, TypeByMoveConstRRefWithMove, MY_NUMBER_OF_SAMPLES, MY_NUMBER_OF_CALLS_PER_MEASUREMENT)
+{
+	Foo f;
+	auto bar = uint64_t(2716057);
+	f.setPODTypeByConstRef(std::move(bar));
+}
+
+// ---------------------------------------------------------------------------------------
+// Repeat some of the tests above, but use the varible after the use in the "set" function
+// ---------------------------------------------------------------------------------------
+
+BASELINE(PODParamPassingUseAfter, Baseline, MY_NUMBER_OF_SAMPLES, MY_NUMBER_OF_CALLS_PER_MEASUREMENT)
+{
+	// While we are not measuring the time to construct a "Foo" or create "bar", since
+	// we do this in each of the tests, the time is exactly the same and does not
+	// change the baseline measurement.  (The only difference in each of these cases
+	// is the part we wish to measure.)
+
+	Foo f;
+	auto bar = uint64_t(2716057);
+	f.podType = bar;
+
+	bar += uint64_t(3370318);
+	celero::DoNotOptimizeAway(&bar);
+}
+
+BENCHMARK(PODParamPassingUseAfter, TypeByValue, MY_NUMBER_OF_SAMPLES, MY_NUMBER_OF_CALLS_PER_MEASUREMENT)
+{
+	Foo f;
+	auto bar = uint64_t(2716057);
+	f.setPODTypeByValue(bar);
+
+	bar += uint64_t(3370318);
+	celero::DoNotOptimizeAway(&bar);
+}
+
+BENCHMARK(PODParamPassingUseAfter, TypeByValueWithMove, MY_NUMBER_OF_SAMPLES, MY_NUMBER_OF_CALLS_PER_MEASUREMENT)
+{
+	Foo f;
+	auto bar = uint64_t(2716057);
+	f.setPODTypeByValue(bar);
+
+	bar += uint64_t(3370318);
+	celero::DoNotOptimizeAway(&bar);
+}
+
+BENCHMARK(PODParamPassingUseAfter, TypeByConstRef, MY_NUMBER_OF_SAMPLES, MY_NUMBER_OF_CALLS_PER_MEASUREMENT)
+{
+	Foo f;
+	auto bar = uint64_t(2716057);
+	f.setPODTypeByConstRef(bar);
+
+	bar += uint64_t(3370318);
+	celero::DoNotOptimizeAway(&bar);
+}
+
+BENCHMARK(PODParamPassingUseAfter, TypeByConstRRef, MY_NUMBER_OF_SAMPLES, MY_NUMBER_OF_CALLS_PER_MEASUREMENT)
+{
+	Foo f;
+	auto bar = uint64_t(2716057);
+	f.setPODTypeByConstRef(bar);
+
+	bar += uint64_t(3370318);
+	celero::DoNotOptimizeAway(&bar);
+}
+
+BENCHMARK(PODParamPassingUseAfter, TypeByConstRRefWithMove, MY_NUMBER_OF_SAMPLES, MY_NUMBER_OF_CALLS_PER_MEASUREMENT)
+{
+	Foo f;
+	auto bar = uint64_t(2716057);
+	f.setPODTypeByConstRef(bar);
+
+	bar += uint64_t(3370318);
+	celero::DoNotOptimizeAway(&bar);
 }
