@@ -45,6 +45,21 @@ struct Foo
 		this->nonPodType = std::move(x);
 	}
 
+	void setNonPODTypeByRRef(std::string&& x)
+	{
+		this->nonPodType = x;
+	}
+
+	void setNonPODTypeByRRefWithMove(std::string&& x)
+	{
+		this->nonPodType = std::move(x);
+	}
+
+	void setNonPODTypeByRRefWithSwap(std::string&& x)
+	{
+		std::swap(this->nonPodType, x);
+	}
+
 	void setNonPODTypeByConstRRef(const std::string&& x)
 	{
 		this->nonPodType = x;
@@ -164,6 +179,36 @@ BENCHMARK(NonPODParamPassing, TypeByMoveConstRRefWithMove, MY_NUMBER_OF_SAMPLES,
 	f.setNonPODTypeByConstRRefWithMove(std::move(std::string("bar")));
 }
 
+BENCHMARK(NonPODParamPassing, TypeByRRef, MY_NUMBER_OF_SAMPLES, MY_NUMBER_OF_CALLS_PER_MEASUREMENT)
+{
+	Foo f;
+	f.setNonPODTypeByRRef(std::string("bar"));
+}
+
+BENCHMARK(NonPODParamPassing, TypeByRRefWithMove, MY_NUMBER_OF_SAMPLES, MY_NUMBER_OF_CALLS_PER_MEASUREMENT)
+{
+	Foo f;
+	f.setNonPODTypeByRRefWithMove(std::string("bar"));
+}
+
+BENCHMARK(NonPODParamPassing, TypeByMoveRRefWithMove, MY_NUMBER_OF_SAMPLES, MY_NUMBER_OF_CALLS_PER_MEASUREMENT)
+{
+	Foo f;
+	f.setNonPODTypeByRRefWithMove(std::move(std::string("bar")));
+}
+
+BENCHMARK(NonPODParamPassing, TypeByRRefWithSwap, MY_NUMBER_OF_SAMPLES, MY_NUMBER_OF_CALLS_PER_MEASUREMENT)
+{
+	Foo f;
+	f.setNonPODTypeByRRefWithSwap(std::string("bar"));
+}
+
+BENCHMARK(NonPODParamPassing, TypeByMoveRRefWithSwap, MY_NUMBER_OF_SAMPLES, MY_NUMBER_OF_CALLS_PER_MEASUREMENT)
+{
+	Foo f;
+	f.setNonPODTypeByRRefWithSwap(std::move(std::string("bar")));
+}
+
 // ---------------------------------------------------------------------------------------
 // Repeat some of the tests above, but use the varible after the use in the "set" function
 // ---------------------------------------------------------------------------------------
@@ -222,6 +267,7 @@ BENCHMARK(NonPODParamPassingUseAfter, TypeByConstRefWithMove, MY_NUMBER_OF_SAMPL
 	bar += "food";
 	celero::DoNotOptimizeAway(&bar);
 }
+
 
 // --------------------------------------------------
 // Now repeat all of the tests above with a POD type.
