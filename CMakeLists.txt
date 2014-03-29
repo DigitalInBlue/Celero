@@ -227,7 +227,7 @@ SET(PROJECT_TEST_NAME celeroDemoJUnit)
 #
 
 add_executable(${PROJECT_TEST_NAME} 
-  examples/DemoSimpleJunit.cpp
+  examples/DemoSimpleJUnit.cpp
   )
 
 #
