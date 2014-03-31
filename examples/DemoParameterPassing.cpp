@@ -197,6 +197,13 @@ BENCHMARK(NonPODParamPassing, TypeByMoveRRefWithMove, MY_NUMBER_OF_SAMPLES, MY_N
 	f.setNonPODTypeByRRefWithMove(std::move(std::string("bar")));
 }
 
+BENCHMARK(NonPODParamPassing, TypeByMoveRRefWithMove2, MY_NUMBER_OF_SAMPLES, MY_NUMBER_OF_CALLS_PER_MEASUREMENT)
+{
+	Foo f;
+	auto bar = std::string("bar");
+	f.setNonPODTypeByRRefWithMove(std::move(bar));
+}
+
 BENCHMARK(NonPODParamPassing, TypeByRRefWithSwap, MY_NUMBER_OF_SAMPLES, MY_NUMBER_OF_CALLS_PER_MEASUREMENT)
 {
 	Foo f;

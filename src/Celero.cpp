@@ -7,25 +7,13 @@
 #include <celero/Print.h>
 #include <celero/ResultTable.h>
 #include <celero/JUnit.h>
+#include <celero/CommandLine.h>
 
 #include <iostream>
 #include <algorithm>
 #include <map>
 
 using namespace celero;
-
-// Temporary argument parsing.  This can be done better, but OK for now.
-std::map<std::string, std::string> MakeArgMap(std::vector<std::string>& argv)
-{
-	std::map<std::string, std::string> args;
-
-	for(size_t i = 1; i < argv.size() - 1; i += 2)
-	{
-		args.insert(std::make_pair(argv[i], argv[i+1]));
-	}
-
-	return args;
-}
 
 std::shared_ptr<celero::BenchmarkInfo> celero::RegisterTest(const char* groupName, const char* benchmarkName, const uint64_t samples, const uint64_t calls, std::shared_ptr<celero::Factory> testFactory, const double target)
 {
@@ -45,31 +33,24 @@ void celero::Run(int argc, char** argv)
 {
 	celero::timer::CachePerformanceFrequency();
 
-	// http://www.helleboreconsulting.com/index.php/blog/105-don-t-argue
-	// Convert standard program arguments into a nice STL vector.
-	std::vector<std::string> params(argv, argv + argc);
-	auto args = MakeArgMap(params);
-
-	// Has help been requested?
-	auto helpSpecified = args.find("-h");
-	if(helpSpecified != args.end())
-	{
-		std::cout << "Usage: celero [-g groupNameToRun] [-o outputFileToWriteTo] [-h]\n";
-		return;
-	}
+	cmdline::parser args;
+	args.add<std::string>("group", 'g', "Runs a specific group of benchmarks.", false, "");
+	args.add<std::string>("outputFile", 'o', "Saves a results table to the named file.", false, "");
+	args.add<std::string>("xml", 'x', "Saves a JUnit XML-formatted file to the named file.", false, "");
+	args.parse_check(argc, argv);
 
 	// Has a result output file been specified?
-	auto outputSpecified = args.find("-o");
-	if(outputSpecified != args.end())
+	auto argument = args.get<std::string>("outputFile");
+	if(argument.empty() == false)
 	{
-		celero::ResultTable::Instance().setFileName(outputSpecified->second);
+		celero::ResultTable::Instance().setFileName(argument);
 	}
 
 	// Has a JUnit output file been specified?
-	auto junitSpecified = args.find("-xml");
-	if(junitSpecified != args.end())
+	argument = args.get<std::string>("xml");
+	if(argument.empty() == false)
 	{
-		celero::JUnit::Instance().setFileName(junitSpecified->second);
+		celero::JUnit::Instance().setFileName(argument);
 	}
 
 	// Initial output
@@ -82,11 +63,11 @@ void celero::Run(int argc, char** argv)
 	std::string finalOutput;
 
 	// Has a run group been specified?
-	auto runGroupSpecified = args.find("-g");
-	if(runGroupSpecified != args.end())
+	argument = args.get<std::string>("group");
+	if(argument.empty() == false)
 	{
-		executor::RunGroup(runGroupSpecified->second);
-		finalOutput = "Completed.  " + std::to_string(celero::TestVector::Instance().getTestSize(runGroupSpecified->second) + celero::TestVector::Instance().getBaselineSize(runGroupSpecified->second)) + " tests complete.";
+		executor::RunGroup(argument);
+		finalOutput = "Completed.  " + std::to_string(celero::TestVector::Instance().getTestSize(argument) + celero::TestVector::Instance().getBaselineSize(argument)) + " tests complete.";
 	}
 	else
 	{

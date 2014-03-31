@@ -111,6 +111,7 @@ endif()
 set(TARGET_H
 	include/celero/BenchmarkInfo.h
 	include/celero/Celero.h
+	include/celero/CommandLine.h
 	include/celero/Console.h
 	include/celero/Executor.h
 	include/celero/Export.h
