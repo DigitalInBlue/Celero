@@ -23,11 +23,11 @@
 
 #include <string>
 #include <memory>
+#include <celero/Export.h>
+#include <celero/BenchmarkInfo.h>
  
 namespace celero
 {
-	class BenchmarkInfo;
-
 	namespace executor
 	{
 		void Execute(std::shared_ptr<BenchmarkInfo> x);

@@ -24,7 +24,9 @@ class BenchmarkInfo::Impl
 			totalRunTime(0),
 			problemSetSize(0),
 			problemSetSizeIndex(0),
-			factory()
+			factory(),
+			lockedBaseline(false),
+			isBaselineCase(false)
 		{
 		}
 
@@ -43,7 +45,8 @@ class BenchmarkInfo::Impl
 			problemSetSize(0),
 			problemSetSizeIndex(0),
 			factory(testFactory),
-			lockedBaseline(false)
+			lockedBaseline(false),
+			isBaselineCase(false)
 		{
 		}
 
@@ -62,7 +65,8 @@ class BenchmarkInfo::Impl
 			problemSetSize(other.pimpl->problemSetSize),
 			problemSetSizeIndex(other.pimpl->problemSetSizeIndex),
 			factory(other.pimpl->factory),
-			lockedBaseline(other.pimpl->lockedBaseline)
+			lockedBaseline(other.pimpl->lockedBaseline),
+			isBaselineCase(other.pimpl->isBaselineCase)
 		{
 		}
 
@@ -100,6 +104,7 @@ class BenchmarkInfo::Impl
 		std::shared_ptr<Factory> factory;
 
 		bool lockedBaseline;
+		bool isBaselineCase;
 };
 
 BenchmarkInfo::BenchmarkInfo() : 
@@ -301,4 +306,14 @@ size_t BenchmarkInfo::getProblemSetSizeIndex() const
 void BenchmarkInfo::incrementProblemSetSizeIndex()
 {
 	this->pimpl->problemSetSizeIndex++;
+}
+
+void BenchmarkInfo::setIsBaselineCase(bool x)
+{
+	this->pimpl->isBaselineCase = x;
+}
+
+bool BenchmarkInfo::getIsBaselineCase() const
+{
+	return this->pimpl->isBaselineCase;
 }

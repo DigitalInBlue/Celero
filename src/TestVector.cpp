@@ -75,6 +75,7 @@ void TestVector::forEachTest(std::function<void(std::shared_ptr<BenchmarkInfo>)>
 void TestVector::pushBackBaseline(std::shared_ptr<BenchmarkInfo> x)
 {
 	std::lock_guard<std::mutex> mutexLock(this->pimpl->baselineVectorMutex);
+	x->setIsBaselineCase(true);
 	this->pimpl->baselineVector.push_back(x);
 }
 

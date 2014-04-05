@@ -1,3 +1,4 @@
+#include <celero/Archive.h>
 #include <celero/Celero.h>
 #include <celero/Console.h>
 #include <celero/BenchmarkInfo.h>
@@ -37,7 +38,7 @@ void executor::Execute(std::shared_ptr<BenchmarkInfo> x)
 	}
 	else
 	{
-		// JEF // Run for at least one second and at least 30 iteratons for good statistical sampling.
+		// Run for at least one second and at least 30 iteratons for good statistical sampling.
 		while((celero::timer::ConvertSystemTime(x->getTotalRunTime()) < 1.0) || (x->getSamples() < celero::StatisticalSample))
 		{
 			x->incrementSamples();
@@ -48,6 +49,7 @@ void executor::Execute(std::shared_ptr<BenchmarkInfo> x)
 	}
 
 	ResultTable::Instance().add(x->getGroupName(), x->getTestName(), temp->getProblemSetValue(problemSetIndex), x->getUsPerOp());
+	Archive::Instance().add(*x);
 	JUnit::Instance().add(*x);
 }
 

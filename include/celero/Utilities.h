@@ -25,6 +25,8 @@
 #include <unistd.h>
 #endif
 
+#include <stdint.h>
+
 namespace celero
 {
 	///
@@ -79,20 +81,20 @@ namespace celero
 	/// GCC 4.8 gives similar results.
 	///
 	#ifdef WIN32
-	template<class T> void DoNotOptimizeAway(T&& x) 
-	{
-		// Begin DoNotOptimizeAway 
-		volatile static T* xPrime = &x;
-		xPrime = &x;
-		// End DoNotOptimizeAway
-	}
+		template<class T> void DoNotOptimizeAway(T&& x) 
+		{
+			// Begin DoNotOptimizeAway 
+			volatile static T* xPrime = &x;
+			xPrime = &x;
+			// End DoNotOptimizeAway
+		}
 	#else
-	template<class T> void DoNotOptimizeAway(T&& x) 
-	{
-		// Begin DoNotOptimizeAway 
-		asm volatile("" : "+r" (x));
-		// End DoNotOptimizeAway
-	}
+		template<class T> void DoNotOptimizeAway(T&& x) 
+		{
+			// Begin DoNotOptimizeAway 
+			asm volatile("" : "+r" (x));
+			// End DoNotOptimizeAway
+		}
 	#endif
 
 	///

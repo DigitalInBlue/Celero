@@ -22,14 +22,12 @@
 ///
 
 #include <string>
-
 #include <celero/Export.h>
 #include <celero/Pimpl.h>
+#include <celero/Factory.h>
 
 namespace celero
 {
-	class Factory;
-
 	///
 	/// \class BenchmarkInfo
 	///
@@ -192,6 +190,16 @@ namespace celero
 			///
 			///
 			void incrementProblemSetSizeIndex();
+
+			///
+			/// Used to set a flag indicating that this is a Baseline case, not a benchmark case.
+			///
+			void setIsBaselineCase(bool x);
+
+			///
+			/// Used to get a flag indicating that this is a Baseline case, not a benchmark case.
+			///
+			bool getIsBaselineCase() const;
 
 		private:
 			///

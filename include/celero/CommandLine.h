@@ -105,18 +105,21 @@ Target lexical_cast(const Source &arg)
   return lexical_cast_t<Target, Source, detail::is_same<Target, Source>::value>::cast(arg);
 }
 
-static inline std::string demangle(const std::string &name)
-{
 #ifdef WIN32
+static inline std::string demangle(const std::string&)
+{
 	return std::string();
+}
 #else
+static inline std::string demangle(const std::string& name)
+{
   int status=0;
   char *p=abi::__cxa_demangle(name.c_str(), 0, 0, &status);
   std::string ret(p);
   free(p);
   return ret;
-#endif
 }
+#endif
 
 template <class T>
 std::string readable_typename()
@@ -540,7 +543,7 @@ public:
   void parse_check(const std::vector<std::string> &args){
 	if (!options.count("help"))
 	  add("help", '?', "print this message");
-	check(args.size(), parse(args));
+	check(static_cast<int>(args.size()), parse(args));
   }
 
   void parse_check(int argc, char *argv[]){
@@ -728,7 +731,7 @@ private:
 		actual=read(value);
 		has=true;
 	  }
-	  catch(const std::exception &e){
+	  catch(const std::exception&){
 		return false;
 	  }
 	  return true;

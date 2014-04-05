@@ -1,3 +1,4 @@
+#include <celero/Archive.h>
 #include <celero/Celero.h>
 #include <celero/Console.h>
 #include <celero/BenchmarkInfo.h>
@@ -37,6 +38,7 @@ void celero::Run(int argc, char** argv)
 	args.add<std::string>("group", 'g', "Runs a specific group of benchmarks.", false, "");
 	args.add<std::string>("outputFile", 'o', "Saves a results table to the named file.", false, "");
 	args.add<std::string>("xml", 'x', "Saves a JUnit XML-formatted file to the named file.", false, "");
+	args.add<std::string>("archive", 'a', "Saves or updates a result archive file.", false, "");
 	args.parse_check(argc, argv);
 
 	// Has a result output file been specified?
@@ -44,6 +46,13 @@ void celero::Run(int argc, char** argv)
 	if(argument.empty() == false)
 	{
 		celero::ResultTable::Instance().setFileName(argument);
+	}
+
+	// Has a result output file been specified?
+	argument = args.get<std::string>("archive");
+	if(argument.empty() == false)
+	{
+		celero::Archive::Instance().setFileName(argument);
 	}
 
 	// Has a JUnit output file been specified?

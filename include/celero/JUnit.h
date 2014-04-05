@@ -21,13 +21,12 @@
 /// limitations under the License.
 ///
 
-#include <celero/Pimpl.h>
 #include <string>
+#include <celero/Pimpl.h>
+#include <celero/BenchmarkInfo.h>
 
 namespace celero
 {
-	class BenchmarkInfo;
-
 	///
 	/// \class JUnit
 	///

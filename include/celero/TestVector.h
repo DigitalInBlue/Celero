@@ -21,14 +21,13 @@
 /// limitations under the License.
 ///
 
+#include <functional>
 #include <celero/Export.h>
 #include <celero/Pimpl.h>
-#include <functional>
+#include <celero/BenchmarkInfo.h>
 
 namespace celero
 {
-	class BenchmarkInfo;
-
 	///
 	/// \class TestVector
 	///

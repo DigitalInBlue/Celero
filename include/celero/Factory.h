@@ -22,12 +22,11 @@
 ///
 
 #include <celero/Export.h>
+#include <celero/TestFixture.h>
 #include <memory>
 
 namespace celero
 {
-	class TestFixture;
-
 	///
 	/// \class Factory
 	///

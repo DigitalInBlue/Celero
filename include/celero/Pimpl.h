@@ -22,6 +22,7 @@
 ///
 
 #include <memory>
+#include <celero/Export.h>
  
 namespace celero
 {

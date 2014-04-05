@@ -23,11 +23,10 @@
 
 #include <string>
 #include <memory>
+#include <celero/BenchmarkInfo.h>
  
 namespace celero
 {
-	class BenchmarkInfo;
-
 	///
 	/// \namespace print
 	///
