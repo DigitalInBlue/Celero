@@ -26,7 +26,7 @@ void Red()
 		auto h = WinColor();
 		SetConsoleTextAttribute(h, FOREGROUND_RED);
 	#else
-		std::cout << "\033[40m\033[31m";
+		std::cout << "\033[49m\033[31m";
 	#endif
 }
 
@@ -36,7 +36,7 @@ void RedBold()
 		auto h = WinColor();
 		SetConsoleTextAttribute(h, FOREGROUND_RED | FOREGROUND_INTENSITY);
 	#else
-		std::cout << "\033[40m\033[1;31m";
+		std::cout << "\033[49m\033[1;31m";
 	#endif
 }
 
@@ -46,7 +46,7 @@ void Green()
 		auto h = WinColor();
 		SetConsoleTextAttribute(h, FOREGROUND_GREEN);
 	#else
-		std::cout << "\033[40m\033[32m";
+		std::cout << "\033[49m\033[32m";
 	#endif
 }
 
@@ -56,7 +56,7 @@ void GreenBold()
 		auto h = WinColor();
 		SetConsoleTextAttribute(h, FOREGROUND_GREEN | FOREGROUND_INTENSITY);
 	#else
-		std::cout << "\033[40m\033[1;32m";
+		std::cout << "\033[49m\033[1;32m";
 	#endif
 }
 
@@ -66,7 +66,7 @@ void Blue()
 		auto h = WinColor();
 		SetConsoleTextAttribute(h, FOREGROUND_BLUE);
 	#else
-		std::cout << "\033[40m\033[34m";
+		std::cout << "\033[49m\033[34m";
 	#endif
 }
 
@@ -76,7 +76,7 @@ void BlueBold()
 		auto h = WinColor();
 		SetConsoleTextAttribute(h, FOREGROUND_BLUE | FOREGROUND_INTENSITY);
 	#else
-		std::cout << "\033[40m\033[1;34m";
+		std::cout << "\033[49m\033[1;34m";
 	#endif
 }
 
@@ -86,7 +86,7 @@ void Cyan()
 		auto h = WinColor();
 		SetConsoleTextAttribute(h, FOREGROUND_BLUE | FOREGROUND_GREEN);
 	#else
-		std::cout << "\033[40m\033[36m";
+		std::cout << "\033[49m\033[36m";
 	#endif
 }
 
@@ -96,7 +96,7 @@ void CyanBold()
 		auto h = WinColor();
 		SetConsoleTextAttribute(h, FOREGROUND_BLUE | FOREGROUND_GREEN | FOREGROUND_INTENSITY);
 	#else
-		std::cout << "\033[40m\033[1;36m";
+		std::cout << "\033[49m\033[1;36m";
 	#endif
 }
 
@@ -106,7 +106,7 @@ void Yellow()
 		auto h = WinColor();
 		SetConsoleTextAttribute(h, FOREGROUND_RED | FOREGROUND_GREEN);
 	#else
-		std::cout << "\033[40m\033[33m";
+		std::cout << "\033[49m\033[33m";
 	#endif
 }
 
@@ -116,7 +116,7 @@ void YellowBold()
 		auto h = WinColor();
 		SetConsoleTextAttribute(h, FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_INTENSITY);
 	#else
-		std::cout << "\033[40m\033[1;33m";
+		std::cout << "\033[49m\033[1;33m";
 	#endif
 }
 
@@ -126,7 +126,7 @@ void White()
 		auto h = WinColor();
 		SetConsoleTextAttribute(h, FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE);
 	#else
-		std::cout << "\033[40m\033[37m";
+		std::cout << "\033[49m\033[37m";
 	#endif
 }
 
@@ -136,7 +136,7 @@ void WhiteBold()
 		auto h = WinColor();
 		SetConsoleTextAttribute(h, FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE | FOREGROUND_INTENSITY);
 	#else
-		std::cout << "\033[40m\033[1;37m";
+		std::cout << "\033[49m\033[1;37m";
 	#endif
 }
 
@@ -166,7 +166,7 @@ void PurpleBold()
 		auto h = WinColor();
 		SetConsoleTextAttribute(h, FOREGROUND_RED | FOREGROUND_BLUE | FOREGROUND_INTENSITY);
 	#else
-		std::cout << "\033[40m\033[1;38m";
+		std::cout << "\033[49m\033[1;38m";
 	#endif
 }
 
