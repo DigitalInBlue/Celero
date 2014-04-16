@@ -18,19 +18,21 @@
 /// limitations under the License.
 ///
 
-#include <celero/BenchmarkInfo.h>
+#include <celero/Benchmark.h>
 #include <gtest/gtest.h>
 
-TEST(celero_BenchmarkInfo, Setters)
+TEST(celero_Benchmark, Setters)
 {
-	celero::BenchmarkInfo original;
+	/*
+	celero::Benchmark original;
 	original.setBaselineUnit(123.456);
 	original.setIsBaselineCase(true);
-	original.setProblemSetSize(123456);
+	original.setExperimentSize(123456);
 	original.setRunTime(123456);
 
 	EXPECT_DOUBLE_EQ(123.456, original.getBaselineUnit());
 	EXPECT_EQ(true, original.getIsBaselineCase());
-	EXPECT_EQ(123456, original.getProblemSetSize());
+	EXPECT_EQ(123456, original.getExperimentSize());
 	EXPECT_EQ(123456, original.getRunTime());
+	*/
 }

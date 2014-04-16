@@ -31,6 +31,8 @@
 
 namespace celero
 {
+	class Benchmark;
+
 	///
 	/// \class TestFixture
 	///
@@ -50,47 +52,36 @@ namespace celero
 			virtual ~TestFixture();
 
 			///
+			/// Allows a test fixture to supply values to use for experiments.
+			/// This is used to create multiple runs of the same experiment
+			/// and varrying the data set size, for example.
+			///
+			/// It is only guaranteed that the constructor is called prior to this function being called.
+			///
+			virtual std::vector<int64_t> getExperimentValues() const { return std::vector<int64_t>(); };
+
+			///
 			/// Set up the test fixture before benchmark execution.
 			///
-			virtual void SetUp();
-		
+			/// \param experimentValue The value for the experiment.  This can be ignored if the test does not utilize experiment values.
 			///
-			/// Set up the test fixture before benchmark execution.
-			///
-			virtual void SetUp(const int32_t problemSetValue);
+			virtual void setUp(int64_t experimentValue);
 		
 			///
 			/// Called after test completion to destroy the fixture.
 			///
-			virtual void TearDown();
+			virtual void tearDown();
 		
 			///
 			/// \param calls The number of times to loop over the UserBenchmark function.
 			///
-			/// \return Returns the number of microseconds the run took.
+			/// \return Returns a pair of the number of microseconds the run took.
 			///
-			std::pair<uint64_t, int32_t> Run(const uint64_t calls, const size_t problemSetValueIndex);
-
-			///
-			///
-			///
-			size_t getProblemSetSize() const;
-
-			///
-			///
-			///
-			int32_t getProblemSetValue(const size_t x) const;
+			uint64_t run(uint64_t calls, int64_t experimentValue);
 
 		protected:
-			///
-			/// Implemented by the classes that are built via macros.
-			///
-			virtual void setProblemSetSize(const size_t) {};
-
 			/// Executed for each operation the benchmarking test is run.
 			virtual void UserBenchmark();
-
-			std::vector<int32_t> ProblemSetValues;
 
 		private:
 	};

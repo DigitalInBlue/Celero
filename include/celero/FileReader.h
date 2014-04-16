@@ -1,6 +1,6 @@
-#ifndef H_CELERO_PRINT_H
-#define H_CELERO_PRINT_H
- 
+#ifndef H_CELERO_FILEREADER_H
+#define H_CELERO_FILEREADER_H
+
 // www.helleboreconsulting.com
 
 ///
@@ -21,26 +21,31 @@
 /// limitations under the License.
 ///
 
-#include <string>
-#include <memory>
-#include <celero/Experiment.h>
- 
+#include <locale>
+
 namespace celero
 {
+	/// \struct FileReader
+	/// 
+	/// A helper struct to aid in reading CSV files.
 	///
-	/// \namespace print
+	/// Classify commas as whitespace.
 	///
-	/// \author	John farrier
-	///
-	namespace print
+	struct FieldReader : std::ctype<char>
 	{
-		void StageBanner(const std::string& x);
-		void GreenBar(const std::string& x);
-		void Run(const std::string& x);
-		void Run(std::shared_ptr<Experiment::Result> x);
-		void Done(std::shared_ptr<Experiment::Result> x);
-		void Baseline(std::shared_ptr<Experiment::Result> x);
-	}
+		FieldReader() : std::ctype<char>(this->getTable()) 
+		{
+		}
+
+		static std::ctype_base::mask const* getTable() 
+		{
+			static std::vector<std::ctype_base::mask> rc(table_size, std::ctype_base::mask());
+			rc[','] = std::ctype_base::space;
+			rc['\n'] = std::ctype_base::space;
+			rc['\r'] = std::ctype_base::space;
+			return &rc[0];
+		}
+	};
 }
 
 #endif

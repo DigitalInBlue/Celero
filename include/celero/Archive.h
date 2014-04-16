@@ -22,7 +22,7 @@
 ///
 
 #include <string>
-#include <celero/BenchmarkInfo.h>
+#include <celero/Experiment.h>
 
 namespace celero
 {
@@ -49,7 +49,9 @@ namespace celero
 			///
 			/// Adds or updates a result which will be saved to a results archive file.
 			///
-			void add(celero::BenchmarkInfo benchmark);
+			/// This should re-save on every new result so that the output can be monitored externally.
+			///
+			void add(std::shared_ptr<celero::Experiment::Result> x);
 
 			///
 			/// Saves all current results to a results archive file.

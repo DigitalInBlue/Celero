@@ -1,233 +1,201 @@
-#include <celero/Archive.h>
+///
+/// \author	John Farrier
+///
+/// \copyright Copyright 2014 John Farrier 
+///
+/// Licensed under the Apache License, Version 2.0 (the "License");
+/// you may not use this file except in compliance with the License.
+/// You may obtain a copy of the License at
+/// 
+/// http://www.apache.org/licenses/LICENSE-2.0
+/// 
+/// Unless required by applicable law or agreed to in writing, software
+/// distributed under the License is distributed on an "AS IS" BASIS,
+/// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+/// See the License for the specific language governing permissions and
+/// limitations under the License.
+///
+
 #include <celero/Celero.h>
 #include <celero/Console.h>
-#include <celero/BenchmarkInfo.h>
+#include <celero/Benchmark.h>
 #include <celero/TestVector.h>
 #include <celero/Utilities.h>
 #include <celero/Executor.h>
 #include <celero/Print.h>
-#include <celero/ResultTable.h>
-#include <celero/JUnit.h>
+#include <celero/Callbacks.h>
 
 #include <iostream>
+#include <cassert>
 
 using namespace celero;
 
-void executor::Execute(std::shared_ptr<BenchmarkInfo> x)
+void executor::Execute(std::shared_ptr<Experiment::Result> r)
 {
 	// Define a small internal function object to use to uniformly execute the tests.
-	auto testRunner = [x](const size_t problemSetValueIndex)
+	auto testRunner = [r]()
 	{
-		auto test = x->getFactory()->Create();
-		const auto testTime = test->Run(x->getOps(), problemSetValueIndex);
+		auto test = r->getExperiment()->getFactory()->Create();
+		const auto testTime = test->run(r->getExperiment()->getCalls(), r->getProblemSpaceValue());
 
 		// Save test results
-		x->setRunTime(testTime.first);
-		x->incrementTotalRunTime(testTime.first);
+		r->getStatistics()->addSample(testTime);
+		r->getExperiment()->incrementTotalRunTime(testTime);
 	};
 
-	auto temp = x->getFactory()->Create();
-	auto problemSetIndex = x->getProblemSetSizeIndex();
-
-	if(x->getSamples() > 0)
+	if(r->getExperiment()->getSamples() > 0)
 	{
-		for(auto j = x->getSamples(); j > 0; --j)
+		for(auto i = r->getExperiment()->getSamples(); i > 0; --i)
 		{
-			testRunner(problemSetIndex);
-		}
+			testRunner();
+		}  
+
+		r->setComplete(true);
 	}
 	else
 	{
-		// Run for at least one second and at least 30 iteratons for good statistical sampling.
-		while((celero::timer::ConvertSystemTime(x->getTotalRunTime()) < 1.0) || (x->getSamples() < celero::StatisticalSample))
-		{
-			x->incrementSamples();
-			testRunner(problemSetIndex);
-		}
-
-		print::Auto(x);
+		std::cerr << "Celero: Test \"" << r->getExperiment()->getBenchmark()->getName() << "::" << r->getExperiment()->getName() << "\" must have at least 1 sample.\n";
 	}
-
-	ResultTable::Instance().add(x->getGroupName(), x->getTestName(), temp->getProblemSetValue(problemSetIndex), x->getUsPerOp());
-	Archive::Instance().add(*x);
-	JUnit::Instance().add(*x);
 }
 
 void executor::RunAll()
 {
-	auto moreProblemSetsLeft = true;
-
-	while(moreProblemSetsLeft == true)
-	{
-		moreProblemSetsLeft = RunAllBaselines();
-		moreProblemSetsLeft |= RunAllTests();
-
-		// Reset all baseline data.
-		celero::TestVector::Instance().forEachBaseline(
-			[](std::shared_ptr<BenchmarkInfo> info)
-		{
-			info->reset();
-		});
-
-		// Reset all benchmark data.
-		celero::TestVector::Instance().forEachTest(
-			[](std::shared_ptr<BenchmarkInfo> info)
-		{
-			info->reset();
-		});
-	}
-
-	ResultTable::Instance().save();
-	JUnit::Instance().save();
+	executor::RunAllBaselines();
+	executor::RunAllTests();
 }
 
-bool executor::RunAllBaselines()
+void executor::RunAllBaselines()
 {
 	print::StageBanner("Baselining");
 
-	auto moreProblemSetsLeft = false;
-
 	// Run through all the tests in ascending order.
-	celero::TestVector::Instance().forEachBaseline(
-		[&moreProblemSetsLeft](std::shared_ptr<BenchmarkInfo> info)
+	for(size_t i = 0; i < celero::TestVector::Instance().size(); i++)
 	{
-		if(info->getProblemSetSizeIndex() < info->getProblemSetSize() || info->getProblemSetSizeIndex() == 0)
-		{
-			// Describe the beginning of the run.
-			print::Run(info);
-				
-			Execute(info);
-				
-			// Describe the end of the run.
-			print::Done(info);
-
-			info->setBaselineUnit(info->getUsPerOp());
-
-			info->incrementProblemSetSizeIndex();
-			moreProblemSetsLeft |= (info->getProblemSetSizeIndex() < info->getProblemSetSize());
-		}
-	});
-
-	return moreProblemSetsLeft;
+		auto bmark = celero::TestVector::Instance()[i];
+		executor::RunBaseline(bmark);
+	}
 }
 
-bool executor::RunAllTests()
+void executor::RunAllTests()
 {
 	print::StageBanner("Benchmarking");
 
-	auto moreProblemSetsLeft = false;
-
 	// Run through all the tests in ascending order.
-	celero::TestVector::Instance().forEachTest(
-		[&moreProblemSetsLeft](std::shared_ptr<BenchmarkInfo> info)
+	for(size_t i = 0; i < celero::TestVector::Instance().size(); i++)
 	{
-		if(info->getProblemSetSizeIndex() < info->getProblemSetSize() || info->getProblemSetSizeIndex() == 0)
-		{
-			// Describe the beginning of the run.
-			print::Run(info);
-				
-			Execute(info);
-
-			// Describe the end of the run.
-			print::Done(info);
-
-			print::Baseline(info);
-
-			info->incrementProblemSetSizeIndex();
-			moreProblemSetsLeft |= (info->getProblemSetSizeIndex() < info->getProblemSetSize());
-		}
-	});
-
-	return moreProblemSetsLeft;
-}
-
-void executor::RunGroup(const std::string& x)
-{
-	if(x.empty() == false)
-	{
-		auto moreProblemSetsLeft = true;
-
-		executor::RunBaseline(x);
-
-		while(moreProblemSetsLeft == true)
-		{
-			moreProblemSetsLeft = false;
-			print::StageBanner("Benchmarking");
-
-			// Run through all the tests in ascending order.
-			celero::TestVector::Instance().forEachTest(
-				[&moreProblemSetsLeft, &x](std::shared_ptr<BenchmarkInfo> info)
-			{
-				if(info != nullptr && info->getGroupName() == x)
-				{
-					if(info->getProblemSetSizeIndex() < info->getProblemSetSize() || info->getProblemSetSizeIndex() == 0)
-					{
-						// Describe the beginning of the run.
-						print::Run(info);
-				
-						Execute(info);
-
-						// Describe the end of the run.
-						print::Done(info);
-
-						print::Baseline(info);
-
-						info->incrementProblemSetSizeIndex();
-						moreProblemSetsLeft |= (info->getProblemSetSizeIndex() < info->getProblemSetSize());
-					}
-				}
-			});
-
-			// Reset all baseline data.
-			celero::TestVector::Instance().forEachBaseline(
-				[](std::shared_ptr<BenchmarkInfo> info)
-			{
-				info->reset();
-			});
-
-			// Reset all benchmark data.
-			celero::TestVector::Instance().forEachTest(
-				[](std::shared_ptr<BenchmarkInfo> info)
-			{
-				info->reset();
-			});
-		}
+		auto bmark = celero::TestVector::Instance()[i];
+		executor::RunExperiments(bmark);
 	}
 }
 
-void executor::Run(const std::string&, const std::string&)
+void executor::RunBaseline(std::shared_ptr<Benchmark> bmark)
 {
+	auto baselineExperiment = bmark->getBaseline();
+	assert(baselineExperiment != nullptr);
+
+	// Populate the problem space with a fake test fixture instantiation.
+	{
+		auto testValues = baselineExperiment->getFactory()->Create()->getExperimentValues();
+		for(auto i : testValues)
+		{
+			baselineExperiment->addProblemSpace(i);
+		}
+	}
+
+	for(size_t i = 0; i < baselineExperiment->getResultSize(); i++)
+	{
+		auto r = baselineExperiment->getResult(i);
+		assert(r != nullptr);
+
+		// Describe the beginning of the run.
+		print::Run(r);
+
+		Execute(r);
+				
+		// Describe the end of the run.
+		print::Done(r);
+		print::Baseline(r);
+		celero::impl::ExperimentResultComplete(r);
+	}
+	
+	celero::impl::ExperimentComplete(baselineExperiment);
 }
 
-void executor::RunBaseline(const std::string& x)
+void executor::RunExperiments(std::shared_ptr<Benchmark> bmark)
 {
-	if(x.empty() == false)
+	auto experimentSize = bmark->getExperimentSize();
+
+	for(size_t i = 0; i < experimentSize; i++)
 	{
-		print::StageBanner("Baselining");
+		auto e = bmark->getExperiment(i);
+		assert(e != nullptr);
 
-		// Run through all the tests in ascending order.
-		auto info = celero::TestVector::Instance().getBaseline(x);
-
-		if(info != nullptr && info->getGroupName() == x)
-		{
-			if(info->getProblemSetSizeIndex() < info->getProblemSetSize() || info->getProblemSetSizeIndex() == 0)
-			{
-				// Describe the beginning of the run.
-				print::Run(info);
-				
-				Execute(info);
-
-				// Describe the end of the run.
-				print::Done(info);
-
-				info->setBaselineUnit(info->getUsPerOp());
-
-				info->incrementProblemSetSizeIndex();
-			}
-		}
+		executor::Run(e);
 	}
 }
 
-void executor::RunTest(const std::string&, const std::string&)
+void executor::Run(std::shared_ptr<Experiment> e)
 {
+	auto bmark = e->getBenchmark();
+
+	if(bmark->getBaseline()->getResult(0)->getComplete() == false)
+	{
+		executor::RunBaseline(bmark);
+	}
+
+	// Populate the problem space with a fake test fixture instantiation.
+	{
+		auto testValues = e->getFactory()->Create()->getExperimentValues();
+		for(auto i : testValues)
+		{
+			e->addProblemSpace(i);
+		}
+	}
+
+	// Result size will grow based on the problem spaces added above.
+	for(size_t i = 0; i < e->getResultSize(); i++)
+	{
+		auto r = e->getResult(i);
+
+		// Describe the beginning of the run.
+		print::Run(r);
+
+		executor::Execute(r);
+				
+		// Describe the end of the run.
+		print::Done(r);
+		print::Baseline(r);
+
+		celero::impl::ExperimentResultComplete(r);
+	}
+
+	celero::impl::ExperimentComplete(e);
+}
+
+void executor::Run(std::shared_ptr<Benchmark> bmark)
+{
+	executor::RunBaseline(bmark);
+	executor::RunExperiments(bmark);
+}
+
+void executor::Run(const std::string& benchmarkName)
+{
+	auto bmark = celero::TestVector::Instance()[benchmarkName];
+
+	if(bmark != nullptr)
+	{
+		executor::Run(bmark);
+	}
+}
+
+void executor::Run(const std::string& benchmarkName, const std::string& experimentName)
+{
+	auto bmark = celero::TestVector::Instance()[benchmarkName];
+
+	if(bmark != nullptr)
+	{
+		auto e = bmark->getExperiment(experimentName);
+		assert(e != nullptr);
+		executor::Run(e);
+	}
 }

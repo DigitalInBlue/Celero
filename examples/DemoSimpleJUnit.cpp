@@ -9,20 +9,20 @@
 /// This is the main(int argc, char** argv) for the entire celero program.
 /// You can write your own, or use this macro to insert the standard one into the project.
 ///
-CELERO_MAIN;
+CELERO_MAIN
 
 /// Run an automatic baseline.  
 /// Celero will help make sure enough samples are taken to get a reasonable measurement
 /// In reality, all of the "Complex" cases take the same amount of time to run.
 /// The difference in the results is a product of measurement error.
-BASELINE(DemoSimple, Baseline, 0, 7100000)
+BASELINE(DemoSimple, Baseline, 1, 7100000)
 {
 	celero::DoNotOptimizeAway(static_cast<float>(sin(3.14159265)));
 }
 
 /// Run an automatic test.  
 /// Celero will help make sure enough samples are taken to get a reasonable measurement
-BENCHMARK_TEST(DemoSimple, Complex1, 0, 7100000, 1.0)
+BENCHMARK_TEST(DemoSimple, Complex1, 1, 7100000, 1.0)
 {
 	celero::DoNotOptimizeAway(static_cast<float>(sin(fmod(rand(), 3.14159265))));
 }

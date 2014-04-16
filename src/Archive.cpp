@@ -1,5 +1,26 @@
+///
+/// \author	John Farrier
+///
+/// \copyright Copyright 2014 John Farrier 
+///
+/// Licensed under the Apache License, Version 2.0 (the "License");
+/// you may not use this file except in compliance with the License.
+/// You may obtain a copy of the License at
+/// 
+/// http://www.apache.org/licenses/LICENSE-2.0
+/// 
+/// Unless required by applicable law or agreed to in writing, software
+/// distributed under the License is distributed on an "AS IS" BASIS,
+/// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+/// See the License for the specific language governing permissions and
+/// limitations under the License.
+///
+
 #include <celero/Archive.h>
 #include <celero/PimplImpl.h>
+#include <celero/Benchmark.h>
+#include <celero/FileReader.h>
+#include <celero/Statistics.h>
 
 #include <assert.h>
 
@@ -18,7 +39,7 @@ using namespace celero;
 struct Result
 {
 	Result() :
-		DataSetSize(0),
+		ExperimentValue(0),
 		FirstRanDate(0),
 		TotalSamplesCollected(0),
 		AverageBaseline(0),
@@ -31,11 +52,63 @@ struct Result
 	{
 	}
 
+	static void WriteHeader(std::ostream& str)
+	{
+		str << "GroupName,RunName,ExperimentValue,FirstRanDate,TotalSamplesCollected,AverageBaseline,";
+		str << "MinBaseline,MinBaselineTimeSinceEpoch,";
+		str << "MinStatSize,MinStatMean,MinStatVariance,MinStatStandardDeviation,MinStatSkewness,MinStatKurtosis,";
+		str << "MinStatMin,MinStatMax,";
+		str << "MaxBaseline,MaxBaselineTimeSinceEpoch,";
+		str << "MaxStatSize,MaxStatMean,MaxStatVariance,MaxStatStandardDeviation,MaxStatSkewness,MaxStatKurtosis,";
+		str << "MaxStatMin,MaxStatMax,";
+		str << "CurrentBaseline,CurrentBaselineTimeSinceEpoch,";
+		str << "CurrentStatSize,CurrentStatMean,CurrentStatVariance,CurrentStatStandardDeviation,CurrentStatSkewness,CurrentStatKurtosis,";
+		str << "CurrentStatMin,CurrentStatMax\n";
+	}
+
+	struct Stat
+	{
+		Stat() :
+			Size(0),
+			Mean(0),
+			Variance(0),
+			StandardDeviation(0),
+			Skewness(0),
+			Kurtosis(0),
+			Min(0),
+			Max(0)
+		{
+		}
+
+		Stat& operator=(const celero::Statistics& s)
+		{
+			this->Size = s.getSize();
+			this->Mean = s.getMean();
+			this->Variance = s.getVariance();
+			this->StandardDeviation = s.getStandardDeviation();
+			this->Skewness = s.getSkewness();
+			this->Kurtosis = s.getKurtosis();
+			this->Min = s.getMin();
+			this->Max = s.getMax();
+
+			return *this;
+		}
+
+		uint64_t Size;
+		double Mean;
+		double Variance;
+		double StandardDeviation;
+		double Skewness;
+		double Kurtosis;
+		uint64_t Min;
+		uint64_t Max;
+	};
+
 	std::string GroupName;
 	std::string RunName;
 
 	/// The data set size, if one was specified.
-	uint64_t DataSetSize;
+	int64_t ExperimentValue;
 
 	uint64_t FirstRanDate;
 	uint32_t TotalSamplesCollected;
@@ -44,13 +117,100 @@ struct Result
 
 	double MinBaseline;
 	uint64_t MinBaseline_TimeSinceEpoch;
+	Stat MinStats;
 			
 	double MaxBaseline;
 	uint64_t MaxBaseline_TimeSinceEpoch;
+	Stat MaxStats;
 			
 	double CurrentBaseline;
 	uint64_t CurrentBaseline_TimeSinceEpoch;
+	Stat CurrentStats;
 };
+
+///
+/// Overload operator<< to allow for easy output of result data to a human-readable text file.
+///
+std::ostream& operator<<(std::ostream& str, Result::Stat const& data)
+{
+	str << data.Size << ",";
+	str << data.Mean << ",";
+	str << data.Variance << ",";
+	str << data.StandardDeviation << ",";
+	str << data.Skewness << ",";
+	str << data.Kurtosis << ",";
+	str << data.Min << ",";
+	str << data.Max << ",";
+	return str;
+}
+
+///
+/// Overload operator<< to allow for easy output of result data to a human-readable text file.
+///
+std::ostream& operator<<(std::ostream& str, Result const& data)
+{
+	str << data.GroupName << ",";
+	str << data.RunName << ",";
+	str << data.ExperimentValue << ",";
+	str << data.FirstRanDate << ",";
+	str << data.TotalSamplesCollected << ",";
+	str << data.AverageBaseline << ",";
+	str << data.MinBaseline << ",";
+	str << data.MinBaseline_TimeSinceEpoch << ",";
+	str << data.MinStats << ",";
+	str << data.MaxBaseline << ",";
+	str << data.MaxBaseline_TimeSinceEpoch << ",";
+	str << data.MaxStats << ",";
+	str << data.CurrentBaseline << ",";
+	str << data.CurrentBaseline_TimeSinceEpoch << "\n";
+	str << data.CurrentStats << "\n";
+	return str;
+}
+
+///
+/// Overload operator>> to allow for easy input of result data from a text file.
+///
+std::istream& operator>>(std::istream& str, Result::Stat& data)
+{
+	// Use FieldReader to classify commas as whitespace.
+	str.imbue(std::locale(std::locale(), new celero::FieldReader));
+
+	str >> data.Size;
+	str >> data.Mean;
+	str >> data.Variance;
+	str >> data.StandardDeviation;
+	str >> data.Skewness;
+	str >> data.Kurtosis;
+	str >> data.Min;
+	str >> data.Max;
+	return str;
+}
+
+///
+/// Overload operator>> to allow for easy input of result data from a text file.
+///
+std::istream& operator>>(std::istream& str, Result& data)
+{
+	// Use FieldReader to classify commas as whitespace.
+	str.imbue(std::locale(std::locale(), new celero::FieldReader));
+
+	str >> data.GroupName;
+	str >> data.RunName;
+	str >> data.ExperimentValue;
+	str >> data.FirstRanDate;
+	str >> data.TotalSamplesCollected;
+	str >> data.AverageBaseline;
+	str >> data.MinBaseline;
+	str >> data.MinBaseline_TimeSinceEpoch;
+	str >> data.MinStats;
+	str >> data.MaxBaseline;
+	str >> data.MaxBaseline_TimeSinceEpoch;
+	str >> data.MaxStats;
+	str >> data.CurrentBaseline;
+	str >> data.CurrentBaseline_TimeSinceEpoch;
+	str >> data.CurrentStats;
+	return str;
+}
 
 ///
 /// \class Impl
@@ -69,49 +229,37 @@ class celero::Archive::Impl
 			return std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
 		}
 
+		void readExistingResults()
+		{
+			// Read in existing results?
+			std::ifstream is;
+			is.open(this->fileName, std::fstream::in);
+
+			if(is.is_open() == true && is.good() == true && is.fail() == false)
+			{
+				// Throw away the header.
+				is.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+
+				// Read in existing results.
+				while(is.eof() == false && is.tellg() >= 0)
+				{
+					Result r;
+					is >> r;
+
+					if(r.GroupName.empty() == false)
+					{
+						this->results.push_back(r);
+					}
+				}
+
+				// Close the file for reading.
+				is.close();
+			}
+		}
+
 		std::vector<Result> results;
 		std::string fileName;
 };
-
-///
-/// Overload operator<< to allow for easy output of result data to a human-readable text file.
-///
-std::ostream& operator<<(std::ostream& str, Result const& data)
-{
-	str << data.GroupName << " ";
-	str << data.RunName << " ";
-	str << data.DataSetSize << " ";
-	str << data.FirstRanDate << " ";
-	str << data.TotalSamplesCollected << " ";
-	str << data.AverageBaseline << " ";
-	str << data.MinBaseline << " ";
-	str << data.MinBaseline_TimeSinceEpoch << " ";
-	str << data.MaxBaseline << " ";
-	str << data.MaxBaseline_TimeSinceEpoch << " ";
-	str << data.CurrentBaseline << " ";
-	str << data.CurrentBaseline_TimeSinceEpoch << "\n";
-	return str;
-}
-
-///
-/// Overload operator>> to allow for easy input of result data from a text file.
-///
-std::istream& operator>>(std::istream& str, Result& data)
-{
-	str >> data.GroupName;
-	str >> data.RunName;
-	str >> data.DataSetSize;
-	str >> data.FirstRanDate;
-	str >> data.TotalSamplesCollected;
-	str >> data.AverageBaseline;
-	str >> data.MinBaseline;
-	str >> data.MinBaseline_TimeSinceEpoch;
-	str >> data.MaxBaseline;
-	str >> data.MaxBaseline_TimeSinceEpoch;
-	str >> data.CurrentBaseline;
-	str >> data.CurrentBaseline_TimeSinceEpoch;
-	return str;
-}
 
 Archive::Archive() : pimpl()
 {
@@ -130,96 +278,86 @@ Archive& Archive::Instance()
 void Archive::setFileName(const std::string& x)
 {
 	assert(x.empty() == false);
-
 	this->pimpl->fileName = x;
-
-	// Read in existing results?
-	std::ifstream is;
-	is.open(this->pimpl->fileName, std::fstream::in);
-
-	if(is.is_open() == true)
-	{
-		// Read in existing results.
-		while(is.eof() == false && is.tellg() >= 0)
-		{
-			Result r;
-			is >> r;
-
-			if(r.GroupName.empty() == false)
-			{
-				this->pimpl->results.push_back(r);
-			}
-		}
-
-		// Close the file for reading.
-		is.close();
-	}
+	this->pimpl->readExistingResults();
 }
 
-void Archive::add(celero::BenchmarkInfo benchmark)
+void Archive::add(std::shared_ptr<celero::Experiment::Result> x)
 {
-	if(benchmark.getIsBaselineCase() == false)
+	auto found = std::find_if(std::begin(this->pimpl->results), std::end(this->pimpl->results),
+		[x](const Result& r)->bool
+		{
+			return (r.GroupName == x->getExperiment()->getBenchmark()->getName()) && 
+				(r.RunName == x->getExperiment()->getName()) && 
+				(r.ExperimentValue == x->getProblemSpaceValue());
+		});
+
+	if(found != std::end(this->pimpl->results))
 	{
-		auto found = std::find_if(std::begin(this->pimpl->results), std::end(this->pimpl->results),
-			[benchmark](const Result& r)->bool
-			{
-				return (r.GroupName == benchmark.getGroupName()) && (r.RunName == benchmark.getTestName()) && (r.DataSetSize == benchmark.getProblemSetSize());
-			});
+		found->CurrentBaseline = x->getBaselineMeasurement();
+		found->CurrentBaseline_TimeSinceEpoch = this->pimpl->now();
+		found->CurrentStats = *x->getStatistics();
 
-		if(found != std::end(this->pimpl->results))
+		if(found->CurrentBaseline <= found->MinBaseline)
 		{
-			found->CurrentBaseline = benchmark.getBaselineMeasurement();
-			found->CurrentBaseline_TimeSinceEpoch = this->pimpl->now();
-
-			if(found->CurrentBaseline <= found->MinBaseline)
-			{
-				 found->MinBaseline = found->CurrentBaseline;
-				 found->MinBaseline_TimeSinceEpoch = found->CurrentBaseline_TimeSinceEpoch;
-			}
-
-			if(found->CurrentBaseline >= found->MaxBaseline)
-			{
-				 found->MaxBaseline = found->CurrentBaseline;
-				 found->MaxBaseline_TimeSinceEpoch = found->CurrentBaseline_TimeSinceEpoch;
-			}
-
-			// This is not good IEEE math.
-			found->AverageBaseline = ((found->AverageBaseline * found->TotalSamplesCollected) + found->CurrentBaseline) / (found->TotalSamplesCollected + 1);
-			found->TotalSamplesCollected++;
-		}	
-		else
-		{
-			Result r;
-			r.GroupName = benchmark.getGroupName();
-			r.RunName = benchmark.getTestName();
-			r.FirstRanDate = this->pimpl->now();
-			r.AverageBaseline = benchmark.getBaselineMeasurement();
-			r.CurrentBaseline = benchmark.getBaselineMeasurement();
-			r.CurrentBaseline_TimeSinceEpoch = r.FirstRanDate;
-			r.DataSetSize = benchmark.getProblemSetSize();
-			r.MaxBaseline = benchmark.getBaselineMeasurement();
-			r.MaxBaseline_TimeSinceEpoch = r.FirstRanDate;
-			r.MinBaseline = benchmark.getBaselineMeasurement();
-			r.MinBaseline_TimeSinceEpoch = r.FirstRanDate;
-			r.TotalSamplesCollected = 1;
-		
-			this->pimpl->results.push_back(r);
+				found->MinBaseline = found->CurrentBaseline;
+				found->MinBaseline_TimeSinceEpoch = found->CurrentBaseline_TimeSinceEpoch;
+				found->MinStats = found->CurrentStats;
 		}
 
-		this->save();
+		if(found->CurrentBaseline >= found->MaxBaseline)
+		{
+				found->MaxBaseline = found->CurrentBaseline;
+				found->MaxBaseline_TimeSinceEpoch = found->CurrentBaseline_TimeSinceEpoch;
+				found->MaxStats = found->MaxStats;
+		}
+
+		// This is not good IEEE math.
+		found->AverageBaseline = ((found->AverageBaseline * found->TotalSamplesCollected) + found->CurrentBaseline) / (found->TotalSamplesCollected + 1);
+		found->TotalSamplesCollected++;
+	}	
+	else
+	{
+		Result r;
+
+		r.GroupName = x->getExperiment()->getBenchmark()->getName();
+		r.RunName = x->getExperiment()->getName();
+		r.FirstRanDate = this->pimpl->now();
+		r.AverageBaseline = x->getBaselineMeasurement();
+		r.ExperimentValue = x->getProblemSpaceValue();
+		r.TotalSamplesCollected = 1;
+
+		r.CurrentBaseline = x->getBaselineMeasurement();
+		r.CurrentBaseline_TimeSinceEpoch = r.FirstRanDate;
+		r.CurrentStats = *x->getStatistics();
+
+		r.MaxBaseline = x->getBaselineMeasurement();
+		r.MaxBaseline_TimeSinceEpoch = r.FirstRanDate;
+		r.MaxStats = *x->getStatistics();
+
+		r.MinBaseline = x->getBaselineMeasurement();
+		r.MinBaseline_TimeSinceEpoch = r.FirstRanDate;
+		r.MinStats = *x->getStatistics();
+		
+		this->pimpl->results.push_back(r);
 	}
+
+	this->save();
 }
 
 void Archive::save()
 {
 	if(this->pimpl->fileName.empty() == false)
 	{
-		// Get ready to write out new results.
+		// Get ready to write out new results.  
+		// We will write all known results every time, replacing file contents.
 		std::ofstream os;
 		os.open(this->pimpl->fileName.c_str(), std::fstream::out);
 
 		if(os.is_open() == true)
 		{
+			Result::WriteHeader(os);
+
 			for(auto i : this->pimpl->results)
 			{
 				os << i;

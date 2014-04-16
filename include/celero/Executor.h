@@ -24,23 +24,25 @@
 #include <string>
 #include <memory>
 #include <celero/Export.h>
-#include <celero/BenchmarkInfo.h>
- 
+#include <celero/Benchmark.h>
+
 namespace celero
 {
 	namespace executor
 	{
-		void Execute(std::shared_ptr<BenchmarkInfo> x);
+		void Execute(std::shared_ptr<Experiment::Result> x);
 
 		void RunAll();
-		bool RunAllBaselines();
-		bool RunAllTests();
+		void RunAllBaselines();
+		void RunBaseline(std::shared_ptr<Benchmark> x);
 
-		void RunGroup(const std::string& x);
+		void RunAllTests();
+		void RunExperiments(std::shared_ptr<Benchmark> x);
 
-		void Run(const std::string& group, const std::string& test);
-		void RunBaseline(const std::string& x);
-		void RunTest(const std::string& x, const std::string& test);
+		void Run(std::shared_ptr<Benchmark> x);
+		void Run(std::shared_ptr<Experiment> x);
+		void Run(const std::string& group);
+		void Run(const std::string& group, const std::string& experiment);
 	}
 }
 

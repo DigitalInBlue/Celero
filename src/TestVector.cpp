@@ -1,6 +1,24 @@
+///
+/// \author	John Farrier
+///
+/// \copyright Copyright 2014 John Farrier 
+///
+/// Licensed under the Apache License, Version 2.0 (the "License");
+/// you may not use this file except in compliance with the License.
+/// You may obtain a copy of the License at
+/// 
+/// http://www.apache.org/licenses/LICENSE-2.0
+/// 
+/// Unless required by applicable law or agreed to in writing, software
+/// distributed under the License is distributed on an "AS IS" BASIS,
+/// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+/// See the License for the specific language governing permissions and
+/// limitations under the License.
+///
+
 #include <celero/TestVector.h>
 #include <celero/PimplImpl.h>
-#include <celero/BenchmarkInfo.h>
+#include <celero/Benchmark.h>
 
 #include <mutex>
 #include <vector>
@@ -16,17 +34,12 @@ class celero::TestVector::Impl
 	public:
 		Impl() : 
 			testVectorMutex(),
-			testVector(),
-			baselineVectorMutex(),
-			baselineVector()
+			testVector()
 		{
 		}
 
 		mutable std::mutex testVectorMutex;
-		std::vector<std::shared_ptr<BenchmarkInfo>> testVector;
-
-		mutable std::mutex baselineVectorMutex;
-		std::vector<std::shared_ptr<BenchmarkInfo>> baselineVector;
+		std::vector<std::shared_ptr<Benchmark>> testVector;
 };
 
 TestVector::TestVector() : pimpl()
@@ -39,83 +52,38 @@ TestVector& TestVector::Instance()
 	return singleton;
 }
 
-void TestVector::pushBackTest(std::shared_ptr<BenchmarkInfo> x)
+void TestVector::push_back(std::shared_ptr<Benchmark> x)
 {
 	std::lock_guard<std::mutex> mutexLock(this->pimpl->testVectorMutex);
 	this->pimpl->testVector.push_back(x);
 }
 
-size_t TestVector::getTestSize() const
+size_t TestVector::size() const
 {
 	std::lock_guard<std::mutex> mutexLock(this->pimpl->testVectorMutex);
 	return this->pimpl->testVector.size();
 }
 
-size_t TestVector::getTestSize(const std::string& groupName) const
-{
-	size_t testSize = 0;
-	std::lock_guard<std::mutex> mutexLock(this->pimpl->testVectorMutex);
-	for(auto test : this->pimpl->testVector)
-	{
-		if(test->getGroupName() == groupName)
-		{
-			testSize++;
-		}
-	}
-
-	return testSize;
-}
-
-void TestVector::forEachTest(std::function<void(std::shared_ptr<BenchmarkInfo>)> f)
+std::shared_ptr<Benchmark> TestVector::operator[](size_t x)
 {
 	std::lock_guard<std::mutex> mutexLock(this->pimpl->testVectorMutex);
-	std::for_each(this->pimpl->testVector.begin(), this->pimpl->testVector.end(), f);
+	return this->pimpl->testVector[x];
 }
 
-void TestVector::pushBackBaseline(std::shared_ptr<BenchmarkInfo> x)
+std::shared_ptr<Benchmark> TestVector::operator[](const std::string& x)
 {
-	std::lock_guard<std::mutex> mutexLock(this->pimpl->baselineVectorMutex);
-	x->setIsBaselineCase(true);
-	this->pimpl->baselineVector.push_back(x);
-}
+	std::lock_guard<std::mutex> mutexLock(this->pimpl->testVectorMutex);
 
-size_t TestVector::getBaselineSize() const
-{
-	std::lock_guard<std::mutex> mutexLock(this->pimpl->baselineVectorMutex);
-	return this->pimpl->baselineVector.size();
-}
-
-size_t TestVector::getBaselineSize(const std::string& groupName) const
-{
-	size_t testSize = 0;
-	std::lock_guard<std::mutex> mutexLock(this->pimpl->baselineVectorMutex);
-
-	for(auto test : this->pimpl->baselineVector)
-	{
-		if(test->getGroupName() == groupName)
+	auto found = std::find_if(std::begin(this->pimpl->testVector), std::end(this->pimpl->testVector),
+		[x](std::shared_ptr<Benchmark> bmark)->bool
 		{
-			testSize++;
-		}
-	}
-
-	return testSize;
-}
-
-void TestVector::forEachBaseline(std::function<void(std::shared_ptr<BenchmarkInfo>)> f)
-{
-	std::lock_guard<std::mutex> mutexLock(this->pimpl->baselineVectorMutex);
-	std::for_each(this->pimpl->baselineVector.begin(), this->pimpl->baselineVector.end(), f);
-}
-
-std::shared_ptr<BenchmarkInfo> TestVector::getBaseline(const std::string& groupName)
-{
-	// std::lock_guard<std::mutex> mutexLock(this->pimpl->baselineVectorMutex);
-	auto it = std::find_if(this->pimpl->baselineVector.begin(), this->pimpl->baselineVector.end(), 
-		[&groupName](std::shared_ptr<BenchmarkInfo> td)
-		{
-			return (td->getGroupName() == groupName);
+			return (bmark->getName() == x);
 		});
 
-	return *it;
-}
+	if(found != std::end(this->pimpl->testVector))
+	{
+		return *found;
+	}
 
+	return nullptr;
+}

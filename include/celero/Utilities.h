@@ -25,6 +25,7 @@
 #include <unistd.h>
 #endif
 
+#include <thread>
 #include <stdint.h>
 
 namespace celero
@@ -80,32 +81,42 @@ namespace celero
 	///
 	/// GCC 4.8 gives similar results.
 	///
-	#ifdef WIN32
-		template<class T> void DoNotOptimizeAway(T&& x) 
+	/// gcc.godbolt.org permalink: http://goo.gl/lsngwX
+	///
+	/// Folly uses a simple bit of inline assembly:
+	/// > template <class T>
+	/// > void doNotOptimizeAway(T&& datum) {
+  	///	> asm volatile("" : "+r" (datum));
+	/// >}
+	///
+	/// It would be great if that were portable with respect to both compilers and 32/64-bit targets.
+	///
+	template<class T> void DoNotOptimizeAway(T&& x) 
+	{
+		//
+		// We must always do this test, but it will never pass.
+		//
+		// A new thread::id does not represent a thread.
+		// getpid() and _getpid() were considered here, but 
+		// there are limitations on Windows:
+		// http://msdn.microsoft.com/en-us/library/t2y34y40.aspx
+		//
+		if(std::this_thread::get_id() != std::this_thread::get_id())
 		{
-			// Begin DoNotOptimizeAway 
-			volatile static T* xPrime = &x;
-			xPrime = &x;
-			// End DoNotOptimizeAway
+			// This forces the value to never be optimized away
+			// by taking a reference then using it.
+			const auto* p = &x;
+			putchar(*reinterpret_cast<const char*>(p));
+
+			// If we do get here, kick out because something has gone wrong.
+			std::abort();
 		}
-	#else
-		template<class T> void DoNotOptimizeAway(T&& x) 
-		{
-			// Begin DoNotOptimizeAway 
-			asm volatile("" : "+r" (x));
-			// End DoNotOptimizeAway
-		}
-	#endif
+	}
 
 	///
 	/// Quick definition of the number of microseconds per second.
 	///
 	const uint64_t UsPerSec(1000000);
-
-	///
-	/// Define the number of samples to default to for a good stastical sample when automatically timing tests.
-	///
-	const uint64_t StatisticalSample(30);
 }
 
 #endif
