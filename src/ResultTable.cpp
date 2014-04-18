@@ -1,5 +1,24 @@
+///
+/// \author	John Farrier
+///
+/// \copyright Copyright 2014 John Farrier 
+///
+/// Licensed under the Apache License, Version 2.0 (the "License");
+/// you may not use this file except in compliance with the License.
+/// You may obtain a copy of the License at
+/// 
+/// http://www.apache.org/licenses/LICENSE-2.0
+/// 
+/// Unless required by applicable law or agreed to in writing, software
+/// distributed under the License is distributed on an "AS IS" BASIS,
+/// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+/// See the License for the specific language governing permissions and
+/// limitations under the License.
+///
+
 #include <celero/ResultTable.h>
 #include <celero/PimplImpl.h>
+#include <celero/Benchmark.h>
 
 #include <assert.h>
 
@@ -21,14 +40,8 @@ class celero::ResultTable::Impl
 		{
 		}
 
-		typedef std::pair<uint32_t, double> ResultPair;
-		typedef std::vector<ResultPair> ResultVector;
-		typedef std::map<std::string, ResultVector> RunMap;
-		typedef std::map<std::string, RunMap> ResultMap;
-
-		std::ofstream os;
-
-		ResultMap results;
+		std::string fileName;
+		std::map<std::string, std::map<std::string, std::vector<std::pair<int64_t, double>>>> results;
 };
 
 ResultTable::ResultTable() : pimpl()
@@ -37,7 +50,6 @@ ResultTable::ResultTable() : pimpl()
 
 ResultTable::~ResultTable()
 {
-	this->pimpl->os.close();
 }
 
 ResultTable& ResultTable::Instance()
@@ -49,48 +61,42 @@ ResultTable& ResultTable::Instance()
 void ResultTable::setFileName(const std::string& x)
 {
 	assert(x.empty() == false);
-
-	this->pimpl->os.open(x);
-
-	if(this->pimpl->os.is_open() == false)
-	{
-		std::cerr << "Celero: Could not open result output file: \"" << x << "\"\n";
-	}
+	this->pimpl->fileName = x;
 }
 
-void ResultTable::add(const std::string& groupName, const std::string& runName, const uint32_t runSize, const double usPerCall)
+void ResultTable::add(std::shared_ptr<Experiment::Result> x)
 {
-	auto measurements = std::make_pair(runSize, usPerCall);
-	auto groupResults = this->pimpl->results[groupName];
-	auto it1 = this->pimpl->results.find(groupName);
-	auto runResults = (it1->second)[runName];
-	auto it2 = it1->second.find(runName);
-	it2->second.push_back(measurements);
+	auto measurements = std::make_pair(x->getProblemSpaceValue(), x->getUsPerCall());
+	this->pimpl->results[x->getExperiment()->getBenchmark()->getName()][x->getExperiment()->getName()].push_back(measurements);
+	this->save();
 }
 
 void ResultTable::save()
 {
-	if(this->pimpl->os.is_open() == true)
-	{
-		auto os = &(this->pimpl->os);
+	std::ofstream ofs;
+	ofs.open(this->pimpl->fileName);
 
-		std::for_each(this->pimpl->results.begin(), this->pimpl->results.end(),
-			[os](const std::pair<std::string, ResultTable::Impl::RunMap>& group)
+	if(ofs.is_open() == true)
+	{
+		auto os = &ofs;
+
+		std::for_each(std::begin(this->pimpl->results), std::end(this->pimpl->results),
+			[&os](decltype(*std::begin(this->pimpl->results))& group)
 			{
 				*os << group.first << "\n";
 			
 				auto run = group.second;
 
-				std::for_each(run.begin(), run.end(),
-					[run, os](const std::pair<std::string, ResultTable::Impl::ResultVector>& result)
+				std::for_each(std::begin(run), std::end(run),
+					[run, os](decltype(*std::begin(run))& result)
 					{
 						auto vec = result.second;
 
-						if(result.first == run.begin()->first)
+						if(result.first == std::begin(run)->first)
 						{
 							*os << ",";
-							std::for_each(vec.begin(), vec.end(), 
-								[os](const ResultTable::Impl::ResultPair& element)
+							std::for_each(std::begin(vec), std::end(vec), 
+								[os](decltype(*std::begin(vec))& element)
 								{
 									*os << element.first << ",";
 								});
@@ -98,8 +104,8 @@ void ResultTable::save()
 						}
 
 						*os << result.first << ",";
-						std::for_each(vec.begin(), vec.end(), 
-							[os](const ResultTable::Impl::ResultPair& element)
+						std::for_each(std::begin(vec), std::end(vec), 
+							[os](decltype(*std::begin(vec))& element)
 							{
 								*os << element.second << ",";
 							});
@@ -108,8 +114,8 @@ void ResultTable::save()
 				
 				*os << "\n";
 			});
-	}
 
-	this->pimpl->os.close();
+		ofs.close();
+	}
 }
 

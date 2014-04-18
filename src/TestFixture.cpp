@@ -1,3 +1,21 @@
+///
+/// \author	John Farrier
+///
+/// \copyright Copyright 2014 John Farrier 
+///
+/// Licensed under the Apache License, Version 2.0 (the "License");
+/// you may not use this file except in compliance with the License.
+/// You may obtain a copy of the License at
+/// 
+/// http://www.apache.org/licenses/LICENSE-2.0
+/// 
+/// Unless required by applicable law or agreed to in writing, software
+/// distributed under the License is distributed on an "AS IS" BASIS,
+/// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+/// See the License for the specific language governing permissions and
+/// limitations under the License.
+///
+
 #include <celero/TestFixture.h>
 
 #include <iostream>
@@ -15,37 +33,18 @@ TestFixture::~TestFixture()
 {
 }
 
-void TestFixture::SetUp()
+void TestFixture::setUp(int64_t)
 {
 }
 
-void TestFixture::SetUp(const int32_t)
-{
-	// There is no SetUp override specified, but problem set sizes were used.
-	std::cerr << "There is no SetUp override specified, but a problem set was use.\n";
-	assert(false);
-}
-
-void TestFixture::TearDown()
+void TestFixture::tearDown()
 {
 }
 	
-std::pair<uint64_t, int32_t> TestFixture::Run(const uint64_t calls, const size_t problemSetValueIndex)
+uint64_t TestFixture::run(const uint64_t calls, int64_t experimentValue)
 {
-	this->setProblemSetSize(this->getProblemSetSize());
-
-	int32_t problemValue = 0;
-
 	// Set up the testing fixture.
-	if(this->ProblemSetValues.empty() == false)
-	{
-		problemValue = this->ProblemSetValues[problemSetValueIndex];
-		this->SetUp(problemValue);
-	}
-	else
-	{
-		this->SetUp();
-	}
+	this->setUp(experimentValue);
 
 	// Run the test body for each operation.
 	auto operation = calls;
@@ -61,27 +60,12 @@ std::pair<uint64_t, int32_t> TestFixture::Run(const uint64_t calls, const size_t
 	auto endTime = celero::timer::GetSystemTime();
 
 	// Tear down the testing fixture.
-	this->TearDown();
+	this->tearDown();
 			
 	// Return the duration in microseconds for the given problem size.
-	return std::make_pair((endTime - startTime), problemValue);
+	return (endTime - startTime);
 }
 
 void TestFixture::UserBenchmark()
 {
-}
-
-size_t TestFixture::getProblemSetSize() const
-{
-	return this->ProblemSetValues.size();
-}
-
-int32_t TestFixture::getProblemSetValue(const size_t x) const
-{
-	if(this->ProblemSetValues.empty() == false)
-	{
-		return this->ProblemSetValues[x];
-	}
-
-	return 0;
 }

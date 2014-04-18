@@ -1,5 +1,7 @@
 #include <celero/Celero.h>
 
+#include <random>
+
 #ifndef WIN32
 #include <cmath>
 #include <cstdlib>
@@ -9,34 +11,49 @@
 /// This is the main(int argc, char** argv) for the entire celero program.
 /// You can write your own, or use this macro to insert the standard one into the project.
 ///
-CELERO_MAIN;
+CELERO_MAIN
 
-/// Run an automatic baseline.  
-/// Celero will help make sure enough samples are taken to get a reasonable measurement
+std::random_device RandomDevice;
+std::uniform_int_distribution<int> UniformDistribution(0, 1024);
+
 /// In reality, all of the "Complex" cases take the same amount of time to run.
 /// The difference in the results is a product of measurement error.
-BASELINE(DemoSimple, Baseline, 0, 7100000)
+///
+/// Interestingly, taking the sin of a constant number here resulted in a 
+/// great deal of optimization in clang and gcc.
+BASELINE(DemoSimple, Baseline, 10, 1000000)
 {
-	celero::DoNotOptimizeAway(static_cast<float>(sin(3.14159265)));
+	celero::DoNotOptimizeAway(static_cast<float>(sin(UniformDistribution(RandomDevice))));
 }
 
-/// Run an automatic test.  
-/// Celero will help make sure enough samples are taken to get a reasonable measurement
-BENCHMARK(DemoSimple, Complex1, 0, 7100000)
+/// Run a test consisting of 1 sample of 710000 operations per measurement.
+/// There are not enough samples here to likely get a meaningful result.
+BENCHMARK(DemoSimple, Complex1, 1, 710000)
 {
-	celero::DoNotOptimizeAway(static_cast<float>(sin(fmod(rand(), 3.14159265))));
+	celero::DoNotOptimizeAway(static_cast<float>(sin(fmod(UniformDistribution(RandomDevice), 3.14159265))));
 }
 
-/// Run a manual test consisting of 1 sample of 7100000 operations per measurement.
-/// Celero will help make sure enough samples are taken to get a reasonable measurement
-BENCHMARK(DemoSimple, Complex2, 1, 7100000)
+/// Run a test consisting of 30 samples of 710000 operations per measurement.
+/// There are not enough samples here to get a reasonable measurement
+/// It should get a Basline number lower than the previous test.
+BENCHMARK(DemoSimple, Complex2, 30, 710000)
 {
-	celero::DoNotOptimizeAway(static_cast<float>(sin(fmod(rand(), 3.14159265))));
+	celero::DoNotOptimizeAway(static_cast<float>(sin(fmod(UniformDistribution(RandomDevice), 3.14159265))));
+}
+
+/// Run a test consisting of 60 samples of 710000 operations per measurement.
+/// There are not enough samples here to get a reasonable measurement
+/// It should get a Basline number lower than the previous test.
+BENCHMARK(DemoSimple, Complex3, 60, 710000)
+{
+	celero::DoNotOptimizeAway(static_cast<float>(sin(fmod(UniformDistribution(RandomDevice), 3.14159265))));
 }
 
 /// Run a manual test consisting of 60 samples of 7100000 operations per measurement.
-/// Celero will help make sure enough samples are taken to get a reasonable measurement
-BENCHMARK(DemoSimple, Complex3, 60, 7100000)
+/// Samples here are much large and there are more of them.  Expect a better answer here.
+/*
+BENCHMARK(DemoSimple, Complex4, 600, 20000000)
 {
 	celero::DoNotOptimizeAway(static_cast<float>(sin(fmod(rand(), 3.14159265))));
 }
+*/

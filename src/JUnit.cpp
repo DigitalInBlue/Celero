@@ -1,7 +1,25 @@
+///
+/// \author	John Farrier
+///
+/// \copyright Copyright 2014 John Farrier 
+///
+/// Licensed under the Apache License, Version 2.0 (the "License");
+/// you may not use this file except in compliance with the License.
+/// You may obtain a copy of the License at
+/// 
+/// http://www.apache.org/licenses/LICENSE-2.0
+/// 
+/// Unless required by applicable law or agreed to in writing, software
+/// distributed under the License is distributed on an "AS IS" BASIS,
+/// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+/// See the License for the specific language governing permissions and
+/// limitations under the License.
+///
+
 #include <celero/JUnit.h>
 #include <celero/PimplImpl.h>
 #include <celero/Utilities.h>
-#include <celero/BenchmarkInfo.h>
+#include <celero/Benchmark.h>
 #include <celero/Timer.h>
 
 #include <assert.h>
@@ -26,11 +44,11 @@ class celero::JUnit::Impl
 		{
 		}
 
-		// Store the test case size, measured baseline, objective baseline, and total run time in seconds.
-		typedef std::map<std::string, std::vector<BenchmarkInfo>> ResultMap;
+		std::string fileName;
 
-		std::ofstream os;
-		ResultMap results;
+		/// Store the test case size, measured baseline, objective baseline, and total run time in seconds.
+		std::map<std::string, std::vector<std::shared_ptr<Experiment::Result>>> results;
+
 		double totalTime;
 };
 
@@ -40,7 +58,6 @@ JUnit::JUnit() : pimpl()
 
 JUnit::~JUnit()
 {
-	this->pimpl->os.close();
 }
 
 JUnit& JUnit::Instance()
@@ -52,26 +69,23 @@ JUnit& JUnit::Instance()
 void JUnit::setFileName(const std::string& x)
 {
 	assert(x.empty() == false);
-
-	this->pimpl->os.open(x);
-
-	if(this->pimpl->os.is_open() == false)
-	{
-		std::cerr << "Celero: Could not open JUnit output file: \"" << x << "\"\n";
-	}
+	this->pimpl->fileName = x;
 }
 
-void JUnit::add(celero::BenchmarkInfo x)
+void JUnit::add(std::shared_ptr<celero::Experiment::Result> x)
 {
-	x.saveBaselineMeasurement();
-	this->pimpl->results[x.getGroupName()].push_back(x);
+	this->pimpl->results[x->getExperiment()->getBenchmark()->getName()].push_back(x);
+	this->save();
 }
 
 void JUnit::save()
 {
-	if(this->pimpl->os.is_open() == true)
+	std::ofstream ofs;
+	ofs.open(this->pimpl->fileName);
+
+	if(ofs.is_open() == true)
 	{
-		auto os = &(this->pimpl->os);
+		auto os = &ofs;
 
 		*os << "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>\n";
 
@@ -84,12 +98,12 @@ void JUnit::save()
 
 			for(auto j : runs)
 			{
-				if(j.getBaselineMeasurement() > 1)
+				if((j->getExperiment()->getBaselineTarget() > 0.0) && (j->getBaselineMeasurement() > j->getExperiment()->getBaselineTarget()))
 				{
 					testSuiteFailures++;
 				}
 
-				testSuiteTime += j.getRunTime();
+				testSuiteTime += j->getRunTime();
 			}
 
 			*os << "<testsuite errors=\"0\" ";
@@ -101,18 +115,18 @@ void JUnit::save()
 			for(auto j : runs)
 			{
 				*os << "\t<testcase ";
-				*os << "time=\"" << celero::timer::ConvertSystemTime(j.getRunTime()) << "\" ";
-				*os << "name=\"" << j.getTestName() << "#" << j.getProblemSetSize() << "\"";
+				*os << "time=\"" << celero::timer::ConvertSystemTime(j->getRunTime()) << "\" ";
+				*os << "name=\"" << j->getExperiment()->getName() << "#" << j->getProblemSpaceValue() << "\"";
 								
 				// Compare measured to objective
-				if(j.getBaselineMeasurement() > j.getBaselineTarget())
+				if((j->getExperiment()->getBaselineTarget() > 0.0) && (j->getBaselineMeasurement() > j->getExperiment()->getBaselineTarget()))
 				{
 					// Failure
 					*os << ">\n";
 
 					*os << "\t\t<failure ";
 					*os << "type=\"Performance objective not met.\" ";
-					*os << "message=\"Measurement of " << j.getBaselineMeasurement() << " exceeds objective baseline of " << j.getBaselineTarget() << "\" ";
+					*os << "message=\"Measurement of " << j->getBaselineMeasurement() << " exceeds objective baseline of " << j->getExperiment()->getBaselineTarget() << "\" ";
 					*os << "/>\n";
 
 					*os << "\t</testcase>\n";
@@ -126,7 +140,7 @@ void JUnit::save()
 				
 			*os << "</testsuite>\n";
 		}
-	}
 
-	this->pimpl->os.close();
+		ofs.close();
+	}
 }

@@ -24,23 +24,60 @@
 #include <string>
 #include <memory>
 #include <celero/Export.h>
-#include <celero/BenchmarkInfo.h>
- 
+#include <celero/Benchmark.h>
+
 namespace celero
 {
 	namespace executor
 	{
-		void Execute(std::shared_ptr<BenchmarkInfo> x);
-
+		///
+		/// Run all baselines and experiments registered within the final application.
+		///
 		void RunAll();
-		bool RunAllBaselines();
-		bool RunAllTests();
 
-		void RunGroup(const std::string& x);
+		///
+		/// Run all baselines (but not experiments) registered within the final application.
+		///
+		void RunAllBaselines();
 
-		void Run(const std::string& group, const std::string& test);
-		void RunBaseline(const std::string& x);
-		void RunTest(const std::string& x, const std::string& test);
+		///
+		/// Run a specific benchmark's baseline.
+		///
+		void RunBaseline(std::shared_ptr<Benchmark> x);
+
+		///
+		/// Run all experiments registered within the final application.
+		///
+		void RunAllExperiments();
+
+		///
+		/// Run all experiments within a specific benchmark.
+		///
+		void RunExperiments(std::shared_ptr<Benchmark> x);
+
+		/// 
+		/// Run a specific benchmark.
+		///
+		void Run(std::shared_ptr<Benchmark> x);
+
+		///
+		/// Run a specific experiment.
+		///
+		/// If the baseline is not complete for the given experiment, it will be executed first.
+		///
+		void Run(std::shared_ptr<Experiment> x);
+
+		///
+		/// Run a specific benchmark with the specified name.
+		///
+		void Run(const std::string& group);
+
+		///
+		/// Run a specific benchmark with the specified name and one specific experiment within it.
+		///
+		/// If the baseline is not complete for the given experiment, it will be executed first.
+		///
+		void Run(const std::string& group, const std::string& experiment);
 	}
 }
 

@@ -40,7 +40,7 @@
 	#include <process.h>
 #endif
 
-#include <celero/BenchmarkInfo.h>
+#include <celero/Benchmark.h>
 #include <celero/TestFixture.h>
 #include <celero/GenericFactory.h>
 #include <celero/Utilities.h>
@@ -56,11 +56,11 @@ namespace celero
 	/// \param benchmarkName A unique name for a specific test within a Test Group.
 	/// \param samples The total number of times to execute the Test.  (Each test contains calls.)
 	/// \param calls The total number of calls per Test.
-	/// \param testFactory The factory implementation for the test.
+	/// \param experimentFactory The factory implementation for the test.
 	///
-	/// \returns a pointer to a BenchmarkInfo instance representing the given test.
+	/// \returns a pointer to a Benchmark instance representing the given test.
 	///
-	CELERO_EXPORT std::shared_ptr<BenchmarkInfo> RegisterTest(const char* groupName, const char* benchmarkName, const uint64_t samples, const uint64_t calls, std::shared_ptr<Factory> testFactory, const double target = -1);
+	CELERO_EXPORT std::shared_ptr<Benchmark> RegisterTest(const char* groupName, const char* benchmarkName, const uint64_t samples, const uint64_t calls, std::shared_ptr<Factory> experimentFactory, const double target = -1);
 
 	///
 	/// \brief	Adds a new test baseline to the list of test baseliness to be executed.
@@ -71,11 +71,22 @@ namespace celero
 	/// \param benchmarkName A unique name for a specific test baseline within a Test Group.
 	/// \param samples The total number of times to execute the Test baseline.  (Each test contains calls.)
 	/// \param calls The total number of calls per Test baseline.
-	/// \param testFactory The factory implementation for the test baseline.
+	/// \param experimentFactory The factory implementation for the test baseline.
 	///
-	/// \returns a pointer to a BenchmarkInfo instance representing the given test.
+	/// \returns a pointer to a Benchmark instance representing the given test.
 	///
-	CELERO_EXPORT std::shared_ptr<BenchmarkInfo> RegisterBaseline(const char* groupName, const char* benchmarkName, const uint64_t samples, const uint64_t calls, std::shared_ptr<Factory> testFactory);
+	CELERO_EXPORT std::shared_ptr<Benchmark> RegisterBaseline(const char* groupName, const char* benchmarkName, const uint64_t samples, const uint64_t calls, std::shared_ptr<Factory> experimentFactory);
+	
+	///
+	/// \brief	Builds a distribution of total system measurement error.
+	///
+	/// The result vector contains microseconds for each trivial timer sample.
+	/// The purpose is to be able to characterize the generic distribution of results
+	/// on a given system.
+	///
+	/// This is just an attempt to characterize the distribution, not quantify it.
+	///
+	CELERO_EXPORT std::vector<uint64_t> BuildDistribution(uint64_t numberOfSamples, uint64_t callsPerSample);
 
 	///
 	/// \brief	The main test executor.
@@ -111,13 +122,11 @@ namespace celero
 		protected:																\
 			virtual void UserBenchmark();										\
 																				\
-			virtual void setProblemSetSize(const size_t x) { info->setProblemSetSize(x); } \
-																				\
 		private:																\
-			static const std::shared_ptr<::celero::BenchmarkInfo> info;			\
+			static const std::shared_ptr< ::celero::Benchmark> info;			\
 	};																			\
 																				\
-	const std::shared_ptr<::celero::BenchmarkInfo> BENCHMARK_CLASS_NAME(groupName, benchmarkName)::info = \
+	const std::shared_ptr< ::celero::Benchmark> BENCHMARK_CLASS_NAME(groupName, benchmarkName)::info = \
 		::celero::RegisterTest(#groupName, #benchmarkName, samples, calls, std::make_shared< ::celero::GenericFactory<BENCHMARK_CLASS_NAME(groupName, benchmarkName)>>()); \
 																				\
 	void BENCHMARK_CLASS_NAME(groupName, benchmarkName)::UserBenchmark()
@@ -136,13 +145,11 @@ namespace celero
 		protected:																\
 			virtual void UserBenchmark();										\
 																				\
-			virtual void setProblemSetSize(const size_t x) { info->setProblemSetSize(x); } \
-																				\
 		private:																\
-			static const std::shared_ptr<::celero::BenchmarkInfo> info;			\
+			static const std::shared_ptr< ::celero::Benchmark> info;			\
 	};																			\
 																				\
-	const std::shared_ptr<::celero::BenchmarkInfo> BENCHMARK_CLASS_NAME(groupName, benchmarkName)::info = \
+	const std::shared_ptr< ::celero::Benchmark> BENCHMARK_CLASS_NAME(groupName, benchmarkName)::info = \
 		::celero::RegisterTest(#groupName, #benchmarkName, samples, calls, std::make_shared< ::celero::GenericFactory<BENCHMARK_CLASS_NAME(groupName, benchmarkName)>>(), target); \
 																				\
 	void BENCHMARK_CLASS_NAME(groupName, benchmarkName)::UserBenchmark()
@@ -204,13 +211,11 @@ namespace celero
 		protected:																\
 			virtual void UserBenchmark();										\
 																				\
-			virtual void setProblemSetSize(const size_t x) { info->setProblemSetSize(x); } \
-																				\
 		private:																\
-			static const std::shared_ptr<::celero::BenchmarkInfo> info;			\
+			static const std::shared_ptr< ::celero::Benchmark> info;			\
 	};																			\
 																				\
-	const std::shared_ptr<::celero::BenchmarkInfo> BASELINE_CLASS_NAME(groupName, baselineName)::info = \
+	const std::shared_ptr< ::celero::Benchmark> BASELINE_CLASS_NAME(groupName, baselineName)::info = \
 		::celero::RegisterBaseline(#groupName, #baselineName, samples, calls, std::make_shared< ::celero::GenericFactory<BASELINE_CLASS_NAME(groupName, baselineName)>>()); \
 																				\
 	void BASELINE_CLASS_NAME(groupName, baselineName)::UserBenchmark()

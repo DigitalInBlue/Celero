@@ -17,16 +17,14 @@ Once Celero is added to your project. You can create dedicated benchmark project
 ###Command Line
 
 ```
-<celeroOutputExecutable> [-g groupNameToRun] [-o outputFileToWriteResultsTo.csv] [-xml junitOutputFile.xml] [-h]
+<celeroOutputExecutable> [-g groupNameToRun] [-t resultsTable.csv] [-j junitOutputFile.xml] [-a resultArchive.csv] [-d numberOfCallsPerSample] [-h]
 ```
 
--g	Use this option to run only one benchmark group out of all benchmarks contained within a test executable.
-
-Example: celeroDemo -g DemoSimple -o SimpleResults.txt
-
--xml Writes JUnit formatted XML output.
-
-To utilize JUnit output, benchmarks must use the "_TEST" version of the macros and specify an expected baseline multiple.  When the test exceeds this multiple, the JUnit output will indicate a failure.
+-g Use this option to run only one benchmark group out of all benchmarks contained within a test executable.
+-t Writes all results to a CSV file.  Very useful when using problem sets to graph performance.
+-j Writes JUnit formatted XML output. To utilize JUnit output, benchmarks must use the "_TEST" version of the macros and specify an expected baseline multiple.  When the test exceeds this multiple, the JUnit output will indicate a failure.
+-a Builds or updates an archive of historical results, tracking current, best, and worst results for each benchmark.
+-d (Experimental) builds a plot of four different sample sizes to investigate the distribution of sample results.
 
 ##Celero Basics
 
@@ -68,35 +66,62 @@ Here is an example of a simple Celero Benchmark:
 
 ```C++
 #include <celero/Celero.h>
- 
-CELERO_MAIN;
- 
-// Run an automatic baseline.  
-// Celero will help make sure enough samples are taken to get a reasonable measurement
-BASELINE(CeleroBenchTest, Baseline, 0, 7100000)
+
+#include <random>
+
+#ifndef WIN32
+#include <cmath>
+#include <cstdlib>
+#endif
+
+///
+/// This is the main(int argc, char** argv) for the entire celero program.
+/// You can write your own, or use this macro to insert the standard one into the project.
+///
+CELERO_MAIN
+
+std::random_device RandomDevice;
+std::uniform_int_distribution<int> UniformDistribution(0, 1024);
+
+///
+/// In reality, all of the "Complex" cases take the same amount of time to run.
+/// The difference in the results is a product of measurement error.
+///
+/// Interestingly, taking the sin of a constant number here resulted in a 
+/// great deal of optimization in clang and gcc.
+///
+BASELINE(DemoSimple, Baseline, 10, 1000000)
 {
-    celero::DoNotOptimizeAway(static_cast(sin(3.14159265)));
+    celero::DoNotOptimizeAway(static_cast<float>(sin(UniformDistribution(RandomDevice))));
 }
- 
-// Run an automatic test.  
-// Celero will help make sure enough samples are taken to get a reasonable measurement
-BENCHMARK(CeleroBenchTest, Complex1, 0, 7100000)
+
+///
+/// Run a test consisting of 1 sample of 710000 operations per measurement.
+/// There are not enough samples here to likely get a meaningful result.
+///
+BENCHMARK(DemoSimple, Complex1, 1, 710000)
 {
-    celero::DoNotOptimizeAway(static_cast(sin(fmod(rand(), 3.14159265))));
+    celero::DoNotOptimizeAway(static_cast<float>(sin(fmod(UniformDistribution(RandomDevice), 3.14159265))));
 }
- 
-// Run a manual test consisting of 1 sample of 7100000 operations per measurement.
-// Celero will help make sure enough samples are taken to get a reasonable measurement
-BENCHMARK(CeleroBenchTest, Complex2, 1, 7100000)
+
+///
+/// Run a test consisting of 30 samples of 710000 operations per measurement.
+/// There are not enough samples here to get a reasonable measurement
+/// It should get a Basline number lower than the previous test.
+///
+BENCHMARK(DemoSimple, Complex2, 30, 710000)
 {
-    celero::DoNotOptimizeAway(static_cast(sin(fmod(rand(), 3.14159265))));
+    celero::DoNotOptimizeAway(static_cast<float>(sin(fmod(UniformDistribution(RandomDevice), 3.14159265))));
 }
- 
-// Run a manual test consisting of 60 samples of 7100000 operations per measurement.
-// Celero will help make sure enough samples are taken to get a reasonable measurement
-BENCHMARK(CeleroBenchTest, Complex3, 60, 7100000)
+
+///
+/// Run a test consisting of 60 samples of 710000 operations per measurement.
+/// There are not enough samples here to get a reasonable measurement
+/// It should get a Basline number lower than the previous test.
+///
+BENCHMARK(DemoSimple, Complex3, 60, 710000)
 {
-    celero::DoNotOptimizeAway(static_cast(sin(fmod(rand(), 3.14159265))));
+    celero::DoNotOptimizeAway(static_cast<float>(sin(fmod(UniformDistribution(RandomDevice), 3.14159265))));
 }
 ```
 
@@ -124,38 +149,39 @@ After the baseline is defined, various benchmarks are then defined.  They syntax
 The sample project is configured to automatically execute the benchmark code upon successful compilation.  Running this benchmark gave the following output on a PC:
 
 ```
+[==========]
 [  CELERO  ]
 [==========]
 [ STAGE    ] Baselining
 [==========]
-[ RUN      ] CeleroBenchTest.Baseline -- Auto Run, 7100000 calls per run.
-[   AUTO   ] CeleroBenchTest.Baseline -- 30 samples, 7100000 calls per run.
-[     DONE ] CeleroBenchTest.Baseline  (0.517049 sec) [7100000 calls in 517049 usec] [0.072824 us/call] [13731773.971132 calls/sec]
+[ RUN      ] Baseline [10 samples of 1000000 calls each.]
+[     DONE ] DemoSimple.Baseline 17.083564 sec. [1.669309e-006 us/call] [59905.030926 calls/sec]
+[ BASELINE ] DemoSimple.Baseline 1.000000 [SD: 897238.378300, V: 805036707494.443850, K: 4.501174]
 [==========]
 [ STAGE    ] Benchmarking
 [==========]
-[ RUN      ] CeleroBenchTest.Complex1 -- Auto Run, 7100000 calls per run.
-[   AUTO   ] CeleroBenchTest.Complex1 -- 30 samples, 7100000 calls per run.
-[     DONE ] CeleroBenchTest.Complex1  (2.192290 sec) [7100000 calls in 2192290 usec] [0.308773 us/call] [3238622.627481 calls/sec]
-[ BASELINE ] CeleroBenchTest.Complex1 4.240004
-[ RUN      ] CeleroBenchTest.Complex2 -- 1 run, 7100000 calls per run.
-[     DONE ] CeleroBenchTest.Complex2  (2.199197 sec) [7100000 calls in 2199197 usec] [0.309746 us/call] [3228451.111929 calls/sec]
-[ BASELINE ] CeleroBenchTest.Complex2 4.253363
-[ RUN      ] CeleroBenchTest.Complex3 -- 60 samples, 7100000 calls per run.
-[     DONE ] CeleroBenchTest.Complex3  (2.192378 sec) [7100000 calls in 2192378 usec] [0.308786 us/call] [3238492.632201 calls/sec]
-[ BASELINE ] CeleroBenchTest.Complex3 4.240175
+[ RUN      ] Complex1 [1 samples of 710000 calls each.]
+[     DONE ] DemoSimple.Complex1 1.194630 sec. [1.682577e-006 us/call] [59432.628973 calls/sec]
+[ BASELINE ] DemoSimple.Complex1 1.007949 [SD: 0.000000, V: 0.000000, K: 0.000000]
+[ RUN      ] Complex2 [30 samples of 710000 calls each.]
+[     DONE ] DemoSimple.Complex2 35.891073 sec. [1.661372e-006 us/call] [60191.213933 calls/sec]
+[ BASELINE ] DemoSimple.Complex2 0.995245 [SD: 187912.311628, V: 35311036861.333244, K: 0.159417]
+[ RUN      ] Complex3 [60 samples of 710000 calls each.]
+[     DONE ] DemoSimple.Complex3 72.550524 sec. [1.662502e-006 us/call] [60150.303754 calls/sec]
+[ BASELINE ] DemoSimple.Complex3 0.995922 [SD: 206802.293968, V: 42767188790.613228, K: 3.088717]
 [==========]
-[ STAGE    ] Completed.  4 tests complete.
+[ STAGE    ]
 [==========]
 ```
 
-The first test that executes will be the group's baseline.  This baseline shows that it was an "auto run", indicating that Celero would measure and decide how many times to execute the code.  In this case, it ran 30 samples of 7100000 iterations of the code in our test.  (Each set of 7100000 calls was measured, and this was done 30 times and the smallest time was taken.) This total measurement took 0.517049 seconds.  Given this, it was measured that each individual call of the baseline code took 0.072824 microseconds.
+The first test that executes will be the group's baseline.  Celero took 10 samples of 10000000 iterations of the code in our test.  (Each set of 10000000 calls was measured, and this was done 10 times and the smallest time was taken.) This total measurement took 17.083564 seconds.  Given this, it was measured that each individual call of the baseline code took 1.669309e-006 microseconds.
 
-After the baseline is complete, each individual test is ran.  Each test is executed and measured in the same way, however, there is an additional metric reported: Baseline.  This compares the time it takes to compute the benchmark to the baseline.  The data here shows that CeleroBenchTest.Complex1 takes 4.240004 times longer to execute than the baseline.
+After the baseline is complete, each individual test is ran.  Each test is executed and measured in the same way, however, there is an additional metric reported: Baseline.  This compares the time it takes to compute the benchmark to the baseline.  The data here shows that CeleroBenchTest.Complex1 takes 1.007949 times longer to execute than the baseline.
 
 ###Notes
 
 - Benchmarks should always be performed on Release builds.  Never measure the performance of a Debug build and make changes based on the results.  The (optimizing) compiler is your friend with respect to code performance.
+- Accuracy is tied very closely to the total number of samples and the sample sizes.  As a general rule, you should aim to execute your baseline code for about as long as your longest benchmark test.  Further, it is helpful if all of the benchmark tests take about the same order of magnitude of execution time.  (Don't compare a baseline that executed in 0.1 seconds with benchmarks that take 60 seconds and an hour, respectivly.)
 - Celero has Doxygen documentation of its API.
 - Celero supports test fixtures for each baseline group.
 
@@ -180,52 +206,60 @@ To demonstrate, we will study the performance of three common sorting algorithms
 ```C++
 class DemoSortFixture : public celero::TestFixture
 {
-public:
-    DemoSortFixture()
-    {
-        // We will run some total number of sets of tests all together. 
-        // Each one growing by a power of 2.
-        const int totalNumberOfTests = 12;
- 
-        for(int i = 0; i < totalNumberOfTests; i++)
+    public:
+        DemoSortFixture()
         {
-            // ProblemSetValues is part of the base class and allows us to specify
-            // some values to control various test runs to end up building a nice graph.
-            this->ProblemSetValues.push_back(static_cast<int32_t>(pow(2, i+1)));
         }
-    }
- 
-    /// Before each run, build a vector of random integers.
-    virtual void SetUp(const int32_t problemSetValue)
-    {
-        this->arraySize = problemSetValue;
- 
-        for(int i = 0; i < this->arraySize; i++)
+
+        virtual std::vector<int64_t> getExperimentValues() const
         {
-            this->array.push_back(rand());
+            std::vector<int64_t> problemSpace;
+
+            // We will run some total number of sets of tests all together. 
+            // Each one growing by a power of 2.
+            const int totalNumberOfTests = 6;
+
+            for(int i = 0; i < totalNumberOfTests; i++)
+            {
+                // ExperimentValues is part of the base class and allows us to specify
+                // some values to control various test runs to end up building a nice graph.
+                problemSpace.push_back(static_cast<int64_t>(pow(2, i+1)));
+            }
+
+            return problemSpace;
         }
-    }
- 
-    /// After each run, clear the vector of random integers.
-    virtual void TearDown()
-    {
-        this->array.clear();
-    }
- 
-    std::vector array;
-    int arraySize;
+
+        /// Before each run, build a vector of random integers.
+        virtual void setUp(int64_t experimentValue)
+        {
+            this->arraySize = experimentValue;
+
+            for(int i = 0; i < this->arraySize; i++)
+            {
+                this->array.push_back(rand());
+            }
+        }
+
+        /// After each run, clear the vector of random integers.
+        virtual void tearDown()
+        {
+            this->array.clear();
+        }
+
+        std::vector<int64_t> array;
+        int64_t arraySize;
 };
 ```
 
-The constructor defines the experiment size,  totalNumberOfTests This number can be changed at will to adjust how many values are pushed into the ProblemSetValues array. Celero uses this array internally when calling the fixture's SetUp() virtual function.
+Before the test fixture is utilized by a benchmark, Celero will create an instanciation of the class and call its "getExperimentValues()" function.  The test fixture can then build a vector of int64_t values.  For each value added to this array, benchmarks will be executed following calls to the "setUp" virtual function.  A new test fixture is created for each measurement.
 
-The SetUp() virtual function is called before each benchmark test is executed. When using a ProblemSetValues array, the function will be given a value that was previously pushed into the array within the constructor. The function's code can then decide what to do with it. Here, we are using the value to indicate how many elements should be in the array that we intend to sort. For each of the array elements, we simply add a pseudo-random integer.
+The SetUp() virtual function is called before each benchmark test is executed. When using a problem space values vector, the function will be given a value that was previously pushed into the array within the constructor. The function's code can then decide what to do with it. Here, we are using the value to indicate how many elements should be in the array that we intend to sort. For each of the array elements, we simply add a pseudo-random integer.
 
 Now for implementing the actual sorting algorithms. For the baseline case, I implemented the first sorting algorithm I ever learned in school: Bubble Sort. The code for bubble sort is straight forward.
 
 ```C++
 // For a baseline, I'll choose Bubble Sort.
-BASELINE_F(DemoSort, BubbleSort, DemoSortFixture, 0, 10000)
+BASELINE_F(DemoSort, BubbleSort, DemoSortFixture, 30, 10000)
 {
     for(int x = 0; x < this->arraySize; x++)
     {
@@ -245,7 +279,7 @@ Celero will use the values from this baseline when computing a base lined measur
 Next, we will implement the Selection Sort algorithm.
 
 ```C++
-BENCHMARK_F(DemoSort, SelectionSort, DemoSortFixture, 0, 10000)
+BENCHMARK_F(DemoSort, SelectionSort, DemoSortFixture, 30, 10000)
 {
     for(int x = 0; x < this->arraySize; x++)
     {
@@ -267,7 +301,7 @@ BENCHMARK_F(DemoSort, SelectionSort, DemoSortFixture, 0, 10000)
 Finally, for good measure, we will simply use the Standard Library's sorting algorithm: Introsort*. We only need write a single line of code, but here it is for completeness.
 
 ```C++
-BENCHMARK_F(DemoSort, stdSort, DemoSortFixture, 0, 10000)
+BENCHMARK_F(DemoSort, stdSort, DemoSortFixture, 30, 10000)
 {
     std::sort(this->array.begin(), this->array.end());
 }
@@ -280,20 +314,17 @@ This test was ran on a 4.00 GHz AMD with four cores, eight logical processors, a
 Celero outputs timing and benchmark references for each test automatically. However, to write to an output file for easy plotting, simply specify an output file on the command line.
 
 ```
-celeroDemo -o results.csv
+celeroDemo -t results.csv
 ```
 
 While not particularly surprising std::sort is by far the best option with any meaningful problem set size. The results are summarized in the following table output written directly by Celero:
 
 ```
-DemoTransform,,,,,,,,,,,,
-,1,2,4,8,16,32,64,128,256,512,1024,2048
-ForLoop,0.0084,0.0125,0.0186,0.0315,0.0595,0.133,0.2353,0.439,0.8607,1.7392,3.4112,7.0522
-SelfForLoop,0.0093,0.012,0.0186,0.0304,0.0567,0.1265,0.225,0.4194,0.8096,1.6094,3.2035,6.4252
-SelfStdTransform,0.0112,0.0113,0.0167,0.0265,0.0478,0.119,0.1953,0.3788,0.7257,1.4189,2.8082,5.5696
-SelfStdTransformLambda,0.0112,0.0111,0.0167,0.0264,0.0474,0.119,0.1953,0.3822,0.7257,1.4192,2.8078,5.5707
-StdTransform,0.0074,0.0111,0.0167,0.0288,0.0539,0.1153,0.2046,0.3832,0.7411,1.4555,2.8884,5.9487
-StdTransformLambda,0.0074,0.0111,0.0167,0.0288,0.0539,0.1153,0.2046,0.3832,0.7411,1.4556,2.8915,5.9451
+DemoSort
+,2,4,8,16,32,64,
+BubbleSort,1.50089e-008,5.47556e-008,1.2232e-007,5.20373e-007,1.39006e-006,5.24534e-006,
+SelectionSort,8.06667e-009,1.76e-008,7.348e-008,2.74364e-007,9.05569e-007,3.22173e-006,
+stdSort,7.04e-009,9.97333e-009,1.77956e-008,3.51511e-008,6.16e-008,2.06262e-007,
 
 ```
 

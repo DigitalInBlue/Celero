@@ -24,7 +24,7 @@
 #include <functional>
 #include <celero/Export.h>
 #include <celero/Pimpl.h>
-#include <celero/BenchmarkInfo.h>
+#include <celero/Benchmark.h>
 
 namespace celero
 {
@@ -33,23 +33,17 @@ namespace celero
 	///
 	/// \author	John Farrier
 	///
-	/// \brief	Don't give me crap about a static global...
-	///
 	class TestVector
 	{
 		public:
 			static TestVector& Instance();
 
-			void pushBackTest(std::shared_ptr<BenchmarkInfo> x);
-			size_t getTestSize() const;
-			size_t getTestSize(const std::string& groupName) const;
-			void forEachTest(std::function<void(std::shared_ptr<BenchmarkInfo>)> f);
+			void push_back(std::shared_ptr<Benchmark> x);
 
-			void pushBackBaseline(std::shared_ptr<BenchmarkInfo> x);
-			size_t getBaselineSize() const;
-			size_t getBaselineSize(const std::string& groupName) const;
-			void forEachBaseline(std::function<void(std::shared_ptr<BenchmarkInfo>)> f);
-			std::shared_ptr<BenchmarkInfo> getBaseline(const std::string& groupName);
+			size_t size() const;
+
+			std::shared_ptr<Benchmark> operator[](size_t x);
+			std::shared_ptr<Benchmark> operator[](const std::string& x);
 
 		private:
 			///

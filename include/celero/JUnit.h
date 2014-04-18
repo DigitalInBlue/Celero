@@ -23,7 +23,7 @@
 
 #include <string>
 #include <celero/Pimpl.h>
-#include <celero/BenchmarkInfo.h>
+#include <celero/Experiment.h>
 
 namespace celero
 {
@@ -48,9 +48,11 @@ namespace celero
 			void setFileName(const std::string& x);
 
 			///
+			/// Add a new result to the JUnit output XML.
 			///
+			/// This should re-save on every new result so that the output can be monitored externally.
 			///
-			void add(celero::BenchmarkInfo x);
+			void add(std::shared_ptr<celero::Experiment::Result> x);
 
 			///
 			///

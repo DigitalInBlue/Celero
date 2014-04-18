@@ -22,6 +22,7 @@
 ///
 
 #include <celero/Pimpl.h>
+#include <celero/Experiment.h>
 #include <string>
 
 namespace celero
@@ -47,9 +48,11 @@ namespace celero
 			void setFileName(const std::string& x);
 
 			///
+			/// Add a new result to the result table.
 			///
+			/// This should re-save on every new result so that the output can be monitored externally.
 			///
-			void add(const std::string& groupName, const std::string& runName, const uint32_t runSize, const double usPerCall);
+			void add(std::shared_ptr<celero::Experiment::Result> x);
 
 			///
 			///
