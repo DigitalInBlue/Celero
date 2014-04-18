@@ -1,6 +1,6 @@
-#ifndef H_CELERO_PRINT_H
-#define H_CELERO_PRINT_H
- 
+#ifndef H_CELERO_DISTRIBUTION_H
+#define H_CELERO_DISTRIBUTION_H
+
 // www.helleboreconsulting.com
 
 ///
@@ -21,27 +21,21 @@
 /// limitations under the License.
 ///
 
-#include <string>
-#include <memory>
-#include <celero/Experiment.h>
- 
+#include <celero/Export.h>
+#include <cstdint>
+#include <vector>
+
 namespace celero
 {
 	///
-	/// \namespace print
+	/// Collects results from Celero for analysis of a hard-coded internal trivial measurement case.
 	///
-	/// \author	John farrier
+	CELERO_EXPORT std::vector<uint64_t> BuildDistribution(uint64_t numberOfSamples, uint64_t callsPerSample);
+
 	///
-	namespace print
-	{
-		void StageBanner(const std::string& x);
-		void GreenBar(const std::string& x);
-		void Run(const std::string& x);
-		void Status(const std::string& x);
-		void Run(std::shared_ptr<Experiment::Result> x);
-		void Done(std::shared_ptr<Experiment::Result> x);
-		void Baseline(std::shared_ptr<Experiment::Result> x);
-	}
+	/// Builds a .csv file to help determine Celero's measurement distribution.
+	///
+	CELERO_EXPORT void RunDistribution(int64_t callsPerSample);
 }
 
 #endif

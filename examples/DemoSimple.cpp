@@ -21,7 +21,7 @@ std::uniform_int_distribution<int> UniformDistribution(0, 1024);
 ///
 /// Interestingly, taking the sin of a constant number here resulted in a 
 /// great deal of optimization in clang and gcc.
-BASELINE(DemoSimple, Baseline, 64, 1000000)
+BASELINE(DemoSimple, Baseline, 10, 1000000)
 {
 	celero::DoNotOptimizeAway(static_cast<float>(sin(UniformDistribution(RandomDevice))));
 }

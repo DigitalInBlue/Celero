@@ -27,12 +27,11 @@
 #include <celero/ResultTable.h>
 #include <celero/JUnit.h>
 #include <celero/CommandLine.h>
+#include <celero/Distribution.h>
 #include <celero/Callbacks.h>
 
 #include <iostream>
 #include <fstream>
-#include <algorithm>
-#include <map>
 #include <cmath>
 
 using namespace celero;
@@ -83,132 +82,8 @@ std::shared_ptr<celero::Benchmark> celero::RegisterBaseline(const char* groupNam
 	return bm;
 }
 
-std::vector<uint64_t> celero::BuildDistribution(uint64_t numberOfSamples, uint64_t callsPerSample)
-{
-	std::vector<uint64_t> measurements;
-	
-	while(numberOfSamples--)
-	{
-		// Dummy variable
-		uint64_t dummy = 0;
-		uint64_t cps = callsPerSample;
-
-		// Get the starting time.
-		auto startTime = celero::timer::GetSystemTime();
-
-		while(cps--)
-		{
-			celero::DoNotOptimizeAway(dummy++);
-		}
-			
-		auto endTime = celero::timer::GetSystemTime();
-
-		measurements.push_back(endTime - startTime);
-	}
-
-	return measurements;
-}
-
-void RunDistribution(int64_t intArgument)
-{
-	auto genFunc = [intArgument](size_t calls)->std::map<double, uint64_t>
-		{
-			auto vec = celero::BuildDistribution(intArgument, calls);
-			std::sort(std::begin(vec), std::end(vec));
-
-			std::map<double, uint64_t> histogram;
-			uint64_t minVal = std::numeric_limits<uint64_t>::max();
-			uint64_t maxVal = 0;
-
-			for(auto i : vec)
-			{
-				minVal = std::min(minVal, i);
-				maxVal = std::max(maxVal, i);
-			}
-
-			auto normalize = [](uint64_t min, uint64_t max, uint64_t val)->double
-				{
-					max -= min;
-					val -= min;
-					return static_cast<double>(val)/static_cast<double>(max);
-				};
-
-			std::vector<double> normalVector;
-
-			for(auto& i : vec)
-			{
-				normalVector.push_back(normalize(minVal, maxVal, i));
-			}
-
-			for(auto& i : normalVector)
-			{
-				// Create a historgram of no more than 1024 values.
-				i = static_cast<int>(i*1024.0);
-				histogram[i] = 0;
-			}
-
-			for(auto i : normalVector)
-			{
-				// Accumulate values into the up to 1024 bins.
-				histogram[i] = histogram[i]+1;
-			}
-
-			return histogram;
-		};
-
-	std::vector<std::map<double, uint64_t>> histograms;
-
-	print::StageBanner("Building Distributions Output");
-	print::Run("Distributions 64");
-	histograms.push_back(genFunc(64));
-	print::Run("Distributions 256");
-	histograms.push_back(genFunc(256));
-	print::Run("Distributions 1024");
-	histograms.push_back(genFunc(1024));
-	print::Run("Distributions 4096");
-	histograms.push_back(genFunc(4096));
-
-	auto maxLen = size_t(0);
-	maxLen = std::max(maxLen, histograms[0].size());
-	maxLen = std::max(maxLen, histograms[1].size());
-	maxLen = std::max(maxLen, histograms[2].size());
-	maxLen = std::max(maxLen, histograms[3].size());
-
-	std::ofstream os;
-	os.open("celeroDistribution.csv");
-
-	os << "64, , 256, , 1024, , 4096, , " << std::endl;
-
-	for(size_t i = 0; i < maxLen; ++i)
-	{
-		for(size_t j = 0; j < histograms.size(); j++)
-		{
-			if(i < histograms[j].size())
-			{
-				auto element = std::begin(histograms[j]);
-				for(size_t k = 0; k < i; k++)
-				{
-					++element;
-				}
-
-				os << element->first << ", " << element->second << ", ";
-			}
-			else
-			{
-				os << " , , ";
-			}
-		}
-
-		os << "\n";
-	}
-
-	os.close();
-}
-
 void celero::Run(int argc, char** argv)
 {
-	celero::timer::CachePerformanceFrequency();
-
 	cmdline::parser args;
 	args.add<std::string>("group", 'g', "Runs a specific group of benchmarks.", false, "");
 	args.add<std::string>("outputTable", 't', "Saves a results table to the named file.", false, "");
@@ -224,6 +99,9 @@ void celero::Run(int argc, char** argv)
 	std::cout << "[  CELERO  ]" << std::endl;
 	celero::console::SetConsoleColor(celero::console::ConsoleColor_Default);
 
+	celero::print::GreenBar("");
+	celero::timer::CachePerformanceFrequency();
+	
 	// Shall we build a distribution?
 	auto intArgument = args.get<uint64_t>("distribution");
 	if(intArgument > 0)

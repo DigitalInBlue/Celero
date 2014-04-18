@@ -17,6 +17,7 @@
 ///
 
 #include <celero/Timer.h>
+#include <celero/Print.h>
 
 #ifdef WIN32
 	#include <Windows.h>
@@ -25,9 +26,10 @@
 	#include <sys/time.h>
 #endif
 
+#include <sstream>
+
 uint64_t celero::timer::GetSystemTime()
 {
-	/// \todo	Replace celero::timer::GetSystemTime() with std::chrono
 	#ifdef WIN32
 		LARGE_INTEGER timeStorage;
 		QueryPerformanceCounter(&timeStorage);
@@ -41,7 +43,6 @@ uint64_t celero::timer::GetSystemTime()
 
 double celero::timer::ConvertSystemTime(uint64_t x)
 {
-	/// \todo	Replace celero::timer::GetSystemTime(uint64_t x) with std::chrono
 	#ifdef WIN32
 		return static_cast<double>(x)/static_cast<double>(QPCFrequency.QuadPart);
 	#else
@@ -51,7 +52,16 @@ double celero::timer::ConvertSystemTime(uint64_t x)
 
 void celero::timer::CachePerformanceFrequency()
 {
+	std::stringstream ss;
+	ss << "Timer resolution: ";
+
 	#ifdef WIN32
 		QueryPerformanceFrequency(&QPCFrequency);
+		ss << std::to_string((1.0/static_cast<double>(QPCFrequency.QuadPart)) * 1000000);
+	#else
+		ss << std::to_string((1.0/(1.0e-6) * 1000000);
 	#endif
+
+		ss << " " << unsigned char(230) << "s";
+	celero::print::Status(ss.str());
 }

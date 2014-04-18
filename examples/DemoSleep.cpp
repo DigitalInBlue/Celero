@@ -9,17 +9,17 @@
 ///
 CELERO_MAIN
 
-BASELINE(DemoSleep, Baseline, 30, 1)
+BASELINE(DemoSleep, Baseline, 60, 1)
 {
 	std::this_thread::sleep_for(std::chrono::microseconds(100000));
 }
 
-BENCHMARK(DemoSleep, HalfBaseline, 30, 1)
+BENCHMARK(DemoSleep, HalfBaseline, 60, 1)
 {
 	std::this_thread::sleep_for(std::chrono::microseconds(50000));
 }
 
-BENCHMARK(DemoSleep, TwiceBaseline, 30, 1)
+BENCHMARK(DemoSleep, TwiceBaseline, 60, 1)
 {
 	std::this_thread::sleep_for(std::chrono::microseconds(200000));
 }

@@ -30,18 +30,21 @@
 
 using namespace celero;
 
-void executor::Execute(std::shared_ptr<Experiment::Result> r)
+///
+/// A local function to support running an individual user-defined function for measurement.
+///
+void ExecuteProblemSpace(std::shared_ptr<Experiment::Result> r)
 {
 	// Define a small internal function object to use to uniformly execute the tests.
 	auto testRunner = [r]()
-	{
-		auto test = r->getExperiment()->getFactory()->Create();
-		const auto testTime = test->run(r->getExperiment()->getCalls(), r->getProblemSpaceValue());
+		{
+			auto test = r->getExperiment()->getFactory()->Create();
+			const auto testTime = test->run(r->getExperiment()->getCalls(), r->getProblemSpaceValue());
 
-		// Save test results
-		r->getStatistics()->addSample(testTime);
-		r->getExperiment()->incrementTotalRunTime(testTime);
-	};
+			// Save test results
+			r->getStatistics()->addSample(testTime);
+			r->getExperiment()->incrementTotalRunTime(testTime);
+		};
 
 	if(r->getExperiment()->getSamples() > 0)
 	{
@@ -61,7 +64,7 @@ void executor::Execute(std::shared_ptr<Experiment::Result> r)
 void executor::RunAll()
 {
 	executor::RunAllBaselines();
-	executor::RunAllTests();
+	executor::RunAllExperiments();
 }
 
 void executor::RunAllBaselines()
@@ -76,7 +79,7 @@ void executor::RunAllBaselines()
 	}
 }
 
-void executor::RunAllTests()
+void executor::RunAllExperiments()
 {
 	print::StageBanner("Benchmarking");
 
@@ -110,7 +113,7 @@ void executor::RunBaseline(std::shared_ptr<Benchmark> bmark)
 		// Describe the beginning of the run.
 		print::Run(r);
 
-		Execute(r);
+		ExecuteProblemSpace(r);
 				
 		// Describe the end of the run.
 		print::Done(r);
@@ -160,7 +163,7 @@ void executor::Run(std::shared_ptr<Experiment> e)
 		// Describe the beginning of the run.
 		print::Run(r);
 
-		executor::Execute(r);
+		ExecuteProblemSpace(r);
 				
 		// Describe the end of the run.
 		print::Done(r);

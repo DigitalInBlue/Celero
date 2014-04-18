@@ -1,7 +1,20 @@
 #
 # Top level makefile for Celero
 #
-# John Farrier
+# Copyright 2014 John Farrier 
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+# 
+# http://www.apache.org/licenses/LICENSE-2.0
+# 
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
 #
 
 #
@@ -97,8 +110,8 @@ set(CMAKE_MINSIZEREL_POSTFIX     ""  CACHE STRING "add a postfix, usually empty 
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 
-# --------------------------------------------------------------------------- #
-# --------------------------------------------------------------------------- #
+# --------------------------------------------------------------------------- 
+# --------------------------------------------------------------------------- 
 
 #
 # Install Locations
@@ -129,6 +142,7 @@ set(TARGET_H
 	include/celero/Celero.h
 	include/celero/CommandLine.h
 	include/celero/Console.h
+	include/celero/Distribution.h
 	include/celero/Executor.h
 	include/celero/Export.h
 	include/celero/Factory.h
@@ -153,6 +167,7 @@ set(TARGET_SRC
 	src/Callbacks.cpp
 	src/Celero.cpp
 	src/Console.cpp
+	src/Distribution.cpp
 	src/Executor.cpp
 	src/JUnit.cpp
 	src/Print.cpp
@@ -168,8 +183,8 @@ set(TARGET_LIBRARIES ${SYSLIBS})
 add_library(${PROJECT_NAME} ${CELERO_USER_DEFINED_SHARED_OR_STATIC} ${TARGET_SRC} ${TARGET_H})
 include_directories(${HEADER_PATH})
 
-# --------------------------------------------------------------------------- #
-# --------------------------------------------------------------------------- #
+# --------------------------------------------------------------------------- 
+# --------------------------------------------------------------------------- 
 
 SET(PROJECT_TEST_NAME celeroDemoComparison)
 
@@ -204,8 +219,8 @@ include_directories(${HEADER_PATH})
 #	add_custom_command(TARGET ${PROJECT_TEST_NAME} POST_BUILD COMMAND $<TARGET_FILE:${PROJECT_TEST_NAME}>)
 # endif()
 
-# --------------------------------------------------------------------------- #
-# --------------------------------------------------------------------------- #
+# --------------------------------------------------------------------------- 
+# --------------------------------------------------------------------------- 
 
 SET(PROJECT_TEST_NAME celeroDemoSimple)
 
@@ -241,8 +256,8 @@ if(CELERO_RUN_EXAMPLE_ON_BUILD)
 	add_custom_command(TARGET ${PROJECT_TEST_NAME} POST_BUILD COMMAND $<TARGET_FILE:${PROJECT_TEST_NAME}>)
 endif()
 
-# --------------------------------------------------------------------------- #
-# --------------------------------------------------------------------------- #
+# --------------------------------------------------------------------------- 
+# --------------------------------------------------------------------------- 
 
 SET(PROJECT_TEST_NAME celeroDemoJUnit)
 
@@ -277,8 +292,8 @@ include_directories(${HEADER_PATH})
 #	add_custom_command(TARGET ${PROJECT_TEST_NAME} POST_BUILD COMMAND $<TARGET_FILE:${PROJECT_TEST_NAME}>)
 # endif()
 
-# --------------------------------------------------------------------------- #
-# --------------------------------------------------------------------------- #
+# --------------------------------------------------------------------------- 
+# --------------------------------------------------------------------------- 
 
 SET(PROJECT_TEST_NAME celeroDemoSort)
 
@@ -313,8 +328,8 @@ include_directories(${HEADER_PATH})
 #	add_custom_command(TARGET ${PROJECT_TEST_NAME} POST_BUILD COMMAND $<TARGET_FILE:${PROJECT_TEST_NAME}>)
 # endif()
 
-# --------------------------------------------------------------------------- #
-# --------------------------------------------------------------------------- #
+# --------------------------------------------------------------------------- 
+# --------------------------------------------------------------------------- 
 
 SET(PROJECT_TEST_NAME celeroDemoTransform)
 
@@ -348,8 +363,8 @@ include_directories(${HEADER_PATH})
 #	add_custom_command(TARGET ${PROJECT_TEST_NAME} POST_BUILD COMMAND $<TARGET_FILE:${PROJECT_TEST_NAME}>)
 # endif()
 
-# --------------------------------------------------------------------------- #
-# --------------------------------------------------------------------------- #
+# --------------------------------------------------------------------------- 
+# --------------------------------------------------------------------------- 
 
 SET(PROJECT_TEST_NAME celeroDemoParameterPassing)
 
@@ -383,8 +398,8 @@ include_directories(${HEADER_PATH})
 #	add_custom_command(TARGET ${PROJECT_TEST_NAME} POST_BUILD COMMAND $<TARGET_FILE:${PROJECT_TEST_NAME}>)
 # endif()
 
-# --------------------------------------------------------------------------- #
-# --------------------------------------------------------------------------- #
+# --------------------------------------------------------------------------- 
+# --------------------------------------------------------------------------- 
 
 SET(PROJECT_TEST_NAME celeroDemoSleep)
 
@@ -418,8 +433,8 @@ include_directories(${HEADER_PATH})
 #	add_custom_command(TARGET ${PROJECT_TEST_NAME} POST_BUILD COMMAND $<TARGET_FILE:${PROJECT_TEST_NAME}>)
 # endif()
 
-# --------------------------------------------------------------------------- #
-# --------------------------------------------------------------------------- #
+# --------------------------------------------------------------------------- 
+# --------------------------------------------------------------------------- 
 
 SET(PROJECT_TEST_NAME celeroDemoPimpl)
 
@@ -453,9 +468,9 @@ include_directories(${HEADER_PATH})
 #	add_custom_command(TARGET ${PROJECT_TEST_NAME} POST_BUILD COMMAND $<TARGET_FILE:${PROJECT_TEST_NAME}>)
 # endif()
 
-# --------------------------------------------------------------------------- #
+# --------------------------------------------------------------------------- 
 # Google Test Application
-# --------------------------------------------------------------------------- #
+# --------------------------------------------------------------------------- 
 
 if(CELERO_ENABLE_TESTS)
 	set(PROJECT_NAME CeleroTest)
@@ -487,9 +502,9 @@ if(CELERO_ENABLE_TESTS)
 	endif()
 endif()
 
-# --------------------------------------------------------------------------- #
+# --------------------------------------------------------------------------- 
 # Optional
-# --------------------------------------------------------------------------- ##
+# --------------------------------------------------------------------------- 
 
 if(CELERO_USE_FOLDERS)
 	set_property(TARGET celero PROPERTY FOLDER "Celero")
