@@ -20,8 +20,6 @@
 #include <celero/PimplImpl.h>
 #include <celero/Benchmark.h>
 #include <celero/FileReader.h>
-#include <celero/Statistics.h>
-#include <celero/Result.h>
 
 #include <assert.h>
 
@@ -40,16 +38,21 @@ using namespace celero;
 struct ArchiveEntry
 {
 	ArchiveEntry() :
+		GroupName(),
+		RunName(),
 		ExperimentValue(0),
 		FirstRanDate(0),
 		TotalSamplesCollected(0),
 		AverageBaseline(0),
 		MinBaseline(0),
 		MinBaseline_TimeSinceEpoch(0),
+		MinStats(),
 		MaxBaseline(0),
 		MaxBaseline_TimeSinceEpoch(0),
+		MaxStats(),
 		CurrentBaseline(0),
-		CurrentBaseline_TimeSinceEpoch(0)
+		CurrentBaseline_TimeSinceEpoch(0),
+		CurrentStats()
 	{
 	}
 
@@ -219,7 +222,9 @@ std::istream& operator>>(std::istream& str, ArchiveEntry& data)
 class celero::Archive::Impl
 {
 	public:
-		Impl()
+		Impl() :
+			results(),
+			fileName()
 		{
 			
 		}
@@ -236,7 +241,7 @@ class celero::Archive::Impl
 			std::ifstream is;
 			is.open(this->fileName, std::fstream::in);
 
-			if(is.is_open() == true && is.good() == true && is.fail() == false)
+			if((is.is_open() == true) && (is.good() == true) && (is.fail() == false))
 			{
 				// Throw away the header.
 				is.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
