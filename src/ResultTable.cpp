@@ -64,7 +64,7 @@ void ResultTable::setFileName(const std::string& x)
 	this->pimpl->fileName = x;
 }
 
-void ResultTable::add(std::shared_ptr<Experiment::Result> x)
+void ResultTable::add(std::shared_ptr<Result> x)
 {
 	auto measurements = std::make_pair(x->getProblemSpaceValue(), x->getUsPerCall());
 	this->pimpl->results[x->getExperiment()->getBenchmark()->getName()][x->getExperiment()->getName()].push_back(measurements);

@@ -84,7 +84,7 @@ endif()
 
 message (STATUS "SYSTEM: ${CMAKE_SYSTEM_NAME}")
 if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
-	EXEC_PROGRAM(xcrun ARGS -find clang++ OUTPUT_VARIABLE XCODE_CLANG_PATH)
+	# EXEC_PROGRAM(xcrun ARGS -find clang++ OUTPUT_VARIABLE XCODE_CLANG_PATH)
 	set (XCODE_CLANG_PATH "${XCODE_CLANG_PATH}" CACHE STRING "Xcode clang path")
 	set (CMAKE_CXX_COMPILER "${XCODE_CLANG_PATH}")
 	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libc++") 
@@ -159,6 +159,7 @@ set(TARGET_H
 	include/celero/PimplImpl.h
 	include/celero/Print.h
 	include/celero/Experiment.h
+	include/celero/Result.h
 	include/celero/ResultTable.h
 	include/celero/Statistics.h
 	include/celero/TestFixture.h
@@ -178,6 +179,7 @@ set(TARGET_SRC
 	src/JUnit.cpp
 	src/Print.cpp
 	src/Experiment.cpp
+	src/Result.cpp
 	src/ResultTable.cpp
 	src/Statistics.cpp
 	src/TestVector.cpp

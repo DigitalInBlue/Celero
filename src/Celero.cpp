@@ -116,7 +116,7 @@ void celero::Run(int argc, char** argv)
 		celero::ResultTable::Instance().setFileName(argument);
 
 		celero::AddExperimentResultCompleteFunction(
-			[](std::shared_ptr<celero::Experiment::Result> p)
+			[](std::shared_ptr<celero::Result> p)
 			{
 				celero::ResultTable::Instance().add(p);
 			});
@@ -129,7 +129,7 @@ void celero::Run(int argc, char** argv)
 		celero::Archive::Instance().setFileName(argument);
 		
 		celero::AddExperimentResultCompleteFunction(
-			[](std::shared_ptr<celero::Experiment::Result> p)
+			[](std::shared_ptr<celero::Result> p)
 			{
 				celero::Archive::Instance().add(p);
 			});
@@ -142,7 +142,7 @@ void celero::Run(int argc, char** argv)
 		celero::JUnit::Instance().setFileName(argument);
 
 		celero::AddExperimentResultCompleteFunction(
-			[](std::shared_ptr<celero::Experiment::Result> p)
+			[](std::shared_ptr<celero::Result> p)
 			{
 				celero::JUnit::Instance().add(p);
 			});

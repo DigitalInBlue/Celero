@@ -23,6 +23,7 @@
 
 #include <string>
 #include <celero/Factory.h>
+#include <celero/Result.h>
 #include <celero/Statistics.h>
 
 namespace celero
@@ -38,90 +39,6 @@ namespace celero
 	class CELERO_EXPORT Experiment
 	{
 		public:
-			class Result
-			{
-				public:
-					Result(Experiment* x);
-
-					///
-					/// Gets a pointer to the owning experiment.
-					///
-					Experiment* getExperiment() const;
-
-					///
-					///
-					///
-					void setProblemSpaceValue(int64_t x);
-
-					///
-					///
-					///
-					int64_t getProblemSpaceValue() const;
-
-					///
-					///
-					///
-					Statistics* getStatistics();
-
-					///
-					/// Adds a run time sample during experiment execution.
-					///
-					void addRunTimeSample(const uint64_t x);
-
-					///
-					/// Returns the best run time sample observed.
-					///
-					uint64_t getRunTime() const;
-
-					///
-					/// \brief	Get the number of computed microseconds per operation.
-					///
-					///	An operation is defined as one operation of one run.
-					///
-					double getUsPerCall() const;
-
-					///
-					/// \brief	Get the number of computer operations per second.
-					///
-					///	An operation is defined as one operation of one run.
-					///
-					double getOpsPerSecond() const;
-
-					///
-					/// Calculate this experiments baseline value.
-					///
-					/// If this IS a baseline experiment, the function will return 1.0;
-					/// Returns -1 on error.
-					///
-					double getBaselineMeasurement();
-
-					///
-					/// Sets a flag indicating if this result is complete.
-					///
-					void setComplete(bool x);
-
-					///
-					/// Gets a flag indicating if this result is complete.
-					///
-					bool getComplete() const;
-
-				private:
-					///
-					/// Disable default constructor
-					///
-					Result();
-
-					///
-					/// \brief	Pimpl Idiom
-					///
-					class Impl;
-
-					///
-					/// \brief	Pimpl Idiom
-					///
-					Pimpl<Impl> pimpl;	
-			};
-
 			///
 			///
 			///
@@ -235,12 +152,12 @@ namespace celero
 			///
 			///
 			///
-			std::shared_ptr<Experiment::Result> getResult(size_t x);
+			std::shared_ptr<Result> getResult(size_t x);
 
 			///
 			///
 			///
-			std::shared_ptr<Experiment::Result> getResultByValue(int64_t x);
+			std::shared_ptr<Result> getResultByValue(int64_t x);
 
 		private:
 			///

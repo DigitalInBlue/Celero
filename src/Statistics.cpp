@@ -205,6 +205,20 @@ double Statistics::getKurtosis() const
 	return 0.0;
 }
 
+double Statistics::getZScore() const
+{
+	auto sd = this->getStandardDeviation();
+
+	if(sd != 0.0)
+	{
+		auto mean = this->getMean();
+		auto hypothesis = static_cast<double>(this->getMin());
+		return (mean - hypothesis)/sd;
+	}
+
+	return 0.0;
+}
+
 uint64_t Statistics::getMin() const
 {
 	return this->pimpl->min;

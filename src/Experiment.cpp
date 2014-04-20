@@ -28,134 +28,6 @@
 
 using namespace celero;
 
-// ----------------------------------------------------------------------------
-//
-// Define the Experiment::Result::Impl class.
-// (I hate putting more than one class in a file.)
-//
-// ----------------------------------------------------------------------------
-
-class Experiment::Result::Impl
-{
-	public:
-		Impl()
-		{
-		}
-
-		Impl(Experiment* p) : 
-			stats(),
-			problemSpaceValue(0),
-			parent(p),
-			complete(false)
-		{
-		}
-
-		/// Track statistics about this specific experiment.
-		Statistics stats;
-		
-		int64_t problemSpaceValue;
-
-		/// A pointer back to our owning Experiment parent.
-		Experiment* parent;
-
-		/// A "completed" flag.
-		bool complete;
-};
-
-// ----------------------------------------------------------------------------
-//
-// Define the Experiment::Result class.
-// (I hate putting more than one class in a file.)
-//
-// ----------------------------------------------------------------------------
-
-Experiment::Result::Result()
-{
-}
-
-Experiment::Result::Result(Experiment* x) : pimpl(x)
-{
-}
-
-Experiment* Experiment::Result::getExperiment() const
-{
-	return this->pimpl->parent;
-}
-
-void Experiment::Result::setProblemSpaceValue(int64_t x)
-{
-	this->pimpl->problemSpaceValue = x;
-}
-
-int64_t Experiment::Result::getProblemSpaceValue() const
-{
-	return this->pimpl->problemSpaceValue;
-}
-
-Statistics* Experiment::Result::getStatistics()
-{
-	return &this->pimpl->stats;
-}
-
-void Experiment::Result::addRunTimeSample(const uint64_t runTime)
-{
-	this->pimpl->stats.addSample(runTime);
-}
-
-uint64_t Experiment::Result::getRunTime() const
-{
-	return this->pimpl->stats.getMin();
-}
-
-double Experiment::Result::getUsPerCall() const
-{
-	return celero::timer::ConvertSystemTime(this->pimpl->stats.getMin()) / static_cast<double>(this->pimpl->parent->getCalls());
-}
-
-double Experiment::Result::getOpsPerSecond() const
-{
-	return 100000.0 / (this->getUsPerCall() * celero::UsPerSec);
-}
-
-double Experiment::Result::getBaselineMeasurement()
-{
-	if(this->pimpl->parent->getIsBaselineCase() == false)
-	{
-		auto bm = this->pimpl->parent->getBenchmark();
-
-		if(bm != nullptr)
-		{
-			auto baselineExperiment = bm->getBaseline();
-
-			if(baselineExperiment != nullptr)
-			{
-				return this->getUsPerCall() / baselineExperiment->getResultByValue(this->getProblemSpaceValue())->getUsPerCall();
-			}
-		}
-
-		return -1.0;
-	}
-
-	return 1.0;
-}
-
-void Experiment::Result::setComplete(bool x)
-{
-	this->pimpl->complete = x;
-}
-
-bool Experiment::Result::getComplete() const
-{
-	return this->pimpl->complete;
-}
-
-// ----------------------------------------------------------------------------
-//
-// Define the Experiment::Impl class.
-// (I hate putting more than one class in a file.)
-//
-// ----------------------------------------------------------------------------
-
 class Experiment::Impl
 {
 	public:
@@ -209,7 +81,7 @@ class Experiment::Impl
 
 		/// There is one result for each problem space value.
 		/// In the event there are not any problem spaces, there shal be a single result.
-		std::vector<std::shared_ptr<Experiment::Result>> results;
+		std::vector<std::shared_ptr<Result>> results;
 
 		/// The owning benchmark object which groups together all experiments.
 		std::weak_ptr<Benchmark> benchmark;
@@ -237,13 +109,6 @@ class Experiment::Impl
 
 		bool isBaselineCase;
 };
-
-// ----------------------------------------------------------------------------
-//
-// Define the Experiment class.
-// (I hate putting more than one class in a file.)
-//
-// ----------------------------------------------------------------------------
 
 Experiment::Experiment() : 
 	pimpl()
@@ -393,7 +258,7 @@ std::shared_ptr<Factory> Experiment::getFactory() const
 
 void Experiment::addProblemSpace(int64_t x)
 {
-	auto r = std::make_shared<Experiment::Result>(this);
+	auto r = std::make_shared<Result>(this);
 	r->setProblemSpaceValue(x);
 	this->pimpl->results.push_back(r);
 }
@@ -402,28 +267,28 @@ size_t Experiment::getResultSize()
 {
 	if(this->pimpl->results.empty() == true)
 	{
-		this->pimpl->results.push_back(std::make_shared<Experiment::Result>(this));
+		this->pimpl->results.push_back(std::make_shared<Result>(this));
 	}
 
 	return this->pimpl->results.size();
 }
 
-std::shared_ptr<Experiment::Result> Experiment::getResult(size_t x)
+std::shared_ptr<Result> Experiment::getResult(size_t x)
 {
 	if((x == 0) && (this->pimpl->results.empty() == true))
 	{
-		this->pimpl->results.push_back(std::make_shared<Experiment::Result>(this));
+		this->pimpl->results.push_back(std::make_shared<Result>(this));
 	}
 
 	return this->pimpl->results[x];
 }
 
-std::shared_ptr<Experiment::Result> Experiment::getResultByValue(int64_t x)
+std::shared_ptr<Result> Experiment::getResultByValue(int64_t x)
 {
-	std::shared_ptr<Experiment::Result> r;
+	std::shared_ptr<Result> r;
 
 	auto found = std::find_if(std::begin(this->pimpl->results), std::end(this->pimpl->results), 
-		[x](std::shared_ptr<Experiment::Result> i)->bool
+		[x](std::shared_ptr<Result> i)->bool
 		{
 			return (i->getProblemSpaceValue() == x);
 		});

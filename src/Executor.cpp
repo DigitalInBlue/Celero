@@ -33,7 +33,7 @@ using namespace celero;
 ///
 /// A local function to support running an individual user-defined function for measurement.
 ///
-void ExecuteProblemSpace(std::shared_ptr<Experiment::Result> r)
+void ExecuteProblemSpace(std::shared_ptr<Result> r)
 {
 	// Define a small internal function object to use to uniformly execute the tests.
 	auto testRunner = [r]()

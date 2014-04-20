@@ -47,7 +47,7 @@ class celero::JUnit::Impl
 		std::string fileName;
 
 		/// Store the test case size, measured baseline, objective baseline, and total run time in seconds.
-		std::map<std::string, std::vector<std::shared_ptr<Experiment::Result>>> results;
+		std::map<std::string, std::vector<std::shared_ptr<Result>>> results;
 
 		double totalTime;
 };
@@ -72,7 +72,7 @@ void JUnit::setFileName(const std::string& x)
 	this->pimpl->fileName = x;
 }
 
-void JUnit::add(std::shared_ptr<celero::Experiment::Result> x)
+void JUnit::add(std::shared_ptr<celero::Result> x)
 {
 	this->pimpl->results[x->getExperiment()->getBenchmark()->getName()].push_back(x);
 	this->save();

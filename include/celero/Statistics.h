@@ -77,6 +77,13 @@ namespace celero
 
 			double getKurtosis() const;
 
+			///
+			/// Computed as (mean - hypothesis)/standard_deviation
+			///
+			/// Here, the hypothesis is our minimum value.
+			///
+			double getZScore() const;
+
 			uint64_t getMin() const;
 
 			uint64_t getMax() const;

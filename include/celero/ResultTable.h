@@ -52,7 +52,7 @@ namespace celero
 			///
 			/// This should re-save on every new result so that the output can be monitored externally.
 			///
-			void add(std::shared_ptr<celero::Experiment::Result> x);
+			void add(std::shared_ptr<celero::Result> x);
 
 			///
 			///

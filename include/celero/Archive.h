@@ -23,6 +23,7 @@
 
 #include <string>
 #include <celero/Experiment.h>
+#include <celero/Result.h>
 
 namespace celero
 {
@@ -51,7 +52,7 @@ namespace celero
 			///
 			/// This should re-save on every new result so that the output can be monitored externally.
 			///
-			void add(std::shared_ptr<celero::Experiment::Result> x);
+			void add(std::shared_ptr<celero::Result> x);
 
 			///
 			/// Saves all current results to a results archive file.

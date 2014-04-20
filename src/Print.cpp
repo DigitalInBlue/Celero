@@ -48,7 +48,7 @@ void print::GreenBar(const std::string& x)
 	std::cout << x << std::endl;
 }
 
-void print::Run(std::shared_ptr<Experiment::Result> x)
+void print::Run(std::shared_ptr<Result> x)
 {
 	celero::console::SetConsoleColor(celero::console::ConsoleColor_Default);
 	std::cout << "[ RUN      ] ";
@@ -77,7 +77,7 @@ void print::Status(const std::string& x)
 	std::cout << "[ STATUS   ] " << x << std::endl;
 }
 
-void print::Done(std::shared_ptr<Experiment::Result> x)
+void print::Done(std::shared_ptr<Result> x)
 {
 	celero::console::SetConsoleColor(celero::console::ConsoleColor_Default);
 	std::cout << "[     DONE ] ";
@@ -87,7 +87,7 @@ void print::Done(std::shared_ptr<Experiment::Result> x)
 		" [" << x->getOpsPerSecond() << " calls/sec]" << std::endl;
 }
 
-void print::Baseline(std::shared_ptr<Experiment::Result> x)
+void print::Baseline(std::shared_ptr<Result> x)
 {	
 	auto baselineGroupName = x->getExperiment()->getBenchmark()->getName();
 	if(baselineGroupName.empty() == false)

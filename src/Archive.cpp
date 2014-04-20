@@ -21,6 +21,7 @@
 #include <celero/Benchmark.h>
 #include <celero/FileReader.h>
 #include <celero/Statistics.h>
+#include <celero/Result.h>
 
 #include <assert.h>
 
@@ -36,9 +37,9 @@ using namespace celero;
 ///
 /// Structure to assist with archiving data during runtime and to a file.
 ///
-struct Result
+struct ArchiveEntry
 {
-	Result() :
+	ArchiveEntry() :
 		ExperimentValue(0),
 		FirstRanDate(0),
 		TotalSamplesCollected(0),
@@ -131,7 +132,7 @@ struct Result
 ///
 /// Overload operator<< to allow for easy output of result data to a human-readable text file.
 ///
-std::ostream& operator<<(std::ostream& str, Result::Stat const& data)
+std::ostream& operator<<(std::ostream& str, ArchiveEntry::Stat const& data)
 {
 	str << data.Size << ",";
 	str << data.Mean << ",";
@@ -147,7 +148,7 @@ std::ostream& operator<<(std::ostream& str, Result::Stat const& data)
 ///
 /// Overload operator<< to allow for easy output of result data to a human-readable text file.
 ///
-std::ostream& operator<<(std::ostream& str, Result const& data)
+std::ostream& operator<<(std::ostream& str, ArchiveEntry const& data)
 {
 	str << data.GroupName << ",";
 	str << data.RunName << ",";
@@ -170,7 +171,7 @@ std::ostream& operator<<(std::ostream& str, Result const& data)
 ///
 /// Overload operator>> to allow for easy input of result data from a text file.
 ///
-std::istream& operator>>(std::istream& str, Result::Stat& data)
+std::istream& operator>>(std::istream& str, ArchiveEntry::Stat& data)
 {
 	// Use FieldReader to classify commas as whitespace.
 	str.imbue(std::locale(std::locale(), new celero::FieldReader));
@@ -189,7 +190,7 @@ std::istream& operator>>(std::istream& str, Result::Stat& data)
 ///
 /// Overload operator>> to allow for easy input of result data from a text file.
 ///
-std::istream& operator>>(std::istream& str, Result& data)
+std::istream& operator>>(std::istream& str, ArchiveEntry& data)
 {
 	// Use FieldReader to classify commas as whitespace.
 	str.imbue(std::locale(std::locale(), new celero::FieldReader));
@@ -243,7 +244,7 @@ class celero::Archive::Impl
 				// Read in existing results.
 				while(is.eof() == false && is.tellg() >= 0)
 				{
-					Result r;
+					ArchiveEntry r;
 					is >> r;
 
 					if(r.GroupName.empty() == false)
@@ -257,7 +258,7 @@ class celero::Archive::Impl
 			}
 		}
 
-		std::vector<Result> results;
+		std::vector<ArchiveEntry> results;
 		std::string fileName;
 };
 
@@ -282,10 +283,10 @@ void Archive::setFileName(const std::string& x)
 	this->pimpl->readExistingResults();
 }
 
-void Archive::add(std::shared_ptr<celero::Experiment::Result> x)
+void Archive::add(std::shared_ptr<celero::Result> x)
 {
 	auto found = std::find_if(std::begin(this->pimpl->results), std::end(this->pimpl->results),
-		[x](const Result& r)->bool
+		[x](const ArchiveEntry& r)->bool
 		{
 			return (r.GroupName == x->getExperiment()->getBenchmark()->getName()) && 
 				(r.RunName == x->getExperiment()->getName()) && 
@@ -318,7 +319,7 @@ void Archive::add(std::shared_ptr<celero::Experiment::Result> x)
 	}	
 	else
 	{
-		Result r;
+		ArchiveEntry r;
 
 		r.GroupName = x->getExperiment()->getBenchmark()->getName();
 		r.RunName = x->getExperiment()->getName();
@@ -356,7 +357,7 @@ void Archive::save()
 
 		if(os.is_open() == true)
 		{
-			Result::WriteHeader(os);
+			ArchiveEntry::WriteHeader(os);
 
 			for(auto i : this->pimpl->results)
 			{
