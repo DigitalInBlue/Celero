@@ -40,6 +40,8 @@ class celero::JUnit::Impl
 {
 	public:
 		Impl() : 
+			fileName(),
+			results(),
 			totalTime(0)
 		{
 		}
@@ -85,7 +87,7 @@ void JUnit::save()
 
 	if(ofs.is_open() == true)
 	{
-		auto os = &ofs;
+		const auto os = &ofs;
 
 		*os << "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>\n";
 

@@ -35,7 +35,7 @@ namespace celero
 	///
 	/// Builds a .csv file to help determine Celero's measurement distribution.
 	///
-	CELERO_EXPORT void RunDistribution(int64_t callsPerSample);
+	CELERO_EXPORT void RunDistribution(uint64_t callsPerSample);
 }
 
 #endif

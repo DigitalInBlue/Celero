@@ -40,14 +40,14 @@ std::vector<uint64_t> celero::BuildDistribution(uint64_t numberOfSamples, uint64
 		auto cps = callsPerSample;
 
 		// Get the starting time.
-		auto startTime = celero::timer::GetSystemTime();
+		const auto startTime = celero::timer::GetSystemTime();
 
 		while(cps--)
 		{
 			celero::DoNotOptimizeAway(dummy++);
 		}
 			
-		auto endTime = celero::timer::GetSystemTime();
+		const auto endTime = celero::timer::GetSystemTime();
 
 		measurements.push_back(endTime - startTime);
 	}
@@ -55,7 +55,7 @@ std::vector<uint64_t> celero::BuildDistribution(uint64_t numberOfSamples, uint64
 	return measurements;
 }
 
-void celero::RunDistribution(int64_t intArgument)
+void celero::RunDistribution(uint64_t intArgument)
 {
 	std::vector<double> series1Normalized;
 	std::vector<double> series2Normalized;
@@ -64,80 +64,79 @@ void celero::RunDistribution(int64_t intArgument)
 
 	print::StageBanner("Building Distributions Output");
 	print::Run("Distributions 64");
-	auto series1 = celero::BuildDistribution(intArgument, 64);
+	auto series1 = celero::BuildDistribution(intArgument, uint64_t(64));
 	print::Run("Distributions 256");
-	auto series2 = celero::BuildDistribution(intArgument, 256);
+	auto series2 = celero::BuildDistribution(intArgument, uint64_t(256));
 	print::Run("Distributions 1024");
-	auto series3 = celero::BuildDistribution(intArgument, 1024);
+	auto series3 = celero::BuildDistribution(intArgument, uint64_t(1024));
 	print::Run("Distributions 4096");
-	auto series4 = celero::BuildDistribution(intArgument, 4096);
+	auto series4 = celero::BuildDistribution(intArgument, uint64_t(4096));
 
 	std::array<std::map<double, uint64_t>, 4> histograms;
 
 	// Find the global max for all tests:
-	auto maxVal = std::max(*std::max_element(std::begin(series1), std::end(series1)), *std::max_element(std::begin(series2), std::end(series2)));
-	maxVal = std::max(maxVal, *std::max_element(std::begin(series3), std::end(series3)));
-	maxVal = std::max(maxVal, *std::max_element(std::begin(series4), std::end(series4)));
+	auto maxVal = std::max(*(std::max_element(std::begin(series1), std::end(series1))), *(std::max_element(std::begin(series2), std::end(series2))));
+	maxVal = std::max(maxVal, *(std::max_element(std::begin(series3), std::end(series3))));
+	maxVal = std::max(maxVal, *(std::max_element(std::begin(series4), std::end(series4))));
 
 	// Find the global min for all tests:
-	auto minVal = std::min(*std::min_element(std::begin(series1), std::end(series1)), *std::min_element(std::begin(series2), std::end(series2)));
-	minVal = std::min(minVal, *std::min_element(std::begin(series3), std::end(series3)));
-	minVal = std::min(minVal, *std::min_element(std::begin(series4), std::end(series4)));
+	auto minVal = std::min(*(std::min_element(std::begin(series1), std::end(series1))), *(std::min_element(std::begin(series2), std::end(series2))));
+	minVal = std::min(minVal, *(std::min_element(std::begin(series3), std::end(series3))));
+	minVal = std::min(minVal, *(std::min_element(std::begin(series4), std::end(series4))));
 
 	// Normalize all vectors:
 	auto normalize = [minVal, maxVal](uint64_t val)->double
 		{
-			auto delta = maxVal - minVal;
+			const auto delta = maxVal - minVal;
 			val -= minVal;
 			return static_cast<double>(val)/static_cast<double>(delta);
-
 		};
 
 	std::transform(std::begin(series1), std::end(series1), std::begin(series1Normalized), 
-		[normalize](uint64_t val)->double
+		[normalize](const uint64_t val)->double
 		{
 			return normalize(val);
 		});
 
 	std::transform(std::begin(series2), std::end(series2), std::begin(series2Normalized), 
-		[normalize](uint64_t val)->double
+		[normalize](const uint64_t val)->double
 		{
 			return normalize(val);
 		});
 
 	std::transform(std::begin(series3), std::end(series3), std::begin(series3Normalized), 
-		[normalize](uint64_t val)->double
+		[normalize](const uint64_t val)->double
 		{
 			return normalize(val);
 		});
 
 	std::transform(std::begin(series4), std::end(series4), std::begin(series4Normalized), 
-		[normalize](uint64_t val)->double
+		[normalize](const uint64_t val)->double
 		{
 			return normalize(val);
 		});
 
 	// Build histograms of each of the series:
 	std::for_each(std::begin(series1Normalized), std::end(series1Normalized), 
-		[&histograms](double val)
+		[&histograms](const double val)
 		{
 			histograms[0][static_cast<int>(val * 1024)]++;
 		});
 
 	std::for_each(std::begin(series2Normalized), std::end(series2Normalized), 
-		[&histograms](double val)
+		[&histograms](const double val)
 		{
 			histograms[1][static_cast<int>(val * 1024)]++;
 		});
 
 	std::for_each(std::begin(series3Normalized), std::end(series3Normalized), 
-		[&histograms](double val)
+		[&histograms](const double val)
 		{
 			histograms[2][static_cast<int>(val * 1024)]++;
 		});
 
 	std::for_each(std::begin(series4Normalized), std::end(series4Normalized), 
-		[&histograms](double val)
+		[&histograms](const double val)
 		{
 			histograms[3][static_cast<int>(val * 1024)]++;
 		});

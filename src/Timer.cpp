@@ -59,9 +59,9 @@ void celero::timer::CachePerformanceFrequency()
 		QueryPerformanceFrequency(&QPCFrequency);
 		ss << std::to_string((1.0/static_cast<double>(QPCFrequency.QuadPart)) * 1000000);
 	#else
-		ss << std::to_string((1.0/1.0e-6) * 1000000);
+		ss << std::to_string(1.0/1.0e-6);
 	#endif
 
-		ss << " " << uint8_t(230) << "s";
+	ss << " us";
 	celero::print::Status(ss.str());
 }

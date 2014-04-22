@@ -42,12 +42,12 @@ namespace celero
 			///
 			///
 			///
-			Experiment(std::weak_ptr<Benchmark> benchmark);
+			explicit Experiment(std::weak_ptr<Benchmark> benchmark);
 
 			///
 			///
 			///
-			Experiment(std::weak_ptr<Benchmark> benchmark, const std::string& name, uint64_t samples, uint64_t calls, double baselineTarget);
+			explicit Experiment(std::weak_ptr<Benchmark> benchmark, const std::string& name, uint64_t samples, uint64_t calls, double baselineTarget);
 
 			///
 			/// \brief	Default destructor.
@@ -168,7 +168,7 @@ namespace celero
 			///
 			/// Hide the copy constructor
 			///
-			Experiment(const Experiment&);
+			explicit Experiment(const Experiment&);
 
 			/// 
 			///

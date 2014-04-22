@@ -38,7 +38,7 @@ class Statistics::Impl
 		{
 		}
 
-		Impl(const Statistics& other) :
+		explicit Impl(const Statistics& other) :
 			sampleSize(other.pimpl->sampleSize),
 			M1(other.pimpl->M1),
 			M2(other.pimpl->M2),
@@ -77,10 +77,10 @@ Statistics Statistics::operator+(const Statistics& other)
 	
 	combined.pimpl->sampleSize = this->pimpl->sampleSize + other.pimpl->sampleSize;
 	
-	auto delta = other.pimpl->M1 - this->pimpl->M1;
-	auto delta2 = delta*delta;
-	auto delta3 = delta*delta2;
-	auto delta4 = delta2*delta2;
+	const auto delta = other.pimpl->M1 - this->pimpl->M1;
+	const auto delta2 = delta*delta;
+	const auto delta3 = delta*delta2;
+	const auto delta4 = delta2*delta2;
 	
 	combined.pimpl->M1 = (this->pimpl->sampleSize*this->pimpl->M1 + other.pimpl->sampleSize*other.pimpl->M1) / combined.pimpl->sampleSize;
 	
@@ -116,7 +116,7 @@ Statistics& Statistics::operator=(const Statistics& other)
 
 Statistics& Statistics::operator+=(const Statistics& other)
 { 
-	auto combined = *this + other;
+	const auto combined = *this + other;
 	*this = combined;
 	return *this;
 }
@@ -140,13 +140,13 @@ void Statistics::reset()
 ///
 void Statistics::addSample(uint64_t x)
 {
-	auto n1 = this->pimpl->sampleSize;
+	const auto n1 = this->pimpl->sampleSize;
 	this->pimpl->sampleSize++;
 
-	auto delta = x - this->pimpl->M1;
-	auto delta_n = delta / this->pimpl->sampleSize;
-	auto delta_n2 = delta_n * delta_n;
-	auto term1 = delta * delta_n * n1;
+	const auto delta = x - this->pimpl->M1;
+	const auto delta_n = delta / this->pimpl->sampleSize;
+	const auto delta_n2 = delta_n * delta_n;
+	const auto term1 = delta * delta_n * n1;
 				
 	this->pimpl->M1 += delta_n;
 	this->pimpl->M4 += term1 * delta_n2 * (this->pimpl->sampleSize*this->pimpl->sampleSize - 3*this->pimpl->sampleSize + 3) + 6 * delta_n2 * this->pimpl->M2 - 4 * delta_n * this->pimpl->M3;
@@ -207,7 +207,7 @@ double Statistics::getKurtosis() const
 
 double Statistics::getZScore() const
 {
-	auto sd = this->getStandardDeviation();
+	const auto sd = this->getStandardDeviation();
 
 	if(sd != 0.0)
 	{

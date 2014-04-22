@@ -32,7 +32,9 @@ class Experiment::Impl
 {
 	public:
 		Impl() : 
+			results(),
 			benchmark(),
+			factory(),
 			name(),
 			baselineUnit(0),
 			baselineTarget(0),
@@ -43,20 +45,24 @@ class Experiment::Impl
 		{
 		}
 
-		Impl(std::weak_ptr<Benchmark> bm, const std::string& name, uint64_t samples, uint64_t calls, double pBaselineTarget) :
+		Impl(std::weak_ptr<Benchmark> bm, const std::string& n, const uint64_t s, const uint64_t c, const double pBaselineTarget) :
+			results(),
 			benchmark(bm),
-			name(name),
+			factory(),
+			name(n),
 			baselineUnit(0),
 			baselineTarget(pBaselineTarget),
-			samples(samples),
-			calls(calls),
+			samples(s),
+			calls(c),
 			totalRunTime(0),
 			isBaselineCase(false)
 		{
 		}
 
 		Impl(std::weak_ptr<Benchmark> bm) :
+			results(),
 			benchmark(bm),
+			factory(),
 			name(),
 			baselineUnit(0),
 			baselineTarget(0),
@@ -68,7 +74,9 @@ class Experiment::Impl
 		}
 
 		Impl(const Experiment& other) : 
+			results(),
 			benchmark(other.pimpl->benchmark),
+			factory(),
 			name(other.pimpl->name),
 			baselineUnit(other.pimpl->baselineUnit),
 			baselineTarget(other.pimpl->baselineTarget),
@@ -287,7 +295,7 @@ std::shared_ptr<Result> Experiment::getResultByValue(int64_t x)
 {
 	std::shared_ptr<Result> r;
 
-	auto found = std::find_if(std::begin(this->pimpl->results), std::end(this->pimpl->results), 
+	const auto found = std::find_if(std::begin(this->pimpl->results), std::end(this->pimpl->results), 
 		[x](std::shared_ptr<Result> i)->bool
 		{
 			return (i->getProblemSpaceValue() == x);
@@ -295,7 +303,7 @@ std::shared_ptr<Result> Experiment::getResultByValue(int64_t x)
 
 	if(found != std::end(this->pimpl->results))
 	{
-		r = *found;
+		r = (*found);
 	}
 
 	return r;

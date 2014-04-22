@@ -38,7 +38,7 @@ namespace celero
 	class CELERO_EXPORT Result
 	{
 		public:
-			Result(Experiment* x);
+			explicit Result(Experiment* x);
 
 			~Result();
 

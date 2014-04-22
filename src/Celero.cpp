@@ -75,7 +75,7 @@ std::shared_ptr<celero::Benchmark> celero::RegisterBaseline(const char* groupNam
 	p->setSamples(samples);
 	p->setCalls(calls);
 	p->setFactory(experimentFactory);
-	p->setBaselineTarget(1);
+	p->setBaselineTarget(1.0);
 
 	bm->setBaseline(p);
 

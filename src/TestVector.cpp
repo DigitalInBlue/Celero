@@ -74,7 +74,7 @@ std::shared_ptr<Benchmark> TestVector::operator[](const std::string& x)
 {
 	std::lock_guard<std::mutex> mutexLock(this->pimpl->testVectorMutex);
 
-	auto found = std::find_if(std::begin(this->pimpl->testVector), std::end(this->pimpl->testVector),
+	const auto found = std::find_if(std::begin(this->pimpl->testVector), std::end(this->pimpl->testVector),
 		[x](std::shared_ptr<Benchmark> bmark)->bool
 		{
 			return (bmark->getName() == x);

@@ -50,14 +50,14 @@ uint64_t TestFixture::run(const uint64_t calls, int64_t experimentValue)
 	auto operation = calls;
 			
 	// Get the starting time.
-	auto startTime = celero::timer::GetSystemTime();
+	const auto startTime = celero::timer::GetSystemTime();
 			
 	while(operation--)
 	{
 		this->UserBenchmark();
 	}
 			
-	auto endTime = celero::timer::GetSystemTime();
+	const auto endTime = celero::timer::GetSystemTime();
 
 	// Tear down the testing fixture.
 	this->tearDown();

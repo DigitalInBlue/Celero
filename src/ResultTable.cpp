@@ -36,7 +36,9 @@ using namespace celero;
 class celero::ResultTable::Impl
 {
 	public:
-		Impl()
+		Impl() :
+			fileName(),
+			results()
 		{
 		}
 
@@ -66,7 +68,7 @@ void ResultTable::setFileName(const std::string& x)
 
 void ResultTable::add(std::shared_ptr<Result> x)
 {
-	auto measurements = std::make_pair(x->getProblemSpaceValue(), x->getUsPerCall());
+	const auto measurements = std::make_pair(x->getProblemSpaceValue(), x->getUsPerCall());
 	this->pimpl->results[x->getExperiment()->getBenchmark()->getName()][x->getExperiment()->getName()].push_back(measurements);
 	this->save();
 }
@@ -78,17 +80,17 @@ void ResultTable::save()
 
 	if(ofs.is_open() == true)
 	{
-		auto os = &ofs;
+		const auto os = &ofs;
 
 		std::for_each(std::begin(this->pimpl->results), std::end(this->pimpl->results),
-			[&os](decltype(*std::begin(this->pimpl->results))& group)
+			[&os](const decltype(*std::begin(this->pimpl->results))& group)
 			{
 				*os << group.first << "\n";
 			
-				auto run = group.second;
+				const auto run = group.second;
 
 				std::for_each(std::begin(run), std::end(run),
-					[run, os](decltype(*std::begin(run))& result)
+					[run, os](const decltype(*std::begin(run))& result)
 					{
 						auto vec = result.second;
 
@@ -96,7 +98,7 @@ void ResultTable::save()
 						{
 							*os << ",";
 							std::for_each(std::begin(vec), std::end(vec), 
-								[os](decltype(*std::begin(vec))& element)
+								[os](const decltype(*std::begin(vec))& element)
 								{
 									*os << element.first << ",";
 								});
@@ -105,7 +107,7 @@ void ResultTable::save()
 
 						*os << result.first << ",";
 						std::for_each(std::begin(vec), std::end(vec), 
-							[os](decltype(*std::begin(vec))& element)
+							[os](const decltype(*std::begin(vec))& element)
 							{
 								*os << element.second << ",";
 							});

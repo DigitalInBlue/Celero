@@ -232,7 +232,7 @@ class celero::Archive::Impl
 		/// Return milliseconds since epoch.
 		uint64_t now() const
 		{
-			return std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+			return static_cast<uint64_t>(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count());
 		}
 
 		void readExistingResults()
@@ -247,7 +247,7 @@ class celero::Archive::Impl
 				is.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 
 				// Read in existing results.
-				while(is.eof() == false && is.tellg() >= 0)
+				while((is.eof() == false) && (is.tellg() >= 0))
 				{
 					ArchiveEntry r;
 					is >> r;
@@ -290,7 +290,7 @@ void Archive::setFileName(const std::string& x)
 
 void Archive::add(std::shared_ptr<celero::Result> x)
 {
-	auto found = std::find_if(std::begin(this->pimpl->results), std::end(this->pimpl->results),
+	const auto found = std::find_if(std::begin(this->pimpl->results), std::end(this->pimpl->results),
 		[x](const ArchiveEntry& r)->bool
 		{
 			return (r.GroupName == x->getExperiment()->getBenchmark()->getName()) && 

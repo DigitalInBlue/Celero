@@ -29,17 +29,26 @@ class Benchmark::Impl
 {
 	public:
 		Impl() : 
-			name()
+			stats(),
+			name(),
+			baseline(),
+			experiments()
 		{
 		}
 
-		Impl(const std::string& name) :
-			name(name)
+		Impl(const std::string& x) :
+			stats(),
+			name(x),
+			baseline(),
+			experiments()
 		{
 		}
 
 		Impl(const Benchmark& other) : 
-			name(other.pimpl->name)
+			stats(),
+			name(other.pimpl->name),
+			baseline(),
+			experiments()
 		{
 		}
 

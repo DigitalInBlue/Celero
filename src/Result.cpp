@@ -33,11 +33,15 @@ using namespace celero;
 class Result::Impl
 {
 	public:
-		Impl()
+		Impl() : 
+			stats(),
+			problemSpaceValue(0),
+			parent(nullptr),
+			complete(false)
 		{
 		}
 
-		Impl(Experiment* p) : 
+		explicit Impl(Experiment* const p) : 
 			stats(),
 			problemSpaceValue(0),
 			parent(p),
