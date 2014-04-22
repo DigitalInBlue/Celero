@@ -1,5 +1,5 @@
-#ifndef H_CELERO_TESTVECTOR_H
-#define H_CELERO_TESTVECTOR_H
+#ifndef H_CELERO_DISTRIBUTION_H
+#define H_CELERO_DISTRIBUTION_H
 
 // www.helleboreconsulting.com
 
@@ -21,46 +21,21 @@
 /// limitations under the License.
 ///
 
-#include <functional>
 #include <celero/Export.h>
-#include <celero/Pimpl.h>
-#include <celero/Benchmark.h>
+#include <cstdint>
+#include <vector>
 
 namespace celero
 {
 	///
-	/// \class TestVector
+	/// Collects results from Celero for analysis of a hard-coded internal trivial measurement case.
 	///
-	/// \author	John Farrier
+	CELERO_EXPORT std::vector<uint64_t> BuildDistribution(uint64_t numberOfSamples, uint64_t callsPerSample);
+
 	///
-	class TestVector
-	{
-		public:
-			static TestVector& Instance();
-
-			void push_back(std::shared_ptr<Benchmark> x);
-
-			size_t size() const;
-
-			std::shared_ptr<Benchmark> operator[](size_t x);
-			std::shared_ptr<Benchmark> operator[](const std::string& x);
-
-		private:
-			///
-			/// Default Constructor
-			///
-			TestVector();
-
-			///
-			/// \brief	Pimpl Idiom
-			///
-			class Impl;
-
-			///
-			/// \brief	Pimpl Idiom
-			///
-			Pimpl<Impl> pimpl;		
-	};
+	/// Builds a .csv file to help determine Celero's measurement distribution.
+	///
+	CELERO_EXPORT void RunDistribution(uint64_t callsPerSample);
 }
 
 #endif

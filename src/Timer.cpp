@@ -1,4 +1,23 @@
+///
+/// \author	John Farrier
+///
+/// \copyright Copyright 2014 John Farrier 
+///
+/// Licensed under the Apache License, Version 2.0 (the "License");
+/// you may not use this file except in compliance with the License.
+/// You may obtain a copy of the License at
+/// 
+/// http://www.apache.org/licenses/LICENSE-2.0
+/// 
+/// Unless required by applicable law or agreed to in writing, software
+/// distributed under the License is distributed on an "AS IS" BASIS,
+/// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+/// See the License for the specific language governing permissions and
+/// limitations under the License.
+///
+
 #include <celero/Timer.h>
+#include <celero/Print.h>
 
 #ifdef WIN32
 	#include <Windows.h>
@@ -7,9 +26,10 @@
 	#include <sys/time.h>
 #endif
 
+#include <sstream>
+
 uint64_t celero::timer::GetSystemTime()
 {
-	/// \todo	Replace celero::timer::GetSystemTime() with std::chrono
 	#ifdef WIN32
 		LARGE_INTEGER timeStorage;
 		QueryPerformanceCounter(&timeStorage);
@@ -23,7 +43,6 @@ uint64_t celero::timer::GetSystemTime()
 
 double celero::timer::ConvertSystemTime(uint64_t x)
 {
-	/// \todo	Replace celero::timer::GetSystemTime(uint64_t x) with std::chrono
 	#ifdef WIN32
 		return static_cast<double>(x)/static_cast<double>(QPCFrequency.QuadPart);
 	#else
@@ -33,7 +52,16 @@ double celero::timer::ConvertSystemTime(uint64_t x)
 
 void celero::timer::CachePerformanceFrequency()
 {
+	std::stringstream ss;
+	ss << "Timer resolution: ";
+
 	#ifdef WIN32
 		QueryPerformanceFrequency(&QPCFrequency);
+		ss << std::to_string((1.0/static_cast<double>(QPCFrequency.QuadPart)) * 1000000);
+	#else
+		ss << std::to_string(1.0/1.0e-6);
 	#endif
+
+	ss << " us";
+	celero::print::Status(ss.str());
 }

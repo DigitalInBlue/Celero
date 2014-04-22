@@ -1,5 +1,5 @@
-#ifndef H_CELERO_TESTVECTOR_H
-#define H_CELERO_TESTVECTOR_H
+#ifndef H_CELERO_FILEREADER_H
+#define H_CELERO_FILEREADER_H
 
 // www.helleboreconsulting.com
 
@@ -21,45 +21,30 @@
 /// limitations under the License.
 ///
 
-#include <functional>
-#include <celero/Export.h>
-#include <celero/Pimpl.h>
-#include <celero/Benchmark.h>
+#include <locale>
 
 namespace celero
 {
+	/// \struct FileReader
+	/// 
+	/// A helper struct to aid in reading CSV files.
 	///
-	/// \class TestVector
+	/// Classify commas as whitespace.
 	///
-	/// \author	John Farrier
-	///
-	class TestVector
+	struct FieldReader : std::ctype<char>
 	{
-		public:
-			static TestVector& Instance();
+		FieldReader() : std::ctype<char>(this->getTable()) 
+		{
+		}
 
-			void push_back(std::shared_ptr<Benchmark> x);
-
-			size_t size() const;
-
-			std::shared_ptr<Benchmark> operator[](size_t x);
-			std::shared_ptr<Benchmark> operator[](const std::string& x);
-
-		private:
-			///
-			/// Default Constructor
-			///
-			TestVector();
-
-			///
-			/// \brief	Pimpl Idiom
-			///
-			class Impl;
-
-			///
-			/// \brief	Pimpl Idiom
-			///
-			Pimpl<Impl> pimpl;		
+		static std::ctype_base::mask const* getTable() 
+		{
+			static std::vector<std::ctype_base::mask> rc(table_size, std::ctype_base::mask());
+			rc[','] = std::ctype_base::space;
+			rc['\n'] = std::ctype_base::space;
+			rc['\r'] = std::ctype_base::space;
+			return &rc[0];
+		}
 	};
 }
 
