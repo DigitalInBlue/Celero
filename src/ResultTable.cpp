@@ -83,14 +83,14 @@ void ResultTable::save()
 		const auto os = &ofs;
 
 		std::for_each(std::begin(this->pimpl->results), std::end(this->pimpl->results),
-			[&os](const decltype(*std::begin(this->pimpl->results))& group)
+			[&os](decltype(*std::begin(this->pimpl->results))& group)
 			{
 				*os << group.first << "\n";
 			
 				const auto run = group.second;
 
 				std::for_each(std::begin(run), std::end(run),
-					[run, os](const decltype(*std::begin(run))& result)
+					[run, os](decltype(*std::begin(run))& result)
 					{
 						auto vec = result.second;
 
@@ -98,7 +98,7 @@ void ResultTable::save()
 						{
 							*os << ",";
 							std::for_each(std::begin(vec), std::end(vec), 
-								[os](const decltype(*std::begin(vec))& element)
+								[os](decltype(*std::begin(vec))& element)
 								{
 									*os << element.first << ",";
 								});
@@ -107,7 +107,7 @@ void ResultTable::save()
 
 						*os << result.first << ",";
 						std::for_each(std::begin(vec), std::end(vec), 
-							[os](const decltype(*std::begin(vec))& element)
+							[os](decltype(*std::begin(vec))& element)
 							{
 								*os << element.second << ",";
 							});
