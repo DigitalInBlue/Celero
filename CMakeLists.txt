@@ -191,6 +191,10 @@ set(TARGET_LIBRARIES ${SYSLIBS})
 add_library(${PROJECT_NAME} ${CELERO_USER_DEFINED_SHARED_OR_STATIC} ${TARGET_SRC} ${TARGET_H})
 include_directories(${HEADER_PATH})
 
+install(TARGETS ${PROJECT_NAME} 
+	LIBRARY DESTINATION ${CMAKE_INSTALL_PREFIX}/bin 
+	ARCHIVE DESTINATION ${CMAKE_INSTALL_PREFIX}/lib)
+
 # --------------------------------------------------------------------------- 
 # --------------------------------------------------------------------------- 
 
