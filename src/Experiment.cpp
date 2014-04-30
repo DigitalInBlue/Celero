@@ -73,20 +73,6 @@ class Experiment::Impl
 		{
 		}
 
-		Impl(const Experiment& other) : 
-			results(),
-			benchmark(other.pimpl->benchmark),
-			factory(),
-			name(other.pimpl->name),
-			baselineUnit(other.pimpl->baselineUnit),
-			baselineTarget(other.pimpl->baselineTarget),
-			samples(other.pimpl->samples),
-			calls(other.pimpl->calls),
-			totalRunTime(other.pimpl->totalRunTime),
-			isBaselineCase(other.pimpl->isBaselineCase)
-		{
-		}
-
 		/// There is one result for each problem space value.
 		/// In the event there are not any problem spaces, there shal be a single result.
 		std::vector<std::shared_ptr<Result>> results;
