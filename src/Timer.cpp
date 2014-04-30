@@ -33,7 +33,7 @@ uint64_t celero::timer::GetSystemTime()
 	#ifdef WIN32
 		LARGE_INTEGER timeStorage;
 		QueryPerformanceCounter(&timeStorage);
-		return timeStorage.QuadPart;
+		return static_cast<uint64_t>(timeStorage.QuadPart);
 	#else
 		timeval timeStorage;
 		gettimeofday(&timeStorage, nullptr);

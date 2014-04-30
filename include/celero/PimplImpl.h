@@ -82,7 +82,7 @@ namespace celero
 		return _pimpl.get(); 
 	}
 
-	template<typename T> const T* const Pimpl<T>::operator->() const
+	template<typename T> const T* Pimpl<T>::operator->() const
 	{ 
 		return _pimpl.get(); 
 	}

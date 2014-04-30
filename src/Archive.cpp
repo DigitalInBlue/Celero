@@ -364,7 +364,7 @@ void Archive::save()
 		{
 			ArchiveEntry::WriteHeader(os);
 
-			for(auto i : this->pimpl->results)
+			for(auto& i : this->pimpl->results)
 			{
 				os << i;
 			}

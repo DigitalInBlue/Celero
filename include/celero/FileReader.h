@@ -33,11 +33,11 @@ namespace celero
 	///
 	struct FieldReader : std::ctype<char>
 	{
-		FieldReader() : std::ctype<char>(this->getTable()) 
+		FieldReader() : std::ctype<char>(FieldReader::GetTable()) 
 		{
 		}
 
-		static std::ctype_base::mask const* getTable() 
+		static std::ctype_base::mask const* GetTable() 
 		{
 			static std::vector<std::ctype_base::mask> rc(table_size, std::ctype_base::mask());
 			rc[','] = std::ctype_base::space;

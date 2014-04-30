@@ -49,7 +49,7 @@ namespace celero
 			~Pimpl();
 
 			T* operator->();
-			const T* const operator->() const;
+			const T* operator->() const;
 			T& operator*();
 
 		private:
