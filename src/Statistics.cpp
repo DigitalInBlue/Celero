@@ -1,14 +1,14 @@
 ///
 /// \author	John Farrier
 ///
-/// \copyright Copyright 2014 John Farrier 
+/// \copyright Copyright 2014 John Farrier
 ///
 /// Licensed under the Apache License, Version 2.0 (the "License");
 /// you may not use this file except in compliance with the License.
 /// You may obtain a copy of the License at
-/// 
+///
 /// http://www.apache.org/licenses/LICENSE-2.0
-/// 
+///
 /// Unless required by applicable law or agreed to in writing, software
 /// distributed under the License is distributed on an "AS IS" BASIS,
 /// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -19,8 +19,10 @@
 #include <celero/Statistics.h>
 #include <celero/PimplImpl.h>
 
+#include <algorithm>
 #include <cmath>
 #include <limits>
+#include <algorithm>
 
 using namespace celero;
 
@@ -74,35 +76,35 @@ Statistics::~Statistics()
 Statistics Statistics::operator+(const Statistics& other)
 {
 	Statistics combined;
-	
+
 	combined.pimpl->sampleSize = this->pimpl->sampleSize + other.pimpl->sampleSize;
-	
+
 	const auto delta = other.pimpl->M1 - this->pimpl->M1;
 	const auto delta2 = delta*delta;
 	const auto delta3 = delta*delta2;
 	const auto delta4 = delta2*delta2;
-	
+
 	combined.pimpl->M1 = (this->pimpl->sampleSize*this->pimpl->M1 + other.pimpl->sampleSize*other.pimpl->M1) / combined.pimpl->sampleSize;
-	
-	combined.pimpl->M2 = this->pimpl->M2 + other.pimpl->M2 + 
+
+	combined.pimpl->M2 = this->pimpl->M2 + other.pimpl->M2 +
 		delta2 * this->pimpl->sampleSize * other.pimpl->sampleSize / combined.pimpl->sampleSize;
-	
-	combined.pimpl->M3 = this->pimpl->M3 + other.pimpl->M3 + 
+
+	combined.pimpl->M3 = this->pimpl->M3 + other.pimpl->M3 +
 		delta3 * this->pimpl->sampleSize * other.pimpl->sampleSize * (this->pimpl->sampleSize - other.pimpl->sampleSize)/(combined.pimpl->sampleSize*combined.pimpl->sampleSize);
-	
+
 	combined.pimpl->M3 += 3.0*delta * (this->pimpl->sampleSize*other.pimpl->M2 - other.pimpl->sampleSize*this->pimpl->M2) / combined.pimpl->sampleSize;
-	
-	combined.pimpl->M4 = this->pimpl->M4 + other.pimpl->M4 + delta4*this->pimpl->sampleSize*other.pimpl->sampleSize * (this->pimpl->sampleSize*this->pimpl->sampleSize - this->pimpl->sampleSize*other.pimpl->sampleSize + other.pimpl->sampleSize*other.pimpl->sampleSize) / 
+
+	combined.pimpl->M4 = this->pimpl->M4 + other.pimpl->M4 + delta4*this->pimpl->sampleSize*other.pimpl->sampleSize * (this->pimpl->sampleSize*this->pimpl->sampleSize - this->pimpl->sampleSize*other.pimpl->sampleSize + other.pimpl->sampleSize*other.pimpl->sampleSize) /
 		(combined.pimpl->sampleSize*combined.pimpl->sampleSize*combined.pimpl->sampleSize);
-	
-	combined.pimpl->M4 += 6.0*delta2 * (this->pimpl->sampleSize*this->pimpl->sampleSize*other.pimpl->M2 + other.pimpl->sampleSize*other.pimpl->sampleSize*this->pimpl->M2)/(combined.pimpl->sampleSize*combined.pimpl->sampleSize) + 
+
+	combined.pimpl->M4 += 6.0*delta2 * (this->pimpl->sampleSize*this->pimpl->sampleSize*other.pimpl->M2 + other.pimpl->sampleSize*other.pimpl->sampleSize*this->pimpl->M2)/(combined.pimpl->sampleSize*combined.pimpl->sampleSize) +
 		4.0*delta*(this->pimpl->sampleSize*other.pimpl->M3 - other.pimpl->sampleSize*this->pimpl->M3) / combined.pimpl->sampleSize;
-	
+
 	return combined;
 }
 
 Statistics& Statistics::operator=(const Statistics& other)
-{ 
+{
 	this->pimpl->sampleSize = other.pimpl->sampleSize;
 	this->pimpl->M1 = other.pimpl->M1;
 	this->pimpl->M2 = other.pimpl->M2;
@@ -115,7 +117,7 @@ Statistics& Statistics::operator=(const Statistics& other)
 }
 
 Statistics& Statistics::operator+=(const Statistics& other)
-{ 
+{
 	const auto combined = *this + other;
 	*this = combined;
 	return *this;
@@ -147,7 +149,7 @@ void Statistics::addSample(uint64_t x)
 	const auto delta_n = delta / this->pimpl->sampleSize;
 	const auto delta_n2 = delta_n * delta_n;
 	const auto term1 = delta * delta_n * n1;
-				
+
 	this->pimpl->M1 += delta_n;
 	this->pimpl->M4 += term1 * delta_n2 * (this->pimpl->sampleSize*this->pimpl->sampleSize - 3*this->pimpl->sampleSize + 3) + 6 * delta_n2 * this->pimpl->M2 - 4 * delta_n * this->pimpl->M3;
 	this->pimpl->M3 += term1 * delta_n * (this->pimpl->sampleSize - 2) - 3 * delta_n * this->pimpl->M2;

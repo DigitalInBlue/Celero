@@ -6,14 +6,14 @@
 ///
 /// \author	John Farrier
 ///
-/// \copyright Copyright 2014 John Farrier 
+/// \copyright Copyright 2014 John Farrier
 ///
 /// Licensed under the Apache License, Version 2.0 (the "License");
 /// you may not use this file except in compliance with the License.
 /// You may obtain a copy of the License at
-/// 
+///
 /// http://www.apache.org/licenses/LICENSE-2.0
-/// 
+///
 /// Unless required by applicable law or agreed to in writing, software
 /// distributed under the License is distributed on an "AS IS" BASIS,
 /// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -25,6 +25,7 @@
 #include <unistd.h>
 #endif
 
+#include <cstdlib>
 #include <thread>
 #include <stdint.h>
 
@@ -65,7 +66,7 @@ namespace celero
 	/// DoNotOptimizeAway(x += i);
 	/// \endcode
 	///
-	/// The result is now a loop which is meaningful for establishing a 
+	/// The result is now a loop which is meaningful for establishing a
 	/// baseline.
 	///
 	/// \verbatim
@@ -91,13 +92,13 @@ namespace celero
 	///
 	/// It would be great if that were portable with respect to both compilers and 32/64-bit targets.
 	///
-	template<class T> void DoNotOptimizeAway(T&& x) 
+	template<class T> void DoNotOptimizeAway(T&& x)
 	{
 		//
 		// We must always do this test, but it will never pass.
 		//
 		// A new thread::id does not represent a thread.
-		// getpid() and _getpid() were considered here, but 
+		// getpid() and _getpid() were considered here, but
 		// there are limitations on Windows:
 		// http://msdn.microsoft.com/en-us/library/t2y34y40.aspx
 		//
