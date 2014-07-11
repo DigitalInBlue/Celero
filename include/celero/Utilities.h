@@ -87,7 +87,7 @@ namespace celero
 	/// Folly uses a simple bit of inline assembly:
 	/// > template <class T>
 	/// > void doNotOptimizeAway(T&& datum) {
-  	///	> asm volatile("" : "+r" (datum));
+	///	> asm volatile("" : "+r" (datum));
 	/// >}
 	///
 	/// It would be great if that were portable with respect to both compilers and 32/64-bit targets.
