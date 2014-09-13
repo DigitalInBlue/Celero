@@ -184,6 +184,7 @@ set(TARGET_SRC
 	src/TestVector.cpp
 	src/TestFixture.cpp
 	src/Timer.cpp
+	src/Utilities.cpp
 )
 
 set(TARGET_LIBRARIES ${SYSLIBS})
@@ -480,6 +481,41 @@ include_directories(${HEADER_PATH})
 # endif()
 
 # --------------------------------------------------------------------------- 
+# --------------------------------------------------------------------------- 
+
+SET(PROJECT_TEST_NAME celeroDemoDoNotOptimizeAway)
+
+#
+# Add Sources
+#
+
+add_executable(${PROJECT_TEST_NAME} 
+  examples/DemoDoNotOptimizeAway.cpp)
+
+#
+# Celero Project Dependencies
+#
+
+add_dependencies(${PROJECT_TEST_NAME} celero)
+target_link_libraries(${PROJECT_TEST_NAME} celero)
+
+#
+# Broiler Plate
+#
+
+# VS2012 doesn't support true variadic templates
+if(MSVC) 
+  add_definitions( /D _VARIADIC_MAX=10 )
+endif()
+
+include_directories(${HEADER_PATH})
+
+# Show here how to automate running after a build:
+# if(CELERO_RUN_EXAMPLE_ON_BUILD)
+#	add_custom_command(TARGET ${PROJECT_TEST_NAME} POST_BUILD COMMAND $<TARGET_FILE:${PROJECT_TEST_NAME}>)
+# endif()
+
+# --------------------------------------------------------------------------- 
 # Google Test Application
 # --------------------------------------------------------------------------- 
 
@@ -527,4 +563,5 @@ if(CELERO_USE_FOLDERS)
 	set_property(TARGET celeroDemoParameterPassing PROPERTY FOLDER "Celero/Demo")
 	set_property(TARGET celeroDemoPimpl PROPERTY FOLDER "Celero/Demo")
 	set_property(TARGET celeroDemoSleep PROPERTY FOLDER "Celero/Demo")
+	set_property(TARGET celeroDemoDoNotOptimizeAway PROPERTY FOLDER "Celero/Demo")
 endif()

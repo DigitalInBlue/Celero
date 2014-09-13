@@ -29,6 +29,8 @@
 #include <thread>
 #include <stdint.h>
 
+#include <celero/Export.h>
+
 namespace celero
 {
 	///
@@ -87,7 +89,7 @@ namespace celero
 	/// Folly uses a simple bit of inline assembly:
 	/// > template <class T>
 	/// > void doNotOptimizeAway(T&& datum) {
-  	///	> asm volatile("" : "+r" (datum));
+	///	> asm volatile("" : "+r" (datum));
 	/// >}
 	///
 	/// It would be great if that were portable with respect to both compilers and 32/64-bit targets.
@@ -97,12 +99,7 @@ namespace celero
 		//
 		// We must always do this test, but it will never pass.
 		//
-		// A new thread::id does not represent a thread.
-		// getpid() and _getpid() were considered here, but
-		// there are limitations on Windows:
-		// http://msdn.microsoft.com/en-us/library/t2y34y40.aspx
-		//
-		if(std::this_thread::get_id() != std::this_thread::get_id())
+		if(std::chrono::system_clock::now() == std::chrono::time_point<std::chrono::system_clock>())
 		{
 			// This forces the value to never be optimized away
 			// by taking a reference then using it.
@@ -113,6 +110,9 @@ namespace celero
 			std::abort();
 		}
 	}
+
+	/// Specialization for std::function objects.
+	template<> CELERO_EXPORT void DoNotOptimizeAway(std::function<void(void)>&& x);
 
 	///
 	/// Quick definition of the number of microseconds per second.
