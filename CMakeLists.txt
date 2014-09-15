@@ -164,6 +164,7 @@ set(TARGET_H
 	include/celero/TestFixture.h
 	include/celero/TestVector.h
 	include/celero/Timer.h
+	include/celero/ToString.h
 	include/celero/Utilities.h
 )
 
@@ -184,6 +185,7 @@ set(TARGET_SRC
 	src/TestVector.cpp
 	src/TestFixture.cpp
 	src/Timer.cpp
+	src/ToString.cpp
 	src/Utilities.cpp
 )
 
