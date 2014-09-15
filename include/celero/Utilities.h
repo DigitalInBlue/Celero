@@ -28,6 +28,7 @@
 #include <cstdlib>
 #include <thread>
 #include <stdint.h>
+#include <stdio.h>
 
 #include <celero/Export.h>
 

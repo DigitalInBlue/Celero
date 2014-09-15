@@ -22,6 +22,9 @@
 #include <celero/PimplImpl.h>
 #include <celero/TestVector.h>
 #include <celero/Utilities.h>
+#ifdef __CYGWIN__
+	#include <celero/ToString.h>
+#endif
 
 #include <algorithm>
 #include <cassert>

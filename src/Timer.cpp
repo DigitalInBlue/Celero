@@ -25,6 +25,9 @@
 #else
 	#include <sys/time.h>
 #endif
+#ifdef __CYGWIN__
+	#include <celero/ToString.h>
+#endif
 
 #include <sstream>
 
