@@ -94,34 +94,41 @@ void executor::RunAllExperiments()
 void executor::RunBaseline(std::shared_ptr<Benchmark> bmark)
 {
 	auto baselineExperiment = bmark->getBaseline();
-	assert(baselineExperiment != nullptr);
 
-	// Populate the problem space with a fake test fixture instantiation.
+	if(baselineExperiment != nullptr)
 	{
-		auto testValues = baselineExperiment->getFactory()->Create()->getExperimentValues();
-		for(auto i : testValues)
+		// Populate the problem space with a fake test fixture instantiation.
 		{
-			baselineExperiment->addProblemSpace(i);
+			auto testValues = baselineExperiment->getFactory()->Create()->getExperimentValues();
+			for(auto i : testValues)
+			{
+				baselineExperiment->addProblemSpace(i);
+			}
 		}
-	}
 
-	for(size_t i = 0; i < baselineExperiment->getResultSize(); i++)
-	{
-		auto r = baselineExperiment->getResult(i);
-		assert(r != nullptr);
+		for(size_t i = 0; i < baselineExperiment->getResultSize(); i++)
+		{
+			auto r = baselineExperiment->getResult(i);
+			assert(r != nullptr);
 
-		// Describe the beginning of the run.
-		print::Run(r);
+			// Describe the beginning of the run.
+			print::Run(r);
 
-		ExecuteProblemSpace(r);
+			ExecuteProblemSpace(r);
 				
-		// Describe the end of the run.
-		print::Done(r);
-		print::Baseline(r);
-		celero::impl::ExperimentResultComplete(r);
-	}
+			// Describe the end of the run.
+			print::Done(r);
+			print::Baseline(r);
+			celero::impl::ExperimentResultComplete(r);
+		}
 	
-	celero::impl::ExperimentComplete(baselineExperiment);
+		celero::impl::ExperimentComplete(baselineExperiment);
+	}
+	else
+	{
+		print::Failure("No Baseline case defined for \"" + bmark->getName() + "\".  Exiting.");
+		std::exit(EXIT_FAILURE);
+	}
 }
 
 void executor::RunExperiments(std::shared_ptr<Benchmark> bmark)

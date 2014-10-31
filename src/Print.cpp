@@ -77,6 +77,17 @@ void print::Status(const std::string& x)
 	std::cout << "[ STATUS   ] " << x << std::endl;
 }
 
+void print::Failure(const std::string& x)
+{	
+	celero::console::SetConsoleColor(celero::console::ConsoleColor_WhiteOnRed_Bold);
+	std::cout << "[==========] " << std::endl;
+	std::cout << "[ FAILURE  ] ";
+	std::cout << x << std::endl;
+	celero::console::SetConsoleColor(celero::console::ConsoleColor_WhiteOnRed_Bold);
+	std::cout << "[==========] " << std::endl;
+	celero::console::SetConsoleColor(celero::console::ConsoleColor_Default);
+}
+
 void print::Done(std::shared_ptr<Result> x)
 {
 	celero::console::SetConsoleColor(celero::console::ConsoleColor_Default);
