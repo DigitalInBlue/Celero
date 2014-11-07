@@ -85,12 +85,26 @@ std::shared_ptr<celero::Benchmark> celero::RegisterBaseline(const char* groupNam
 void celero::Run(int argc, char** argv)
 {
 	cmdline::parser args;
+	args.add("list", 'l', "Prints a list of all available benchmarks.");
 	args.add<std::string>("group", 'g', "Runs a specific group of benchmarks.", false, "");
 	args.add<std::string>("outputTable", 't', "Saves a results table to the named file.", false, "");
 	args.add<std::string>("junit", 'j', "Saves a JUnit XML-formatted file to the named file.", false, "");
 	args.add<std::string>("archive", 'a', "Saves or updates a result archive file.", false, "");
 	args.add<uint64_t>("distribution", 'd', "Builds a file to help characterize the distribution of measurements and exits.", false, 0);
 	args.parse_check(argc, argv);
+	
+	if(args.exist("list"))
+	{
+		TestVector& tests = celero::TestVector::Instance();
+		std::cout << "Avaliable tests:" << std::endl;
+		for(unsigned int i = 0; i < tests.size(); i++)
+		{
+			auto bm = celero::TestVector::Instance()[i];
+			std::cout << " " << bm->getName() << std::endl;
+		}
+
+		return;
+	}
 
 	// Initial output
 	print::GreenBar("");
