@@ -94,7 +94,7 @@ void print::Done(std::shared_ptr<Result> x)
 	std::cout << "[     DONE ] ";
 	std::cout << x->getExperiment()->getShort() << " ";
 	std::cout << celero::timer::ConvertSystemTime(x->getExperiment()->getTotalRunTime()) << " sec.";
-	std::cout << " [" << std::scientific << x->getUsPerCall() << " us/call]" << std::fixed << 
+	std::cout << " [" << x->getRunTime() << " us] [" << x->getUsPerCall() << " us/call]" << std::fixed << 
 		" [" << x->getOpsPerSecond() << " calls/sec]" << std::endl;
 }
 

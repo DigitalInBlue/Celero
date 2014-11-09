@@ -52,6 +52,14 @@ class Benchmark::Impl
 		{
 		}
 
+		void copy(const Benchmark& other)
+		{
+			stats = other.pimpl->stats;
+			name = other.pimpl->name;
+			baseline = other.pimpl->baseline;
+			experiments = other.pimpl->experiments;
+		}
+
 		Statistics stats;
 
 		/// Group name
@@ -78,6 +86,16 @@ Benchmark::Benchmark(const Benchmark& other) :
 
 Benchmark::~Benchmark()
 {
+}
+
+Benchmark& Benchmark::operator=(const Benchmark& other)
+{
+	if(&other != this)
+	{
+		this->pimpl->copy(other);
+	}
+
+	return *this;
 }
 
 std::string Benchmark::getName() const

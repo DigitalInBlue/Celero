@@ -105,12 +105,12 @@ uint64_t Result::getRunTime() const
 
 double Result::getUsPerCall() const
 {
-	return celero::timer::ConvertSystemTime(this->pimpl->stats.getMin()) / static_cast<double>(this->pimpl->parent->getCalls());
+	return static_cast<double>(this->pimpl->stats.getMin()) / static_cast<double>(this->pimpl->parent->getCalls());
 }
 
 double Result::getOpsPerSecond() const
 {
-	return 100000.0 / (this->getUsPerCall() * celero::UsPerSec);
+	return 1.0 / (this->getUsPerCall() * 1.0e-6);
 }
 
 double Result::getBaselineMeasurement()

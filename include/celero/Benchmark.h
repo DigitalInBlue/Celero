@@ -59,6 +59,11 @@ namespace celero
 			~Benchmark();
 
 			///
+			/// Assignment Operator
+			///
+			Benchmark& operator=(const Benchmark& other);
+
+			///
 			/// The name to group all experiment under.
 			///
 			std::string getName() const;
