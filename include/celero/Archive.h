@@ -68,9 +68,21 @@ namespace celero
 			Archive();
 
 			///
+			/// Non-copyable.  
+			/// Visual studio 2012 does not support "delete" here.
+			///
+			Archive(Archive&){}
+
+			///
 			/// Default Destructor
 			///
 			~Archive();
+
+			///
+			/// Non-assignable.  
+			/// Visual studio 2012 does not support "delete" here.
+			///
+			Archive& operator=(const Archive&){return *this;}
 
 			///
 			/// \brief	Pimpl Idiom

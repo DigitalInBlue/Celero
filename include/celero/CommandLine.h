@@ -427,7 +427,7 @@ public:
 	int argc=static_cast<int>(args.size());
 	std::vector<const char*> argv(static_cast<size_t>(argc));
 
-	for (size_t i=0; i<argc; i++)
+	for (int i=0; i<argc; i++)
 	  argv[i]=args[i].c_str();
 
 	return parse(argc, &argv[0]);

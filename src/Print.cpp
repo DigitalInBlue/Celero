@@ -77,13 +77,24 @@ void print::Status(const std::string& x)
 	std::cout << "[ STATUS   ] " << x << std::endl;
 }
 
+void print::Failure(const std::string& x)
+{	
+	celero::console::SetConsoleColor(celero::console::ConsoleColor_WhiteOnRed_Bold);
+	std::cout << "[==========] " << std::endl;
+	std::cout << "[ FAILURE  ] ";
+	std::cout << x << std::endl;
+	celero::console::SetConsoleColor(celero::console::ConsoleColor_WhiteOnRed_Bold);
+	std::cout << "[==========] " << std::endl;
+	celero::console::SetConsoleColor(celero::console::ConsoleColor_Default);
+}
+
 void print::Done(std::shared_ptr<Result> x)
 {
 	celero::console::SetConsoleColor(celero::console::ConsoleColor_Default);
 	std::cout << "[     DONE ] ";
 	std::cout << x->getExperiment()->getShort() << " ";
 	std::cout << celero::timer::ConvertSystemTime(x->getExperiment()->getTotalRunTime()) << " sec.";
-	std::cout << " [" << std::scientific << x->getUsPerCall() << " us/call]" << std::fixed << 
+	std::cout << " [" << x->getRunTime() << " us] [" << x->getUsPerCall() << " us/call]" << std::fixed << 
 		" [" << x->getOpsPerSecond() << " calls/sec]" << std::endl;
 }
 
