@@ -97,11 +97,16 @@ void celero::Run(int argc, char** argv)
 	{
 		TestVector& tests = celero::TestVector::Instance();
 		std::cout << "Avaliable tests:" << std::endl;
+		std::vector<std::string> test_names;
 		for(unsigned int i = 0; i < tests.size(); i++)
 		{
 			auto bm = celero::TestVector::Instance()[i];
-			std::cout << " " << bm->getName() << std::endl;
+			test_names.push_back(bm->getName());
 		}
+
+		std::sort(test_names.begin(), test_names.end());
+		for(auto test_name: test_names)
+			std::cout << " " << test_name << std::endl;
 
 		return;
 	}
