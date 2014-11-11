@@ -144,7 +144,7 @@ std::ostream& operator<<(std::ostream& str, ArchiveEntry::Stat const& data)
 	str << data.Skewness << ",";
 	str << data.Kurtosis << ",";
 	str << data.Min << ",";
-	str << data.Max << ",";
+	str << data.Max;
 	return str;
 }
 
@@ -166,7 +166,7 @@ std::ostream& operator<<(std::ostream& str, ArchiveEntry const& data)
 	str << data.MaxBaseline_TimeSinceEpoch << ",";
 	str << data.MaxStats << ",";
 	str << data.CurrentBaseline << ",";
-	str << data.CurrentBaseline_TimeSinceEpoch << "\n";
+	str << data.CurrentBaseline_TimeSinceEpoch << ",";
 	str << data.CurrentStats << "\n";
 	return str;
 }
