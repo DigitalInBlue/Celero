@@ -35,7 +35,7 @@ include(CheckIncludeFile)
 #
 
 option(CELERO_COMPILE_DYNAMIC_LIBRARIES "Set to ON to build Celero for dynamic linking.  Use OFF for static." ON)
-option(CELERO_BUILD_EXAMPLES "Set to ON to automatically build all examples." OFF)
+option(CELERO_BUILD_EXAMPLES "Set to ON to automatically build all examples." ON)
 option(CELERO_RUN_EXAMPLE_ON_BUILD "Set to ON to automatically run the example after a successful build." OFF)
 option(CELERO_USE_FOLDERS "Enable to put Celero in its own solution folder under Visual Studio" OFF)
 option(CELERO_ENABLE_TESTS "Enable building and running unit tests." OFF)
