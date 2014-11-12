@@ -144,7 +144,7 @@ std::ostream& operator<<(std::ostream& str, ArchiveEntry::Stat const& data)
 	str << data.Skewness << ",";
 	str << data.Kurtosis << ",";
 	str << data.Min << ",";
-	str << data.Max << ",";
+	str << data.Max;
 	return str;
 }
 
