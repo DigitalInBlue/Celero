@@ -55,11 +55,11 @@ void print::Run(std::shared_ptr<Result> x)
 
 	if(x->getExperiment()->getResultSize() > 1)
 	{
-		std::cout << x->getExperiment()->getName() << " @ " << x->getProblemSpaceValue();
+		std::cout << x->getExperiment()->getShort() << " @ " << x->getProblemSpaceValue();
 	}
 	else
 	{
-		std::cout << x->getExperiment()->getName();
+		std::cout << x->getExperiment()->getShort();
 	}
 
 	std::cout << " [" << x->getExperiment()->getSamples() << " samples of " << x->getExperiment()->getCalls() << " calls each.]" << std::endl;
