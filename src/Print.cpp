@@ -24,6 +24,7 @@
 #include <celero/Timer.h>
 
 #include <iostream>
+#include <iomanip>
 #include <chrono>
 
 using namespace celero;
@@ -106,10 +107,33 @@ void print::Baseline(std::shared_ptr<Result> x)
 		celero::console::SetConsoleColor(celero::console::ConsoleColor_Cyan);
 		std::cout << "[ BASELINE ] ";
 		std::cout << x->getExperiment()->getShort() << " ";
-		std::cout << x->getBaselineMeasurement() <<
-			" [SD: " << x->getStatistics()->getStandardDeviation() <<
+		celero::console::SetConsoleColor(celero::console::ConsoleColor_Green_Bold);
+		std::cout << x->getBaselineMeasurement();
+		celero::console::SetConsoleColor(celero::console::ConsoleColor_Cyan);
+		std::cout << " [SD: " << x->getStatistics()->getStandardDeviation() <<
 			", V: " << x->getStatistics()->getVariance() <<
 			", K: " << x->getStatistics()->getKurtosis() << "]" << std::endl;
+
+		celero::console::SetConsoleColor(celero::console::ConsoleColor_Default);
+	}
+}
+
+void print::SummaryTest(const std::string& x)
+{
+	celero::console::SetConsoleColor(celero::console::ConsoleColor_Default);
+	std::cout << "[ TEST     ] " << x << std::endl;
+}
+
+void print::Summary(std::shared_ptr<Result> x)
+{	
+	auto baselineGroupName = x->getExperiment()->getBenchmark()->getName();
+	if(baselineGroupName.empty() == false)
+	{
+		celero::console::SetConsoleColor(celero::console::ConsoleColor_White);
+		std::cout << "[          ] ";
+		std::cout << std::left << std::setw(32) << x->getExperiment()->getName() << ", ";
+		std::cout << std::left << std::setw(8) << x->getProblemSpaceValue() << ", ";
+		std::cout << x->getBaselineMeasurement() << std::endl;
 
 		celero::console::SetConsoleColor(celero::console::ConsoleColor_Default);
 	}

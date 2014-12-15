@@ -33,6 +33,7 @@
 #include <iostream>
 #include <fstream>
 #include <cmath>
+#include <cassert>
 
 using namespace celero;
 
@@ -171,8 +172,6 @@ void celero::Run(int argc, char** argv)
 			});
 	}
 
-	std::string finalOutput;
-
 	// Has a run group been specified?
 	argument = args.get<std::string>("group");
 	if(argument.empty() == false)
@@ -183,7 +182,35 @@ void celero::Run(int argc, char** argv)
 	{
 		executor::RunAll();
 	}
+
+	// Results Sumamry
+	const auto summaryOutput = std::string("Results Summary");
+	print::StageBanner(summaryOutput);
+
+	// Print a summary of run results.
+	for(auto i = size_t(0); i < celero::TestVector::Instance().size(); ++i)
+	{
+		auto test = celero::TestVector::Instance()[i];
+
+		celero::print::SummaryTest(test->getName());
+
+		// Print baseline
+		for(auto j = size_t(0); j < test->getBaseline()->getResultSize(); ++j)
+		{
+			celero::print::Summary(test->getBaseline()->getResult(j));
+
+			// Print test cases corresponding to that baseline.
+			for(auto k = size_t(0); k < test->getExperimentSize(); k++)
+			{
+				// Experiments should have the same number of results as the baseline.
+				assert(test->getExperiment(k)->getResultSize() == test->getBaseline()->getResultSize());
+
+				celero::print::Summary(test->getExperiment(k)->getResult(j));
+			}
+		}
+	}
 	
 	// Final output.
+	const auto finalOutput = std::string("Complete");
 	print::StageBanner(finalOutput);
 }
