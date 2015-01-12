@@ -41,6 +41,7 @@ namespace celero
 		void Failure(const std::string& x);
 		void Run(std::shared_ptr<Result> x);
 		void Done(std::shared_ptr<Result> x);
+		void DoneExperiment(std::shared_ptr<Experiment> x);
 		void Baseline(std::shared_ptr<Result> x);
 	}
 }

@@ -93,9 +93,20 @@ void print::Done(std::shared_ptr<Result> x)
 	celero::console::SetConsoleColor(celero::console::ConsoleColor_Default);
 	std::cout << "[     DONE ] ";
 	std::cout << x->getExperiment()->getShort() << " ";
-	std::cout << celero::timer::ConvertSystemTime(x->getExperiment()->getTotalRunTime()) << " sec.";
+	std::cout << celero::timer::ConvertSystemTime(x->getRunTime()) << " sec.";
 	std::cout << " [" << x->getRunTime() << " us] [" << x->getUsPerCall() << " us/call]" << std::fixed << 
 		" [" << x->getOpsPerSecond() << " calls/sec]" << std::endl;
+}
+
+void print::DoneExperiment(std::shared_ptr<Experiment> x)
+{
+	celero::console::SetConsoleColor(celero::console::ConsoleColor_Yellow_Bold);
+	std::cout << "[ RUN TIME ] ";
+	std::cout << x->getShort() << " ";
+	std::cout << celero::timer::ConvertSystemTime(x->getTotalRunTime()) << " sec.";
+	std::cout << " [" << x->getTotalRunTime() << " us]" << std::endl;
+	celero::console::SetConsoleColor(celero::console::ConsoleColor_Yellow_Bold);
+	celero::console::SetConsoleColor(celero::console::ConsoleColor_Default);
 }
 
 void print::Baseline(std::shared_ptr<Result> x)
