@@ -122,8 +122,6 @@ void executor::RunBaseline(std::shared_ptr<Benchmark> bmark)
 			celero::impl::ExperimentResultComplete(r);
 		}
 
-		print::DoneExperiment(baselineExperiment);
-
 		celero::impl::ExperimentComplete(baselineExperiment);
 	}
 	else
@@ -180,8 +178,6 @@ void executor::Run(std::shared_ptr<Experiment> e)
 
 		celero::impl::ExperimentResultComplete(r);
 	}
-
-	print::DoneExperiment(e);
 
 	celero::impl::ExperimentComplete(e);
 }

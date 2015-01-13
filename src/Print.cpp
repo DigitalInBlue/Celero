@@ -1,14 +1,14 @@
 ///
 /// \author	John Farrier
 ///
-/// \copyright Copyright 2014 John Farrier 
+/// \copyright Copyright 2014 John Farrier
 ///
 /// Licensed under the Apache License, Version 2.0 (the "License");
 /// you may not use this file except in compliance with the License.
 /// You may obtain a copy of the License at
-/// 
+///
 /// http://www.apache.org/licenses/LICENSE-2.0
-/// 
+///
 /// Unless required by applicable law or agreed to in writing, software
 /// distributed under the License is distributed on an "AS IS" BASIS,
 /// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -78,7 +78,7 @@ void print::Status(const std::string& x)
 }
 
 void print::Failure(const std::string& x)
-{	
+{
 	celero::console::SetConsoleColor(celero::console::ConsoleColor_WhiteOnRed_Bold);
 	std::cout << "[==========] " << std::endl;
 	std::cout << "[ FAILURE  ] ";
@@ -94,23 +94,12 @@ void print::Done(std::shared_ptr<Result> x)
 	std::cout << "[     DONE ] ";
 	std::cout << x->getExperiment()->getShort() << " ";
 	std::cout << celero::timer::ConvertSystemTime(x->getRunTime()) << " sec.";
-	std::cout << " [" << x->getRunTime() << " us] [" << x->getUsPerCall() << " us/call]" << std::fixed << 
+	std::cout << " [" << x->getRunTime() << " us] [" << x->getUsPerCall() << " us/call]" << std::fixed <<
 		" [" << x->getOpsPerSecond() << " calls/sec]" << std::endl;
 }
 
-void print::DoneExperiment(std::shared_ptr<Experiment> x)
-{
-	celero::console::SetConsoleColor(celero::console::ConsoleColor_Yellow_Bold);
-	std::cout << "[ RUN TIME ] ";
-	std::cout << x->getShort() << " ";
-	std::cout << celero::timer::ConvertSystemTime(x->getTotalRunTime()) << " sec.";
-	std::cout << " [" << x->getTotalRunTime() << " us]" << std::endl;
-	celero::console::SetConsoleColor(celero::console::ConsoleColor_Yellow_Bold);
-	celero::console::SetConsoleColor(celero::console::ConsoleColor_Default);
-}
-
 void print::Baseline(std::shared_ptr<Result> x)
-{	
+{
 	auto baselineGroupName = x->getExperiment()->getBenchmark()->getName();
 	if(baselineGroupName.empty() == false)
 	{
