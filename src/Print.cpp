@@ -1,7 +1,7 @@
 ///
 /// \author	John Farrier
 ///
-/// \copyright Copyright 2014 John Farrier 
+/// \copyright Copyright 2015 John Farrier 
 ///
 /// Licensed under the Apache License, Version 2.0 (the "License");
 /// you may not use this file except in compliance with the License.
@@ -94,7 +94,7 @@ void print::Done(std::shared_ptr<Result> x)
 	celero::console::SetConsoleColor(celero::console::ConsoleColor_Default);
 	std::cout << "[     DONE ] ";
 	std::cout << x->getExperiment()->getShort() << " ";
-	std::cout << celero::timer::ConvertSystemTime(x->getExperiment()->getTotalRunTime()) << " sec.";
+	std::cout << celero::timer::ConvertSystemTime(x->getRunTime()) << " sec.";
 	std::cout << " [" << x->getRunTime() << " us] [" << x->getUsPerCall() << " us/call]" << std::fixed << 
 		" [" << x->getOpsPerSecond() << " calls/sec]" << std::endl;
 }
