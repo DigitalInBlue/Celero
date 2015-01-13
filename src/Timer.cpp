@@ -1,7 +1,7 @@
 ///
 /// \author	John Farrier
 ///
-/// \copyright Copyright 2014 John Farrier 
+/// \copyright Copyright 2015 John Farrier 
 ///
 /// Licensed under the Apache License, Version 2.0 (the "License");
 /// you may not use this file except in compliance with the License.
@@ -33,7 +33,7 @@ uint64_t celero::timer::GetSystemTime()
 	#ifdef WIN32
 		LARGE_INTEGER timeStorage;
 		QueryPerformanceCounter(&timeStorage);
-		return static_cast<uint64_t>(timeStorage.QuadPart);
+		return static_cast<uint64_t>(timeStorage.QuadPart * 1000000)/static_cast<uint64_t>(QPCFrequency.QuadPart);
 	#else
 		auto timePoint = std::chrono::high_resolution_clock::now();
 		return std::chrono::duration_cast<std::chrono::microseconds>(timePoint.time_since_epoch()).count();
@@ -42,11 +42,7 @@ uint64_t celero::timer::GetSystemTime()
 
 double celero::timer::ConvertSystemTime(uint64_t x)
 {
-	#ifdef WIN32
-		return static_cast<double>(x)/static_cast<double>(QPCFrequency.QuadPart);
-	#else
-		return x * 1.0e-6;
-	#endif
+	return x * 1.0e-6;
 }
 
 void celero::timer::CachePerformanceFrequency()
@@ -62,6 +58,6 @@ void celero::timer::CachePerformanceFrequency()
 			static_cast<double>(std::chrono::high_resolution_clock::period::den)) * 1000000.0;
 	#endif
 
-	ss << precision << " us";
+	ss << std::to_string(precision) << " us";
 	celero::print::Status(ss.str());
 }
