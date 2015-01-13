@@ -23,7 +23,7 @@
 	#include <Windows.h>
 	LARGE_INTEGER QPCFrequency;
 #else
-	#include <sys/time.h>
+	#include <chrono>
 #endif
 
 #include <sstream>
@@ -35,9 +35,8 @@ uint64_t celero::timer::GetSystemTime()
 		QueryPerformanceCounter(&timeStorage);
 		return static_cast<uint64_t>(timeStorage.QuadPart);
 	#else
-		timeval timeStorage;
-		gettimeofday(&timeStorage, nullptr);
-		return timeStorage.tv_sec * 1000000 + timeStorage.tv_usec;
+		auto timePoint = std::chrono::high_resolution_clock::now();
+		return std::chrono::duration_cast<std::chrono::microseconds>(timePoint.time_since_epoch()).count();
 	#endif
 }
 
@@ -57,11 +56,12 @@ void celero::timer::CachePerformanceFrequency()
 
 	#ifdef WIN32
 		QueryPerformanceFrequency(&QPCFrequency);
-		ss << std::to_string((1.0/static_cast<double>(QPCFrequency.QuadPart)) * 1000000);
+		auto precision = ((1.0/static_cast<double>(QPCFrequency.QuadPart)) * 1000000.0);
 	#else
-		ss << std::to_string(1.0/1.0e-6);
+		auto precision = (static_cast<double>(std::chrono::high_resolution_clock::period::num) / 
+			static_cast<double>(std::chrono::high_resolution_clock::period::den)) * 1000000.0;
 	#endif
 
-	ss << " us";
+	ss << precision << " us";
 	celero::print::Status(ss.str());
 }
