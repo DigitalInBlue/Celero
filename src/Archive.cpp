@@ -41,6 +41,7 @@ struct ArchiveEntry
 		GroupName(),
 		RunName(),
 		ExperimentValue(0),
+		ExperimentValueSize(0),
 		FirstRanDate(0),
 		TotalSamplesCollected(0),
 		AverageBaseline(0),
@@ -58,7 +59,7 @@ struct ArchiveEntry
 
 	static void WriteHeader(std::ostream& str)
 	{
-		str << "GroupName,RunName,ExperimentValue,FirstRanDate,TotalSamplesCollected,AverageBaseline,";
+		str << "GroupName,RunName,ExperimentValue,ExperimentValueSize,FirstRanDate,TotalSamplesCollected,AverageBaseline,";
 		str << "MinBaseline,MinBaselineTimeSinceEpoch,";
 		str << "MinStatSize,MinStatMean,MinStatVariance,MinStatStandardDeviation,MinStatSkewness,MinStatKurtosis,";
 		str << "MinStatMin,MinStatMax,";
@@ -113,6 +114,7 @@ struct ArchiveEntry
 
 	/// The data set size, if one was specified.
 	int64_t ExperimentValue;
+	int64_t ExperimentValueSize;
 
 	uint64_t FirstRanDate;
 	uint32_t TotalSamplesCollected;
@@ -156,6 +158,7 @@ std::ostream& operator<<(std::ostream& str, ArchiveEntry const& data)
 	str << data.GroupName << ",";
 	str << data.RunName << ",";
 	str << data.ExperimentValue << ",";
+	str << data.ExperimentValueSize << ",";
 	str << data.FirstRanDate << ",";
 	str << data.TotalSamplesCollected << ",";
 	str << data.AverageBaseline << ",";
@@ -201,6 +204,7 @@ std::istream& operator>>(std::istream& str, ArchiveEntry& data)
 	str >> data.GroupName;
 	str >> data.RunName;
 	str >> data.ExperimentValue;
+	str >> data.ExperimentValueSize;
 	str >> data.FirstRanDate;
 	str >> data.TotalSamplesCollected;
 	str >> data.AverageBaseline;
@@ -331,6 +335,7 @@ void Archive::add(std::shared_ptr<celero::Result> x)
 		r.FirstRanDate = this->pimpl->now();
 		r.AverageBaseline = x->getBaselineMeasurement();
 		r.ExperimentValue = x->getProblemSpaceValue();
+		r.ExperimentValueSize = x->getProblemSpaceValueSize();
 		r.TotalSamplesCollected = 1;
 
 		r.CurrentBaseline = x->getBaselineMeasurement();

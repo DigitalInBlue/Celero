@@ -142,7 +142,7 @@ namespace celero
 			///
 			///
 			///
-			void addProblemSpace(int64_t x);
+			void addProblemSpace(int64_t x, int64_t size);
 
 			///
 			/// There is one result for each problem space.

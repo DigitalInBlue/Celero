@@ -61,6 +61,16 @@ namespace celero
 			virtual std::vector<int64_t> getExperimentValues() const { return std::vector<int64_t>(); };
 
 			///
+			/// Provide a size in bytes of each experiment value. If the value
+			/// is greater than 0 then additional statistic value will be printed
+			/// in output - [ xxxx MB/sec ]. For example for measure speed of
+			/// file IO operations (megabytes per second).
+			///
+			/// It is only guaranteed that the constructor is called prior to this function being called.
+			///
+			virtual int64_t getExperimentValueSize() const { return 0; };
+
+			///
 			/// Set up the test fixture before benchmark execution.
 			///
 			/// \param experimentValue The value for the experiment.  This can be ignored if the test does not utilize experiment values.

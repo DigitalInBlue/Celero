@@ -1,14 +1,14 @@
 #
 # Top level makefile for Celero
 #
-# Copyright 2014 John Farrier 
+# Copyright 2014 John Farrier
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 # http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -62,43 +62,43 @@ set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 # Compiler Settings
 #
 
-if(MSVC) 
+if(MSVC)
   # Force to always compile with warning level 4
-  if(CMAKE_CXX_FLAGS MATCHES "/W[0-4]") 
-	string(REGEX REPLACE "/W[0-4]" "/W4" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}") 
-  else() 
-	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W4") 
-  endif() 
+  if(CMAKE_CXX_FLAGS MATCHES "/W[0-4]")
+	string(REGEX REPLACE "/W[0-4]" "/W4" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
+  else()
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W4")
+  endif()
 
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}" CACHE STRING "Compiler Flags for All Builds" FORCE) 
-  set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG}" CACHE STRING "Compiler Flags for Debug Builds" FORCE) 
-  set(CMAKE_CXX_FLAGS_RELEASE  "${CMAKE_CXX_FLAGS_RELEASE}" CACHE STRING "Compiler Flags for Release Builds" FORCE) 
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}" CACHE STRING "Compiler Flags for All Builds" FORCE)
+  set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG}" CACHE STRING "Compiler Flags for Debug Builds" FORCE)
+  set(CMAKE_CXX_FLAGS_RELEASE  "${CMAKE_CXX_FLAGS_RELEASE}" CACHE STRING "Compiler Flags for Release Builds" FORCE)
 
   add_definitions("/D_CRT_SECURE_NO_WARNINGS /wd4251 /nologo")
-endif() 
- 
-if(BORLAND) 
-  set(CMAKE_CXX_FLAGS "" CACHE STRING "Compiler Flags for All Builds" FORCE) 
-  set(CMAKE_CXX_FLAGS_DEBUG "" CACHE STRING "Compiler Flags for Debug Builds" FORCE)  
-  set(CMAKE_CXX_FLAGS_RELEASE  "" CACHE STRING "Compiler Flags for Release Builds" FORCE) 
-endif() 
+endif()
+
+if(BORLAND)
+  set(CMAKE_CXX_FLAGS "" CACHE STRING "Compiler Flags for All Builds" FORCE)
+  set(CMAKE_CXX_FLAGS_DEBUG "" CACHE STRING "Compiler Flags for Debug Builds" FORCE)
+  set(CMAKE_CXX_FLAGS_RELEASE  "" CACHE STRING "Compiler Flags for Release Builds" FORCE)
+endif()
 
 message (STATUS "SYSTEM: ${CMAKE_SYSTEM_NAME}")
 if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
-	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libc++") 
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libc++")
 	set(CMAKE_COMPILER_IS_GNUCXX 1)
 endif()
- 
+
 if(UNIX)
-	if(CMAKE_COMPILER_IS_GNUCXX) 
-	  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -std=gnu++11 -Wall" CACHE STRING "Compiler Flags for All Builds" FORCE) 
-	  set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -pedantic" CACHE STRING "Compiler Flags for Debug Builds" FORCE) 
-	  set(CMAKE_CXX_FLAGS_RELEASE  "${CMAKE_CXX_FLAGS_RELEASE}" CACHE STRING "Compiler Flags for Release Builds" FORCE) 
+	if(CMAKE_COMPILER_IS_GNUCXX)
+	  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -std=gnu++11 -Wall" CACHE STRING "Compiler Flags for All Builds" FORCE)
+	  set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -pedantic" CACHE STRING "Compiler Flags for Debug Builds" FORCE)
+	  set(CMAKE_CXX_FLAGS_RELEASE  "${CMAKE_CXX_FLAGS_RELEASE}" CACHE STRING "Compiler Flags for Release Builds" FORCE)
 	else()
-	  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -std=gnu++11 -Wall -fPIC" CACHE STRING "Compiler Flags for All Builds" FORCE) 
-	  set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -pedantic" CACHE STRING "Compiler Flags for Debug Builds" FORCE) 
-	  set(CMAKE_CXX_FLAGS_RELEASE  "${CMAKE_CXX_FLAGS_RELEASE}" CACHE STRING "Compiler Flags for Release Builds" FORCE) 
-	endif() 
+	  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -std=gnu++11 -Wall -fPIC" CACHE STRING "Compiler Flags for All Builds" FORCE)
+	  set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -pedantic" CACHE STRING "Compiler Flags for Debug Builds" FORCE)
+	  set(CMAKE_CXX_FLAGS_RELEASE  "${CMAKE_CXX_FLAGS_RELEASE}" CACHE STRING "Compiler Flags for Release Builds" FORCE)
+	endif()
 endif()
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
@@ -116,8 +116,8 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 
 message("CMAKE_CXX_COMPILER: ${CMAKE_CXX_COMPILER}")
 
-# --------------------------------------------------------------------------- 
-# --------------------------------------------------------------------------- 
+# ---------------------------------------------------------------------------
+# ---------------------------------------------------------------------------
 
 #
 # Install Locations
@@ -192,370 +192,405 @@ set(TARGET_LIBRARIES ${SYSLIBS})
 add_library(${PROJECT_NAME} ${CELERO_USER_DEFINED_SHARED_OR_STATIC} ${TARGET_SRC} ${TARGET_H})
 include_directories(${HEADER_PATH})
 
-install(TARGETS ${PROJECT_NAME} 
-	LIBRARY DESTINATION ${CMAKE_INSTALL_PREFIX}/bin 
+install(TARGETS ${PROJECT_NAME}
+	LIBRARY DESTINATION ${CMAKE_INSTALL_PREFIX}/bin
 	ARCHIVE DESTINATION ${CMAKE_INSTALL_PREFIX}/lib)
 
-# --------------------------------------------------------------------------- 
-# --------------------------------------------------------------------------- 
+# ---------------------------------------------------------------------------
+# ---------------------------------------------------------------------------
 
 if(CELERO_BUILD_EXAMPLES)
-    
+
     SET(PROJECT_TEST_NAME celeroDemoComparison)
-    
+
     #
     # Add Sources
     #
-    
-    add_executable(${PROJECT_TEST_NAME} 
+
+    add_executable(${PROJECT_TEST_NAME}
       examples/DemoComparison.cpp
       )
-    
+
     #
     # Celero Project Dependencies
     #
-    
+
     add_dependencies(${PROJECT_TEST_NAME} celero)
     target_link_libraries(${PROJECT_TEST_NAME} celero)
-    
+
     #
     # Broiler Plate
     #
-    
+
     # VS2012 doesn't support true variadic templates
-    if(MSVC) 
+    if(MSVC)
       add_definitions( /D _VARIADIC_MAX=10 )
     endif()
-    
+
     include_directories(${HEADER_PATH})
-    
+
     # Show here how to automate running after a build:
     # if(CELERO_RUN_EXAMPLE_ON_BUILD)
     #	add_custom_command(TARGET ${PROJECT_TEST_NAME} POST_BUILD COMMAND $<TARGET_FILE:${PROJECT_TEST_NAME}>)
     # endif()
-    
-    # --------------------------------------------------------------------------- 
-    # --------------------------------------------------------------------------- 
-    
+
+    # ---------------------------------------------------------------------------
+    # ---------------------------------------------------------------------------
+
     SET(PROJECT_TEST_NAME celeroDemoSimple)
-    
+
     #
     # Add Sources
     #
-    
-    add_executable(${PROJECT_TEST_NAME} 
+
+    add_executable(${PROJECT_TEST_NAME}
       examples/DemoSimple.cpp
       )
-    
+
     #
     # Celero Project Dependencies
     #
-    
+
     add_dependencies(${PROJECT_TEST_NAME} celero)
     target_link_libraries(${PROJECT_TEST_NAME} celero)
-    
+
     #
     # Broiler Plate
     #
-    
+
     # VS2012 doesn't support true variadic templates
-    if(MSVC) 
+    if(MSVC)
       add_definitions( /D _VARIADIC_MAX=10 )
     endif()
-    
+
     include_directories(${HEADER_PATH})
-    
+
     # Show here how to automate running after a build:
     # Will leave this one operational for demonstrational purposes
     if(CELERO_RUN_EXAMPLE_ON_BUILD)
     	add_custom_command(TARGET ${PROJECT_TEST_NAME} POST_BUILD COMMAND $<TARGET_FILE:${PROJECT_TEST_NAME}>)
     endif()
-    
-    # --------------------------------------------------------------------------- 
-    # --------------------------------------------------------------------------- 
-    
+
+    # ---------------------------------------------------------------------------
+    # ---------------------------------------------------------------------------
+
     SET(PROJECT_TEST_NAME celeroDemoJUnit)
-    
+
     #
     # Add Sources
     #
-    
-    add_executable(${PROJECT_TEST_NAME} 
+
+    add_executable(${PROJECT_TEST_NAME}
       examples/DemoSimpleJUnit.cpp
       )
-    
+
     #
     # Celero Project Dependencies
     #
-    
+
     add_dependencies(${PROJECT_TEST_NAME} celero)
     target_link_libraries(${PROJECT_TEST_NAME} celero)
-    
+
     #
     # Broiler Plate
     #
-    
+
     # VS2012 doesn't support true variadic templates
-    if(MSVC) 
+    if(MSVC)
       add_definitions( /D _VARIADIC_MAX=10 )
     endif()
-    
+
     include_directories(${HEADER_PATH})
-    
+
     # Show here how to automate running after a build:
     # if(CELERO_RUN_EXAMPLE_ON_BUILD)
     #	add_custom_command(TARGET ${PROJECT_TEST_NAME} POST_BUILD COMMAND $<TARGET_FILE:${PROJECT_TEST_NAME}>)
     # endif()
-    
-    # --------------------------------------------------------------------------- 
-    # --------------------------------------------------------------------------- 
-    
+
+    # ---------------------------------------------------------------------------
+    # ---------------------------------------------------------------------------
+
     SET(PROJECT_TEST_NAME celeroDemoSort)
-    
+
     #
     # Add Sources
     #
-    
-    add_executable(${PROJECT_TEST_NAME} 
+
+    add_executable(${PROJECT_TEST_NAME}
       examples/DemoSort.cpp
       )
-    
+
     #
     # Celero Project Dependencies
     #
-    
+
     add_dependencies(${PROJECT_TEST_NAME} celero)
     target_link_libraries(${PROJECT_TEST_NAME} celero)
-    
+
     #
     # Broiler Plate
     #
-    
+
     # VS2012 doesn't support true variadic templates
-    if(MSVC) 
+    if(MSVC)
       add_definitions( /D _VARIADIC_MAX=10 )
     endif()
-    
+
     include_directories(${HEADER_PATH})
-    
+
     # Show here how to automate running after a build:
     # if(CELERO_RUN_EXAMPLE_ON_BUILD)
     #	add_custom_command(TARGET ${PROJECT_TEST_NAME} POST_BUILD COMMAND $<TARGET_FILE:${PROJECT_TEST_NAME}>)
     # endif()
-    
-    # --------------------------------------------------------------------------- 
-    # --------------------------------------------------------------------------- 
-    
+
+    # ---------------------------------------------------------------------------
+    # ---------------------------------------------------------------------------
+
     SET(PROJECT_TEST_NAME celeroDemoTransform)
-    
+
     #
     # Add Sources
     #
-    
-    add_executable(${PROJECT_TEST_NAME} 
+
+    add_executable(${PROJECT_TEST_NAME}
       examples/DemoTransform.cpp)
-    
+
     #
     # Celero Project Dependencies
     #
-    
+
     add_dependencies(${PROJECT_TEST_NAME} celero)
     target_link_libraries(${PROJECT_TEST_NAME} celero)
-    
+
     #
     # Broiler Plate
     #
-    
+
     # VS2012 doesn't support true variadic templates
-    if(MSVC) 
+    if(MSVC)
       add_definitions( /D _VARIADIC_MAX=10 )
     endif()
-    
+
     include_directories(${HEADER_PATH})
-    
+
     # Show here how to automate running after a build:
     # if(CELERO_RUN_EXAMPLE_ON_BUILD)
     #	add_custom_command(TARGET ${PROJECT_TEST_NAME} POST_BUILD COMMAND $<TARGET_FILE:${PROJECT_TEST_NAME}>)
     # endif()
-    
-    # --------------------------------------------------------------------------- 
-    # --------------------------------------------------------------------------- 
-    
+
+    # ---------------------------------------------------------------------------
+    # ---------------------------------------------------------------------------
+
     SET(PROJECT_TEST_NAME celeroDemoParameterPassing)
-    
+
     #
     # Add Sources
     #
-    
-    add_executable(${PROJECT_TEST_NAME} 
+
+    add_executable(${PROJECT_TEST_NAME}
       examples/DemoParameterPassing.cpp)
-    
+
     #
     # Celero Project Dependencies
     #
-    
+
     add_dependencies(${PROJECT_TEST_NAME} celero)
     target_link_libraries(${PROJECT_TEST_NAME} celero)
-    
+
     #
     # Broiler Plate
     #
-    
+
     # VS2012 doesn't support true variadic templates
-    if(MSVC) 
+    if(MSVC)
       add_definitions( /D _VARIADIC_MAX=10 )
     endif()
-    
+
     include_directories(${HEADER_PATH})
-    
+
     # Show here how to automate running after a build:
     # if(CELERO_RUN_EXAMPLE_ON_BUILD)
     #	add_custom_command(TARGET ${PROJECT_TEST_NAME} POST_BUILD COMMAND $<TARGET_FILE:${PROJECT_TEST_NAME}>)
     # endif()
-    
-    # --------------------------------------------------------------------------- 
-    # --------------------------------------------------------------------------- 
-    
+
+    # ---------------------------------------------------------------------------
+    # ---------------------------------------------------------------------------
+
     SET(PROJECT_TEST_NAME celeroDemoSleep)
-    
+
     #
     # Add Sources
     #
-    
-    add_executable(${PROJECT_TEST_NAME} 
+
+    add_executable(${PROJECT_TEST_NAME}
       examples/DemoSleep.cpp)
-    
+
     #
     # Celero Project Dependencies
     #
-    
+
     add_dependencies(${PROJECT_TEST_NAME} celero)
     target_link_libraries(${PROJECT_TEST_NAME} celero)
-    
+
     #
     # Broiler Plate
     #
-    
+
     # VS2012 doesn't support true variadic templates
-    if(MSVC) 
+    if(MSVC)
       add_definitions( /D _VARIADIC_MAX=10 )
     endif()
-    
+
     include_directories(${HEADER_PATH})
-    
+
     # Show here how to automate running after a build:
     # if(CELERO_RUN_EXAMPLE_ON_BUILD)
     #	add_custom_command(TARGET ${PROJECT_TEST_NAME} POST_BUILD COMMAND $<TARGET_FILE:${PROJECT_TEST_NAME}>)
     # endif()
-    
-    # --------------------------------------------------------------------------- 
-    # --------------------------------------------------------------------------- 
-    
+
+    # ---------------------------------------------------------------------------
+    # ---------------------------------------------------------------------------
+
     SET(PROJECT_TEST_NAME celeroDemoPimpl)
-    
+
     #
     # Add Sources
     #
-    
-    add_executable(${PROJECT_TEST_NAME} 
+
+    add_executable(${PROJECT_TEST_NAME}
       examples/DemoPimpl.cpp)
-    
+
     #
     # Celero Project Dependencies
     #
-    
+
     add_dependencies(${PROJECT_TEST_NAME} celero)
     target_link_libraries(${PROJECT_TEST_NAME} celero)
-    
+
     #
     # Broiler Plate
     #
-    
+
     # VS2012 doesn't support true variadic templates
-    if(MSVC) 
+    if(MSVC)
       add_definitions( /D _VARIADIC_MAX=10 )
     endif()
-    
+
     include_directories(${HEADER_PATH})
-    
+
     # Show here how to automate running after a build:
     # if(CELERO_RUN_EXAMPLE_ON_BUILD)
     #	add_custom_command(TARGET ${PROJECT_TEST_NAME} POST_BUILD COMMAND $<TARGET_FILE:${PROJECT_TEST_NAME}>)
     # endif()
-    
-    # --------------------------------------------------------------------------- 
-    # --------------------------------------------------------------------------- 
-    
+
+    # ---------------------------------------------------------------------------
+    # ---------------------------------------------------------------------------
+
     SET(PROJECT_TEST_NAME celeroDemoDoNotOptimizeAway)
-    
+
     #
     # Add Sources
     #
-    
-    add_executable(${PROJECT_TEST_NAME} 
+
+    add_executable(${PROJECT_TEST_NAME}
       examples/DemoDoNotOptimizeAway.cpp)
-    
+
     #
     # Celero Project Dependencies
     #
-    
+
     add_dependencies(${PROJECT_TEST_NAME} celero)
     target_link_libraries(${PROJECT_TEST_NAME} celero)
-    
+
     #
     # Broiler Plate
     #
-    
+
     # VS2012 doesn't support true variadic templates
-    if(MSVC) 
+    if(MSVC)
       add_definitions( /D _VARIADIC_MAX=10 )
     endif()
-    
+
     include_directories(${HEADER_PATH})
-    
+
     # Show here how to automate running after a build:
     # if(CELERO_RUN_EXAMPLE_ON_BUILD)
     #	add_custom_command(TARGET ${PROJECT_TEST_NAME} POST_BUILD COMMAND $<TARGET_FILE:${PROJECT_TEST_NAME}>)
     # endif()
-    
-    # --------------------------------------------------------------------------- 
+
+    # ---------------------------------------------------------------------------
+    # ---------------------------------------------------------------------------
+
+    SET(PROJECT_TEST_NAME celeroDemoFileWrite)
+
+    #
+    # Add Sources
+    #
+
+    add_executable(${PROJECT_TEST_NAME}
+      examples/DemoFileWrite.cpp)
+
+    #
+    # Celero Project Dependencies
+    #
+
+    add_dependencies(${PROJECT_TEST_NAME} celero)
+    target_link_libraries(${PROJECT_TEST_NAME} celero)
+
+    #
+    # Broiler Plate
+    #
+
+    # VS2012 doesn't support true variadic templates
+    if(MSVC)
+      add_definitions( /D _VARIADIC_MAX=10 )
+    endif()
+
+    include_directories(${HEADER_PATH})
+
+    # Show here how to automate running after a build:
+    # if(CELERO_RUN_EXAMPLE_ON_BUILD)
+    #	add_custom_command(TARGET ${PROJECT_TEST_NAME} POST_BUILD COMMAND $<TARGET_FILE:${PROJECT_TEST_NAME}>)
+    # endif()
+
+    # ---------------------------------------------------------------------------
     # Google Test Application
-    # --------------------------------------------------------------------------- 
-    
+    # ---------------------------------------------------------------------------
+
     if(CELERO_ENABLE_TESTS)
     	set(PROJECT_NAME CeleroTest)
-    
-    	add_executable(${PROJECT_NAME} 
+
+    	add_executable(${PROJECT_NAME}
     		test/celero/Benchmark.test.cpp
     		test/celero/Utilities.test.cpp
     		)
-    
+
     	# VS2012 doesn't support true variadic templates
-    	if(MSVC) 
+    	if(MSVC)
     		add_definitions( /D _VARIADIC_MAX=10 )
     	endif()
-    
+
     	SET(HEADER_PATH ${celero_SOURCE_DIR}/include)
     	include_directories(${HEADER_PATH})
     	include_directories(${GTEST_INCLUDE_DIR})
-    
+
     	add_dependencies(${PROJECT_NAME} celero)
     	target_link_libraries(${PROJECT_NAME} ${GTEST_LIBRARY} ${GTEST_MAIN_LIBRARY} celero)
-    
+
     	if(CELERO_ENABLE_AUTO_RUN_TESTS)
     		add_test(${PROJECT_NAME} ${PROJECT_NAME})
     		add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD COMMAND $<TARGET_FILE:${PROJECT_NAME}>)
     	endif()
-    
+
     	if(CELERO_USE_FOLDERS)
     		set_property(TARGET ${PROJECT_NAME} PROPERTY FOLDER "Celero/Test")
     	endif()
     endif()
-    
-    # --------------------------------------------------------------------------- 
+
+    # ---------------------------------------------------------------------------
     # Optional
-    # --------------------------------------------------------------------------- 
-    
+    # ---------------------------------------------------------------------------
+
     if(CELERO_USE_FOLDERS)
     	set_property(TARGET celero PROPERTY FOLDER "Celero")
     	set_property(TARGET celeroDemoComparison PROPERTY FOLDER "Celero/Demo")
@@ -567,6 +602,7 @@ if(CELERO_BUILD_EXAMPLES)
     	set_property(TARGET celeroDemoPimpl PROPERTY FOLDER "Celero/Demo")
     	set_property(TARGET celeroDemoSleep PROPERTY FOLDER "Celero/Demo")
     	set_property(TARGET celeroDemoDoNotOptimizeAway PROPERTY FOLDER "Celero/Demo")
+    	set_property(TARGET celeroDemoFileWrite PROPERTY FOLDER "Celero/Demo")
     endif()
-    
+
 endif(CELERO_BUILD_EXAMPLES)
