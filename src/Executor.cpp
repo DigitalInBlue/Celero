@@ -100,9 +100,10 @@ void executor::RunBaseline(std::shared_ptr<Benchmark> bmark)
 		// Populate the problem space with a fake test fixture instantiation.
 		{
 			auto testValues = baselineExperiment->getFactory()->Create()->getExperimentValues();
+			auto valueSize = baselineExperiment->getFactory()->Create()->getExperimentValueSize();
 			for(auto i : testValues)
 			{
-				baselineExperiment->addProblemSpace(i);
+				baselineExperiment->addProblemSpace(i, valueSize);
 			}
 		}
 
@@ -156,9 +157,10 @@ void executor::Run(std::shared_ptr<Experiment> e)
 	// Populate the problem space with a fake test fixture instantiation.
 	{
 		auto testValues = e->getFactory()->Create()->getExperimentValues();
+		auto valueSize = e->getFactory()->Create()->getExperimentValueSize();
 		for(auto i : testValues)
 		{
-			e->addProblemSpace(i);
+			e->addProblemSpace(i, valueSize);
 		}
 	}
 

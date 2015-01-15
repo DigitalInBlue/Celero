@@ -50,12 +50,17 @@ namespace celero
 			///
 			///
 			///
-			void setProblemSpaceValue(int64_t x);
+			void setProblemSpaceValue(int64_t x, int64_t size);
 
 			///
 			///
 			///
 			int64_t getProblemSpaceValue() const;
+
+			///
+			///
+			///
+			int64_t getProblemSpaceValueSize() const;
 
 			///
 			///
@@ -85,6 +90,13 @@ namespace celero
 			///	An operation is defined as one operation of one run.
 			///
 			double getOpsPerSecond() const;
+
+			///
+			/// \brief	Get the processing speed in megabytes per second.
+			///
+			///	An operation is defined as one operation of one run.
+			///
+			double getMBPerSecond() const;
 
 			///
 			/// Calculate this experiments baseline value.
