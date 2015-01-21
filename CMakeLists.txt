@@ -35,9 +35,9 @@ include(CheckIncludeFile)
 #
 
 option(CELERO_COMPILE_DYNAMIC_LIBRARIES "Set to ON to build Celero for dynamic linking.  Use OFF for static." ON)
-option(CELERO_BUILD_EXAMPLES "Set to ON to automatically build all examples." ON)
 option(CELERO_RUN_EXAMPLE_ON_BUILD "Set to ON to automatically run the example after a successful build." OFF)
-option(CELERO_USE_FOLDERS "Enable to put Celero in its own solution folder under Visual Studio" OFF)
+option(CELERO_ENABLE_EXPERIMENTS "Set to ON to automatically build all examples." ON)
+option(CELERO_ENABLE_FOLDERS "Enable to put Celero in its own solution folder under Visual Studio" ON)
 option(CELERO_ENABLE_TESTS "Enable building and running unit tests." OFF)
 
 if(CELERO_COMPILE_DYNAMIC_LIBRARIES)
@@ -197,376 +197,45 @@ install(TARGETS ${PROJECT_NAME}
 	ARCHIVE DESTINATION ${CMAKE_INSTALL_PREFIX}/lib)
 
 # --------------------------------------------------------------------------- 
+# Google Test Application
 # --------------------------------------------------------------------------- 
 
-if(CELERO_BUILD_EXAMPLES)
-    
-    SET(PROJECT_TEST_NAME celeroDemoComparison)
-    
-    #
-    # Add Sources
-    #
-    
-    add_executable(${PROJECT_TEST_NAME} 
-      examples/DemoComparison.cpp
-      )
-    
-    #
-    # Celero Project Dependencies
-    #
-    
-    add_dependencies(${PROJECT_TEST_NAME} celero)
-    target_link_libraries(${PROJECT_TEST_NAME} celero)
-    
-    #
-    # Broiler Plate
-    #
-    
-    # VS2012 doesn't support true variadic templates
-    if(MSVC) 
-      add_definitions( /D _VARIADIC_MAX=10 )
-    endif()
-    
-    include_directories(${HEADER_PATH})
-    
-    # Show here how to automate running after a build:
-    # if(CELERO_RUN_EXAMPLE_ON_BUILD)
-    #	add_custom_command(TARGET ${PROJECT_TEST_NAME} POST_BUILD COMMAND $<TARGET_FILE:${PROJECT_TEST_NAME}>)
-    # endif()
-    
-    # --------------------------------------------------------------------------- 
-    # --------------------------------------------------------------------------- 
-    
-    SET(PROJECT_TEST_NAME celeroDemoSimple)
-    
-    #
-    # Add Sources
-    #
-    
-    add_executable(${PROJECT_TEST_NAME} 
-      examples/DemoSimple.cpp
-      )
-    
-    #
-    # Celero Project Dependencies
-    #
-    
-    add_dependencies(${PROJECT_TEST_NAME} celero)
-    target_link_libraries(${PROJECT_TEST_NAME} celero)
-    
-    #
-    # Broiler Plate
-    #
-    
-    # VS2012 doesn't support true variadic templates
-    if(MSVC) 
-      add_definitions( /D _VARIADIC_MAX=10 )
-    endif()
-    
-    include_directories(${HEADER_PATH})
-    
-    # Show here how to automate running after a build:
-    # Will leave this one operational for demonstrational purposes
-    if(CELERO_RUN_EXAMPLE_ON_BUILD)
-    	add_custom_command(TARGET ${PROJECT_TEST_NAME} POST_BUILD COMMAND $<TARGET_FILE:${PROJECT_TEST_NAME}>)
-    endif()
-    
-    # --------------------------------------------------------------------------- 
-    # --------------------------------------------------------------------------- 
-    
-    SET(PROJECT_TEST_NAME celeroDemoJUnit)
-    
-    #
-    # Add Sources
-    #
-    
-    add_executable(${PROJECT_TEST_NAME} 
-      examples/DemoSimpleJUnit.cpp
-      )
-    
-    #
-    # Celero Project Dependencies
-    #
-    
-    add_dependencies(${PROJECT_TEST_NAME} celero)
-    target_link_libraries(${PROJECT_TEST_NAME} celero)
-    
-    #
-    # Broiler Plate
-    #
-    
-    # VS2012 doesn't support true variadic templates
-    if(MSVC) 
-      add_definitions( /D _VARIADIC_MAX=10 )
-    endif()
-    
-    include_directories(${HEADER_PATH})
-    
-    # Show here how to automate running after a build:
-    # if(CELERO_RUN_EXAMPLE_ON_BUILD)
-    #	add_custom_command(TARGET ${PROJECT_TEST_NAME} POST_BUILD COMMAND $<TARGET_FILE:${PROJECT_TEST_NAME}>)
-    # endif()
-    
-    # --------------------------------------------------------------------------- 
-    # --------------------------------------------------------------------------- 
-    
-    SET(PROJECT_TEST_NAME celeroDemoSort)
-    
-    #
-    # Add Sources
-    #
-    
-    add_executable(${PROJECT_TEST_NAME} 
-      examples/DemoSort.cpp
-      )
-    
-    #
-    # Celero Project Dependencies
-    #
-    
-    add_dependencies(${PROJECT_TEST_NAME} celero)
-    target_link_libraries(${PROJECT_TEST_NAME} celero)
-    
-    #
-    # Broiler Plate
-    #
-    
-    # VS2012 doesn't support true variadic templates
-    if(MSVC) 
-      add_definitions( /D _VARIADIC_MAX=10 )
-    endif()
-    
-    include_directories(${HEADER_PATH})
-    
-    # Show here how to automate running after a build:
-    # if(CELERO_RUN_EXAMPLE_ON_BUILD)
-    #	add_custom_command(TARGET ${PROJECT_TEST_NAME} POST_BUILD COMMAND $<TARGET_FILE:${PROJECT_TEST_NAME}>)
-    # endif()
-    
-    # --------------------------------------------------------------------------- 
-    # --------------------------------------------------------------------------- 
-    
-    SET(PROJECT_TEST_NAME celeroDemoTransform)
-    
-    #
-    # Add Sources
-    #
-    
-    add_executable(${PROJECT_TEST_NAME} 
-      examples/DemoTransform.cpp)
-    
-    #
-    # Celero Project Dependencies
-    #
-    
-    add_dependencies(${PROJECT_TEST_NAME} celero)
-    target_link_libraries(${PROJECT_TEST_NAME} celero)
-    
-    #
-    # Broiler Plate
-    #
-    
-    # VS2012 doesn't support true variadic templates
-    if(MSVC) 
-      add_definitions( /D _VARIADIC_MAX=10 )
-    endif()
-    
-    include_directories(${HEADER_PATH})
-    
-    # Show here how to automate running after a build:
-    # if(CELERO_RUN_EXAMPLE_ON_BUILD)
-    #	add_custom_command(TARGET ${PROJECT_TEST_NAME} POST_BUILD COMMAND $<TARGET_FILE:${PROJECT_TEST_NAME}>)
-    # endif()
-    
-    # --------------------------------------------------------------------------- 
-    # --------------------------------------------------------------------------- 
-    
-    SET(PROJECT_TEST_NAME celeroDemoParameterPassing)
-    
-    #
-    # Add Sources
-    #
-    
-    add_executable(${PROJECT_TEST_NAME} 
-      examples/DemoParameterPassing.cpp)
-    
-    #
-    # Celero Project Dependencies
-    #
-    
-    add_dependencies(${PROJECT_TEST_NAME} celero)
-    target_link_libraries(${PROJECT_TEST_NAME} celero)
-    
-    #
-    # Broiler Plate
-    #
-    
-    # VS2012 doesn't support true variadic templates
-    if(MSVC) 
-      add_definitions( /D _VARIADIC_MAX=10 )
-    endif()
-    
-    include_directories(${HEADER_PATH})
-    
-    # Show here how to automate running after a build:
-    # if(CELERO_RUN_EXAMPLE_ON_BUILD)
-    #	add_custom_command(TARGET ${PROJECT_TEST_NAME} POST_BUILD COMMAND $<TARGET_FILE:${PROJECT_TEST_NAME}>)
-    # endif()
-    
-    # --------------------------------------------------------------------------- 
-    # --------------------------------------------------------------------------- 
-    
-    SET(PROJECT_TEST_NAME celeroDemoSleep)
-    
-    #
-    # Add Sources
-    #
-    
-    add_executable(${PROJECT_TEST_NAME} 
-      examples/DemoSleep.cpp)
-    
-    #
-    # Celero Project Dependencies
-    #
-    
-    add_dependencies(${PROJECT_TEST_NAME} celero)
-    target_link_libraries(${PROJECT_TEST_NAME} celero)
-    
-    #
-    # Broiler Plate
-    #
-    
-    # VS2012 doesn't support true variadic templates
-    if(MSVC) 
-      add_definitions( /D _VARIADIC_MAX=10 )
-    endif()
-    
-    include_directories(${HEADER_PATH})
-    
-    # Show here how to automate running after a build:
-    # if(CELERO_RUN_EXAMPLE_ON_BUILD)
-    #	add_custom_command(TARGET ${PROJECT_TEST_NAME} POST_BUILD COMMAND $<TARGET_FILE:${PROJECT_TEST_NAME}>)
-    # endif()
-    
-    # --------------------------------------------------------------------------- 
-    # --------------------------------------------------------------------------- 
-    
-    SET(PROJECT_TEST_NAME celeroDemoPimpl)
-    
-    #
-    # Add Sources
-    #
-    
-    add_executable(${PROJECT_TEST_NAME} 
-      examples/DemoPimpl.cpp)
-    
-    #
-    # Celero Project Dependencies
-    #
-    
-    add_dependencies(${PROJECT_TEST_NAME} celero)
-    target_link_libraries(${PROJECT_TEST_NAME} celero)
-    
-    #
-    # Broiler Plate
-    #
-    
-    # VS2012 doesn't support true variadic templates
-    if(MSVC) 
-      add_definitions( /D _VARIADIC_MAX=10 )
-    endif()
-    
-    include_directories(${HEADER_PATH})
-    
-    # Show here how to automate running after a build:
-    # if(CELERO_RUN_EXAMPLE_ON_BUILD)
-    #	add_custom_command(TARGET ${PROJECT_TEST_NAME} POST_BUILD COMMAND $<TARGET_FILE:${PROJECT_TEST_NAME}>)
-    # endif()
-    
-    # --------------------------------------------------------------------------- 
-    # --------------------------------------------------------------------------- 
-    
-    SET(PROJECT_TEST_NAME celeroDemoDoNotOptimizeAway)
-    
-    #
-    # Add Sources
-    #
-    
-    add_executable(${PROJECT_TEST_NAME} 
-      examples/DemoDoNotOptimizeAway.cpp)
-    
-    #
-    # Celero Project Dependencies
-    #
-    
-    add_dependencies(${PROJECT_TEST_NAME} celero)
-    target_link_libraries(${PROJECT_TEST_NAME} celero)
-    
-    #
-    # Broiler Plate
-    #
-    
-    # VS2012 doesn't support true variadic templates
-    if(MSVC) 
-      add_definitions( /D _VARIADIC_MAX=10 )
-    endif()
-    
-    include_directories(${HEADER_PATH})
-    
-    # Show here how to automate running after a build:
-    # if(CELERO_RUN_EXAMPLE_ON_BUILD)
-    #	add_custom_command(TARGET ${PROJECT_TEST_NAME} POST_BUILD COMMAND $<TARGET_FILE:${PROJECT_TEST_NAME}>)
-    # endif()
-    
-    # --------------------------------------------------------------------------- 
-    # Google Test Application
-    # --------------------------------------------------------------------------- 
-    
-    if(CELERO_ENABLE_TESTS)
-    	set(PROJECT_NAME CeleroTest)
-    
-    	add_executable(${PROJECT_NAME} 
-    		test/celero/Benchmark.test.cpp
-    		test/celero/Utilities.test.cpp
-    		)
-    
-    	# VS2012 doesn't support true variadic templates
-    	if(MSVC) 
-    		add_definitions( /D _VARIADIC_MAX=10 )
-    	endif()
-    
-    	SET(HEADER_PATH ${celero_SOURCE_DIR}/include)
-    	include_directories(${HEADER_PATH})
-    	include_directories(${GTEST_INCLUDE_DIR})
-    
-    	add_dependencies(${PROJECT_NAME} celero)
-    	target_link_libraries(${PROJECT_NAME} ${GTEST_LIBRARY} ${GTEST_MAIN_LIBRARY} celero)
-    
-    	if(CELERO_ENABLE_AUTO_RUN_TESTS)
-    		add_test(${PROJECT_NAME} ${PROJECT_NAME})
-    		add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD COMMAND $<TARGET_FILE:${PROJECT_NAME}>)
-    	endif()
-    
-    	if(CELERO_USE_FOLDERS)
-    		set_property(TARGET ${PROJECT_NAME} PROPERTY FOLDER "Celero/Test")
-    	endif()
-    endif()
-    
-    # --------------------------------------------------------------------------- 
-    # Optional
-    # --------------------------------------------------------------------------- 
-    
-    if(CELERO_USE_FOLDERS)
-    	set_property(TARGET celero PROPERTY FOLDER "Celero")
-    	set_property(TARGET celeroDemoComparison PROPERTY FOLDER "Celero/Demo")
-    	set_property(TARGET celeroDemoSimple PROPERTY FOLDER "Celero/Demo")
-    	set_property(TARGET celeroDemoJUnit PROPERTY FOLDER "Celero/Demo")
-    	set_property(TARGET celeroDemoSort PROPERTY FOLDER "Celero/Demo")
-    	set_property(TARGET celeroDemoTransform PROPERTY FOLDER "Celero/Demo")
-    	set_property(TARGET celeroDemoParameterPassing PROPERTY FOLDER "Celero/Demo")
-    	set_property(TARGET celeroDemoPimpl PROPERTY FOLDER "Celero/Demo")
-    	set_property(TARGET celeroDemoSleep PROPERTY FOLDER "Celero/Demo")
-    	set_property(TARGET celeroDemoDoNotOptimizeAway PROPERTY FOLDER "Celero/Demo")
-    endif()
-    
-endif(CELERO_BUILD_EXAMPLES)
+if(CELERO_ENABLE_TESTS)
+	set(PROJECT_NAME CeleroTest)
+
+	add_executable(${PROJECT_NAME} 
+		test/celero/Benchmark.test.cpp
+		test/celero/Utilities.test.cpp
+		)
+
+	# VS2012 doesn't support true variadic templates
+	if(MSVC) 
+		add_definitions( /D _VARIADIC_MAX=10 )
+	endif()
+
+	SET(HEADER_PATH ${celero_SOURCE_DIR}/include)
+	include_directories(${HEADER_PATH})
+	include_directories(${GTEST_INCLUDE_DIR})
+
+	add_dependencies(${PROJECT_NAME} celero)
+	target_link_libraries(${PROJECT_NAME} ${GTEST_LIBRARY} ${GTEST_MAIN_LIBRARY} celero)
+
+	if(CELERO_ENABLE_AUTO_RUN_TESTS)
+		add_test(${PROJECT_NAME} ${PROJECT_NAME})
+		add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD COMMAND $<TARGET_FILE:${PROJECT_NAME}>)
+	endif()
+
+	if(CELERO_ENABLE_FOLDERS)
+		set_property(TARGET ${PROJECT_NAME} PROPERTY FOLDER "Celero/Test")
+	endif()
+endif()
+    
+# --------------------------------------------------------------------------- 
+# Optional
+# --------------------------------------------------------------------------- 
+
+if(CELERO_ENABLE_FOLDERS)
+	set_property(TARGET celero PROPERTY FOLDER "Celero")
+endif()
+
+ADD_SUBDIRECTORY(experiments)
