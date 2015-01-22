@@ -15,14 +15,6 @@ matrix:
       env: BUILD_TYPE=Release STD=c++0x
     - os: linux
       env: BUILD_TYPE=Release STD=c++11
-    - os: osx
-      env: BUILD_TYPE=Debug   STD=c++11
-    - os: osx
-      env: BUILD_TYPE=Release STD=c++11
-    - os: osx
-      env: BUILD_TYPE=Debug   STD=c++11
-    - os: osx
-      env: BUILD_TYPE=Release STD=c++11
 
 env: STD=c++11
 
@@ -38,9 +30,3 @@ branches:
   only:
     - master
     - develop
-
-os:
-  - linux
-  - osx
-
-osx_image: xcode61
