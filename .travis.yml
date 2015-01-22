@@ -19,11 +19,16 @@ matrix:
 env: STD=c++11
 
 before_script:
-    - mkdir build && cd build
+  - sudo apt-get update -qq
+  - sudo apt-get install -qq libyajl-dev libxml2-dev libxqilla-dev
+  - if [ "$CXX" = "clang++" ]; then sudo apt-get install -qq libstdc++-4.8-dev; fi
+  - if [ "$CXX" = "g++" ]; then sudo apt-get install -qq g++-4.8; fi
+  - if [ "$CXX" = "g++" ]; then export CXX="g++-4.8" CC="gcc-4.8"; fi
+  - mkdir build && cd build
 
 script:
-    - cmake .. -DCMAKE_BUILD_TYPE=${BUILD_TYPE} -DCMAKE_CXX_FLAGS="-std=${STD}"
-    - make
+  - cmake .. -DCMAKE_BUILD_TYPE=${BUILD_TYPE} -DCMAKE_CXX_FLAGS="-std=${STD}"
+  - make
 
 branches:
   only:
