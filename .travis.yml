@@ -22,9 +22,8 @@ before_script:
     - mkdir build && cd build
 
 script:
-    - cmake .. -DCMAKE_BUILD_TYPE=${BUILD_TYPE} -DCMAKE_CXX_FLAGS="-std=${STD}" -DCELERO_ENABLE_TESTS
+    - cmake .. -DCMAKE_BUILD_TYPE=${BUILD_TYPE} -DCMAKE_CXX_FLAGS="-std=${STD}"
     - make
-    - CeleroTest
 
 branches:
   only:
