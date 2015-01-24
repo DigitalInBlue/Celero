@@ -1,32 +1,47 @@
-language:
+language: 
   - cpp
-
+  
 compiler:
-  - gcc
   - clang
+  - gcc
 
-matrix:
-  include:
-    - os: linux
-      env: BUILD_TYPE=Debug   STD=c++0x
-    - os: linux
-      env: BUILD_TYPE=Debug   STD=c++11
-    - os: linux
-      env: BUILD_TYPE=Release STD=c++0x
-    - os: linux
-      env: BUILD_TYPE=Release STD=c++11
+# Setup different environments to test
+env:
+  - CPP14=0
+  - CPP14=1
 
-env: STD=c++11
-
-before_script:
+# Setup repos etc before installation
+before_install:
+  - if [ "$CXX" == "g++" ]; then sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test; fi
+  - if [ "$CXX" == "clang++" -a "$CPP14" == "0" ]; then sudo add-apt-repository -y ppa:h-rayflood/llvm; fi
   - sudo apt-get update -qq
-  - sudo apt-get install -qq libyajl-dev libxml2-dev libxqilla-dev
-  - if [ "$CXX" = "clang++" ]; then sudo apt-get install -qq libstdc++-4.8-dev; fi
-  - if [ "$CXX" = "g++" ]; then sudo apt-get install -qq g++-4.8; fi
-  - if [ "$CXX" = "g++" ]; then export CXX="g++-4.8" CC="gcc-4.8"; fi
-  - mkdir build && cd build
 
-script:
+# Install dependencies
+install:
+  # install g++ 4.8, if tests are run with g++
+  - if [ "$CXX" == "g++" ]; then sudo apt-get install -qq g++-4.8; fi
+  - if [ "$CXX" == "g++" ]; then sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-4.8 50; fi
+
+  # install clang-3.4 if CPP14==1
+  - if [ "$CXX" == "clang++" -a "$CPP14" == "0" ]; then sudo apt-get install --allow-unauthenticated -qq clang-3.3; fi
+
+  - if [ "$CXX" == "clang++" ]; then cwd=$(pwd); fi
+
+  # Install libc++ if tests are run with clang++
+  - if [ "$CXX" == "clang++" -a "$CPP14" == "0" ]; then svn co --quiet http://llvm.org/svn/llvm-project/libcxx/trunk@181765 libcxx; fi
+  - if [ "$CXX" == "clang++" -a "$CPP14" == "1" ]; then svn co --quiet http://llvm.org/svn/llvm-project/libcxx/trunk@201601 libcxx; fi
+
+  - if [ "$CXX" == "clang++" ]; then cd libcxx/lib && bash buildit; fi
+  - if [ "$CXX" == "clang++" ]; then sudo cp ./libc++.so.1.0 /usr/lib/; fi
+  - if [ "$CXX" == "clang++" ]; then sudo mkdir /usr/include/c++/v1; fi
+  - if [ "$CXX" == "clang++" ]; then cd .. && sudo cp -r include/* /usr/include/c++/v1/; fi
+  - if [ "$CXX" == "clang++" ]; then cd /usr/lib && sudo ln -sf libc++.so.1.0 libc++.so; fi
+  - if [ "$CXX" == "clang++" ]; then sudo ln -sf libc++.so.1.0 libc++.so.1 && cd $cwd; fi
+
+  - if [ "$CXX" == "clang++" -a "$CPP14" == "0" ]; then CXX=clang++-3.3; fi
+
+# command to run tests
+script: 
   - cmake .. -DCMAKE_BUILD_TYPE=${BUILD_TYPE} -DCMAKE_CXX_FLAGS="-std=${STD}"
   - make
 
