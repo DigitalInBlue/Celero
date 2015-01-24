@@ -1,6 +1,6 @@
 language: 
   - cpp
-  
+
 compiler:
   - clang
   - gcc
@@ -42,6 +42,9 @@ install:
 
 # command to run tests
 script: 
+  - cd /home/travis/build/DigitalInBlue/Celero
+  - mkdir build
+  - cd build
   - cmake .. -DCMAKE_BUILD_TYPE=${BUILD_TYPE} -DCMAKE_CXX_FLAGS="-std=${STD}"
   - make
 
