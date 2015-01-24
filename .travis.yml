@@ -7,6 +7,9 @@ compiler:
 
 # Setup different environments to test
 env:
+  global:
+    - GCC_VERSION="4.9"
+  matrix:
   - CPP14=0
   - CPP14=1
 
@@ -19,8 +22,8 @@ before_install:
 # Install dependencies
 install:
   # install g++ 4.8, if tests are run with g++
-  - if [ "$CXX" == "g++" ]; then sudo apt-get install -qq g++-4.8; fi
-  - if [ "$CXX" == "g++" ]; then sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-4.8 50; fi
+  - if [ "$CXX" = "g++" ]; then sudo apt-get install -qq "g++-${GCC_VERSION}"; fi
+  - if [ "$CXX" = "g++" ]; then export CXX="g++-${GCC_VERSION}" CC="gcc-${GCC_VERSION}"; fi
 
   # install clang-3.4 if CPP14==1
   - if [ "$CXX" == "clang++" -a "$CPP14" == "0" ]; then sudo apt-get install --allow-unauthenticated -qq clang-3.3; fi
@@ -43,9 +46,13 @@ install:
 # command to run tests
 script: 
   - cd /home/travis/build/DigitalInBlue/Celero
+  - pwd
   - mkdir build
+  - pwd
   - cd build
+  - pwd
   - cmake .. -DCMAKE_BUILD_TYPE=${BUILD_TYPE} -DCMAKE_CXX_FLAGS="-std=${STD}"
+  - ls
   - make
 
 branches:
