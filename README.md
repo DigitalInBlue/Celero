@@ -2,15 +2,15 @@
 
 ###C++ Benchmarking Library
 
-Copyright 2014 John Farrier 
+Copyright 2015 John Farrier 
 
 Apache 2.0 License
 
 ###Overview
 
-Developing consistent and meaningful benchmark results for code is a complex task. Measurement tools exist (Intel® VTune™ Amplifier, SmartBear AQTime, Valgrind) external to applications, but they are sometimes expensive for small teams or cumbersome to utilize. This project, Celero, aims to be a small library which can be added to a C++ project and perform benchmarks on code in a way which is easy to reproduce, share, and compare among individual runs, developers, or projects. Celero uses a framework similar to that of GoogleTest to make its API easier to use and integrate into a project. Make automated benchmarking as much a part of your development process as automated testing.
+Developing consistent and meaningful benchmark results for code is a complex task. Measurement tools exist (Intel® VTune™ Amplifier, SmartBear AQTime, Valgrind, etc.) external to applications, but they are sometimes expensive for small teams or cumbersome to utilize. This project, Celero, aims to be a small library which can be added to a C++ project and perform benchmarks on code in a way which is easy to reproduce, share, and compare among individual runs, developers, or projects. Celero uses a framework similar to that of GoogleTest to make its API easier to use and integrate into a project. Make automated benchmarking as much a part of your development process as automated testing.
 
-Celero uses CMake to provide cross-platform builds. It does require a modern compiler (Visual C++ 2012 or GCC 4.7+) due to its use of C++11.
+Celero uses CMake to provide cross-platform builds. It does require a modern compiler (Visual C++ 2012+, GCC 4.7+, Clang 2.9+) due to its use of C++11.
 
 Once Celero is added to your project. You can create dedicated benchmark projects and source files. For convenience, there is single header file and a CELERO_MAIN macro that can be used to provide a main() for your benchmark project that will automatically execute all of your benchmark tests.
 
@@ -339,3 +339,9 @@ Test early and test often!
 - Because I like explicitness as much as the next programmer, I want to note that the actual sorting algorithm used by std::sort is not defined in the standard, but references cite Introsort as a likely contender for how an STL implementation would approach std::sort. http://en.wikipedia.org/wiki/Introsort.
 - When choosing a sorting algorithm, start with std::sort and see if you can make improvements from there.
 - Don't just trust your experience, measure your code!
+
+## Example and Demo Code
+
+Example and demonstration code is provided under Celero's "experiments" folder.  There are two types of projects.  The first are "Demo" projects.  These are useful for illustrating techniques and ideas, but may not be interesting from a computer-science perspective.  Experiments, on the other hand, have been added which demonstrate real-world questions.  
+
+The addition of real use cases of Celero are encouraged to be submitted to Celero's development branch for inclusion in the Demo and Experiment library.

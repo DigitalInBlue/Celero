@@ -143,22 +143,22 @@ class DemoFixture : public celero::TestFixture
 // The number of calls is very large because the operation is very quick.  We want to 
 // look at a large enough chunk of time to reduce the reliance on the resolution of the 
 // clock.  Then, do 30 samples of this large number of runs and keep the quickest.
-BASELINE_F(DemoPimpl, Baseline, DemoFixture, 30, 1000000000)
+BASELINE_F(CostOfPimpl, Baseline, DemoFixture, 30, 1000000000)
 {
 	celero::DoNotOptimizeAway(noPtr.getValue());
 }
 
-BENCHMARK_F(DemoPimpl, RawPtr, DemoFixture, 30, 1000000000)
+BENCHMARK_F(CostOfPimpl, RawPtr, DemoFixture, 30, 1000000000)
 {
 	celero::DoNotOptimizeAway(rawPtr.getValue());
 }
 
-BENCHMARK_F(DemoPimpl, UniquePtr, DemoFixture, 30, 1000000000)
+BENCHMARK_F(CostOfPimpl, UniquePtr, DemoFixture, 30, 1000000000)
 {
 	celero::DoNotOptimizeAway(uniquePtr.getValue());
 }
 
-BENCHMARK_F(DemoPimpl, SutterPtr, DemoFixture, 30, 1000000000)
+BENCHMARK_F(CostOfPimpl, SutterPtr, DemoFixture, 30, 1000000000)
 {
 	celero::DoNotOptimizeAway(sutterPtr.getValue());
 }
