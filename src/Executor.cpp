@@ -163,8 +163,6 @@ void executor::Run(std::shared_ptr<Experiment> e)
 		}
 	}
 
-	return;
-
 	// Result size will grow based on the problem spaces added above.
 	for(size_t i = 0; i < e->getResultSize(); i++)
 	{
