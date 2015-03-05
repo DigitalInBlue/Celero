@@ -97,7 +97,7 @@ void executor::RunBaseline(std::shared_ptr<Benchmark> bmark)
 
 	if(baselineExperiment != nullptr)
 	{
-		// Populate the problem space with a fake test fixture instantiation.
+		// Populate the problem space with a test fixture instantiation.
 		{
 			auto testValues = baselineExperiment->getFactory()->Create()->getExperimentValues();
 			for(auto i : testValues)
@@ -148,7 +148,8 @@ void executor::Run(std::shared_ptr<Experiment> e)
 {
 	auto bmark = e->getBenchmark();
 
-	if(bmark->getBaseline()->getResult(0)->getComplete() == false)
+	auto baseline = bmark->getBaseline();
+	if(baseline->getResultSize() == 0 || baseline->getResult(0)->getComplete() == false)
 	{
 		executor::RunBaseline(bmark);
 	}
@@ -161,6 +162,8 @@ void executor::Run(std::shared_ptr<Experiment> e)
 			e->addProblemSpace(i);
 		}
 	}
+
+	return;
 
 	// Result size will grow based on the problem spaces added above.
 	for(size_t i = 0; i < e->getResultSize(); i++)
