@@ -63,7 +63,7 @@ void print::Run(std::shared_ptr<Result> x)
 		std::cout << x->getExperiment()->getShort();
 	}
 
-	std::cout << " [" << x->getExperiment()->getSamples() << " samples of " << x->getExperiment()->getCalls() << " calls each.]" << std::endl;
+	std::cout << " [" << x->getExperiment()->getSamples() << " samples of " << x->getExperiment()->getCalls() << " calls each. " << x->getExperiment()->getThreads() << " working threads. ]" << std::endl;
 }
 
 void print::Run(const std::string& x)
@@ -96,7 +96,13 @@ void print::Done(std::shared_ptr<Result> x)
 	std::cout << x->getExperiment()->getShort() << " ";
 	std::cout << celero::timer::ConvertSystemTime(x->getRunTime()) << " sec.";
 	std::cout << " [" << x->getRunTime() << " us] [" << x->getUsPerCall() << " us/call]" << std::fixed << 
-		" [" << x->getOpsPerSecond() << " calls/sec]" << std::endl;
+		" [" << x->getOpsPerSecond() << " calls/sec]";
+	// Show processing speed in megabytes per second
+	if (x->getProblemSpaceValueSize() > 0)
+	{
+		std::cout << " [" << x->getMBPerSecond() << " MB/sec]";
+	}
+	std::cout << std::endl;
 }
 
 void print::Baseline(std::shared_ptr<Result> x)

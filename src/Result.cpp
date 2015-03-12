@@ -36,6 +36,7 @@ class Result::Impl
 		Impl() : 
 			stats(),
 			problemSpaceValue(0),
+			problemSpaceValueSize(0),
 			parent(nullptr),
 			complete(false)
 		{
@@ -44,6 +45,7 @@ class Result::Impl
 		explicit Impl(Experiment* const p) : 
 			stats(),
 			problemSpaceValue(0),
+			problemSpaceValueSize(0),
 			parent(p),
 			complete(false)
 		{
@@ -53,6 +55,7 @@ class Result::Impl
 		Statistics stats;
 		
 		int64_t problemSpaceValue;
+		int64_t problemSpaceValueSize;
 
 		/// A pointer back to our owning Experiment parent.
 		Experiment* parent;
@@ -78,14 +81,20 @@ Experiment* Result::getExperiment() const
 	return this->pimpl->parent;
 }
 
-void Result::setProblemSpaceValue(int64_t x)
+void Result::setProblemSpaceValue(int64_t x, int64_t size)
 {
 	this->pimpl->problemSpaceValue = x;
+	this->pimpl->problemSpaceValueSize = size;
 }
 
 int64_t Result::getProblemSpaceValue() const
 {
 	return this->pimpl->problemSpaceValue;
+}
+
+int64_t Result::getProblemSpaceValueSize() const
+{
+	return this->pimpl->problemSpaceValueSize;
 }
 
 Statistics* Result::getStatistics()
@@ -111,6 +120,11 @@ double Result::getUsPerCall() const
 double Result::getOpsPerSecond() const
 {
 	return 1.0 / (this->getUsPerCall() * 1.0e-6);
+}
+
+double Result::getMBPerSecond() const
+{
+    return (this->pimpl->problemSpaceValueSize > 0) ? ((this->pimpl->problemSpaceValue * this->pimpl->problemSpaceValueSize * this->pimpl->parent->getCalls() / (1024 * 1024)) / (this->pimpl->stats.getMin() * 1.0e-6)) : 0;
 }
 
 double Result::getBaselineMeasurement()
