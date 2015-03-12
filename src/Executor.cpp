@@ -1,14 +1,14 @@
 ///
 /// \author	John Farrier
 ///
-/// \copyright Copyright 2014 John Farrier
+/// \copyright Copyright 2015 John Farrier 
 ///
 /// Licensed under the Apache License, Version 2.0 (the "License");
 /// you may not use this file except in compliance with the License.
 /// You may obtain a copy of the License at
-///
+/// 
 /// http://www.apache.org/licenses/LICENSE-2.0
-///
+/// 
 /// Unless required by applicable law or agreed to in writing, software
 /// distributed under the License is distributed on an "AS IS" BASIS,
 /// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -39,7 +39,7 @@ void ExecuteProblemSpace(std::shared_ptr<Result> r)
 	auto testRunner = [r]()
 		{
 			auto test = r->getExperiment()->getFactory()->Create();
-			const auto testTime = test->run(r->getExperiment()->getThreads(), r->getExperiment()->getCalls(), r->getProblemSpaceValue());
+			const auto testTime = test->run(r->getExperiment()->getCalls(), r->getProblemSpaceValue());
 
 			// Save test results
 			r->getStatistics()->addSample(testTime);
@@ -51,7 +51,7 @@ void ExecuteProblemSpace(std::shared_ptr<Result> r)
 		for(auto i = r->getExperiment()->getSamples(); i > 0; --i)
 		{
 			testRunner();
-		}
+		}  
 
 		r->setComplete(true);
 	}
@@ -100,10 +100,9 @@ void executor::RunBaseline(std::shared_ptr<Benchmark> bmark)
 		// Populate the problem space with a fake test fixture instantiation.
 		{
 			auto testValues = baselineExperiment->getFactory()->Create()->getExperimentValues();
-			auto valueSize = baselineExperiment->getFactory()->Create()->getExperimentValueSize();
 			for(auto i : testValues)
 			{
-				baselineExperiment->addProblemSpace(i, valueSize);
+				baselineExperiment->addProblemSpace(i);
 			}
 		}
 
@@ -116,13 +115,13 @@ void executor::RunBaseline(std::shared_ptr<Benchmark> bmark)
 			print::Run(r);
 
 			ExecuteProblemSpace(r);
-
+				
 			// Describe the end of the run.
 			print::Done(r);
 			print::Baseline(r);
 			celero::impl::ExperimentResultComplete(r);
 		}
-
+	
 		celero::impl::ExperimentComplete(baselineExperiment);
 	}
 	else
@@ -157,10 +156,9 @@ void executor::Run(std::shared_ptr<Experiment> e)
 	// Populate the problem space with a fake test fixture instantiation.
 	{
 		auto testValues = e->getFactory()->Create()->getExperimentValues();
-		auto valueSize = e->getFactory()->Create()->getExperimentValueSize();
 		for(auto i : testValues)
 		{
-			e->addProblemSpace(i, valueSize);
+			e->addProblemSpace(i);
 		}
 	}
 
@@ -173,7 +171,7 @@ void executor::Run(std::shared_ptr<Experiment> e)
 		print::Run(r);
 
 		ExecuteProblemSpace(r);
-
+				
 		// Describe the end of the run.
 		print::Done(r);
 		print::Baseline(r);

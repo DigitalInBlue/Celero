@@ -1,7 +1,7 @@
 ///
 /// \author	John Farrier
 ///
-/// \copyright Copyright 2014 John Farrier 
+/// \copyright Copyright 2015 John Farrier 
 ///
 /// Licensed under the Apache License, Version 2.0 (the "License");
 /// you may not use this file except in compliance with the License.
@@ -33,6 +33,7 @@
 #include <iostream>
 #include <fstream>
 #include <cmath>
+#include <cassert>
 
 using namespace celero;
 
@@ -95,20 +96,24 @@ void celero::Run(int argc, char** argv)
 	args.add<uint64_t>("distribution", 'd', "Builds a file to help characterize the distribution of measurements and exits.", false, 0);
 	args.parse_check(argc, argv);
 	
-	if(args.exist("list"))
+	if(args.exist("list") == true)
 	{
-		TestVector& tests = celero::TestVector::Instance();
-		std::cout << "Avaliable tests:" << std::endl;
-		std::vector<std::string> test_names;
-		for(unsigned int i = 0; i < tests.size(); i++)
+		auto& tests = celero::TestVector::Instance();
+		std::vector<std::string> testNames;
+		
+		for(auto i = size_t(0); i < tests.size(); i++)
 		{
 			auto bm = celero::TestVector::Instance()[i];
-			test_names.push_back(bm->getName());
+			testNames.push_back(bm->getName());
 		}
 
-		std::sort(test_names.begin(), test_names.end());
-		for(auto test_name: test_names)
-			std::cout << " " << test_name << std::endl;
+		std::sort(std::begin(testNames), std::end(testNames));
+
+		std::cout << "Avaliable tests:" << std::endl;
+		for(auto i : testNames)
+		{
+			std::cout << "\t" << i << std::endl;
+		}
 
 		return;
 	}
@@ -169,8 +174,6 @@ void celero::Run(int argc, char** argv)
 			});
 	}
 
-	std::string finalOutput;
-
 	// Has a run group been specified?
 	argument = args.get<std::string>("group");
 	if(argument.empty() == false)
@@ -181,7 +184,35 @@ void celero::Run(int argc, char** argv)
 	{
 		executor::RunAll();
 	}
+
+	// Results Sumamry
+	const auto summaryOutput = std::string("Results Summary");
+	print::StageBanner(summaryOutput);
+
+	// Print a summary of run results.
+	for(auto i = size_t(0); i < celero::TestVector::Instance().size(); ++i)
+	{
+		auto test = celero::TestVector::Instance()[i];
+
+		celero::print::SummaryTest(test->getName());
+
+		// Print baseline
+		for(auto j = size_t(0); j < test->getBaseline()->getResultSize(); ++j)
+		{
+			celero::print::Summary(test->getBaseline()->getResult(j));
+
+			// Print test cases corresponding to that baseline.
+			for(auto k = size_t(0); k < test->getExperimentSize(); k++)
+			{
+				// Experiments should have the same number of results as the baseline.
+				assert(test->getExperiment(k)->getResultSize() == test->getBaseline()->getResultSize());
+
+				celero::print::Summary(test->getExperiment(k)->getResult(j));
+			}
+		}
+	}
 	
 	// Final output.
+	const auto finalOutput = std::string("Complete");
 	print::StageBanner(finalOutput);
 }

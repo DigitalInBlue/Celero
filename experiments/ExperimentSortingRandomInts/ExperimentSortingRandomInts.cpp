@@ -13,7 +13,7 @@
 CELERO_MAIN
 
 ///
-/// \class	DemoSortFixture
+/// \class	SortFixture
 ///	\autho	John Farrier
 /// 
 ///	\brief	A Celero Test Fixture for sorting functions.
@@ -33,10 +33,10 @@ CELERO_MAIN
 /// celeroDemo outfile.csv
 /// \endcode
 ///
-class DemoSortFixture : public celero::TestFixture
+class SortFixture : public celero::TestFixture
 {
 	public:
-		DemoSortFixture()
+	SortFixture()
 		{
 		}
 
@@ -80,7 +80,7 @@ class DemoSortFixture : public celero::TestFixture
 };
 
 // For a baseline, I'll choose Bubble Sort.
-BASELINE_F(DemoSort, BubbleSort, DemoSortFixture, 30, 10000)
+BASELINE_F(SortRandInts, BubbleSort, SortFixture, 30, 10000)
 {
 	for(int x = 0; x < this->arraySize; x++)
 	{
@@ -94,7 +94,7 @@ BASELINE_F(DemoSort, BubbleSort, DemoSortFixture, 30, 10000)
 	}
 }
 
-BENCHMARK_F(DemoSort, SelectionSort, DemoSortFixture, 30, 10000)
+BENCHMARK_F(SortRandInts, SelectionSort, SortFixture, 30, 10000)
 {
 	for(int x = 0; x < this->arraySize; x++)
 	{
@@ -112,7 +112,7 @@ BENCHMARK_F(DemoSort, SelectionSort, DemoSortFixture, 30, 10000)
 	}
 }
 
-BENCHMARK_F(DemoSort, stdSort, DemoSortFixture, 30, 10000)
+BENCHMARK_F(SortRandInts, stdSort, SortFixture, 30, 10000)
 {
 	std::sort(this->array.begin(), this->array.end());
 }

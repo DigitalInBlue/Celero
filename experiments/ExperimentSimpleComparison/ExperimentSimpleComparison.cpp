@@ -69,31 +69,32 @@ class StackOverflowFixture : public celero::TestFixture
 		std::uniform_int_distribution<int> RandomInt;
 };
 
-BASELINE_F(StackOverflow, Baseline, StackOverflowFixture, 100, 5000000)
+// Shortened up the name from "StackOverflowSimpleComparison"
+BASELINE_F(SOSimpleComparison, Baseline, StackOverflowFixture, 100, 5000000)
 {
 	celero::DoNotOptimizeAway(NoOp(
 		this->RandomBool(this->Gen), this->RandomInt(this->Gen), this->RandomInt(this->Gen)));
 }
 
-BENCHMARK_F(StackOverflow, Compare, StackOverflowFixture, 100, 5000000)
+BENCHMARK_F(SOSimpleComparison, Compare, StackOverflowFixture, 100, 5000000)
 {
 	celero::DoNotOptimizeAway(Compare(
 		this->RandomBool(this->Gen), this->RandomInt(this->Gen), this->RandomInt(this->Gen)));
 }
 
-BENCHMARK_F(StackOverflow, Compare2, StackOverflowFixture, 100, 5000000)
+BENCHMARK_F(SOSimpleComparison, Compare2, StackOverflowFixture, 100, 5000000)
 {
 	celero::DoNotOptimizeAway(Compare2(
 		this->RandomBool(this->Gen), this->RandomInt(this->Gen), this->RandomInt(this->Gen)));
 }
 
-BENCHMARK_F(StackOverflow, Compare3, StackOverflowFixture, 100, 5000000)
+BENCHMARK_F(SOSimpleComparison, Compare3, StackOverflowFixture, 100, 5000000)
 {
 	celero::DoNotOptimizeAway(Compare3(
 		this->RandomBool(this->Gen), this->RandomInt(this->Gen), this->RandomInt(this->Gen)));
 }
 
-BENCHMARK_F(StackOverflow, Compare4, StackOverflowFixture, 100, 5000000)
+BENCHMARK_F(SOSimpleComparison, Compare4, StackOverflowFixture, 100, 5000000)
 {
 	celero::DoNotOptimizeAway(Compare4(
 		this->RandomBool(this->Gen), this->RandomInt(this->Gen), this->RandomInt(this->Gen)));
