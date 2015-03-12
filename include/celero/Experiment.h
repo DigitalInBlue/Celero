@@ -47,7 +47,7 @@ namespace celero
 			///
 			///
 			///
-			explicit Experiment(std::weak_ptr<Benchmark> benchmark, const std::string& name, uint64_t samples, uint64_t calls, double baselineTarget);
+			explicit Experiment(std::weak_ptr<Benchmark> benchmark, const std::string& name, uint64_t samples, uint64_t calls, uint64_t threads, double baselineTarget);
 
 			///
 			/// \brief	Default destructor.
@@ -88,6 +88,16 @@ namespace celero
 			///
 			///
 			uint64_t getCalls() const;
+
+			///
+			///
+			///
+			void setThreads(uint64_t x);
+
+			///
+			///
+			///
+			uint64_t getThreads() const;
 
 			///
 			///

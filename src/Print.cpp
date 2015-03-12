@@ -62,7 +62,7 @@ void print::Run(std::shared_ptr<Result> x)
 		std::cout << x->getExperiment()->getName();
 	}
 
-	std::cout << " [" << x->getExperiment()->getSamples() << " samples of " << x->getExperiment()->getCalls() << " calls each.]" << std::endl;
+	std::cout << " [" << x->getExperiment()->getSamples() << " samples of " << x->getExperiment()->getCalls() << " calls each. " << x->getExperiment()->getThreads() << " working threads. ]" << std::endl;
 }
 
 void print::Run(const std::string& x)

@@ -26,6 +26,7 @@
 
 #include <celero/Timer.h>
 #include <celero/Export.h>
+#include <celero/ThreadLocal.h>
 
 #include <vector>
 
@@ -83,17 +84,30 @@ namespace celero
 			virtual void tearDown();
 		
 			///
+			/// \param threads The number of working threads.
 			/// \param calls The number of times to loop over the UserBenchmark function.
+			/// \param experimentValue The experiment value to pass in setUp function.
 			///
 			/// \return Returns a pair of the number of microseconds the run took.
 			///
-			uint64_t run(uint64_t calls, int64_t experimentValue);
+			virtual uint64_t run(uint64_t threads, uint64_t calls, int64_t experimentValue);
+
+			///
+			/// Get the current call number starting from 1.
+			///
+			uint64_t getCallId() const { return currentCallId; };
+
+			///
+			/// Get the current thread Id starting from 1.
+			///
+			uint64_t getThreadId() const { return currentThreadId; };
 
 		protected:
+			static thread_local uint64_t currentCallId;
+			static thread_local uint64_t currentThreadId;
+
 			/// Executed for each operation the benchmarking test is run.
 			virtual void UserBenchmark();
-
-		private:
 	};
 }
 

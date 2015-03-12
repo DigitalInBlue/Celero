@@ -36,7 +36,7 @@
 
 using namespace celero;
 
-std::shared_ptr<celero::Benchmark> celero::RegisterTest(const char* groupName, const char* benchmarkName, const uint64_t samples, const uint64_t calls, std::shared_ptr<celero::Factory> experimentFactory, const double target)
+std::shared_ptr<celero::Benchmark> celero::RegisterTest(const char* groupName, const char* benchmarkName, const uint64_t samples, const uint64_t calls, const uint64_t threads, std::shared_ptr<celero::Factory> experimentFactory, const double target)
 {
 	auto bm = celero::TestVector::Instance()[groupName];
 
@@ -51,6 +51,7 @@ std::shared_ptr<celero::Benchmark> celero::RegisterTest(const char* groupName, c
 	p->setName(benchmarkName);
 	p->setSamples(samples);
 	p->setCalls(calls);
+	p->setThreads(threads);
 	p->setFactory(experimentFactory);
 	p->setBaselineTarget(target);
 
@@ -59,7 +60,7 @@ std::shared_ptr<celero::Benchmark> celero::RegisterTest(const char* groupName, c
 	return bm;
 }
 
-std::shared_ptr<celero::Benchmark> celero::RegisterBaseline(const char* groupName, const char* benchmarkName, const uint64_t samples, const uint64_t calls, std::shared_ptr<celero::Factory> experimentFactory)
+std::shared_ptr<celero::Benchmark> celero::RegisterBaseline(const char* groupName, const char* benchmarkName, const uint64_t samples, const uint64_t calls, const uint64_t threads, std::shared_ptr<celero::Factory> experimentFactory)
 {
 	auto bm = celero::TestVector::Instance()[groupName];
 
@@ -74,6 +75,7 @@ std::shared_ptr<celero::Benchmark> celero::RegisterBaseline(const char* groupNam
 	p->setName(benchmarkName);
 	p->setSamples(samples);
 	p->setCalls(calls);
+	p->setThreads(threads);
 	p->setFactory(experimentFactory);
 	p->setBaselineTarget(1.0);
 

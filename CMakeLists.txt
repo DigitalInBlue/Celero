@@ -163,6 +163,7 @@ set(TARGET_H
 	include/celero/ResultTable.h
 	include/celero/Statistics.h
 	include/celero/TestFixture.h
+	include/celero/ThreadTestFixture.h
 	include/celero/TestVector.h
 	include/celero/Timer.h
 	include/celero/Utilities.h
@@ -184,6 +185,7 @@ set(TARGET_SRC
 	src/Statistics.cpp
 	src/TestVector.cpp
 	src/TestFixture.cpp
+	src/ThreadTestFixture.cpp
 	src/Timer.cpp
 	src/Utilities.cpp
 )
@@ -554,6 +556,41 @@ if(CELERO_BUILD_EXAMPLES)
     # endif()
 
     # ---------------------------------------------------------------------------
+    # ---------------------------------------------------------------------------
+
+    SET(PROJECT_TEST_NAME celeroDemoMultithread)
+
+    #
+    # Add Sources
+    #
+
+    add_executable(${PROJECT_TEST_NAME}
+      examples/DemoMultithread.cpp)
+
+    #
+    # Celero Project Dependencies
+    #
+
+    add_dependencies(${PROJECT_TEST_NAME} celero)
+    target_link_libraries(${PROJECT_TEST_NAME} celero)
+
+    #
+    # Broiler Plate
+    #
+
+    # VS2012 doesn't support true variadic templates
+    if(MSVC)
+      add_definitions( /D _VARIADIC_MAX=10 )
+    endif()
+
+    include_directories(${HEADER_PATH})
+
+    # Show here how to automate running after a build:
+    # if(CELERO_RUN_EXAMPLE_ON_BUILD)
+    #	add_custom_command(TARGET ${PROJECT_TEST_NAME} POST_BUILD COMMAND $<TARGET_FILE:${PROJECT_TEST_NAME}>)
+    # endif()
+
+    # ---------------------------------------------------------------------------
     # Google Test Application
     # ---------------------------------------------------------------------------
 
@@ -603,6 +640,7 @@ if(CELERO_BUILD_EXAMPLES)
     	set_property(TARGET celeroDemoSleep PROPERTY FOLDER "Celero/Demo")
     	set_property(TARGET celeroDemoDoNotOptimizeAway PROPERTY FOLDER "Celero/Demo")
     	set_property(TARGET celeroDemoFileWrite PROPERTY FOLDER "Celero/Demo")
+    	set_property(TARGET celeroDemoMultithread PROPERTY FOLDER "Celero/Demo")
     endif()
 
 endif(CELERO_BUILD_EXAMPLES)
