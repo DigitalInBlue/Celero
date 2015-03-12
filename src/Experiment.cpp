@@ -40,12 +40,13 @@ class Experiment::Impl
 			baselineTarget(0),
 			samples(0),
 			calls(0),
+			threads(1),
 			totalRunTime(0),
 			isBaselineCase(false)
 		{
 		}
 
-		Impl(std::weak_ptr<Benchmark> bm, const std::string& n, const uint64_t s, const uint64_t c, const double pBaselineTarget) :
+		Impl(std::weak_ptr<Benchmark> bm, const std::string& n, const uint64_t s, const uint64_t c, const uint64_t t, const double pBaselineTarget) :
 			results(),
 			benchmark(bm),
 			factory(),
@@ -54,6 +55,7 @@ class Experiment::Impl
 			baselineTarget(pBaselineTarget),
 			samples(s),
 			calls(c),
+			threads(t),
 			totalRunTime(0),
 			isBaselineCase(false)
 		{
@@ -68,6 +70,7 @@ class Experiment::Impl
 			baselineTarget(0),
 			samples(0),
 			calls(0),
+			threads(1),
 			totalRunTime(0),
 			isBaselineCase(false)
 		{
@@ -98,6 +101,9 @@ class Experiment::Impl
 		/// Calls per test run.  (Size of each sample.)
 		uint64_t calls;
 
+		/// Threads per test run.  (Size of each sample.)
+		uint64_t threads;
+
 		/// The best run time for this test
 		uint64_t totalRunTime;
 
@@ -114,8 +120,8 @@ Experiment::Experiment(std::weak_ptr<Benchmark> benchmark) :
 {
 }
 
-Experiment::Experiment(std::weak_ptr<Benchmark> benchmark, const std::string& name, uint64_t samples, uint64_t calls, double baselineTarget) :
-	pimpl(benchmark, name, samples, calls, baselineTarget)
+Experiment::Experiment(std::weak_ptr<Benchmark> benchmark, const std::string& name, uint64_t samples, uint64_t calls, uint64_t threads, double baselineTarget) :
+	pimpl(benchmark, name, samples, calls, threads, baselineTarget)
 {
 }
 
@@ -162,6 +168,16 @@ uint64_t Experiment::getCalls() const
 	return this->pimpl->calls;
 }
 
+void Experiment::setThreads(uint64_t x)
+{
+	this->pimpl->threads = x;
+}
+
+uint64_t Experiment::getThreads() const
+{
+	return this->pimpl->threads;
+}
+
 Experiment::operator std::string() const
 {
 	auto output = this->getShort();
@@ -188,11 +204,20 @@ Experiment::operator std::string() const
 
 	if(this->getCalls() == 1)
 	{
-		output += " call per run.";
+		output += " call per run,";
 	}
 	else
 	{
-		output += " calls per run.";
+		output += " calls per run,";
+	}
+
+	if(this->getThreads() == 1)
+	{
+		output += " thread per run.";
+	}
+	else
+	{
+		output += " threads per run.";
 	}
 
 	return output;
@@ -250,10 +275,10 @@ std::shared_ptr<Factory> Experiment::getFactory() const
 	return this->pimpl->factory;
 }
 
-void Experiment::addProblemSpace(int64_t x)
+void Experiment::addProblemSpace(int64_t x, int64_t size)
 {
 	auto r = std::make_shared<Result>(this);
-	r->setProblemSpaceValue(x);
+	r->setProblemSpaceValue(x, size);
 	this->pimpl->results.push_back(r);
 }
 

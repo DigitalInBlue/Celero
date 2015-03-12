@@ -26,6 +26,7 @@
 
 #include <celero/Timer.h>
 #include <celero/Export.h>
+#include <celero/ThreadLocal.h>
 
 #include <vector>
 
@@ -61,6 +62,16 @@ namespace celero
 			virtual std::vector<int64_t> getExperimentValues() const { return std::vector<int64_t>(); };
 
 			///
+			/// Provide a size in bytes of each experiment value. If the value
+			/// is greater than 0 then additional statistic value will be printed
+			/// in output - [ xxxx MB/sec ]. For example for measure speed of
+			/// file IO operations (megabytes per second).
+			///
+			/// It is only guaranteed that the constructor is called prior to this function being called.
+			///
+			virtual int64_t getExperimentValueSize() const { return 0; };
+
+			///
 			/// Set up the test fixture before benchmark execution.
 			///
 			/// \param experimentValue The value for the experiment.  This can be ignored if the test does not utilize experiment values.
@@ -73,17 +84,30 @@ namespace celero
 			virtual void tearDown();
 		
 			///
+			/// \param threads The number of working threads.
 			/// \param calls The number of times to loop over the UserBenchmark function.
+			/// \param experimentValue The experiment value to pass in setUp function.
 			///
 			/// \return Returns a pair of the number of microseconds the run took.
 			///
-			uint64_t run(uint64_t calls, int64_t experimentValue);
+			virtual uint64_t run(uint64_t threads, uint64_t calls, int64_t experimentValue);
+
+			///
+			/// Get the current call number starting from 1.
+			///
+			uint64_t getCallId() const { return currentCallId; };
+
+			///
+			/// Get the current thread Id starting from 1.
+			///
+			uint64_t getThreadId() const { return currentThreadId; };
 
 		protected:
+			static thread_local uint64_t currentCallId;
+			static thread_local uint64_t currentThreadId;
+
 			/// Executed for each operation the benchmarking test is run.
 			virtual void UserBenchmark();
-
-		private:
 	};
 }
 
