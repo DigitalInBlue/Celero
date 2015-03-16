@@ -68,9 +68,7 @@ namespace celero
 			///
 			/// \param experimentValue The value for the experiment.  This can be ignored if the test does not utilize experiment values.
 			///
-			void TestFixture::onExperimentStart(int64_t experimentValue)
-			{
-			}
+			void onExperimentStart(int64_t experimentValue);
 
 			///
 			/// Allows the text fixture to run code that will be executed once
@@ -78,9 +76,7 @@ namespace celero
 			/// of this function IS included in the total experiment execution
 			/// time.
 			///
-			void TestFixture::onExperimentEnd()
-			{
-			}
+			void onExperimentEnd();
 
 			///
 			/// Set up the test fixture before benchmark execution.

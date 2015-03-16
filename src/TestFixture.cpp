@@ -33,7 +33,7 @@ TestFixture::~TestFixture()
 {
 }
 
-void TestFixture::onExperimentStart()
+void TestFixture::onExperimentStart(int64_t)
 {
 }
 
@@ -67,7 +67,7 @@ uint64_t TestFixture::run(const uint64_t calls, int64_t experimentValue)
 		this->UserBenchmark();
 	}
 
-	this->onExperimentEnd(experimentValue);
+	this->onExperimentEnd();
 			
 	const auto endTime = celero::timer::GetSystemTime();
 
