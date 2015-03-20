@@ -1,7 +1,7 @@
 language: cpp
 compiler:
     - gcc
-    - clang
+    # - clang # This is not currently working because it seems to still be looking at GCC include directories.
 
 before_install:
     - echo "yes" | sudo add-apt-repository ppa:kalakris/cmake
