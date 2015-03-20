@@ -37,7 +37,7 @@ script:
   - pwd
   - cd build
   - pwd
-  - cmake .. -DCMAKE_BUILD_TYPE=${BUILD_TYPE} -DCMAKE_CXX_FLAGS="-std=${STD}"
+  - cmake ..
   - ls
   - make
 
