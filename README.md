@@ -1,5 +1,7 @@
 #Celero
 
+Develop Branch Status: [![Build Status](https://travis-ci.org/DigitalInBlue/Celero.svg?branch=develop)](https://travis-ci.org/DigitalInBlue/Celero)
+
 ###C++ Benchmarking Library
 
 Copyright 2015 John Farrier 
