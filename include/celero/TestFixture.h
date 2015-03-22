@@ -61,6 +61,24 @@ namespace celero
 			virtual std::vector<int64_t> getExperimentValues() const { return std::vector<int64_t>(); };
 
 			///
+			/// Allows the text fixture to run code that will be executed once
+			/// immediately before the benchmark. Unlike setUp, the evaluation
+			/// of this function IS included in the total experiment execution
+			/// time.
+			///
+			/// \param experimentValue The value for the experiment.  This can be ignored if the test does not utilize experiment values.
+			///
+			virtual void onExperimentStart(int64_t experimentValue);
+
+			///
+			/// Allows the text fixture to run code that will be executed once
+			/// immediately after the benchmark. Unlike tearDown, the evaluation
+			/// of this function IS included in the total experiment execution
+			/// time.
+			///
+			virtual void onExperimentEnd();
+
+			///
 			/// Set up the test fixture before benchmark execution.
 			///
 			/// \param experimentValue The value for the experiment.  This can be ignored if the test does not utilize experiment values.

@@ -33,6 +33,14 @@ TestFixture::~TestFixture()
 {
 }
 
+void TestFixture::onExperimentStart(int64_t)
+{
+}
+
+void TestFixture::onExperimentEnd()
+{
+}
+
 void TestFixture::setUp(int64_t)
 {
 }
@@ -51,11 +59,15 @@ uint64_t TestFixture::run(const uint64_t calls, int64_t experimentValue)
 			
 	// Get the starting time.
 	const auto startTime = celero::timer::GetSystemTime();
+
+	this->onExperimentStart(experimentValue);
 			
 	while(operation--)
 	{
 		this->UserBenchmark();
 	}
+
+	this->onExperimentEnd();
 			
 	const auto endTime = celero::timer::GetSystemTime();
 

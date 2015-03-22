@@ -259,22 +259,13 @@ void Experiment::addProblemSpace(int64_t x)
 
 size_t Experiment::getResultSize()
 {
-	if(this->pimpl->results.empty() == true)
-	{
-		this->pimpl->results.push_back(std::make_shared<Result>(this));
-	}
-
 	return this->pimpl->results.size();
 }
 
 std::shared_ptr<Result> Experiment::getResult(size_t x)
 {
-	if((x == 0) && (this->pimpl->results.empty() == true))
-	{
-		this->pimpl->results.push_back(std::make_shared<Result>(this));
-	}
-
-	return this->pimpl->results[x];
+	// get the result OR thrown an exception if the result list is empty;
+	return this->pimpl->results.at(x);
 }
 
 std::shared_ptr<Result> Experiment::getResultByValue(int64_t x)
