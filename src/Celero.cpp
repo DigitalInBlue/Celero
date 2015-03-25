@@ -117,13 +117,8 @@ void celero::Run(int argc, char** argv)
 	}
 
 	// Initial output
-	print::GreenBar("");
-	std::cout << std::fixed;
-	celero::console::SetConsoleColor(celero::console::ConsoleColor_Green_Bold);
-	std::cout << "[  CELERO  ]" << std::endl;
-	celero::console::SetConsoleColor(celero::console::ConsoleColor_Default);
+	std::cout << "Celero" << std::endl;
 
-	celero::print::GreenBar("");
 	celero::timer::CachePerformanceFrequency();
 	
 	// Shall we build a distribution?
@@ -172,6 +167,8 @@ void celero::Run(int argc, char** argv)
 			});
 	}
 
+	print::TableBanner();
+
 	// Has a run group been specified?
 	argument = args.get<std::string>("group");
 	if(argument.empty() == false)
@@ -183,34 +180,6 @@ void celero::Run(int argc, char** argv)
 		executor::RunAll();
 	}
 
-	// Results Sumamry
-	const auto summaryOutput = std::string("Results Summary");
-	print::StageBanner(summaryOutput);
-
-	// Print a summary of run results.
-	for(auto i = size_t(0); i < celero::TestVector::Instance().size(); ++i)
-	{
-		auto test = celero::TestVector::Instance()[i];
-
-		celero::print::SummaryTest(test->getName());
-
-		// Print baseline
-		for(auto j = size_t(0); j < test->getBaseline()->getResultSize(); ++j)
-		{
-			celero::print::Summary(test->getBaseline()->getResult(j));
-
-			// Print test cases corresponding to that baseline.
-			for(auto k = size_t(0); k < test->getExperimentSize(); k++)
-			{
-				// Experiments should have the same number of results as the baseline.
-				assert(test->getExperiment(k)->getResultSize() == test->getBaseline()->getResultSize());
-
-				celero::print::Summary(test->getExperiment(k)->getResult(j));
-			}
-		}
-	}
-	
 	// Final output.
-	const auto finalOutput = std::string("Complete");
-	print::StageBanner(finalOutput);
+	std::cout << "Complete.\n";
 }

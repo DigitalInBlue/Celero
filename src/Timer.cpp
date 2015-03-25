@@ -26,7 +26,7 @@
 	#include <chrono>
 #endif
 
-#include <sstream>
+#include <iostream>
 
 uint64_t celero::timer::GetSystemTime()
 {
@@ -47,8 +47,7 @@ double celero::timer::ConvertSystemTime(uint64_t x)
 
 void celero::timer::CachePerformanceFrequency()
 {
-	std::stringstream ss;
-	ss << "Timer resolution: ";
+	std::cout << "Timer resolution: ";
 
 	#ifdef WIN32
 		QueryPerformanceFrequency(&QPCFrequency);
@@ -58,6 +57,5 @@ void celero::timer::CachePerformanceFrequency()
 			static_cast<double>(std::chrono::high_resolution_clock::period::den)) * 1000000.0;
 	#endif
 
-	ss << std::to_string(precision) << " us";
-	celero::print::Status(ss.str());
+	std::cout << std::to_string(precision) << " us\n";
 }

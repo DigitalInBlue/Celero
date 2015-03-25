@@ -62,14 +62,9 @@ void celero::RunDistribution(uint64_t intArgument)
 	std::vector<double> series3Normalized;
 	std::vector<double> series4Normalized;
 
-	print::StageBanner("Building Distributions Output");
-	print::Run("Distributions 64");
 	auto series1 = celero::BuildDistribution(intArgument, uint64_t(64));
-	print::Run("Distributions 256");
 	auto series2 = celero::BuildDistribution(intArgument, uint64_t(256));
-	print::Run("Distributions 1024");
 	auto series3 = celero::BuildDistribution(intArgument, uint64_t(1024));
-	print::Run("Distributions 4096");
 	auto series4 = celero::BuildDistribution(intArgument, uint64_t(4096));
 
 	std::array<std::map<double, uint64_t>, 4> histograms;

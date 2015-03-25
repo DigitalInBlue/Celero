@@ -69,8 +69,6 @@ void executor::RunAll()
 
 void executor::RunAllBaselines()
 {
-	print::StageBanner("Baselining");
-
 	// Run through all the tests in ascending order.
 	for(size_t i = 0; i < celero::TestVector::Instance().size(); i++)
 	{
@@ -81,8 +79,6 @@ void executor::RunAllBaselines()
 
 void executor::RunAllExperiments()
 {
-	print::StageBanner("Benchmarking");
-
 	// Run through all the tests in ascending order.
 	for(size_t i = 0; i < celero::TestVector::Instance().size(); i++)
 	{
@@ -104,6 +100,13 @@ void executor::RunBaseline(std::shared_ptr<Benchmark> bmark)
 			{
 				baselineExperiment->addProblemSpace(i);
 			}
+
+			// Add a single default problem space if none was specified.  
+			// This is needed to get the result size later.
+			if(baselineExperiment->getResultSize() == 0)
+			{
+				baselineExperiment->addProblemSpace(0);
+			}
 		}
 
 		for(size_t i = 0; i < baselineExperiment->getResultSize(); i++)
@@ -112,13 +115,12 @@ void executor::RunBaseline(std::shared_ptr<Benchmark> bmark)
 			assert(r != nullptr);
 
 			// Describe the beginning of the run.
-			print::Run(r);
+			print::TableRowHeader(r);
 
 			ExecuteProblemSpace(r);
 				
 			// Describe the end of the run.
-			print::Done(r);
-			print::Baseline(r);
+			print::TableResult(r);
 			celero::impl::ExperimentResultComplete(r);
 		}
 	
@@ -126,7 +128,7 @@ void executor::RunBaseline(std::shared_ptr<Benchmark> bmark)
 	}
 	else
 	{
-		print::Failure("No Baseline case defined for \"" + bmark->getName() + "\".  Exiting.");
+		std::cerr << "No Baseline case defined for \"" + bmark->getName() + "\".  Exiting.";
 		std::exit(EXIT_FAILURE);
 	}
 }
@@ -161,6 +163,13 @@ void executor::Run(std::shared_ptr<Experiment> e)
 		{
 			e->addProblemSpace(i);
 		}
+
+		// Add a single default problem space if none was specified.  
+		// This is needed to get the result size later.
+		if(e->getResultSize() == 0)
+		{
+			e->addProblemSpace(0);
+		}
 	}
 
 	// Result size will grow based on the problem spaces added above.
@@ -169,14 +178,12 @@ void executor::Run(std::shared_ptr<Experiment> e)
 		auto r = e->getResult(i);
 
 		// Describe the beginning of the run.
-		print::Run(r);
+		print::TableRowHeader(r);
 
 		ExecuteProblemSpace(r);
 				
 		// Describe the end of the run.
-		print::Done(r);
-		print::Baseline(r);
-
+		print::TableResult(r);
 		celero::impl::ExperimentResultComplete(r);
 	}
 

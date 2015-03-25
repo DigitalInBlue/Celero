@@ -69,7 +69,7 @@ namespace celero
 	///
 	/// \param groupName The name of the Test Group that the baseline is associated with.
 	/// \param benchmarkName A unique name for a specific test baseline within a Test Group.
-	/// \param samples The total number of times to execute the Test baseline.  (Each test contains calls.)
+	/// \param samples The total number of times to execute the Test baseline.  (Each sample contains one or more calls.)
 	/// \param calls The total number of calls per Test baseline.
 	/// \param experimentFactory The factory implementation for the test baseline.
 	///

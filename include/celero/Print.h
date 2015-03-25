@@ -34,16 +34,20 @@ namespace celero
 	///
 	namespace print
 	{
-		void StageBanner(const std::string& x);
-		void GreenBar(const std::string& x);
-		void Run(const std::string& x);
-		void Status(const std::string& x);
-		void Failure(const std::string& x);
-		void Run(std::shared_ptr<Result> x);
-		void Done(std::shared_ptr<Result> x);
-		void Baseline(std::shared_ptr<Result> x);
-		void SummaryTest(const std::string& x);
-		void Summary(std::shared_ptr<Result> x);
+		//void StageBanner(const std::string& x);
+		//void GreenBar(const std::string& x);
+		//void Run(const std::string& x);
+		//void Status(const std::string& x);
+		//void Failure(const std::string& x);
+		//void Run(std::shared_ptr<Result> x);
+		//void Done(std::shared_ptr<Result> x);
+		//void Baseline(std::shared_ptr<Result> x);
+		//void SummaryTest(const std::string& x);
+		//void Summary(std::shared_ptr<Result> x);
+
+		void TableBanner();
+		void TableRowHeader(std::shared_ptr<Result> x);
+		void TableResult(std::shared_ptr<Result> x);
 	}
 }
 
