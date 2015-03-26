@@ -39,7 +39,7 @@ void ExecuteProblemSpace(std::shared_ptr<Result> r)
 	auto testRunner = [r]()
 		{
 			auto test = r->getExperiment()->getFactory()->Create();
-			const auto testTime = test->run(r->getExperiment()->getIterations(), r->getProblemSpaceValue());
+			const auto testTime = test->run(r->getExperiment()->getCalls(), r->getProblemSpaceValue());
 
 			// Save test results
 			r->getStatistics()->addSample(testTime);

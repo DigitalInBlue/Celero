@@ -19,7 +19,7 @@ Once Celero is added to your project. You can create dedicated benchmark project
 ###Command Line
 
 ```
-<celeroOutputExecutable> [-g groupNameToRun] [-t resultsTable.csv] [-j junitOutputFile.xml] [-a resultArchive.csv] [-d numberOfIterationsPerDistribution] [-h]
+<celeroOutputExecutable> [-g groupNameToRun] [-t resultsTable.csv] [-j junitOutputFile.xml] [-a resultArchive.csv] [-d numberOfCallsPerSample] [-h]
 ```
 
 -g Use this option to run only one benchmark group out of all benchmarks contained within a test executable.
@@ -148,22 +148,35 @@ After the baseline is defined, various benchmarks are then defined.  They syntax
 
 ###Results
 
-Running Celero's simple example experiment (celeroDemoSimple.exe) benchmark gave the following output on a PC:
+The sample project is configured to automatically execute the benchmark code upon successful compilation.  Running this benchmark gave the following output on a PC:
 
 ```
-Celero
-Timer resolution: 0.069841 us
------------------------------------------------------------------------------------------------------------------------------------------------
-     Group      |   Experiment    |   Prob. Space   |     Samples     |   Iterations    |    Baseline     |  us/Iteration   | Iterations/sec  |
------------------------------------------------------------------------------------------------------------------------------------------------
-DemoSimple      | Baseline        |               0 |              10 |         1000000 |         1.00000 |         0.28789 |      3473512.73 |
-DemoSimple      | Complex1        |               0 |               1 |          710000 |         1.11028 |         0.31964 |      3128497.53 |
-DemoSimple      | Complex2        |               0 |              30 |          710000 |         1.10749 |         0.31884 |      3136388.74 |
-DemoSimple      | Complex3        |               0 |              60 |          710000 |         1.10678 |         0.31863 |      3138398.97 |
-Complete.
+[==========]
+[  CELERO  ]
+[==========]
+[ STAGE    ] Baselining
+[==========]
+[ RUN      ] Baseline [10 samples of 1000000 calls each.]
+[     DONE ] DemoSimple.Baseline 17.083564 sec. [1.669309e-006 us/call] [59905.030926 calls/sec]
+[ BASELINE ] DemoSimple.Baseline 1.000000 [SD: 897238.378300, V: 805036707494.443850, K: 4.501174]
+[==========]
+[ STAGE    ] Benchmarking
+[==========]
+[ RUN      ] Complex1 [1 samples of 710000 calls each.]
+[     DONE ] DemoSimple.Complex1 1.194630 sec. [1.682577e-006 us/call] [59432.628973 calls/sec]
+[ BASELINE ] DemoSimple.Complex1 1.007949 [SD: 0.000000, V: 0.000000, K: 0.000000]
+[ RUN      ] Complex2 [30 samples of 710000 calls each.]
+[     DONE ] DemoSimple.Complex2 35.891073 sec. [1.661372e-006 us/call] [60191.213933 calls/sec]
+[ BASELINE ] DemoSimple.Complex2 0.995245 [SD: 187912.311628, V: 35311036861.333244, K: 0.159417]
+[ RUN      ] Complex3 [60 samples of 710000 calls each.]
+[     DONE ] DemoSimple.Complex3 72.550524 sec. [1.662502e-006 us/call] [60150.303754 calls/sec]
+[ BASELINE ] DemoSimple.Complex3 0.995922 [SD: 206802.293968, V: 42767188790.613228, K: 3.088717]
+[==========]
+[ STAGE    ]
+[==========]
 ```
 
-The first test that executes will be the group's baseline.  Celero took 10 samples of 1000000 iterations of the code in our test.  (Each set of 1000000 iterations was measured, and this was done 10 times and the smallest time was taken.)  The "Baseline" value for the baseline measurement itself will always be 1.0.
+The first test that executes will be the group's baseline.  Celero took 10 samples of 10000000 iterations of the code in our test.  (Each set of 10000000 calls was measured, and this was done 10 times and the smallest time was taken.) This total measurement took 17.083564 seconds.  Given this, it was measured that each individual call of the baseline code took 1.669309e-006 microseconds.
 
 After the baseline is complete, each individual test is ran.  Each test is executed and measured in the same way, however, there is an additional metric reported: Baseline.  This compares the time it takes to compute the benchmark to the baseline.  The data here shows that CeleroBenchTest.Complex1 takes 1.007949 times longer to execute than the baseline.
 
@@ -193,10 +206,10 @@ Within Celero, a test fixture can push integers into a ProblemSetValues vector w
 To demonstrate, we will study the performance of three common sorting algorithms: BubbleSort, SelectionSort, and std::sort. (The source code to this demo is distributed with Celero, available on GitHub.)  First, we will write a test fixture for Celero.
 
 ```C++
-class SortFixture : public celero::TestFixture
+class DemoSortFixture : public celero::TestFixture
 {
     public:
-        SortFixture()
+        DemoSortFixture()
         {
         }
 
@@ -248,7 +261,7 @@ Now for implementing the actual sorting algorithms. For the baseline case, I imp
 
 ```C++
 // For a baseline, I'll choose Bubble Sort.
-BASELINE_F(SortRandInts, BubbleSort, SortFixture, 30, 10000)
+BASELINE_F(DemoSort, BubbleSort, DemoSortFixture, 30, 10000)
 {
     for(int x = 0; x < this->arraySize; x++)
     {
@@ -268,7 +281,7 @@ Celero will use the values from this baseline when computing a base lined measur
 Next, we will implement the Selection Sort algorithm.
 
 ```C++
-BENCHMARK_F(SortRandInts, SelectionSort, SortFixture, 30, 10000)
+BENCHMARK_F(DemoSort, SelectionSort, DemoSortFixture, 30, 10000)
 {
     for(int x = 0; x < this->arraySize; x++)
     {
@@ -290,7 +303,7 @@ BENCHMARK_F(SortRandInts, SelectionSort, SortFixture, 30, 10000)
 Finally, for good measure, we will simply use the Standard Library's sorting algorithm: Introsort*. We only need write a single line of code, but here it is for completeness.
 
 ```C++
-BENCHMARK_F(SortRandInts, stdSort, SortFixture, 30, 10000)
+BENCHMARK_F(DemoSort, stdSort, DemoSortFixture, 30, 10000)
 {
     std::sort(this->array.begin(), this->array.end());
 }
@@ -303,36 +316,18 @@ This test was ran on a 4.00 GHz AMD with four cores, eight logical processors, a
 Celero outputs timing and benchmark references for each test automatically. However, to write to an output file for easy plotting, simply specify an output file on the command line.
 
 ```
-celeroExperimentSortingRandomInts.exe -t results.csv
+celeroDemo -t results.csv
 ```
 
 While not particularly surprising std::sort is by far the best option with any meaningful problem set size. The results are summarized in the following table output written directly by Celero:
 
 ```
-Celero
-Timer resolution: 0.069841 us
------------------------------------------------------------------------------------------------------------------------------------------------
-     Group      |   Experiment    |   Prob. Space   |     Samples     |   Iterations    |    Baseline     |  us/Iteration   | Iterations/sec  |
------------------------------------------------------------------------------------------------------------------------------------------------
-SortRandInts    | BubbleSort      |               2 |              30 |           10000 |         1.00000 |         0.00500 |    200000000.00 |
-SortRandInts    | BubbleSort      |               4 |              30 |           10000 |         1.00000 |         0.01820 |     54945054.95 |
-SortRandInts    | BubbleSort      |               8 |              30 |           10000 |         1.00000 |         0.08380 |     11933174.22 |
-SortRandInts    | BubbleSort      |              16 |              30 |           10000 |         1.00000 |         0.34860 |      2868617.33 |
-SortRandInts    | BubbleSort      |              32 |              30 |           10000 |         1.00000 |         1.38200 |       723589.00 |
-SortRandInts    | BubbleSort      |              64 |              30 |           10000 |         1.00000 |         5.19970 |       192318.79 |
-SortRandInts    | SelectionSort   |               2 |              30 |           10000 |         1.54000 |         0.00770 |    129870129.87 |
-SortRandInts    | SelectionSort   |               4 |              30 |           10000 |         0.91758 |         0.01670 |     59880239.52 |
-SortRandInts    | SelectionSort   |               8 |              30 |           10000 |         0.81265 |         0.06810 |     14684287.81 |
-SortRandInts    | SelectionSort   |              16 |              30 |           10000 |         0.74154 |         0.25850 |      3868471.95 |
-SortRandInts    | SelectionSort   |              32 |              30 |           10000 |         0.62171 |         0.85920 |      1163873.37 |
-SortRandInts    | SelectionSort   |              64 |              30 |           10000 |         0.60811 |         3.16200 |       316255.53 |
-SortRandInts    | stdSort         |               2 |              30 |           10000 |         1.42000 |         0.00710 |    140845070.42 |
-SortRandInts    | stdSort         |               4 |              30 |           10000 |         0.51099 |         0.00930 |    107526881.72 |
-SortRandInts    | stdSort         |               8 |              30 |           10000 |         0.18377 |         0.01540 |     64935064.94 |
-SortRandInts    | stdSort         |              16 |              30 |           10000 |         0.08233 |         0.02870 |     34843205.57 |
-SortRandInts    | stdSort         |              32 |              30 |           10000 |         0.03915 |         0.05410 |     18484288.35 |
-SortRandInts    | stdSort         |              64 |              30 |           10000 |         0.03831 |         0.19920 |      5020080.32 |
-Complete.
+DemoSort
+,2,4,8,16,32,64,
+BubbleSort,1.50089e-008,5.47556e-008,1.2232e-007,5.20373e-007,1.39006e-006,5.24534e-006,
+SelectionSort,8.06667e-009,1.76e-008,7.348e-008,2.74364e-007,9.05569e-007,3.22173e-006,
+stdSort,7.04e-009,9.97333e-009,1.77956e-008,3.51511e-008,6.16e-008,2.06262e-007,
+
 ```
 
 The data shows first the test group name. Next, all of the data sizes are output. Then each row shows the baseline or benchmark name and the corresponding time for the algorithm to complete measured in useconds. This data, in CSV format, can be directly read by programs such as Microsoft Excel and plotted without any modification.

@@ -140,7 +140,7 @@ class DemoFixture : public celero::TestFixture
 		SutterPointer sutterPtr;
 };
 
-// The number of iterations is very large because the operation is very quick.  We want to 
+// The number of calls is very large because the operation is very quick.  We want to 
 // look at a large enough chunk of time to reduce the reliance on the resolution of the 
 // clock.  Then, do 30 samples of this large number of runs and keep the quickest.
 BASELINE_F(CostOfPimpl, Baseline, DemoFixture, 30, 1000000000)

@@ -30,12 +30,12 @@ namespace celero
 	///
 	/// Collects results from Celero for analysis of a hard-coded internal trivial measurement case.
 	///
-	CELERO_EXPORT std::vector<uint64_t> BuildDistribution(uint64_t numberOfSamples, uint64_t iterationsPerSample);
+	CELERO_EXPORT std::vector<uint64_t> BuildDistribution(uint64_t numberOfSamples, uint64_t callsPerSample);
 
 	///
 	/// Builds a .csv file to help determine Celero's measurement distribution.
 	///
-	CELERO_EXPORT void RunDistribution(uint64_t iterationsPerSample);
+	CELERO_EXPORT void RunDistribution(uint64_t callsPerSample);
 }
 
 #endif
