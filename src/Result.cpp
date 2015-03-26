@@ -1,14 +1,14 @@
 ///
 /// \author	John Farrier
 ///
-/// \copyright Copyright 2015 John Farrier 
+/// \copyright Copyright 2015 John Farrier
 ///
 /// Licensed under the Apache License, Version 2.0 (the "License");
 /// you may not use this file except in compliance with the License.
 /// You may obtain a copy of the License at
-/// 
+///
 /// http://www.apache.org/licenses/LICENSE-2.0
-/// 
+///
 /// Unless required by applicable law or agreed to in writing, software
 /// distributed under the License is distributed on an "AS IS" BASIS,
 /// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -33,17 +33,19 @@ using namespace celero;
 class Result::Impl
 {
 	public:
-		Impl() : 
+		Impl() :
 			stats(),
 			problemSpaceValue(0),
+            problemSpaceValueScale(0),
 			parent(nullptr),
 			complete(false)
 		{
 		}
 
-		explicit Impl(Experiment* const p) : 
+		explicit Impl(Experiment* const p) :
 			stats(),
 			problemSpaceValue(0),
+            problemSpaceValueScale(0),
 			parent(p),
 			complete(false)
 		{
@@ -51,8 +53,9 @@ class Result::Impl
 
 		/// Track statistics about this specific experiment.
 		Statistics stats;
-		
+
 		int64_t problemSpaceValue;
+        int64_t problemSpaceValueScale;
 
 		/// A pointer back to our owning Experiment parent.
 		Experiment* parent;
@@ -78,14 +81,20 @@ Experiment* Result::getExperiment() const
 	return this->pimpl->parent;
 }
 
-void Result::setProblemSpaceValue(int64_t x)
+void Result::setProblemSpaceValue(int64_t x, int64_t scale)
 {
 	this->pimpl->problemSpaceValue = x;
+	this->pimpl->problemSpaceValueScale = scale;
 }
 
 int64_t Result::getProblemSpaceValue() const
 {
 	return this->pimpl->problemSpaceValue;
+}
+
+int64_t Result::getProblemSpaceValueScale() const
+{
+    return this->pimpl->problemSpaceValueScale;
 }
 
 Statistics* Result::getStatistics()
@@ -111,6 +120,11 @@ double Result::getUsPerCall() const
 double Result::getOpsPerSecond() const
 {
 	return 1.0 / (this->getUsPerCall() * 1.0e-6);
+}
+
+double Result::getUnitsPerSecond() const
+{
+    return (this->pimpl->problemSpaceValueScale > 0) ? ((this->pimpl->problemSpaceValue * this->pimpl->parent->getCalls() / this->pimpl->problemSpaceValueScale) / (this->pimpl->stats.getMin() * 1.0e-6)) : 0;
 }
 
 double Result::getBaselineMeasurement()

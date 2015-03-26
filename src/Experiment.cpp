@@ -1,14 +1,14 @@
 ///
 /// \author	John Farrier
 ///
-/// \copyright Copyright 2015 John Farrier 
+/// \copyright Copyright 2015 John Farrier
 ///
 /// Licensed under the Apache License, Version 2.0 (the "License");
 /// you may not use this file except in compliance with the License.
 /// You may obtain a copy of the License at
-/// 
+///
 /// http://www.apache.org/licenses/LICENSE-2.0
-/// 
+///
 /// Unless required by applicable law or agreed to in writing, software
 /// distributed under the License is distributed on an "AS IS" BASIS,
 /// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -31,7 +31,7 @@ using namespace celero;
 class Experiment::Impl
 {
 	public:
-		Impl() : 
+		Impl() :
 			results(),
 			benchmark(),
 			factory(),
@@ -40,12 +40,13 @@ class Experiment::Impl
 			baselineTarget(0),
 			samples(0),
 			calls(0),
+			threads(1),
 			totalRunTime(0),
 			isBaselineCase(false)
 		{
 		}
 
-		Impl(std::weak_ptr<Benchmark> bm, const std::string& n, const uint64_t s, const uint64_t c, const double pBaselineTarget) :
+		Impl(std::weak_ptr<Benchmark> bm, const std::string& n, const uint64_t s, const uint64_t c, const uint64_t t, const double pBaselineTarget) :
 			results(),
 			benchmark(bm),
 			factory(),
@@ -54,6 +55,7 @@ class Experiment::Impl
 			baselineTarget(pBaselineTarget),
 			samples(s),
 			calls(c),
+			threads(t),
 			totalRunTime(0),
 			isBaselineCase(false)
 		{
@@ -68,6 +70,7 @@ class Experiment::Impl
 			baselineTarget(0),
 			samples(0),
 			calls(0),
+			threads(1),
 			totalRunTime(0),
 			isBaselineCase(false)
 		{
@@ -94,9 +97,12 @@ class Experiment::Impl
 
 		/// Test samples to complete.
 		uint64_t samples;
-		
+
 		/// Calls per test run.  (Size of each sample.)
 		uint64_t calls;
+
+		/// Threads per test run.  (Size of each sample.)
+		uint64_t threads;
 
 		/// The best run time for this test
 		uint64_t totalRunTime;
@@ -104,7 +110,7 @@ class Experiment::Impl
 		bool isBaselineCase;
 };
 
-Experiment::Experiment() : 
+Experiment::Experiment() :
 	pimpl()
 {
 }
@@ -114,8 +120,8 @@ Experiment::Experiment(std::weak_ptr<Benchmark> benchmark) :
 {
 }
 
-Experiment::Experiment(std::weak_ptr<Benchmark> benchmark, const std::string& name, uint64_t samples, uint64_t calls, double baselineTarget) :
-	pimpl(benchmark, name, samples, calls, baselineTarget)
+Experiment::Experiment(std::weak_ptr<Benchmark> benchmark, const std::string& name, uint64_t samples, uint64_t calls, uint64_t threads, double baselineTarget) :
+	pimpl(benchmark, name, samples, calls, threads, baselineTarget)
 {
 }
 
@@ -162,6 +168,16 @@ uint64_t Experiment::getCalls() const
 	return this->pimpl->calls;
 }
 
+void Experiment::setThreads(uint64_t x)
+{
+	this->pimpl->threads = x;
+}
+
+uint64_t Experiment::getThreads() const
+{
+	return this->pimpl->threads;
+}
+
 Experiment::operator std::string() const
 {
 	auto output = this->getShort();
@@ -188,11 +204,20 @@ Experiment::operator std::string() const
 
 	if(this->getCalls() == 1)
 	{
-		output += " call per run.";
+		output += " call per run,";
 	}
 	else
 	{
-		output += " calls per run.";
+		output += " calls per run,";
+	}
+
+	if(this->getThreads() == 1)
+	{
+		output += " thread per run.";
+	}
+	else
+	{
+		output += " threads per run.";
 	}
 
 	return output;
@@ -250,15 +275,20 @@ std::shared_ptr<Factory> Experiment::getFactory() const
 	return this->pimpl->factory;
 }
 
-void Experiment::addProblemSpace(int64_t x)
+void Experiment::addProblemSpace(int64_t x, int64_t scale)
 {
 	auto r = std::make_shared<Result>(this);
-	r->setProblemSpaceValue(x);
+    r->setProblemSpaceValue(x, scale);
 	this->pimpl->results.push_back(r);
 }
 
 size_t Experiment::getResultSize()
 {
+	if(this->pimpl->results.empty() == true)
+	{
+		this->pimpl->results.push_back(std::make_shared<Result>(this));
+	}
+
 	return this->pimpl->results.size();
 }
 
@@ -272,7 +302,7 @@ std::shared_ptr<Result> Experiment::getResultByValue(int64_t x)
 {
 	std::shared_ptr<Result> r;
 
-	const auto found = std::find_if(std::begin(this->pimpl->results), std::end(this->pimpl->results), 
+	const auto found = std::find_if(std::begin(this->pimpl->results), std::end(this->pimpl->results),
 		[x](std::shared_ptr<Result> i)->bool
 		{
 			return (i->getProblemSpaceValue() == x);
