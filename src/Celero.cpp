@@ -37,7 +37,7 @@
 
 using namespace celero;
 
-std::shared_ptr<celero::Benchmark> celero::RegisterTest(const char* groupName, const char* benchmarkName, const uint64_t samples, const uint64_t calls, std::shared_ptr<celero::Factory> experimentFactory, const double target)
+std::shared_ptr<celero::Benchmark> celero::RegisterTest(const char* groupName, const char* benchmarkName, const uint64_t samples, const uint64_t iterations, std::shared_ptr<celero::Factory> experimentFactory, const double target)
 {
 	auto bm = celero::TestVector::Instance()[groupName];
 
@@ -51,7 +51,7 @@ std::shared_ptr<celero::Benchmark> celero::RegisterTest(const char* groupName, c
 	p->setIsBaselineCase(false);
 	p->setName(benchmarkName);
 	p->setSamples(samples);
-	p->setCalls(calls);
+	p->setIterations(iterations);
 	p->setFactory(experimentFactory);
 	p->setBaselineTarget(target);
 
@@ -60,7 +60,7 @@ std::shared_ptr<celero::Benchmark> celero::RegisterTest(const char* groupName, c
 	return bm;
 }
 
-std::shared_ptr<celero::Benchmark> celero::RegisterBaseline(const char* groupName, const char* benchmarkName, const uint64_t samples, const uint64_t calls, std::shared_ptr<celero::Factory> experimentFactory)
+std::shared_ptr<celero::Benchmark> celero::RegisterBaseline(const char* groupName, const char* benchmarkName, const uint64_t samples, const uint64_t iterations, std::shared_ptr<celero::Factory> experimentFactory)
 {
 	auto bm = celero::TestVector::Instance()[groupName];
 
@@ -74,7 +74,7 @@ std::shared_ptr<celero::Benchmark> celero::RegisterBaseline(const char* groupNam
 	p->setIsBaselineCase(true);
 	p->setName(benchmarkName);
 	p->setSamples(samples);
-	p->setCalls(calls);
+	p->setIterations(iterations);
 	p->setFactory(experimentFactory);
 	p->setBaselineTarget(1.0);
 
@@ -132,6 +132,7 @@ void celero::Run(int argc, char** argv)
 	auto argument = args.get<std::string>("outputTable");
 	if(argument.empty() == false)
 	{
+		std::cout << "Writing results to: " << argument << std::endl;
 		celero::ResultTable::Instance().setFileName(argument);
 
 		celero::AddExperimentResultCompleteFunction(
@@ -145,6 +146,7 @@ void celero::Run(int argc, char** argv)
 	argument = args.get<std::string>("archive");
 	if(argument.empty() == false)
 	{
+		std::cout << "Archiving results to: " << argument << std::endl;
 		celero::Archive::Instance().setFileName(argument);
 		
 		celero::AddExperimentResultCompleteFunction(
@@ -158,6 +160,7 @@ void celero::Run(int argc, char** argv)
 	argument = args.get<std::string>("junit");
 	if(argument.empty() == false)
 	{
+		std::cout << "Writing JUnit results to: " << argument << std::endl;
 		celero::JUnit::Instance().setFileName(argument);
 
 		celero::AddExperimentResultCompleteFunction(

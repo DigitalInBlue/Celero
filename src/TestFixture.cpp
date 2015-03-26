@@ -49,13 +49,13 @@ void TestFixture::tearDown()
 {
 }
 	
-uint64_t TestFixture::run(const uint64_t calls, int64_t experimentValue)
+uint64_t TestFixture::run(const uint64_t iterations, int64_t experimentValue)
 {
 	// Set up the testing fixture.
 	this->setUp(experimentValue);
 
 	// Run the test body for each operation.
-	auto operation = calls;
+	auto operation = iterations;
 			
 	// Get the starting time.
 	const auto startTime = celero::timer::GetSystemTime();

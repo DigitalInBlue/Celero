@@ -30,123 +30,11 @@
 
 using namespace celero;
 
-/*
-void print::StageBanner(const std::string& x)
-{
-	celero::console::SetConsoleColor(celero::console::ConsoleColor_Green_Bold);
-	std::cout << "[==========] " << std::endl;
-	std::cout << "[ STAGE    ] ";
-	celero::console::SetConsoleColor(celero::console::ConsoleColor_Default);
-	std::cout << x << std::endl;
-	celero::console::SetConsoleColor(celero::console::ConsoleColor_Green_Bold);
-	std::cout << "[==========] " << std::endl;
-	celero::console::SetConsoleColor(celero::console::ConsoleColor_Default);
-}
-
-void print::GreenBar(const std::string& x)
-{
-	celero::console::SetConsoleColor(celero::console::ConsoleColor_Green_Bold);
-	std::cout << "[==========] ";
-	celero::console::SetConsoleColor(celero::console::ConsoleColor_Default);
-	std::cout << x << std::endl;
-}
-
-void print::Run(std::shared_ptr<Result> x)
-{
-	celero::console::SetConsoleColor(celero::console::ConsoleColor_Default);
-	std::cout << "[ RUN      ] ";
-
-	if(x->getExperiment()->getResultSize() > 1)
-	{
-		std::cout << x->getExperiment()->getShort() << " @ " << x->getProblemSpaceValue();
-	}
-	else
-	{
-		std::cout << x->getExperiment()->getShort();
-	}
-
-	std::cout << " [" << x->getExperiment()->getSamples() << " samples of " << x->getExperiment()->getCalls() << " calls each.]" << std::endl;
-}
-
-void print::Run(const std::string& x)
-{
-	celero::console::SetConsoleColor(celero::console::ConsoleColor_Default);
-	std::cout << "[ RUN      ] " << x << std::endl;
-}
-
-void print::Status(const std::string& x)
-{
-	celero::console::SetConsoleColor(celero::console::ConsoleColor_Default);
-	std::cout << "[ STATUS   ] " << x << std::endl;
-}
-
-void print::Failure(const std::string& x)
-{	
-	celero::console::SetConsoleColor(celero::console::ConsoleColor_WhiteOnRed_Bold);
-	std::cout << "[==========] " << std::endl;
-	std::cout << "[ FAILURE  ] ";
-	std::cout << x << std::endl;
-	celero::console::SetConsoleColor(celero::console::ConsoleColor_WhiteOnRed_Bold);
-	std::cout << "[==========] " << std::endl;
-	celero::console::SetConsoleColor(celero::console::ConsoleColor_Default);
-}
-
-void print::Done(std::shared_ptr<Result> x)
-{
-	celero::console::SetConsoleColor(celero::console::ConsoleColor_Default);
-	std::cout << "[     DONE ] ";
-	std::cout << x->getExperiment()->getShort() << " ";
-	std::cout << celero::timer::ConvertSystemTime(x->getRunTime()) << " sec.";
-	std::cout << " [" << x->getRunTime() << " us] [" << x->getUsPerCall() << " us/call]" << std::fixed << 
-		" [" << x->getOpsPerSecond() << " calls/sec]" << std::endl;
-}
-
-void print::Baseline(std::shared_ptr<Result> x)
-{	
-	auto baselineGroupName = x->getExperiment()->getBenchmark()->getName();
-	if(baselineGroupName.empty() == false)
-	{
-		celero::console::SetConsoleColor(celero::console::ConsoleColor_Cyan);
-		std::cout << "[ BASELINE ] ";
-		std::cout << x->getExperiment()->getShort() << " ";
-		celero::console::SetConsoleColor(celero::console::ConsoleColor_Green_Bold);
-		std::cout << x->getBaselineMeasurement();
-		celero::console::SetConsoleColor(celero::console::ConsoleColor_Cyan);
-		std::cout << " [SD: " << x->getStatistics()->getStandardDeviation() <<
-			", V: " << x->getStatistics()->getVariance() <<
-			", K: " << x->getStatistics()->getKurtosis() << "]" << std::endl;
-
-		celero::console::SetConsoleColor(celero::console::ConsoleColor_Default);
-	}
-}
-
-void print::SummaryTest(const std::string& x)
-{
-	celero::console::SetConsoleColor(celero::console::ConsoleColor_Default);
-	std::cout << "[ TEST     ] " << x << std::endl;
-}
-
-void print::Summary(std::shared_ptr<Result> x)
-{	
-	auto baselineGroupName = x->getExperiment()->getBenchmark()->getName();
-	if(baselineGroupName.empty() == false)
-	{
-		celero::console::SetConsoleColor(celero::console::ConsoleColor_White);
-		std::cout << "[          ] ";
-		std::cout << std::left << std::setw(32) << x->getExperiment()->getName() << ", ";
-		std::cout << std::left << std::setw(8) << x->getProblemSpaceValue() << ", ";
-		std::cout << x->getBaselineMeasurement() << std::endl;
-
-		celero::console::SetConsoleColor(celero::console::ConsoleColor_Default);
-	}
-}
-*/
-
 enum PrintConstants : size_t
 {
 	ColumnSeperatorWidth = 3,
 	DoubleDecimals = 5,
-	NumberOfColumns = 10,
+	NumberOfColumns = 8,
 	ColumnWidth = 15
 };
 
@@ -290,13 +178,6 @@ void celero::print::TableBanner()
 				<< PrintCenter("Baseline")
 				<< PrintCenter("us/Iteration")
 				<< PrintCenter("Iterations/sec")
-
-				<< PrintCenter("Mean")
-				//<< PrintCenter("Variance")
-				<< PrintCenter("Std. Dev.")
-				//<< PrintCenter("Skewness")
-				//<< PrintCenter("Kurtosis")
-				//<< PrintCenter("Z Score")
 				<< "\n";
 	std::cout << PrintHRule();
 }
@@ -308,7 +189,7 @@ void celero::print::TableRowHeader(std::shared_ptr<Result> x)
 				<< PrintColumn(x->getExperiment()->getName())
 				<< PrintColumn(x->getProblemSpaceValue())
 				<< PrintColumn(x->getExperiment()->getSamples())
-				<< PrintColumn(x->getExperiment()->getCalls());
+				<< PrintColumn(x->getExperiment()->getIterations());
 }
 
 void celero::print::TableResult(std::shared_ptr<Result> x)
@@ -331,15 +212,8 @@ void celero::print::TableResult(std::shared_ptr<Result> x)
 
 	std::cout	<< PrintColumn(x->getBaselineMeasurement())
 				<< PrintColumn(x->getUsPerCall())
-				<< PrintColumn(x->getOpsPerSecond(), 2);
+				<< PrintColumn(x->getOpsPerSecond(), 2)
+				<< "\n";
 
 	celero::console::SetConsoleColor(celero::console::ConsoleColor_Default);
-
-	std::cout	<< PrintColumn(x->getStatistics()->getMean())
-				//<< PrintColumn(x->getStatistics()->getVariance())
-				<< PrintColumn(x->getStatistics()->getStandardDeviation())
-				//<< PrintColumn(x->getStatistics()->getSkewness())
-				//<< PrintColumn(x->getStatistics()->getKurtosis())
-				//<< PrintColumn(x->getStatistics()->getZScore())
-				<< "\n";
 }

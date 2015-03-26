@@ -36,7 +36,7 @@ CELERO_MAIN
 class SortFixture : public celero::TestFixture
 {
 	public:
-	SortFixture()
+		SortFixture()
 		{
 		}
 

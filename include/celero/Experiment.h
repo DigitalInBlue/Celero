@@ -47,7 +47,7 @@ namespace celero
 			///
 			///
 			///
-			explicit Experiment(std::weak_ptr<Benchmark> benchmark, const std::string& name, uint64_t samples, uint64_t calls, double baselineTarget);
+			explicit Experiment(std::weak_ptr<Benchmark> benchmark, const std::string& name, uint64_t samples, uint64_t iterations, double baselineTarget);
 
 			///
 			/// \brief	Default destructor.
@@ -82,12 +82,12 @@ namespace celero
 			///
 			///
 			///
-			void setCalls(uint64_t x);
+			void setIterations(uint64_t x);
 
 			///
 			///
 			///
-			uint64_t getCalls() const;
+			uint64_t getIterations() const;
 
 			///
 			///

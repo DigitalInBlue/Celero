@@ -91,11 +91,11 @@ namespace celero
 			virtual void tearDown();
 		
 			///
-			/// \param calls The number of times to loop over the UserBenchmark function.
+			/// \param iterations The number of times to loop over the UserBenchmark function.
 			///
 			/// \return Returns a pair of the number of microseconds the run took.
 			///
-			uint64_t run(uint64_t calls, int64_t experimentValue);
+			uint64_t run(uint64_t iterations, int64_t experimentValue);
 
 		protected:
 			/// Executed for each operation the benchmarking test is run.

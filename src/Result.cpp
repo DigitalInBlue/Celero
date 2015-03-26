@@ -105,7 +105,7 @@ uint64_t Result::getRunTime() const
 
 double Result::getUsPerCall() const
 {
-	return static_cast<double>(this->pimpl->stats.getMin()) / static_cast<double>(this->pimpl->parent->getCalls());
+	return static_cast<double>(this->pimpl->stats.getMin()) / static_cast<double>(this->pimpl->parent->getIterations());
 }
 
 double Result::getOpsPerSecond() const

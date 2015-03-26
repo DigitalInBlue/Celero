@@ -29,7 +29,7 @@
 
 using namespace celero;
 
-std::vector<uint64_t> celero::BuildDistribution(uint64_t numberOfSamples, uint64_t callsPerSample)
+std::vector<uint64_t> celero::BuildDistribution(uint64_t numberOfSamples, uint64_t iterationsPerSample)
 {
 	std::vector<uint64_t> measurements;
 	
@@ -37,7 +37,7 @@ std::vector<uint64_t> celero::BuildDistribution(uint64_t numberOfSamples, uint64
 	{
 		// Dummy variable
 		auto dummy = uint64_t(0);
-		auto cps = callsPerSample;
+		auto cps = iterationsPerSample;
 
 		// Get the starting time.
 		const auto startTime = celero::timer::GetSystemTime();

@@ -39,7 +39,7 @@ class Experiment::Impl
 			baselineUnit(0),
 			baselineTarget(0),
 			samples(0),
-			calls(0),
+			iterations(0),
 			totalRunTime(0),
 			isBaselineCase(false)
 		{
@@ -53,7 +53,7 @@ class Experiment::Impl
 			baselineUnit(0),
 			baselineTarget(pBaselineTarget),
 			samples(s),
-			calls(c),
+			iterations(c),
 			totalRunTime(0),
 			isBaselineCase(false)
 		{
@@ -67,7 +67,7 @@ class Experiment::Impl
 			baselineUnit(0),
 			baselineTarget(0),
 			samples(0),
-			calls(0),
+			iterations(0),
 			totalRunTime(0),
 			isBaselineCase(false)
 		{
@@ -95,8 +95,8 @@ class Experiment::Impl
 		/// Test samples to complete.
 		uint64_t samples;
 		
-		/// Calls per test run.  (Size of each sample.)
-		uint64_t calls;
+		/// Iterations per test run.  (Size of each sample.)
+		uint64_t iterations;
 
 		/// The best run time for this test
 		uint64_t totalRunTime;
@@ -114,8 +114,8 @@ Experiment::Experiment(std::weak_ptr<Benchmark> benchmark) :
 {
 }
 
-Experiment::Experiment(std::weak_ptr<Benchmark> benchmark, const std::string& name, uint64_t samples, uint64_t calls, double baselineTarget) :
-	pimpl(benchmark, name, samples, calls, baselineTarget)
+Experiment::Experiment(std::weak_ptr<Benchmark> benchmark, const std::string& name, uint64_t samples, uint64_t iterations, double baselineTarget) :
+	pimpl(benchmark, name, samples, iterations, baselineTarget)
 {
 }
 
@@ -152,14 +152,14 @@ uint64_t Experiment::getSamples() const
 	return this->pimpl->samples;
 }
 
-void Experiment::setCalls(uint64_t x)
+void Experiment::setIterations(uint64_t x)
 {
-	this->pimpl->calls = x;
+	this->pimpl->iterations = x;
 }
 
-uint64_t Experiment::getCalls() const
+uint64_t Experiment::getIterations() const
 {
-	return this->pimpl->calls;
+	return this->pimpl->iterations;
 }
 
 Experiment::operator std::string() const
@@ -184,15 +184,15 @@ Experiment::operator std::string() const
 		output += " -- Auto Run, ";
 	}
 
-	output += std::to_string(this->getCalls());
+	output += std::to_string(this->getIterations());
 
-	if(this->getCalls() == 1)
+	if(this->getIterations() == 1)
 	{
 		output += " call per run.";
 	}
 	else
 	{
-		output += " calls per run.";
+		output += " iterations per run.";
 	}
 
 	return output;
