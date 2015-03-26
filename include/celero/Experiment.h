@@ -11,9 +11,9 @@
 /// Licensed under the Apache License, Version 2.0 (the "License");
 /// you may not use this file except in compliance with the License.
 /// You may obtain a copy of the License at
-/// 
+///
 /// http://www.apache.org/licenses/LICENSE-2.0
-/// 
+///
 /// Unless required by applicable law or agreed to in writing, software
 /// distributed under the License is distributed on an "AS IS" BASIS,
 /// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -47,7 +47,7 @@ namespace celero
 			///
 			///
 			///
-			explicit Experiment(std::weak_ptr<Benchmark> benchmark, const std::string& name, uint64_t samples, uint64_t calls, double baselineTarget);
+			explicit Experiment(std::weak_ptr<Benchmark> benchmark, const std::string& name, uint64_t samples, uint64_t calls, uint64_t threads, double baselineTarget);
 
 			///
 			/// \brief	Default destructor.
@@ -88,6 +88,16 @@ namespace celero
 			///
 			///
 			uint64_t getCalls() const;
+
+			///
+			///
+			///
+			void setThreads(uint64_t x);
+
+			///
+			///
+			///
+			uint64_t getThreads() const;
 
 			///
 			///
@@ -133,7 +143,7 @@ namespace celero
 			/// Sets the factory used to create this experiment's test fixtures.
 			///
 			void setFactory(std::shared_ptr<Factory> x);
-			
+
 			///
 			/// Gets the factory used to create this experiment's test fixtures.
 			///
@@ -142,7 +152,7 @@ namespace celero
 			///
 			///
 			///
-			void addProblemSpace(int64_t x);
+			void addProblemSpace(int64_t x, int64_t scale);
 
 			///
 			/// There is one result for each problem space.
@@ -170,7 +180,7 @@ namespace celero
 			///
 			explicit Experiment(const Experiment&);
 
-			/// 
+			///
 			///
 			/// \brief	Pimpl Idiom
 			///
@@ -179,7 +189,7 @@ namespace celero
 			///
 			/// \brief	Pimpl Idiom
 			///
-			Pimpl<Impl> pimpl;	
+			Pimpl<Impl> pimpl;
 	};
 }
 
