@@ -1,14 +1,14 @@
 ///
 /// \author	John Farrier
 ///
-/// \copyright Copyright 2015 John Farrier 
+/// \copyright Copyright 2015 John Farrier
 ///
 /// Licensed under the Apache License, Version 2.0 (the "License");
 /// you may not use this file except in compliance with the License.
 /// You may obtain a copy of the License at
-/// 
+///
 /// http://www.apache.org/licenses/LICENSE-2.0
-/// 
+///
 /// Unless required by applicable law or agreed to in writing, software
 /// distributed under the License is distributed on an "AS IS" BASIS,
 /// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -65,7 +65,7 @@ void print::Run(std::shared_ptr<Result> x)
 		std::cout << x->getExperiment()->getShort();
 	}
 
-	std::cout << " [" << x->getExperiment()->getSamples() << " samples of " << x->getExperiment()->getCalls() << " calls each.]" << std::endl;
+	std::cout << " [" << x->getExperiment()->getSamples() << " samples of " << x->getExperiment()->getCalls() << " calls each. " << x->getExperiment()->getThreads() << " working threads. ]" << std::endl;
 }
 
 void print::Run(const std::string& x)
@@ -81,7 +81,7 @@ void print::Status(const std::string& x)
 }
 
 void print::Failure(const std::string& x)
-{	
+{
 	celero::console::SetConsoleColor(celero::console::ConsoleColor_WhiteOnRed_Bold);
 	std::cout << "[==========] " << std::endl;
 	std::cout << "[ FAILURE  ] ";
@@ -97,12 +97,18 @@ void print::Done(std::shared_ptr<Result> x)
 	std::cout << "[     DONE ] ";
 	std::cout << x->getExperiment()->getShort() << " ";
 	std::cout << celero::timer::ConvertSystemTime(x->getRunTime()) << " sec.";
-	std::cout << " [" << x->getRunTime() << " us] [" << x->getUsPerCall() << " us/call]" << std::fixed << 
-		" [" << x->getOpsPerSecond() << " calls/sec]" << std::endl;
+	std::cout << " [" << x->getRunTime() << " us] [" << x->getUsPerCall() << " us/call]" << std::fixed <<
+		" [" << x->getOpsPerSecond() << " calls/sec]";
+	// Show processing speed in units per second
+    if (x->getProblemSpaceValueScale() > 0)
+	{
+        std::cout << " [" << x->getUnitsPerSecond() << " units/sec]";
+	}
+	std::cout << std::endl;
 }
 
 void print::Baseline(std::shared_ptr<Result> x)
-{	
+{
 	auto baselineGroupName = x->getExperiment()->getBenchmark()->getName();
 	if(baselineGroupName.empty() == false)
 	{

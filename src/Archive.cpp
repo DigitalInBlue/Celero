@@ -1,14 +1,14 @@
 ///
 /// \author	John Farrier
 ///
-/// \copyright Copyright 2015 John Farrier 
+/// \copyright Copyright 2015 John Farrier
 ///
 /// Licensed under the Apache License, Version 2.0 (the "License");
 /// you may not use this file except in compliance with the License.
 /// You may obtain a copy of the License at
-/// 
+///
 /// http://www.apache.org/licenses/LICENSE-2.0
-/// 
+///
 /// Unless required by applicable law or agreed to in writing, software
 /// distributed under the License is distributed on an "AS IS" BASIS,
 /// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -41,6 +41,7 @@ struct ArchiveEntry
 		GroupName(),
 		RunName(),
 		ExperimentValue(0),
+        ExperimentValueScale(0),
 		FirstRanDate(0),
 		TotalSamplesCollected(0),
 		AverageBaseline(0),
@@ -58,7 +59,7 @@ struct ArchiveEntry
 
 	static void WriteHeader(std::ostream& str)
 	{
-		str << "GroupName,RunName,ExperimentValue,FirstRanDate,TotalSamplesCollected,AverageBaseline,";
+		str << "GroupName,RunName,ExperimentValue,ExperimentValueScale,FirstRanDate,TotalSamplesCollected,AverageBaseline,";
 		str << "MinBaseline,MinBaselineTimeSinceEpoch,";
 		str << "MinStatSize,MinStatMean,MinStatVariance,MinStatStandardDeviation,MinStatSkewness,MinStatKurtosis,";
 		str << "MinStatMin,MinStatMax,";
@@ -113,6 +114,7 @@ struct ArchiveEntry
 
 	/// The data set size, if one was specified.
 	int64_t ExperimentValue;
+    int64_t ExperimentValueScale;
 
 	uint64_t FirstRanDate;
 	uint32_t TotalSamplesCollected;
@@ -122,11 +124,11 @@ struct ArchiveEntry
 	double MinBaseline;
 	uint64_t MinBaseline_TimeSinceEpoch;
 	Stat MinStats;
-			
+
 	double MaxBaseline;
 	uint64_t MaxBaseline_TimeSinceEpoch;
 	Stat MaxStats;
-			
+
 	double CurrentBaseline;
 	uint64_t CurrentBaseline_TimeSinceEpoch;
 	Stat CurrentStats;
@@ -156,6 +158,7 @@ std::ostream& operator<<(std::ostream& str, ArchiveEntry const& data)
 	str << data.GroupName << ",";
 	str << data.RunName << ",";
 	str << data.ExperimentValue << ",";
+    str << data.ExperimentValueScale << ",";
 	str << data.FirstRanDate << ",";
 	str << data.TotalSamplesCollected << ",";
 	str << data.AverageBaseline << ",";
@@ -201,6 +204,7 @@ std::istream& operator>>(std::istream& str, ArchiveEntry& data)
 	str >> data.GroupName;
 	str >> data.RunName;
 	str >> data.ExperimentValue;
+    str >> data.ExperimentValueScale;
 	str >> data.FirstRanDate;
 	str >> data.TotalSamplesCollected;
 	str >> data.AverageBaseline;
@@ -226,7 +230,7 @@ class celero::Archive::Impl
 			results(),
 			fileName()
 		{
-			
+
 		}
 
 		/// Return milliseconds since epoch.
@@ -293,8 +297,8 @@ void Archive::add(std::shared_ptr<celero::Result> x)
 	const auto found = std::find_if(std::begin(this->pimpl->results), std::end(this->pimpl->results),
 		[x](const ArchiveEntry& r)->bool
 		{
-			return (r.GroupName == x->getExperiment()->getBenchmark()->getName()) && 
-				(r.RunName == x->getExperiment()->getName()) && 
+			return (r.GroupName == x->getExperiment()->getBenchmark()->getName()) &&
+				(r.RunName == x->getExperiment()->getName()) &&
 				(r.ExperimentValue == x->getProblemSpaceValue());
 		});
 
@@ -321,7 +325,7 @@ void Archive::add(std::shared_ptr<celero::Result> x)
 		// This is not good IEEE math.
 		found->AverageBaseline = ((found->AverageBaseline * found->TotalSamplesCollected) + found->CurrentBaseline) / (found->TotalSamplesCollected + 1);
 		found->TotalSamplesCollected++;
-	}	
+	}
 	else
 	{
 		ArchiveEntry r;
@@ -331,6 +335,7 @@ void Archive::add(std::shared_ptr<celero::Result> x)
 		r.FirstRanDate = this->pimpl->now();
 		r.AverageBaseline = x->getBaselineMeasurement();
 		r.ExperimentValue = x->getProblemSpaceValue();
+        r.ExperimentValueScale = x->getProblemSpaceValueScale();
 		r.TotalSamplesCollected = 1;
 
 		r.CurrentBaseline = x->getBaselineMeasurement();
@@ -344,7 +349,7 @@ void Archive::add(std::shared_ptr<celero::Result> x)
 		r.MinBaseline = x->getBaselineMeasurement();
 		r.MinBaseline_TimeSinceEpoch = r.FirstRanDate;
 		r.MinStats = *x->getStatistics();
-		
+
 		this->pimpl->results.push_back(r);
 	}
 
@@ -355,7 +360,7 @@ void Archive::save()
 {
 	if(this->pimpl->fileName.empty() == false)
 	{
-		// Get ready to write out new results.  
+		// Get ready to write out new results.
 		// We will write all known results every time, replacing file contents.
 		std::ofstream os;
 		os.open(this->pimpl->fileName.c_str(), std::fstream::out);
