@@ -70,7 +70,7 @@ namespace celero
 			///
 			/// It is only guaranteed that the constructor is called prior to this function being called.
 			///
-            virtual int64_t getExperimentValueResultScale() const { return 0; };
+            virtual double getExperimentValueResultScale() const { return 1.0; };
 
 			///
 			/// Allows the text fixture to run code that will be executed once
@@ -105,27 +105,14 @@ namespace celero
 			///
 			///
 			/// \param threads The number of working threads.
-			/// \param calls The number of times to loop over the UserBenchmark function.
+			/// \param iterations The number of times to loop over the UserBenchmark function.
 			/// \param experimentValue The experiment value to pass in setUp function.
 			///
 			/// \return Returns a pair of the number of microseconds the run took.
 			///
-			virtual uint64_t run(uint64_t threads, uint64_t calls, int64_t experimentValue);
-
-			///
-			/// Get the current call number starting from 1.
-			///
-			uint64_t getCallId() const { return currentCallId; };
-
-			///
-			/// Get the current thread Id starting from 1.
-			///
-			uint64_t getThreadId() const { return currentThreadId; };
+			virtual uint64_t run(uint64_t threads, uint64_t iterations, int64_t experimentValue);
 
 		protected:
-			static thread_local uint64_t currentCallId;
-			static thread_local uint64_t currentThreadId;
-
 			/// Executed for each operation the benchmarking test is run.
 			virtual void UserBenchmark();
 	};

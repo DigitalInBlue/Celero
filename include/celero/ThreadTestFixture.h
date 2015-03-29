@@ -4,7 +4,7 @@
 ///
 /// \author	Ivan Shynkarenka
 ///
-/// \copyright Copyright 2015 Ivan Shynkarenka
+/// \copyright Copyright 2015 John Farrier
 ///
 /// Licensed under the Apache License, Version 2.0 (the "License");
 /// you may not use this file except in compliance with the License.
@@ -19,9 +19,8 @@
 /// limitations under the License.
 ///
 
-#include <future>
-
 #include <celero/TestFixture.h>
+#include <celero/Pimpl.h>
 
 namespace celero
 {
@@ -67,8 +66,19 @@ namespace celero
 			///
             uint64_t run(uint64_t threads, uint64_t calls, int64_t experimentValue) override;
 
-		protected:
-			std::vector<std::future<void>> futures;
+			///
+			/// Get the current call number starting from 1.
+			///
+			uint64_t getCallId() const;
+
+			///
+			/// Get the current thread Id starting from 1.
+			///
+			uint64_t getThreadId() const;
+
+		private:
+			class Impl;
+			Pimpl<Impl> pimpl;
 	};
 }
 

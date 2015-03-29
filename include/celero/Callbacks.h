@@ -26,10 +26,10 @@
 ///
 /// Special thanks to the band "3" for providing the development soundtrack.
 ///
-/// "Calls" refers to how many loops of the test function are measured as a time.
-/// For very fast code, many calls would help amoratize measurement error.
+/// "Iterations" refers to how many loops of the test function are measured as a time.
+/// For very fast code, many iterations would help amoratize measurement error.
 /// 
-/// "Samples" refers to how many sets of "Ops" will be performed.  Each "sample" is
+/// "Samples" refers to how many sets of "iterations" will be performed.  Each "sample" is
 /// a single measurement.  Set to 0 to have Celero decide how many samples are required
 /// for a minimally significant answer.
 ///

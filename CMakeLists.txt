@@ -163,6 +163,7 @@ set(TARGET_H
 	include/celero/ResultTable.h
 	include/celero/Statistics.h
 	include/celero/TestFixture.h
+	include/celero/ThreadLocal.h
 	include/celero/ThreadTestFixture.h
 	include/celero/TestVector.h
 	include/celero/Timer.h

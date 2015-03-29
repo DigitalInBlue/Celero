@@ -47,7 +47,7 @@ namespace celero
 			///
 			///
 			///
-			explicit Experiment(std::weak_ptr<Benchmark> benchmark, const std::string& name, uint64_t samples, uint64_t calls, uint64_t threads, double baselineTarget);
+			explicit Experiment(std::weak_ptr<Benchmark> benchmark, const std::string& name, uint64_t samples, uint64_t iterations, uint64_t threads, double baselineTarget);
 
 			///
 			/// \brief	Default destructor.
@@ -82,12 +82,12 @@ namespace celero
 			///
 			///
 			///
-			void setCalls(uint64_t x);
+			void setIterations(uint64_t x);
 
 			///
 			///
 			///
-			uint64_t getCalls() const;
+			uint64_t getIterations() const;
 
 			///
 			///
@@ -150,9 +150,10 @@ namespace celero
 			std::shared_ptr<Factory> getFactory() const;
 
 			///
+			/// \param x	Can be interpreted in any way be the test fixture (i.e. index into an array, etc.)
+			/// \param scale	Used to format unit results.
 			///
-			///
-			void addProblemSpace(int64_t x, int64_t scale);
+			void addProblemSpace(int64_t x, double scale = 1.0);
 
 			///
 			/// There is one result for each problem space.

@@ -1,7 +1,7 @@
 ///
 /// \author	Ivan Shynkarenka
 ///
-/// \copyright Copyright 2015 Ivan Shynkarenka
+/// \copyright Copyright 2015 John Farrier
 ///
 /// Licensed under the Apache License, Version 2.0 (the "License");
 /// you may not use this file except in compliance with the License.
@@ -17,13 +17,26 @@
 ///
 
 #include <celero/ThreadTestFixture.h>
+#include <celero/PimplImpl.h>
 
 #include <iostream>
 #include <algorithm>
+#include <future>
 
 #include <assert.h>
 
 using namespace celero;
+
+class ThreadTestFixture::Impl
+{
+	public:
+		static thread_local uint64_t currentCallId;
+		static thread_local uint64_t currentThreadId;
+		std::vector<std::future<void>> futures;
+};
+
+uint64_t ThreadTestFixture::Impl::currentCallId = 0;
+uint64_t ThreadTestFixture::Impl::currentThreadId = 0;
 
 ThreadTestFixture::ThreadTestFixture()
 {
@@ -36,28 +49,28 @@ ThreadTestFixture::~ThreadTestFixture()
 void ThreadTestFixture::startThreads(uint64_t threads, uint64_t calls)
 {
 	uint64_t callsPerThread = calls / threads;
-    for (uint64_t i = 0; i < threads; ++i)
-    {
-        this->futures.push_back(std::async([this, i, callsPerThread]()
-        {
-			currentThreadId = i + 1;
-			for (auto operation = 0; operation < callsPerThread;)
+	for(uint64_t i = 0; i < threads; ++i)
+	{
+		this->pimpl->futures.push_back(std::async([this, i, callsPerThread]()
+		{
+			this->pimpl->currentThreadId = i + 1;
+			for(auto operation = 0; operation < callsPerThread;)
 			{
-				currentCallId = ++operation;
+				this->pimpl->currentCallId = ++operation;
 				this->UserBenchmark();
 			}
-        }));
-    }
+		}));
+	}
 }
 
 void ThreadTestFixture::stopThreads()
 {
-    // This part will be more effective after 
-    // wait_for_all() will be avaliable for futures!
-    for (auto& f : this->futures)
-    {
-        f.wait();
-    };
+	// This part will be more effective after 
+	// wait_for_all() will be avaliable for futures!
+	for(auto& f : this->pimpl->futures)
+	{
+		f.wait();
+	};
 }
 
 uint64_t ThreadTestFixture::run(uint64_t threads, uint64_t calls, int64_t experimentValue)

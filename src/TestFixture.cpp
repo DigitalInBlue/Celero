@@ -25,9 +25,6 @@
 
 using namespace celero;
 
-uint64_t TestFixture::currentCallId = 0;
-uint64_t TestFixture::currentThreadId = 0;
-
 TestFixture::TestFixture()
 {
 }
@@ -52,22 +49,23 @@ void TestFixture::tearDown()
 {
 }
 	
-uint64_t TestFixture::run(uint64_t, uint64_t calls, int64_t experimentValue)
+uint64_t TestFixture::run(const uint64_t, const uint64_t iterations, int64_t experimentValue)
 {
 	// Set up the testing fixture.
 	this->setUp(experimentValue);
 
+	// Run the test body for each operation.
+	auto operation = iterations;
+			
 	// Get the starting time.
 	const auto startTime = celero::timer::GetSystemTime();
 
 	this->onExperimentStart(experimentValue);
 
-	currentThreadId = 1;
-	for(auto operation = 0; operation < calls;)
+	while(operation--)
 	{
-		currentCallId = ++operation;
 		this->UserBenchmark();
-	}			
+	}
 
 	this->onExperimentEnd();
 			

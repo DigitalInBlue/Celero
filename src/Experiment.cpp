@@ -39,7 +39,7 @@ class Experiment::Impl
 			baselineUnit(0),
 			baselineTarget(0),
 			samples(0),
-			calls(0),
+			iterations(0),
 			threads(1),
 			totalRunTime(0),
 			isBaselineCase(false)
@@ -54,7 +54,7 @@ class Experiment::Impl
 			baselineUnit(0),
 			baselineTarget(pBaselineTarget),
 			samples(s),
-			calls(c),
+			iterations(c),
 			threads(t),
 			totalRunTime(0),
 			isBaselineCase(false)
@@ -69,7 +69,7 @@ class Experiment::Impl
 			baselineUnit(0),
 			baselineTarget(0),
 			samples(0),
-			calls(0),
+			iterations(0),
 			threads(1),
 			totalRunTime(0),
 			isBaselineCase(false)
@@ -98,8 +98,8 @@ class Experiment::Impl
 		/// Test samples to complete.
 		uint64_t samples;
 
-		/// Calls per test run.  (Size of each sample.)
-		uint64_t calls;
+		/// Iterations per test run.  (Size of each sample.)
+		uint64_t iterations;
 
 		/// Threads per test run.  (Size of each sample.)
 		uint64_t threads;
@@ -120,8 +120,8 @@ Experiment::Experiment(std::weak_ptr<Benchmark> benchmark) :
 {
 }
 
-Experiment::Experiment(std::weak_ptr<Benchmark> benchmark, const std::string& name, uint64_t samples, uint64_t calls, uint64_t threads, double baselineTarget) :
-	pimpl(benchmark, name, samples, calls, threads, baselineTarget)
+Experiment::Experiment(std::weak_ptr<Benchmark> benchmark, const std::string& name, uint64_t samples, uint64_t iterations, uint64_t threads, double baselineTarget) :
+	pimpl(benchmark, name, samples, iterations, threads, baselineTarget)
 {
 }
 
@@ -158,14 +158,14 @@ uint64_t Experiment::getSamples() const
 	return this->pimpl->samples;
 }
 
-void Experiment::setCalls(uint64_t x)
+void Experiment::setIterations(uint64_t x)
 {
-	this->pimpl->calls = x;
+	this->pimpl->iterations = x;
 }
 
-uint64_t Experiment::getCalls() const
+uint64_t Experiment::getIterations() const
 {
-	return this->pimpl->calls;
+	return this->pimpl->iterations;
 }
 
 void Experiment::setThreads(uint64_t x)
@@ -200,15 +200,15 @@ Experiment::operator std::string() const
 		output += " -- Auto Run, ";
 	}
 
-	output += std::to_string(this->getCalls());
+	output += std::to_string(this->getIterations());
 
-	if(this->getCalls() == 1)
+	if(this->getIterations() == 1)
 	{
-		output += " call per run,";
+		output += " iteration per run,";
 	}
 	else
 	{
-		output += " calls per run,";
+		output += " iterations per run,";
 	}
 
 	if(this->getThreads() == 1)
@@ -275,7 +275,7 @@ std::shared_ptr<Factory> Experiment::getFactory() const
 	return this->pimpl->factory;
 }
 
-void Experiment::addProblemSpace(int64_t x, int64_t scale)
+void Experiment::addProblemSpace(int64_t x, double scale)
 {
 	auto r = std::make_shared<Result>(this);
     r->setProblemSpaceValue(x, scale);

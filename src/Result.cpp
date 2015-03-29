@@ -36,7 +36,7 @@ class Result::Impl
 		Impl() :
 			stats(),
 			problemSpaceValue(0),
-            problemSpaceValueScale(0),
+			problemSpaceValueScale(1.0),
 			parent(nullptr),
 			complete(false)
 		{
@@ -45,7 +45,7 @@ class Result::Impl
 		explicit Impl(Experiment* const p) :
 			stats(),
 			problemSpaceValue(0),
-            problemSpaceValueScale(0),
+			problemSpaceValueScale(1.0),
 			parent(p),
 			complete(false)
 		{
@@ -55,7 +55,7 @@ class Result::Impl
 		Statistics stats;
 
 		int64_t problemSpaceValue;
-        int64_t problemSpaceValueScale;
+		double problemSpaceValueScale;
 
 		/// A pointer back to our owning Experiment parent.
 		Experiment* parent;
@@ -81,7 +81,7 @@ Experiment* Result::getExperiment() const
 	return this->pimpl->parent;
 }
 
-void Result::setProblemSpaceValue(int64_t x, int64_t scale)
+void Result::setProblemSpaceValue(int64_t x, double scale)
 {
 	this->pimpl->problemSpaceValue = x;
 	this->pimpl->problemSpaceValueScale = scale;
@@ -92,9 +92,9 @@ int64_t Result::getProblemSpaceValue() const
 	return this->pimpl->problemSpaceValue;
 }
 
-int64_t Result::getProblemSpaceValueScale() const
+double Result::getProblemSpaceValueScale() const
 {
-    return this->pimpl->problemSpaceValueScale;
+	return this->pimpl->problemSpaceValueScale;
 }
 
 Statistics* Result::getStatistics()
@@ -114,7 +114,7 @@ uint64_t Result::getRunTime() const
 
 double Result::getUsPerCall() const
 {
-	return static_cast<double>(this->pimpl->stats.getMin()) / static_cast<double>(this->pimpl->parent->getCalls());
+	return static_cast<double>(this->pimpl->stats.getMin()) / static_cast<double>(this->pimpl->parent->getIterations());
 }
 
 double Result::getOpsPerSecond() const
@@ -124,7 +124,7 @@ double Result::getOpsPerSecond() const
 
 double Result::getUnitsPerSecond() const
 {
-    return (this->pimpl->problemSpaceValueScale > 0) ? ((this->pimpl->problemSpaceValue * this->pimpl->parent->getCalls() / this->pimpl->problemSpaceValueScale) / (this->pimpl->stats.getMin() * 1.0e-6)) : 0;
+	return (this->pimpl->problemSpaceValueScale > 0) ? ((this->pimpl->problemSpaceValue * this->pimpl->parent->getIterations() / this->pimpl->problemSpaceValueScale) / (this->pimpl->stats.getMin() * 1.0e-6)) : 0;
 }
 
 double Result::getBaselineMeasurement()

@@ -39,7 +39,7 @@ void ExecuteProblemSpace(std::shared_ptr<Result> r)
 	auto testRunner = [r]()
 		{
 			auto test = r->getExperiment()->getFactory()->Create();
-			const auto testTime = test->run(r->getExperiment()->getThreads(), r->getExperiment()->getCalls(), r->getProblemSpaceValue());
+			const auto testTime = test->run(r->getExperiment()->getThreads(), r->getExperiment()->getIterations(), r->getProblemSpaceValue());
 
 			// Save test results
 			r->getStatistics()->addSample(testTime);
@@ -96,10 +96,10 @@ void executor::RunBaseline(std::shared_ptr<Benchmark> bmark)
 		// Populate the problem space with a test fixture instantiation.
 		{
 			auto testValues = baselineExperiment->getFactory()->Create()->getExperimentValues();
-            auto valueResultScale = baselineExperiment->getFactory()->Create()->getExperimentValueResultScale();
+			auto valueResultScale = baselineExperiment->getFactory()->Create()->getExperimentValueResultScale();
 			for(auto i : testValues)
 			{
-                baselineExperiment->addProblemSpace(i, valueResultScale);
+				baselineExperiment->addProblemSpace(i, static_cast<double>(valueResultScale));
 			}
 
 			// Add a single default problem space if none was specified.  
@@ -160,10 +160,10 @@ void executor::Run(std::shared_ptr<Experiment> e)
 	// Populate the problem space with a fake test fixture instantiation.
 	{
 		auto testValues = e->getFactory()->Create()->getExperimentValues();
-        auto valueResultScale = e->getFactory()->Create()->getExperimentValueResultScale();
+		auto valueResultScale = e->getFactory()->Create()->getExperimentValueResultScale();
 		for(auto i : testValues)
 		{
-            e->addProblemSpace(i, valueResultScale);
+			e->addProblemSpace(i, valueResultScale);
 		}
 
 		// Add a single default problem space if none was specified.  

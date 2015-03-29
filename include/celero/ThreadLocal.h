@@ -4,7 +4,7 @@
 ///
 /// \author	Ivan Shynkarenka
 ///
-/// \copyright Copyright 2015 Ivan Shynkarenka
+/// \copyright Copyright 2015 John Farrier
 ///
 /// Licensed under the Apache License, Version 2.0 (the "License");
 /// you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@
 ///
 
 #ifndef thread_local
+
 # if __STDC_VERSION__ >= 201112 && !defined __STDC_NO_THREADS__
 #  define thread_local _Thread_local
 # elif defined _WIN32 && ( \
@@ -39,4 +40,3 @@
 #endif
 
 #endif
-

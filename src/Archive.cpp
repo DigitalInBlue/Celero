@@ -41,7 +41,7 @@ struct ArchiveEntry
 		GroupName(),
 		RunName(),
 		ExperimentValue(0),
-        ExperimentValueScale(0),
+		ExperimentValueScale(0),
 		FirstRanDate(0),
 		TotalSamplesCollected(0),
 		AverageBaseline(0),
@@ -114,7 +114,7 @@ struct ArchiveEntry
 
 	/// The data set size, if one was specified.
 	int64_t ExperimentValue;
-    int64_t ExperimentValueScale;
+	double ExperimentValueScale;
 
 	uint64_t FirstRanDate;
 	uint32_t TotalSamplesCollected;
@@ -158,7 +158,7 @@ std::ostream& operator<<(std::ostream& str, ArchiveEntry const& data)
 	str << data.GroupName << ",";
 	str << data.RunName << ",";
 	str << data.ExperimentValue << ",";
-    str << data.ExperimentValueScale << ",";
+	str << data.ExperimentValueScale << ",";
 	str << data.FirstRanDate << ",";
 	str << data.TotalSamplesCollected << ",";
 	str << data.AverageBaseline << ",";
@@ -204,7 +204,7 @@ std::istream& operator>>(std::istream& str, ArchiveEntry& data)
 	str >> data.GroupName;
 	str >> data.RunName;
 	str >> data.ExperimentValue;
-    str >> data.ExperimentValueScale;
+	str >> data.ExperimentValueScale;
 	str >> data.FirstRanDate;
 	str >> data.TotalSamplesCollected;
 	str >> data.AverageBaseline;
@@ -335,7 +335,7 @@ void Archive::add(std::shared_ptr<celero::Result> x)
 		r.FirstRanDate = this->pimpl->now();
 		r.AverageBaseline = x->getBaselineMeasurement();
 		r.ExperimentValue = x->getProblemSpaceValue();
-        r.ExperimentValueScale = x->getProblemSpaceValueScale();
+		r.ExperimentValueScale = x->getProblemSpaceValueScale();
 		r.TotalSamplesCollected = 1;
 
 		r.CurrentBaseline = x->getBaselineMeasurement();

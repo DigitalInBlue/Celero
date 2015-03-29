@@ -26,8 +26,8 @@
 ///
 /// Special thanks to the band "3" for providing the development soundtrack.
 ///
-/// "Calls" refers to how many loops of the test function are measured as a time.
-/// For very fast code, many calls would help amoratize measurement error.
+/// "Iterations" refers to how many loops of the test function are measured as a time.
+/// For very fast code, many iterations would help amoratize measurement error.
 /// 
 /// "Samples" refers to how many sets of "Ops" will be performed.  Each "sample" is
 /// a single measurement.  Set to 0 to have Celero decide how many samples are required
@@ -55,14 +55,14 @@ namespace celero
 	///
 	/// \param groupName The name of the Test Group.  Used for retrieving the associated baseline.
 	/// \param benchmarkName A unique name for a specific test within a Test Group.
-	/// \param samples The total number of times to execute the Test.  (Each test contains calls.)
-	/// \param calls The total number of calls per Test.
-	/// \param threads The total number of threads per Test.
+	/// \param samples The total number of times to execute the Test.  (Each test contains iterations.)
+	/// \param iterations The total number of iterations per Test.
+	/// \param threads The total number of threads per Test sample.
 	/// \param experimentFactory The factory implementation for the test.
 	///
 	/// \returns a pointer to a Benchmark instance representing the given test.
 	///
-	CELERO_EXPORT std::shared_ptr<Benchmark> RegisterTest(const char* groupName, const char* benchmarkName, const uint64_t samples, const uint64_t calls, const uint64_t threads, std::shared_ptr<Factory> experimentFactory, const double target = -1);
+	CELERO_EXPORT std::shared_ptr<Benchmark> RegisterTest(const char* groupName, const char* benchmarkName, const uint64_t samples, const uint64_t iterations, const uint64_t threads, std::shared_ptr<Factory> experimentFactory, const double target = -1);
 
 	///
 	/// \brief	Adds a new test baseline to the list of test baseliness to be executed.
@@ -71,14 +71,14 @@ namespace celero
 	///
 	/// \param groupName The name of the Test Group that the baseline is associated with.
 	/// \param benchmarkName A unique name for a specific test baseline within a Test Group.
-	/// \param samples The total number of times to execute the Test baseline.  (Each sample contains one or more calls.)
-	/// \param calls The total number of calls per Test baseline.
+	/// \param samples The total number of times to execute the Test baseline.  (Each sample contains one or more iterations.)
+	/// \param iterations The total number of iterations per Test baseline sample.
 	/// \param threads The total number of threads per Test baseline.
 	/// \param experimentFactory The factory implementation for the test baseline.
 	///
 	/// \returns a pointer to a Benchmark instance representing the given test.
 	///
-	CELERO_EXPORT std::shared_ptr<Benchmark> RegisterBaseline(const char* groupName, const char* benchmarkName, const uint64_t samples, const uint64_t calls, const uint64_t threads, std::shared_ptr<Factory> experimentFactory);
+	CELERO_EXPORT std::shared_ptr<Benchmark> RegisterBaseline(const char* groupName, const char* benchmarkName, const uint64_t samples, const uint64_t iterations, const uint64_t threads, std::shared_ptr<Factory> experimentFactory);
 	
 	///
 	/// \brief	Builds a distribution of total system measurement error.
@@ -89,7 +89,7 @@ namespace celero
 	///
 	/// This is just an attempt to characterize the distribution, not quantify it.
 	///
-	CELERO_EXPORT std::vector<uint64_t> BuildDistribution(uint64_t numberOfSamples, uint64_t callsPerSample);
+	CELERO_EXPORT std::vector<uint64_t> BuildDistribution(uint64_t numberOfSamples, uint64_t iterationsPerSample);
 
 	///
 	/// \brief	The main test executor.
@@ -116,7 +116,7 @@ namespace celero
 ///
 ///	A macro to create a class of a unique name which can be used to register and execute a benchmark test.
 ///
-#define BENCHMARK_IMPL(groupName, benchmarkName, fixtureName, samples, calls, threads)		\
+#define BENCHMARK_IMPL(groupName, benchmarkName, fixtureName, samples, iterations, threads)		\
 	class BENCHMARK_CLASS_NAME(groupName, benchmarkName) : public fixtureName	\
 	{																			\
 		public:																	\
@@ -130,7 +130,7 @@ namespace celero
 	};																			\
 																				\
 	const std::shared_ptr< ::celero::Benchmark> BENCHMARK_CLASS_NAME(groupName, benchmarkName)::info = \
-		::celero::RegisterTest(#groupName, #benchmarkName, samples, calls, threads, std::make_shared< ::celero::GenericFactory<BENCHMARK_CLASS_NAME(groupName, benchmarkName)>>()); \
+		::celero::RegisterTest(#groupName, #benchmarkName, samples, iterations, threads, std::make_shared< ::celero::GenericFactory<BENCHMARK_CLASS_NAME(groupName, benchmarkName)>>()); \
 																				\
 	void BENCHMARK_CLASS_NAME(groupName, benchmarkName)::UserBenchmark()
 
@@ -139,7 +139,7 @@ namespace celero
 ///
 ///	A macro to create a class of a unique name which can be used to register and execute a benchmark test.
 ///
-#define BENCHMARK_TEST_IMPL(groupName, benchmarkName, fixtureName, samples, calls, threads, target)		\
+#define BENCHMARK_TEST_IMPL(groupName, benchmarkName, fixtureName, samples, iterations, threads, target)		\
 	class BENCHMARK_CLASS_NAME(groupName, benchmarkName) : public fixtureName	\
 	{																			\
 		public:																	\
@@ -153,7 +153,7 @@ namespace celero
 	};																			\
 																				\
 	const std::shared_ptr< ::celero::Benchmark> BENCHMARK_CLASS_NAME(groupName, benchmarkName)::info = \
-		::celero::RegisterTest(#groupName, #benchmarkName, samples, calls, threads, std::make_shared< ::celero::GenericFactory<BENCHMARK_CLASS_NAME(groupName, benchmarkName)>>(), target); \
+		::celero::RegisterTest(#groupName, #benchmarkName, samples, iterations, threads, std::make_shared< ::celero::GenericFactory<BENCHMARK_CLASS_NAME(groupName, benchmarkName)>>(), target); \
 																				\
 	void BENCHMARK_CLASS_NAME(groupName, benchmarkName)::UserBenchmark()
 
@@ -164,7 +164,7 @@ namespace celero
 ///
 /// Using the BENCHMARK_ macro, this effectivly fills in a class's UserBenchmark() function.
 ///
-#define BENCHMARK_F(groupName, benchmarkName, fixtureName, samples, calls) BENCHMARK_IMPL(groupName, benchmarkName, fixtureName, samples, calls, 1)
+#define BENCHMARK_F(groupName, benchmarkName, fixtureName, samples, iterations) BENCHMARK_IMPL(groupName, benchmarkName, fixtureName, samples, iterations, 1)
 
 ///
 /// \define BENCHMARK_T
@@ -173,7 +173,7 @@ namespace celero
 ///
 /// Using the BENCHMARK_ macro, this effectivly fills in a class's UserBenchmark() function.
 ///
-#define BENCHMARK_T(groupName, benchmarkName, fixtureName, samples, calls, threads) BENCHMARK_IMPL(groupName, benchmarkName, fixtureName, samples, calls, threads)
+#define BENCHMARK_T(groupName, benchmarkName, fixtureName, samples, iterations, threads) BENCHMARK_IMPL(groupName, benchmarkName, fixtureName, samples, iterations, threads)
 
 ///
 /// \define BENCHMARK_TEST_F
@@ -182,7 +182,7 @@ namespace celero
 ///
 /// Using the BENCHMARK_ macro, this effectivly fills in a class's UserBenchmark() function.
 ///
-#define BENCHMARK_TEST_F(groupName, benchmarkName, fixtureName, samples, calls, target) BENCHMARK_TEST_IMPL(groupName, benchmarkName, fixtureName, samples, calls, 1, target)
+#define BENCHMARK_TEST_F(groupName, benchmarkName, fixtureName, samples, iterations, target) BENCHMARK_TEST_IMPL(groupName, benchmarkName, fixtureName, samples, iterations, 1, target)
 
 ///
 /// \define BENCHMARK_TEST_T
@@ -191,7 +191,7 @@ namespace celero
 ///
 /// Using the BENCHMARK_ macro, this effectivly fills in a class's UserBenchmark() function.
 ///
-#define BENCHMARK_TEST_T(groupName, benchmarkName, fixtureName, samples, calls, threads, target) BENCHMARK_TEST_IMPL(groupName, benchmarkName, fixtureName, samples, calls, threads, target)
+#define BENCHMARK_TEST_T(groupName, benchmarkName, fixtureName, samples, iterations, threads, target) BENCHMARK_TEST_IMPL(groupName, benchmarkName, fixtureName, samples, iterations, threads, target)
 
 ///
 /// \define BENCHMARK
@@ -200,7 +200,7 @@ namespace celero
 ///
 /// Using the BENCHMARK_ macro, this effectivly fills in a class's UserBenchmark() function.
 ///
-#define BENCHMARK(groupName, benchmarkName, samples, calls) BENCHMARK_IMPL(groupName,  benchmarkName, ::celero::TestFixture, samples, calls, 1)
+#define BENCHMARK(groupName, benchmarkName, samples, iterations) BENCHMARK_IMPL(groupName, benchmarkName, ::celero::TestFixture, samples, iterations, 1)
 
 ///
 /// \define BENCHMARK
@@ -209,7 +209,7 @@ namespace celero
 ///
 /// Using the BENCHMARK_ macro, this effectivly fills in a class's UserBenchmark() function.
 ///
-#define BENCHMARK_TEST(groupName, benchmarkName, samples, calls, target) BENCHMARK_TEST_IMPL(groupName,  benchmarkName, ::celero::TestFixture, samples, calls, 1, target)
+#define BENCHMARK_TEST(groupName, benchmarkName, samples, iterations, target) BENCHMARK_TEST_IMPL(groupName, benchmarkName, ::celero::TestFixture, samples, iterations, 1, target)
 
 ///
 /// \define	BASELINE_CLASS_NAME 
@@ -223,7 +223,7 @@ namespace celero
 ///
 ///	A macro to create a class of a unique name which can be used to register and execute a baseline benchmark test.
 ///
-#define BASELINE_IMPL(groupName, baselineName, fixtureName, samples, calls, threads)		\
+#define BASELINE_IMPL(groupName, baselineName, fixtureName, samples, iterations, threads)		\
 	class BASELINE_CLASS_NAME(groupName, baselineName) : public fixtureName		\
 	{																			\
 		public:																	\
@@ -237,7 +237,7 @@ namespace celero
 	};																			\
 																				\
 	const std::shared_ptr< ::celero::Benchmark> BASELINE_CLASS_NAME(groupName, baselineName)::info = \
-		::celero::RegisterBaseline(#groupName, #baselineName, samples, calls, threads, std::make_shared< ::celero::GenericFactory<BASELINE_CLASS_NAME(groupName, baselineName)>>()); \
+		::celero::RegisterBaseline(#groupName, #baselineName, samples, iterations, threads, std::make_shared< ::celero::GenericFactory<BASELINE_CLASS_NAME(groupName, baselineName)>>()); \
 																				\
 	void BASELINE_CLASS_NAME(groupName, baselineName)::UserBenchmark()
 
@@ -248,7 +248,7 @@ namespace celero
 ///
 /// Using the BASELINE_ macro, this effectivly fills in a class's UserBenchmark() function.
 ///
-#define BASELINE_F(groupName, baselineName, fixtureName, samples, calls) BASELINE_IMPL(groupName, baselineName, fixtureName, samples, calls, 1)
+#define BASELINE_F(groupName, baselineName, fixtureName, samples, iterations) BASELINE_IMPL(groupName, baselineName, fixtureName, samples, iterations, 1)
 
 ///
 /// \define BASELINE_T
@@ -257,7 +257,7 @@ namespace celero
 ///
 /// Using the BASELINE_ macro, this effectivly fills in a class's UserBenchmark() function.
 ///
-#define BASELINE_T(groupName, baselineName, fixtureName, samples, calls, threads) BASELINE_IMPL(groupName, baselineName, fixtureName, samples, calls, threads)
+#define BASELINE_T(groupName, baselineName, fixtureName, samples, iterations, threads) BASELINE_IMPL(groupName, baselineName, fixtureName, samples, iterations, threads)
 
 ///
 /// \define BASELINE_F
@@ -266,6 +266,6 @@ namespace celero
 ///
 /// Using the BASELINE_ macro, this effectivly fills in a class's UserBenchmark() function.
 ///
-#define BASELINE(groupName, baselineName, samples, calls) BASELINE_IMPL(groupName,  baselineName, ::celero::TestFixture, samples, calls, 1)
+#define BASELINE(groupName, baselineName, samples, iterations) BASELINE_IMPL(groupName,  baselineName, ::celero::TestFixture, samples, iterations, 1)
 
 #endif

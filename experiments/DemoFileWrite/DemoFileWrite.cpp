@@ -5,7 +5,7 @@ CELERO_MAIN
 class BaseFixture : public celero::TestFixture
 {
 	public:
-        std::vector<int64_t> getExperimentValues() const override
+		std::vector<int64_t> getExperimentValues() const override
 		{
 			std::vector<int64_t> bufferSizes;
 			bufferSizes.push_back(32);
@@ -19,18 +19,21 @@ class BaseFixture : public celero::TestFixture
 			return bufferSizes;
 		}
 
-        int64_t getExperimentValueResultScale() const override
+		// Scale the experiment values to megabytes.
+		double getExperimentValueResultScale() const override
 		{
-			return 1024 * 1024;
+			return 1024.0 * 1024.0;
 		}
 
-        void setUp(int64_t experimentValue) override
+		void setUp(int64_t experimentValue) override
 		{
-			for (auto i = 0; i < experimentValue; ++i)
+			for(auto i = 0; i < experimentValue; ++i)
+			{
 				this->buffer.push_back(rand() % 256);
+			}
 		}
 
-        void tearDown() override
+		void tearDown() override
 		{
 			this->buffer.clear();
 		}
@@ -41,28 +44,28 @@ class BaseFixture : public celero::TestFixture
 class StdFileFixture : public BaseFixture
 {
 	public:
-        void setUp(int64_t experimentValue) override
+		void setUp(int64_t experimentValue) override
 		{
 			BaseFixture::setUp(experimentValue);
-			file = fopen("FileWrite.out", "wb");
+			this->file = fopen("FileWrite.out", "wb");
 		}
 
-        void tearDown() override
+		void tearDown() override
 		{
-			fclose(file);
+			fclose(this->file);
 			BaseFixture::tearDown();
 		}
 
 		FILE* file;
 };
 
-BASELINE_F(FileWrite, fwrite, StdFileFixture, 1, 500000)
+BASELINE_F(FileWrite, fwrite, StdFileFixture, 30, 5000)
 {
-	celero::DoNotOptimizeAway(fwrite(buffer.data(), sizeof(char), buffer.size() * sizeof(char), file));
+	fwrite(buffer.data(), sizeof(char), buffer.size() * sizeof(char), file);
 }
 
-BENCHMARK_F(FileWrite, fwrite_with_fflush, StdFileFixture, 1, 500000)
+BENCHMARK_F(FileWrite, fwrite_with_fflush, StdFileFixture, 30, 5000)
 {
-	celero::DoNotOptimizeAway(fwrite(buffer.data(), sizeof(char), buffer.size() * sizeof(char), file));
-	celero::DoNotOptimizeAway(fflush(file));
+	fwrite(buffer.data(), sizeof(char), buffer.size() * sizeof(char), file);
+	fflush(file);
 }
