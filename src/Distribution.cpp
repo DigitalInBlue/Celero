@@ -57,10 +57,10 @@ std::vector<uint64_t> celero::BuildDistribution(uint64_t numberOfSamples, uint64
 
 void celero::RunDistribution(uint64_t intArgument)
 {
-	std::vector<double> series1Normalized;
-	std::vector<double> series2Normalized;
-	std::vector<double> series3Normalized;
-	std::vector<double> series4Normalized;
+	std::vector<double> series1Normalized(intArgument);
+	std::vector<double> series2Normalized(intArgument);
+	std::vector<double> series3Normalized(intArgument);
+	std::vector<double> series4Normalized(intArgument);
 
 	auto series1 = celero::BuildDistribution(intArgument, uint64_t(64));
 	auto series2 = celero::BuildDistribution(intArgument, uint64_t(256));
@@ -82,9 +82,19 @@ void celero::RunDistribution(uint64_t intArgument)
 	// Normalize all vectors:
 	auto normalize = [minVal, maxVal](uint64_t val)->double
 		{
-			const auto delta = maxVal - minVal;
-			val -= minVal;
-			return static_cast<double>(val)/static_cast<double>(delta);
+			if(val >= minVal)
+			{
+				if(val <= maxVal)
+				{
+					const auto delta = maxVal - minVal;
+					val -= minVal;
+					return static_cast<double>(val)/static_cast<double>(delta);
+				}
+
+				return maxVal;
+			}
+
+			return minVal;
 		};
 
 	std::transform(std::begin(series1), std::end(series1), std::begin(series1Normalized), 

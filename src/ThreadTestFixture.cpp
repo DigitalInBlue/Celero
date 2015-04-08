@@ -35,10 +35,10 @@ class ThreadTestFixture::Impl
 		std::vector<std::future<void>> futures;
 };
 
-uint64_t ThreadTestFixture::Impl::currentCallId = 0;
-uint64_t ThreadTestFixture::Impl::currentThreadId = 0;
+thread_local uint64_t ThreadTestFixture::Impl::currentCallId = 0;
+thread_local uint64_t ThreadTestFixture::Impl::currentThreadId = 0;
 
-ThreadTestFixture::ThreadTestFixture()
+ThreadTestFixture::ThreadTestFixture() : TestFixture()
 {
 }
 
@@ -48,18 +48,29 @@ ThreadTestFixture::~ThreadTestFixture()
 
 void ThreadTestFixture::startThreads(uint64_t threads, uint64_t calls)
 {
-	uint64_t callsPerThread = calls / threads;
+	const uint64_t callsPerThread = calls / threads;
+
 	for(uint64_t i = 0; i < threads; ++i)
 	{
-		this->pimpl->futures.push_back(std::async([this, i, callsPerThread]()
+		try
 		{
-			this->pimpl->currentThreadId = i + 1;
-			for(auto operation = 0; operation < callsPerThread;)
-			{
-				this->pimpl->currentCallId = ++operation;
-				this->UserBenchmark();
-			}
-		}));
+			this->pimpl->futures.push_back(
+			//std::async(std::launch::deferred, 
+			std::async(std::launch::async, 
+				[this, i, callsPerThread]()
+				{
+					this->pimpl->currentThreadId = i + 1;
+					for(auto operation = size_t(0); operation < callsPerThread;)
+					{
+						this->pimpl->currentCallId = ++operation;
+						this->UserBenchmark();
+					}
+				}));
+		}
+		catch(std::system_error& e)
+		{
+			std::cerr << "Exception. Error Code: " << e.code() << ", " << e.what() << std::endl;
+		}
 	}
 }
 
@@ -69,7 +80,17 @@ void ThreadTestFixture::stopThreads()
 	// wait_for_all() will be avaliable for futures!
 	for(auto& f : this->pimpl->futures)
 	{
-		f.wait();
+		if(f.valid() == true)
+		{
+			try
+			{
+				f.wait();
+			}
+			catch(std::system_error& e)
+			{
+				std::cerr << "Exception. Error Code: " << e.code() << ", " << e.what() << std::endl;
+			}
+		}
 	};
 }
 

@@ -92,11 +92,11 @@ endif()
 if(UNIX)
 	if(CMAKE_COMPILER_IS_GNUCXX) 
 	  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -std=gnu++11 -Wall -O3" CACHE STRING "Compiler Flags for All Builds" FORCE) 
-	  set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -pedantic" CACHE STRING "Compiler Flags for Debug Builds" FORCE) 
+	  set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -pedantic -O0 -g" CACHE STRING "Compiler Flags for Debug Builds" FORCE) 
 	  set(CMAKE_CXX_FLAGS_RELEASE  "${CMAKE_CXX_FLAGS_RELEASE}" CACHE STRING "Compiler Flags for Release Builds" FORCE) 
 	else()
 	  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -std=gnu++11 -Wall -fPIC -O3" CACHE STRING "Compiler Flags for All Builds" FORCE) 
-	  set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -pedantic" CACHE STRING "Compiler Flags for Debug Builds" FORCE) 
+	  set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -pedantic -O0 -g" CACHE STRING "Compiler Flags for Debug Builds" FORCE) 
 	  set(CMAKE_CXX_FLAGS_RELEASE  "${CMAKE_CXX_FLAGS_RELEASE}" CACHE STRING "Compiler Flags for Release Builds" FORCE) 
 	endif() 
 endif()
@@ -191,8 +191,18 @@ set(TARGET_SRC
 	src/Utilities.cpp
 )
 
-set(TARGET_LIBRARIES ${SYSLIBS})
+if(msvc)
+	set(SYSLIBS
+		)
+else()
+	#pthread is required for std::thread to work.
+	set(SYSLIBS
+		pthread
+		)
+endif()
+
 add_library(${PROJECT_NAME} ${CELERO_USER_DEFINED_SHARED_OR_STATIC} ${TARGET_SRC} ${TARGET_H})
+target_link_libraries(${PROJECT_NAME} ${SYSLIBS})
 include_directories(${HEADER_PATH})
 
 install(TARGETS ${PROJECT_NAME} 
