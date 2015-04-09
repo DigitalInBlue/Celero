@@ -191,7 +191,7 @@ set(TARGET_SRC
 	src/Utilities.cpp
 )
 
-if(msvc)
+if(MSVC)
 	set(SYSLIBS
 		)
 else()
@@ -242,7 +242,7 @@ if(CELERO_ENABLE_TESTS)
 		set_property(TARGET ${PROJECT_NAME} PROPERTY FOLDER "Celero/Test")
 	endif()
 endif()
-    
+	
 # --------------------------------------------------------------------------- 
 # Optional
 # --------------------------------------------------------------------------- 

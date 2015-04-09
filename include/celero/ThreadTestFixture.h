@@ -64,7 +64,7 @@ namespace celero
 			///
 			/// \return Returns a pair of the number of microseconds the run took.
 			///
-            uint64_t run(uint64_t threads, uint64_t calls, int64_t experimentValue) override;
+			uint64_t run(uint64_t threads, uint64_t calls, int64_t experimentValue) override;
 
 			///
 			/// Get the current call number starting from 1.
