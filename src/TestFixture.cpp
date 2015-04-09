@@ -49,7 +49,7 @@ void TestFixture::tearDown()
 {
 }
 	
-uint64_t TestFixture::run(const uint64_t iterations, int64_t experimentValue)
+uint64_t TestFixture::run(const uint64_t, const uint64_t iterations, int64_t experimentValue)
 {
 	// Set up the testing fixture.
 	this->setUp(experimentValue);
@@ -61,7 +61,7 @@ uint64_t TestFixture::run(const uint64_t iterations, int64_t experimentValue)
 	const auto startTime = celero::timer::GetSystemTime();
 
 	this->onExperimentStart(experimentValue);
-			
+
 	while(operation--)
 	{
 		this->UserBenchmark();

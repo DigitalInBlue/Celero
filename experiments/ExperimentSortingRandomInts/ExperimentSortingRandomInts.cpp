@@ -36,7 +36,7 @@ CELERO_MAIN
 class SortFixture : public celero::TestFixture
 {
 	public:
-		SortFixture()
+	SortFixture()
 		{
 		}
 
@@ -111,6 +111,34 @@ BENCHMARK_F(SortRandInts, SelectionSort, SortFixture, 30, 10000)
 		std::swap(this->array[x], this->array[minIdx]);
 	}
 }
+
+// http://www.bfilipek.com/2014/12/top-5-beautiful-c-std-algorithms.html
+BENCHMARK_F(SortRandInts, InsertionSort, SortFixture, 30, 10000)
+{
+	for(auto i = std::begin(this->array); i != std::end(this->array); ++i)
+	{
+		std::rotate(std::upper_bound(std::begin(this->array), i, *i), i, std::next(i));
+	}
+}
+
+// http://www.bfilipek.com/2014/12/top-5-beautiful-c-std-algorithms.html
+template<class FwdIt, class Compare = std::less<>>
+void quickSort(FwdIt first, FwdIt last, Compare cmp = Compare {})
+{
+	auto const N = std::distance(first, last);
+	if(N <= 1) return;
+	auto const pivot = std::next(first, N / 2);
+	std::nth_element(first, pivot, last, cmp);
+	quickSort(first, pivot, cmp);
+	quickSort(pivot, last, cmp);
+
+}
+
+BENCHMARK_F(SortRandInts, QuickSort, SortFixture, 30, 10000)
+{
+	quickSort(std::begin(this->array), std::end(this->array));
+}
+
 
 BENCHMARK_F(SortRandInts, stdSort, SortFixture, 30, 10000)
 {
