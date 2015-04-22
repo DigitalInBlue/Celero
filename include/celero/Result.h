@@ -50,7 +50,7 @@ namespace celero
 			///
 			///
 			///
-			void setProblemSpaceValue(int64_t x, double scale = 1.0);
+			void setProblemSpaceValue(int64_t x, double scale = 1.0, uint64_t iterations = 0);
 
 			///
 			///
@@ -61,6 +61,11 @@ namespace celero
 			///
 			///
 			double getProblemSpaceValueScale() const;
+
+			///
+			///
+			///
+			uint64_t getProblemSpaceIterations() const;
 
 			///
 			///

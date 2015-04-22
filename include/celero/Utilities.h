@@ -118,6 +118,12 @@ namespace celero
 	/// Quick definition of the number of microseconds per second.
 	///
 	const uint64_t UsPerSec(1000000);
+
+	///
+	/// Disable dynamic CPU scaling which allows the clock speed of the processor 
+	/// to be adjusted to different P-states by software. 
+	///
+	CELERO_EXPORT void DisableDynamicCPUScaling();
 }
 
 #endif

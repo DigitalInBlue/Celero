@@ -55,11 +55,14 @@ namespace celero
 			///
 			/// Allows a test fixture to supply values to use for experiments.
 			/// This is used to create multiple runs of the same experiment
-			/// and varrying the data set size, for example.
+			/// and varrying the data set size, for example.  The second value
+			/// of the pair is an optional override for the number of iterations
+			/// to be used.  If zero is specified, then the default number of 
+			/// iterations is used.
 			///
 			/// It is only guaranteed that the constructor is called prior to this function being called.
 			///
-			virtual std::vector<int64_t> getExperimentValues() const { return std::vector<int64_t>(); };
+			virtual std::vector<std::pair<int64_t, uint64_t>> getExperimentValues() const { return std::vector<std::pair<int64_t, uint64_t>>(); };
 
 			///
 			/// Provide a units result scale of each experiment value. If the value

@@ -275,10 +275,10 @@ std::shared_ptr<Factory> Experiment::getFactory() const
 	return this->pimpl->factory;
 }
 
-void Experiment::addProblemSpace(int64_t x, double scale)
+void Experiment::addProblemSpace(int64_t x, double scale, uint64_t iterations)
 {
 	auto r = std::make_shared<Result>(this);
-    r->setProblemSpaceValue(x, scale);
+	r->setProblemSpaceValue(x, scale, iterations);
 	this->pimpl->results.push_back(r);
 }
 

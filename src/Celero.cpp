@@ -121,6 +121,8 @@ void celero::Run(int argc, char** argv)
 	// Initial output
 	std::cout << "Celero" << std::endl;
 
+	// Disable dynamic CPU frequency scaling
+	celero::DisableDynamicCPUScaling();
 	celero::timer::CachePerformanceFrequency();
 	
 	// Shall we build a distribution?

@@ -10,7 +10,7 @@ class BaseFixture : public celero::ThreadTestFixture
 public:
 	int counter;
 
-    void setUp(int64_t) override
+	void setUp(int64_t) override
 	{
 		this->counter = 0;
 	}
@@ -21,7 +21,7 @@ class AtomicFixture : public celero::ThreadTestFixture
 public:
 	std::atomic<int> counter;
 
-    void setUp(int64_t) override
+	void setUp(int64_t) override
 	{
 		this->counter = 0;
 	}
@@ -33,7 +33,7 @@ public:
 	int counter;
 	std::mutex mutex;
 
-    void setUp(int64_t) override
+	void setUp(int64_t) override
 	{
 		this->counter = 0;
 	}

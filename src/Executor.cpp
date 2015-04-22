@@ -39,7 +39,7 @@ void ExecuteProblemSpace(std::shared_ptr<Result> r)
 	auto testRunner = [r]()
 		{
 			auto test = r->getExperiment()->getFactory()->Create();
-			const auto testTime = test->run(r->getExperiment()->getThreads(), r->getExperiment()->getIterations(), r->getProblemSpaceValue());
+			const auto testTime = test->run(r->getExperiment()->getThreads(), r->getProblemSpaceIterations(), r->getProblemSpaceValue());
 
 			// Save test results
 			r->getStatistics()->addSample(testTime);
@@ -97,9 +97,17 @@ void executor::RunBaseline(std::shared_ptr<Benchmark> bmark)
 		{
 			auto testValues = baselineExperiment->getFactory()->Create()->getExperimentValues();
 			auto valueResultScale = baselineExperiment->getFactory()->Create()->getExperimentValueResultScale();
+
 			for(auto i : testValues)
 			{
-				baselineExperiment->addProblemSpace(i, static_cast<double>(valueResultScale));
+				if(i.second != 0)
+				{
+					baselineExperiment->addProblemSpace(i.first, static_cast<double>(valueResultScale), i.second);
+				}
+				else
+				{
+					baselineExperiment->addProblemSpace(i.first, static_cast<double>(valueResultScale), baselineExperiment->getIterations());
+				}
 			}
 
 			// Add a single default problem space if none was specified.  
@@ -163,7 +171,14 @@ void executor::Run(std::shared_ptr<Experiment> e)
 		auto valueResultScale = e->getFactory()->Create()->getExperimentValueResultScale();
 		for(auto i : testValues)
 		{
-			e->addProblemSpace(i, valueResultScale);
+			if(i.second != 0)
+			{
+				e->addProblemSpace(i.first, valueResultScale, i.second);
+			}
+			else
+			{
+				e->addProblemSpace(i.first, valueResultScale, e->getIterations());
+			}
 		}
 
 		// Add a single default problem space if none was specified.  

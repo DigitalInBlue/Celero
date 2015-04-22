@@ -97,7 +97,7 @@ void ResultTable::add(std::shared_ptr<Result> x)
 			<< x->getExperiment()->getName() << ","
 			<< x->getProblemSpaceValue() << ","
 			<< x->getExperiment()->getSamples() << ","
-			<< x->getExperiment()->getIterations() << ",";
+			<< x->getProblemSpaceIterations() << ",";
 
 		this->pimpl->ofs << x->getBaselineMeasurement() << ","
 			<< x->getUsPerCall() << ","

@@ -165,6 +165,11 @@ std::string PrintHRule()
 	return ss.str();
 }
 
+void celero::print::Console(const std::string& x)
+{
+	std::cout << "Celero: " << x << std::endl;
+}
+
 void celero::print::TableBanner()
 {
 	celero::console::SetConsoleColor(celero::console::ConsoleColor_Default); 
@@ -189,7 +194,7 @@ void celero::print::TableRowHeader(std::shared_ptr<Result> x)
 				<< PrintColumn(x->getExperiment()->getName())
 				<< PrintColumn(x->getProblemSpaceValue())
 				<< PrintColumn(x->getExperiment()->getSamples())
-				<< PrintColumn(x->getExperiment()->getIterations());
+				<< PrintColumn(x->getProblemSpaceIterations());
 }
 
 void celero::print::TableResult(std::shared_ptr<Result> x)
