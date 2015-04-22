@@ -103,6 +103,9 @@ BASELINE_F(DemoTransform, ForLoop, DemoTransformFixture, 30, 10000)
 	}
 }
 
+// BASELINE_FIXED_F(DemoTransform, FixedTime, DemoTransformFixture, 30, 10000, 100)
+// { }
+
 BENCHMARK_F(DemoTransform, StdTransform, DemoTransformFixture, 30, 10000)
 {
 	std::transform(this->arrayIn.begin(), this->arrayIn.end(), this->arrayOut.begin(), std::bind1st(std::multiplies<int>(), DemoTransformFixture::Multiple));

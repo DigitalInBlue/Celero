@@ -69,11 +69,11 @@ namespace celero
 			/// is greater than 0 then additional statistic value will be printed
 			/// in output - [ xxxx units/sec ]. For example for measure speed of
 			/// file IO operations method might return 1024 * 1024 to get megabytes 
-            /// per second.
+			/// per second.
 			///
 			/// It is only guaranteed that the constructor is called prior to this function being called.
 			///
-            virtual double getExperimentValueResultScale() const { return 1.0; };
+			virtual double getExperimentValueResultScale() const { return 1.0; };
 
 			///
 			/// Allows the text fixture to run code that will be executed once
@@ -118,6 +118,11 @@ namespace celero
 		protected:
 			/// Executed for each operation the benchmarking test is run.
 			virtual void UserBenchmark();
+
+			///
+			/// Only used for baseline cases.  Used to define a hard-coded execution time vs. actually making a measurement.
+			///
+			virtual uint64_t HardCodedMeasurement() const;
 	};
 }
 

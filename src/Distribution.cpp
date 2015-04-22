@@ -91,10 +91,10 @@ void celero::RunDistribution(uint64_t intArgument)
 					return static_cast<double>(val)/static_cast<double>(delta);
 				}
 
-				return maxVal;
+				return static_cast<double>(maxVal);
 			}
 
-			return minVal;
+			return static_cast<double>(minVal);
 		};
 
 	std::transform(std::begin(series1), std::end(series1), std::begin(series1Normalized), 

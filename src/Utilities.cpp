@@ -70,7 +70,7 @@ void celero::DisableDynamicCPUScaling()
 			&spc,
 			sizeof(SYSTEM_POWER_CAPABILITIES));
 		
-		if(spc.ProcessorThrottle == true)
+		if(spc.ProcessorThrottle == TRUE)
 		{
 			celero::print::Console("CPU supports processor throttling.  Attempting to disable.");
 			

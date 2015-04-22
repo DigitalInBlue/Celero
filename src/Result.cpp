@@ -47,7 +47,7 @@ class Result::Impl
 			stats(),
 			problemSpaceValue(0),
 			problemSpaceValueScale(1.0),
-			problemSpaceIterations(0),
+			problemSpaceIterations(1),
 			parent(p),
 			complete(false)
 		{
