@@ -1,8 +1,6 @@
 #ifndef H_CELERO_TESTFIXTURE_H
 #define H_CELERO_TESTFIXTURE_H
 
-// www.helleboreconsulting.com
-
 ///
 /// \author	John Farrier
 ///

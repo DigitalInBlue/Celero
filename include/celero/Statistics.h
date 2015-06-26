@@ -1,8 +1,6 @@
 #ifndef H_CELERO_STATISTICS_H
 #define H_CELERO_STATISTICS_H
 
-// www.helleboreconsulting.com
-
 ///
 /// \author	John Farrier
 ///

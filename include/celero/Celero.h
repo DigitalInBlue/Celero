@@ -1,8 +1,6 @@
 #ifndef H_CELERO_CELERO_H
 #define H_CELERO_CELERO_H
 
-// www.helleboreconsulting.com
-
 ///
 /// \namespace celero
 ///

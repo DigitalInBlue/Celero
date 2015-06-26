@@ -1,8 +1,6 @@
 #ifndef H_CELERO_DISTRIBUTION_H
 #define H_CELERO_DISTRIBUTION_H
 
-// www.helleboreconsulting.com
-
 ///
 /// \author	John Farrier
 ///
