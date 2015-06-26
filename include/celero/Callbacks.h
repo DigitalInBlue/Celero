@@ -1,8 +1,6 @@
 #ifndef H_CELERO_CALLBACKS_H
 #define H_CELERO_CALLBACKS_H
 
-// www.helleboreconsulting.com
-
 ///
 /// \namespace celero
 ///

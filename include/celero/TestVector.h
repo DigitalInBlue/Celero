@@ -1,8 +1,6 @@
 #ifndef H_CELERO_TESTVECTOR_H
 #define H_CELERO_TESTVECTOR_H
 
-// www.helleboreconsulting.com
-
 ///
 /// \author	John Farrier
 ///

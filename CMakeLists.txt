@@ -193,6 +193,7 @@ set(TARGET_SRC
 
 if(MSVC)
 	set(SYSLIBS
+		PowrProf.lib
 		)
 else()
 	#pthread is required for std::thread to work.

@@ -40,9 +40,9 @@ class SortFixture : public celero::TestFixture
 		{
 		}
 
-		virtual std::vector<int64_t> getExperimentValues() const
+		virtual std::vector<std::pair<int64_t, uint64_t>> getExperimentValues() const override
 		{
-			std::vector<int64_t> problemSpace;
+			std::vector<std::pair<int64_t, uint64_t>> problemSpace;
 
 			// We will run some total number of sets of tests all together. 
 			// Each one growing by a power of 2.
@@ -52,7 +52,7 @@ class SortFixture : public celero::TestFixture
 			{
 				// ExperimentValues is part of the base class and allows us to specify
 				// some values to control various test runs to end up building a nice graph.
-				problemSpace.push_back(static_cast<int64_t>(pow(2, i+1)));
+				problemSpace.push_back(std::make_pair(int64_t(pow(2, i+1)), uint64_t(0)));
 			}
 
 			return problemSpace;

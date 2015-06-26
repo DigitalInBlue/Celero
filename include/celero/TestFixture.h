@@ -1,8 +1,6 @@
 #ifndef H_CELERO_TESTFIXTURE_H
 #define H_CELERO_TESTFIXTURE_H
 
-// www.helleboreconsulting.com
-
 ///
 /// \author	John Farrier
 ///
@@ -55,22 +53,25 @@ namespace celero
 			///
 			/// Allows a test fixture to supply values to use for experiments.
 			/// This is used to create multiple runs of the same experiment
-			/// and varrying the data set size, for example.
+			/// and varrying the data set size, for example.  The second value
+			/// of the pair is an optional override for the number of iterations
+			/// to be used.  If zero is specified, then the default number of 
+			/// iterations is used.
 			///
 			/// It is only guaranteed that the constructor is called prior to this function being called.
 			///
-			virtual std::vector<int64_t> getExperimentValues() const { return std::vector<int64_t>(); };
+			virtual std::vector<std::pair<int64_t, uint64_t>> getExperimentValues() const { return std::vector<std::pair<int64_t, uint64_t>>(); };
 
 			///
 			/// Provide a units result scale of each experiment value. If the value
 			/// is greater than 0 then additional statistic value will be printed
 			/// in output - [ xxxx units/sec ]. For example for measure speed of
 			/// file IO operations method might return 1024 * 1024 to get megabytes 
-            /// per second.
+			/// per second.
 			///
 			/// It is only guaranteed that the constructor is called prior to this function being called.
 			///
-            virtual double getExperimentValueResultScale() const { return 1.0; };
+			virtual double getExperimentValueResultScale() const { return 1.0; };
 
 			///
 			/// Allows the text fixture to run code that will be executed once
@@ -115,6 +116,11 @@ namespace celero
 		protected:
 			/// Executed for each operation the benchmarking test is run.
 			virtual void UserBenchmark();
+
+			///
+			/// Only used for baseline cases.  Used to define a hard-coded execution time vs. actually making a measurement.
+			///
+			virtual uint64_t HardCodedMeasurement() const;
 	};
 }
 

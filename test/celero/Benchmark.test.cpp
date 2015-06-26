@@ -1,5 +1,3 @@
-// www.helleboreconsulting.com
-
 ///
 /// \author	John Farrier
 ///

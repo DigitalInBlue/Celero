@@ -51,33 +51,43 @@ void TestFixture::tearDown()
 	
 uint64_t TestFixture::run(const uint64_t, const uint64_t iterations, int64_t experimentValue)
 {
-	// Set up the testing fixture.
-	this->setUp(experimentValue);
-
-	// Run the test body for each operation.
-	auto operation = iterations;
-			
-	// Get the starting time.
-	const auto startTime = celero::timer::GetSystemTime();
-
-	this->onExperimentStart(experimentValue);
-
-	while(operation--)
+	if(this->HardCodedMeasurement() == 0)
 	{
-		this->UserBenchmark();
+		// Set up the testing fixture.
+		this->setUp(experimentValue);
+
+		// Run the test body for each operation.
+		auto operation = iterations;
+
+		// Get the starting time.
+		const auto startTime = celero::timer::GetSystemTime();
+
+		this->onExperimentStart(experimentValue);
+
+		while(operation--)
+		{
+			this->UserBenchmark();
+		}
+
+		this->onExperimentEnd();
+
+		const auto endTime = celero::timer::GetSystemTime();
+
+		// Tear down the testing fixture.
+		this->tearDown();
+
+		// Return the duration in microseconds for the given problem size.
+		return (endTime - startTime);
 	}
 
-	this->onExperimentEnd();
-			
-	const auto endTime = celero::timer::GetSystemTime();
-
-	// Tear down the testing fixture.
-	this->tearDown();
-			
-	// Return the duration in microseconds for the given problem size.
-	return (endTime - startTime);
+	return this->HardCodedMeasurement();
 }
 
 void TestFixture::UserBenchmark()
 {
+}
+
+uint64_t TestFixture::HardCodedMeasurement() const
+{
+	return uint64_t(0);
 }

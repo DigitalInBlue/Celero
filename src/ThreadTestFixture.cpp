@@ -96,27 +96,32 @@ void ThreadTestFixture::stopThreads()
 
 uint64_t ThreadTestFixture::run(uint64_t threads, uint64_t calls, int64_t experimentValue)
 {
-	// Set up the testing fixture.
-	this->setUp(experimentValue);
+	if(this->HardCodedMeasurement() == 0)
+	{
+		// Set up the testing fixture.
+		this->setUp(experimentValue);
 
-	// Start working threads.
-	this->startThreads(threads, calls);
+		// Start working threads.
+		this->startThreads(threads, calls);
 
-	// Get the starting time.
-	const auto startTime = celero::timer::GetSystemTime();
+		// Get the starting time.
+		const auto startTime = celero::timer::GetSystemTime();
 
-	this->onExperimentStart(experimentValue);
+		this->onExperimentStart(experimentValue);
 
-	// Stop working threads.
-	this->stopThreads();
+		// Stop working threads.
+		this->stopThreads();
 
-	this->onExperimentEnd();
+		this->onExperimentEnd();
 
-	const auto endTime = celero::timer::GetSystemTime();
+		const auto endTime = celero::timer::GetSystemTime();
 
-	// Tear down the testing fixture.
-	this->tearDown();
+		// Tear down the testing fixture.
+		this->tearDown();
 
-	// Return the duration in microseconds for the given problem size.
-	return (endTime - startTime);
+		// Return the duration in microseconds for the given problem size.
+		return (endTime - startTime);
+	}
+
+	return this->HardCodedMeasurement();
 }

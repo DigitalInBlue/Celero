@@ -1,7 +1,5 @@
 #Celero
 
-Develop Branch Status: [![Build Status](https://travis-ci.org/DigitalInBlue/Celero.svg?branch=develop)](https://travis-ci.org/DigitalInBlue/Celero)
-
 ###C++ Benchmarking Library
 
 Copyright 2015 John Farrier 
@@ -166,6 +164,38 @@ Complete.
 The first test that executes will be the group's baseline.  Celero took 10 samples of 1000000 iterations of the code in our test.  (Each set of 1000000 iterations was measured, and this was done 10 times and the smallest time was taken.)  The "Baseline" value for the baseline measurement itself will always be 1.0.
 
 After the baseline is complete, each individual test is ran.  Each test is executed and measured in the same way, however, there is an additional metric reported: Baseline.  This compares the time it takes to compute the benchmark to the baseline.  The data here shows that CeleroBenchTest.Complex1 takes 1.007949 times longer to execute than the baseline.
+
+###Threaded Benchmarks
+Celero can automatically run threaded benchmarks.  BASELINE_T and BENCHMARK_T can be used to launch the given code on its own thread using a user-defined number of concurrent executions.  celeroDemoMultithread illustrates using this feature.  When defining these macros, the use the following format:
+
+```C++
+BASELINE_T(groupName, baselineName, fixtureName, samples, iterations, threads)
+BASELINE_FIXED_T(groupName, baselineName, fixtureName, samples, iterations, threads, useconds)
+
+BENCHMARK_T(groupName, benchmarkName, fixtureName, samples, iterations, threads)
+BENCHMARK_TEST_T(groupName, benchmarkName, fixtureName, samples, iterations, threads, target)
+```
+
+###Fixed Measurement Benchmarks
+While celero normally measures the baseline time and then executes benchmark cases for comparison, you can also specify a fixed measurement time.  This is useful for measuring performance against a real-time requirement.  To use, utilize the ```_FIXED_``` version of the BASELINE and BENCHMARK macros.
+
+```C++
+// No threads or test fixtures.
+BASELINE_FIXED(groupName, baselineName, samples, iterations, useconds)
+
+// For using test fixtures:
+BASELINE_FIXED_F(groupName, baselineName, fixtureName, samples, iterations, useconds)
+
+// For using threads and test fixtures.
+BASELINE_FIXED_T(groupName, baselineName, fixtureName, samples, iterations, threads, useconds)
+```
+
+Example:
+
+```C++
+BASELINE_FIXED_F(DemoTransform, FixedTime, DemoTransformFixture, 30, 10000, 100)
+{ /* Nothing to do */ }
+```
 
 ###Notes
 

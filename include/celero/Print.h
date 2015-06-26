@@ -1,8 +1,6 @@
 #ifndef H_CELERO_PRINT_H
 #define H_CELERO_PRINT_H
  
-// www.helleboreconsulting.com
-
 ///
 /// \author	John Farrier
 ///
@@ -45,6 +43,7 @@ namespace celero
 		//void SummaryTest(const std::string& x);
 		//void Summary(std::shared_ptr<Result> x);
 
+		void Console(const std::string& x);
 		void TableBanner();
 		void TableRowHeader(std::shared_ptr<Result> x);
 		void TableResult(std::shared_ptr<Result> x);

@@ -5,17 +5,17 @@ CELERO_MAIN
 class BaseFixture : public celero::TestFixture
 {
 	public:
-		std::vector<int64_t> getExperimentValues() const override
+		std::vector<std::pair<int64_t, uint64_t>> getExperimentValues() const override
 		{
-			std::vector<int64_t> bufferSizes;
-			bufferSizes.push_back(32);
-			bufferSizes.push_back(64);
-			bufferSizes.push_back(128);
-			bufferSizes.push_back(256);
-			bufferSizes.push_back(512);
-			bufferSizes.push_back(1024);
-			bufferSizes.push_back(2048);
-			bufferSizes.push_back(4096);
+			std::vector<std::pair<int64_t, uint64_t>> bufferSizes;
+			bufferSizes.push_back(std::pair<int64_t, uint64_t>(32, 0));
+			bufferSizes.push_back(std::pair<int64_t, uint64_t>(64, 0));
+			bufferSizes.push_back(std::pair<int64_t, uint64_t>(128, 0));
+			bufferSizes.push_back(std::pair<int64_t, uint64_t>(256, 0));
+			bufferSizes.push_back(std::pair<int64_t, uint64_t>(512, 0));
+			bufferSizes.push_back(std::pair<int64_t, uint64_t>(1024, 0));
+			bufferSizes.push_back(std::pair<int64_t, uint64_t>(2048, 0));
+			bufferSizes.push_back(std::pair<int64_t, uint64_t>(4096, 0));
 			return bufferSizes;
 		}
 

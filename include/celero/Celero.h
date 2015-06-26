@@ -1,8 +1,6 @@
 #ifndef H_CELERO_CELERO_H
 #define H_CELERO_CELERO_H
 
-// www.helleboreconsulting.com
-
 ///
 /// \namespace celero
 ///
@@ -123,7 +121,7 @@ namespace celero
 			BENCHMARK_CLASS_NAME(groupName, benchmarkName)() : fixtureName() {}	\
 																				\
 		protected:																\
-			virtual void UserBenchmark();										\
+			virtual void UserBenchmark() override;								\
 																				\
 		private:																\
 			static const std::shared_ptr< ::celero::Benchmark> info;			\
@@ -146,7 +144,7 @@ namespace celero
 			BENCHMARK_CLASS_NAME(groupName, benchmarkName)() : fixtureName() {}	\
 																				\
 		protected:																\
-			virtual void UserBenchmark();										\
+			virtual void UserBenchmark() override;								\
 																				\
 		private:																\
 			static const std::shared_ptr< ::celero::Benchmark> info;			\
@@ -223,15 +221,15 @@ namespace celero
 ///
 ///	A macro to create a class of a unique name which can be used to register and execute a baseline benchmark test.
 ///
-#define BASELINE_IMPL(groupName, baselineName, fixtureName, samples, iterations, threads)		\
+#define BASELINE_IMPL(groupName, baselineName, fixtureName, samples, iterations, threads, useconds)		\
 	class BASELINE_CLASS_NAME(groupName, baselineName) : public fixtureName		\
 	{																			\
 		public:																	\
 			BASELINE_CLASS_NAME(groupName, baselineName)() : fixtureName() {}	\
 																				\
 		protected:																\
-			virtual void UserBenchmark();										\
-																				\
+			virtual void UserBenchmark() override;								\
+			virtual uint64_t HardCodedMeasurement() const override { return uint64_t(useconds); }	\
 		private:																\
 			static const std::shared_ptr< ::celero::Benchmark> info;			\
 	};																			\
@@ -248,7 +246,7 @@ namespace celero
 ///
 /// Using the BASELINE_ macro, this effectivly fills in a class's UserBenchmark() function.
 ///
-#define BASELINE_F(groupName, baselineName, fixtureName, samples, iterations) BASELINE_IMPL(groupName, baselineName, fixtureName, samples, iterations, 1)
+#define BASELINE_F(groupName, baselineName, fixtureName, samples, iterations) BASELINE_IMPL(groupName, baselineName, fixtureName, samples, iterations, 1, 0)
 
 ///
 /// \define BASELINE_T
@@ -257,15 +255,28 @@ namespace celero
 ///
 /// Using the BASELINE_ macro, this effectivly fills in a class's UserBenchmark() function.
 ///
-#define BASELINE_T(groupName, baselineName, fixtureName, samples, iterations, threads) BASELINE_IMPL(groupName, baselineName, fixtureName, samples, iterations, threads)
+#define BASELINE_T(groupName, baselineName, fixtureName, samples, iterations, threads) BASELINE_IMPL(groupName, baselineName, fixtureName, samples, iterations, threads, 0)
 
 ///
-/// \define BASELINE_F
+/// \define BASELINE
 ///
 /// \brief	A macro to place in user code to define a UserBenchmark function for a benchmark.
 ///
 /// Using the BASELINE_ macro, this effectivly fills in a class's UserBenchmark() function.
 ///
-#define BASELINE(groupName, baselineName, samples, iterations) BASELINE_IMPL(groupName,  baselineName, ::celero::TestFixture, samples, iterations, 1)
+#define BASELINE(groupName, baselineName, samples, iterations) BASELINE_IMPL(groupName, baselineName, ::celero::TestFixture, samples, iterations, 1, 0)
+
+///
+/// \define BASELINE_FIXED
+///
+/// \brief	A macro to place in user code to define a UserBenchmark function for a benchmark with a hard-coded timing.
+///
+/// This will NOT perform any timing measurments but will instead use the number of microseconds passed in as the measured time.
+///
+/// Using the BASELINE_ macro, this effectivly fills in a class's UserBenchmark() function.
+///
+#define BASELINE_FIXED(groupName, baselineName, samples, iterations, useconds) BASELINE_IMPL(groupName, baselineName, ::celero::TestFixture, samples, iterations, 1, useconds)
+#define BASELINE_FIXED_F(groupName, baselineName, fixtureName, samples, iterations, useconds) BASELINE_IMPL(groupName, baselineName, fixtureName, samples, iterations, 1, useconds)
+#define BASELINE_FIXED_T(groupName, baselineName, fixtureName, samples, iterations, threads, useconds) BASELINE_IMPL(groupName, baselineName, fixtureName, samples, iterations, threads, useconds)
 
 #endif

@@ -1,8 +1,6 @@
 #ifndef H_CELERO_RESULT_H
 #define H_CELERO_RESULT_H
 
-// www.helleboreconsulting.com
-
 ///
 /// \author	John Farrier
 ///
@@ -50,7 +48,7 @@ namespace celero
 			///
 			///
 			///
-			void setProblemSpaceValue(int64_t x, double scale = 1.0);
+			void setProblemSpaceValue(int64_t x, double scale = 1.0, uint64_t iterations = 0);
 
 			///
 			///
@@ -61,6 +59,11 @@ namespace celero
 			///
 			///
 			double getProblemSpaceValueScale() const;
+
+			///
+			///
+			///
+			uint64_t getProblemSpaceIterations() const;
 
 			///
 			///

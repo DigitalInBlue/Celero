@@ -48,9 +48,9 @@ class DemoTransformFixture : public celero::TestFixture
 		{
 		}
 
-		virtual std::vector<int64_t> getExperimentValues() const
+		virtual std::vector<std::pair<int64_t, uint64_t>> getExperimentValues() const override
 		{
-			std::vector<int64_t> problemSpaceValues;
+			std::vector<std::pair<int64_t, uint64_t>> problemSpaceValues;
 
 			// We will run some total number of sets of tests all together. 
 			// Each one growing by a power of 2.
@@ -60,7 +60,10 @@ class DemoTransformFixture : public celero::TestFixture
 			{
 				// ExperimentValues is part of the base class and allows us to specify
 				// some values to control various test runs to end up building a nice graph.
-				problemSpaceValues.push_back(static_cast<int64_t>(pow(2, i+1)));
+				// We make the number of iterations decrease as the size of our problem space increases
+				// to demonstrate how to adjust the number of iterations per sample based on the 
+				// problem space size.
+				problemSpaceValues.push_back(std::make_pair(int64_t(pow(2, i + 1)), uint64_t(pow(2, totalNumberOfTests - i))));
 			}
 
 			return problemSpaceValues;
@@ -99,6 +102,9 @@ BASELINE_F(DemoTransform, ForLoop, DemoTransformFixture, 30, 10000)
 		this->arrayOut[i] = this->arrayIn[i] * DemoTransformFixture::Multiple;
 	}
 }
+
+// BASELINE_FIXED_F(DemoTransform, FixedTime, DemoTransformFixture, 30, 10000, 100)
+// { }
 
 BENCHMARK_F(DemoTransform, StdTransform, DemoTransformFixture, 30, 10000)
 {
