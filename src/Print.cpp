@@ -217,7 +217,7 @@ void celero::print::TableResult(std::shared_ptr<Result> x)
 
 	std::cout	<< PrintColumn(x->getBaselineMeasurement())
 				<< PrintColumn(x->getUsPerCall())
-				<< PrintColumn(x->getOpsPerSecond(), 2)
+				<< PrintColumn(x->getCallsPerSecond(), 2)
 				<< "\n";
 
 	celero::console::SetConsoleColor(celero::console::ConsoleColor_Default);

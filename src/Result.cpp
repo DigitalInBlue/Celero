@@ -126,7 +126,7 @@ double Result::getUsPerCall() const
 	return static_cast<double>(this->pimpl->stats.getMin()) / static_cast<double>(this->pimpl->problemSpaceIterations);
 }
 
-double Result::getOpsPerSecond() const
+double Result::getCallsPerSecond() const
 {
 	return 1.0 / (this->getUsPerCall() * 1.0e-6);
 }

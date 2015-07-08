@@ -101,7 +101,7 @@ void ResultTable::add(std::shared_ptr<Result> x)
 
 		this->pimpl->ofs << x->getBaselineMeasurement() << ","
 			<< x->getUsPerCall() << ","
-			<< x->getOpsPerSecond() << ","
+			<< x->getCallsPerSecond() << ","
 			<< x->getStatistics()->getMin() << ","
 			<< x->getStatistics()->getMean() << ","
 			<< x->getStatistics()->getMax() << ","
