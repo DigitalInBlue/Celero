@@ -12,7 +12,6 @@
 CELERO_MAIN
 
 /// Run an automatic baseline.  
-/// Celero will help make sure enough samples are taken to get a reasonable measurement
 /// In reality, all of the "Complex" cases take the same amount of time to run.
 /// The difference in the results is a product of measurement error.
 BASELINE(DemoSimple, Baseline, 1, 7100000)
@@ -27,15 +26,13 @@ BENCHMARK_TEST(DemoSimple, Complex1, 1, 7100000, 1.0)
 	celero::DoNotOptimizeAway(static_cast<float>(sin(fmod(rand(), 3.14159265))));
 }
 
-/// Run a manual test consisting of 1 sample of 7100000 operations per measurement.
-/// Celero will help make sure enough samples are taken to get a reasonable measurement
+/// Run a manual test consisting of 1 sample of 7100000 iterations per measurement.
 BENCHMARK_TEST(DemoSimple, Complex2, 1, 7100000, 3.71)
 {
 	celero::DoNotOptimizeAway(static_cast<float>(sin(fmod(rand(), 3.14159265))));
 }
 
-/// Run a manual test consisting of 60 samples of 7100000 operations per measurement.
-/// Celero will help make sure enough samples are taken to get a reasonable measurement
+/// Run a manual test consisting of 60 samples of 7100000 iterations per measurement.
 BENCHMARK_TEST(DemoSimple, Complex3, 60, 7100000, 5.0)
 {
 	celero::DoNotOptimizeAway(static_cast<float>(sin(fmod(rand(), 3.14159265))));

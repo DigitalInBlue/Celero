@@ -20,16 +20,13 @@
 /// See the License for the specific language governing permissions and
 /// limitations under the License.
 ///
-/// Ideas from Nick Brunn's Hayai (https://github.com/nickbruun/hayai) were used and I likely owe him a beer.
-///
-/// Special thanks to the band "3" for providing the development soundtrack.
+/// Special thanks to the bands "3" and "Coheed and Cambria" for providing the development soundtrack.
 ///
 /// "Iterations" refers to how many loops of the test function are measured as a time.
 /// For very fast code, many iterations would help amoratize measurement error.
 /// 
-/// "Samples" refers to how many sets of "Ops" will be performed.  Each "sample" is
-/// a single measurement.  Set to 0 to have Celero decide how many samples are required
-/// for a minimally significant answer.
+/// "Samples" refers to how many sets of "Iterations" will be performed.  Each "sample" is
+/// a single measurement.  
 ///
 /// It is highly encouraged to only run this code compiled in a "Release" mode to use all available optimizations.
 ///

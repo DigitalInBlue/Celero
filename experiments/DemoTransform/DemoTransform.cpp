@@ -94,13 +94,19 @@ class DemoTransformFixture : public celero::TestFixture
 		int arraySize;
 };
 
+#include <iostream>
+
 // For a baseline, I'll chose Bubble Sort.
 BASELINE_F(DemoTransform, ForLoop, DemoTransformFixture, 30, 10000)
 {
+	static int iterationCount = 0;
 	for(int i = 0; i < this->arraySize; i++)
 	{
 		this->arrayOut[i] = this->arrayIn[i] * DemoTransformFixture::Multiple;
 	}
+	iterationCount++;
+	if(iterationCount%1000== 0)	std::cout << "Baseline " << iterationCount << std::endl;
+	
 }
 
 // BASELINE_FIXED_F(DemoTransform, FixedTime, DemoTransformFixture, 30, 10000, 100)
@@ -108,7 +114,11 @@ BASELINE_F(DemoTransform, ForLoop, DemoTransformFixture, 30, 10000)
 
 BENCHMARK_F(DemoTransform, StdTransform, DemoTransformFixture, 30, 10000)
 {
+	static int iterationCount = 0;
 	std::transform(this->arrayIn.begin(), this->arrayIn.end(), this->arrayOut.begin(), std::bind1st(std::multiplies<int>(), DemoTransformFixture::Multiple));
+
+	iterationCount++;
+	if(iterationCount%1000== 0)	std::cout << "Benchmark " << iterationCount << std::endl;
 }
 
 BENCHMARK_F(DemoTransform, StdTransformLambda, DemoTransformFixture, 30, 10000)

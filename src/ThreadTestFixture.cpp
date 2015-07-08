@@ -46,9 +46,9 @@ ThreadTestFixture::~ThreadTestFixture()
 {
 }
 
-void ThreadTestFixture::startThreads(uint64_t threads, uint64_t calls)
+void ThreadTestFixture::startThreads(uint64_t threads, uint64_t iterations)
 {
-	const uint64_t callsPerThread = calls / threads;
+	const uint64_t iterationsPerThread = iterations / threads;
 
 	for(uint64_t i = 0; i < threads; ++i)
 	{
@@ -57,12 +57,12 @@ void ThreadTestFixture::startThreads(uint64_t threads, uint64_t calls)
 			this->pimpl->futures.push_back(
 			//std::async(std::launch::deferred, 
 			std::async(std::launch::async, 
-				[this, i, callsPerThread]()
+				[this, i, iterationsPerThread]()
 				{
 					this->pimpl->currentThreadId = i + 1;
-					for(auto operation = size_t(0); operation < callsPerThread;)
+					for(auto threadIterationCounter = size_t(0); threadIterationCounter < iterationsPerThread;)
 					{
-						this->pimpl->currentCallId = ++operation;
+						this->pimpl->currentCallId = ++threadIterationCounter;
 						this->UserBenchmark();
 					}
 				}));

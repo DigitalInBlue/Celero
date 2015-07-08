@@ -81,23 +81,23 @@ namespace celero
 			uint64_t getRunTime() const;
 
 			///
-			/// \brief	Get the number of computed microseconds per operation.
+			/// \brief	Get the number of computed microseconds per iteration (i.e. a single call to the code under test.)
 			///
-			///	An operation is defined as one operation of one run.
+			///	A call is defined as one iteration of one execution of the code under test.
 			///
 			double getUsPerCall() const;
 
 			///
-			/// \brief	Get the number of computer operations per second.
+			/// \brief	Get the number of times the code under test could be called per second.
 			///
-			///	An operation is defined as one operation of one run.
+			///	A call is defined as one iteration of one execution of the code under test.
 			///
-			double getOpsPerSecond() const;
+			double getCallsPerSecond() const;
 
 			///
 			/// \brief	Get the processing speed in units per second.
 			///
-			///	An operation is defined as one operation of one run.
+			///	A call is defined as one iteration of one execution of the code under test.
 			///
 			double getUnitsPerSecond() const;
 

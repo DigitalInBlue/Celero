@@ -286,7 +286,9 @@ size_t Experiment::getResultSize()
 {
 	if(this->pimpl->results.empty() == true)
 	{
-		this->pimpl->results.push_back(std::make_shared<Result>(this));
+		auto defaultResult = std::make_shared<Result>(this);
+		defaultResult->setProblemSpaceValue(0, 1.0, this->getIterations());
+		this->pimpl->results.push_back(defaultResult);
 	}
 
 	return this->pimpl->results.size();
