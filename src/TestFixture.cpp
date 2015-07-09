@@ -56,15 +56,16 @@ uint64_t TestFixture::run(const uint64_t, const uint64_t iterations, int64_t exp
 		// Set up the testing fixture.
 		this->setUp(experimentValue);
 
-		// Run the test body for each operation.
-		auto operation = iterations;
+		// Run the test body for each iterations.
+		auto iterationCounter = iterations;
 
 		// Get the starting time.
 		const auto startTime = celero::timer::GetSystemTime();
 
 		this->onExperimentStart(experimentValue);
 
-		while(operation--)
+		// Count down to zero
+		while(iterationCounter--)
 		{
 			this->UserBenchmark();
 		}
