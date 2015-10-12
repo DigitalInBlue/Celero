@@ -114,7 +114,7 @@ void executor::RunBaseline(std::shared_ptr<Benchmark> bmark)
 			// This is needed to get the result size later.
 			if(baselineExperiment->getResultSize() == 0)
 			{
-				baselineExperiment->addProblemSpace(0);
+				baselineExperiment->addProblemSpace(static_cast<int64_t>(TestFixture::Constants::NoProblemSpaceValue));
 			}
 		}
 
