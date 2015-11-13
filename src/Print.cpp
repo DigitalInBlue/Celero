@@ -191,9 +191,18 @@ void celero::print::TableRowHeader(std::shared_ptr<Result> x)
 {
 	celero::console::SetConsoleColor(celero::console::ConsoleColor_Default);
 	std::cout << PrintColumn(x->getExperiment()->getBenchmark()->getName())
-				<< PrintColumn(x->getExperiment()->getName())
-				<< PrintColumn(x->getProblemSpaceValue())
-				<< PrintColumn(x->getExperiment()->getSamples())
+				<< PrintColumn(x->getExperiment()->getName());
+
+	if(x->getProblemSpaceValue() == static_cast<int64_t>(TestFixture::Constants::NoProblemSpaceValue))
+	{
+		std::cout << std::fixed << std::right << PrintColumn("Null");
+	}
+	else
+	{
+		std::cout << PrintColumn(x->getProblemSpaceValue());
+	}
+
+	std::cout << PrintColumn(x->getExperiment()->getSamples())
 				<< PrintColumn(x->getProblemSpaceIterations());
 }
 

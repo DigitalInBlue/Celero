@@ -287,7 +287,7 @@ size_t Experiment::getResultSize()
 	if(this->pimpl->results.empty() == true)
 	{
 		auto defaultResult = std::make_shared<Result>(this);
-		defaultResult->setProblemSpaceValue(0, 1.0, this->getIterations());
+		defaultResult->setProblemSpaceValue(static_cast<int64_t>(TestFixture::Constants::NoProblemSpaceValue), 1.0, this->getIterations());
 		this->pimpl->results.push_back(defaultResult);
 	}
 

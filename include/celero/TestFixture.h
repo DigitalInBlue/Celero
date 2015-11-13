@@ -50,6 +50,11 @@ namespace celero
 			///
 			virtual ~TestFixture();
 
+			enum class Constants : int64_t
+			{
+				NoProblemSpaceValue = INT64_MIN
+			};
+
 			///
 			/// Allows a test fixture to supply values to use for experiments.
 			/// This is used to create multiple runs of the same experiment
