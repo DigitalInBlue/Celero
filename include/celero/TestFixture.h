@@ -20,7 +20,8 @@
 ///
 
 #include <cstddef>
-#include <stdint.h>
+#include <cstdint>
+#include <limits>
 
 #include <celero/Timer.h>
 #include <celero/Export.h>
@@ -52,7 +53,7 @@ namespace celero
 
 			enum class Constants : int64_t
 			{
-				NoProblemSpaceValue = INT64_MIN
+				NoProblemSpaceValue = std::numeric_limits<short>::min()
 			};
 
 			///
