@@ -24,8 +24,9 @@
 #endif
 
 #include <cstdlib>
+#include <cstdint>
+#include <cstdio>
 #include <thread>
-#include <stdint.h>
 
 #include <celero/Export.h>
 
