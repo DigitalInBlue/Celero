@@ -53,7 +53,7 @@ namespace celero
 
 			enum class Constants : int64_t
 			{
-				NoProblemSpaceValue = std::numeric_limits<short>::min()
+				NoProblemSpaceValue = std::numeric_limits<int64_t>::min()
 			};
 
 			///
