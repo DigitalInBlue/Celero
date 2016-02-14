@@ -29,7 +29,6 @@ PROJECT(CeleroProject)
 include(CheckFunctionExists)
 include(CheckCXXSourceCompiles)
 include(CheckIncludeFile)
-cmake_policy(SET CMP0042 OLD) # MACOSX_RPATH migration
 
 
 #
@@ -89,6 +88,10 @@ endif()
 if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
 	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libc++")
 	set(CMAKE_COMPILER_IS_GNUCXX 1)
+endif()
+
+if(APPLE)
+  cmake_policy(SET CMP0042 OLD) # MACOSX_RPATH migration
 endif()
 
 if(UNIX)
