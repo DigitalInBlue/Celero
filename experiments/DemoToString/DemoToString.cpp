@@ -118,14 +118,6 @@ BENCHMARK(DemoToString, table, 128, 1000000)
 	celero::DoNotOptimizeAway(uint8str[x]);
 }
 
-BENCHMARK(DemoToString, itoa, 128, 1000000)
-{
-	const uint8_t x = rand() % 42;
-	char buffer[64];
-	_itoa(x, buffer, 10);
-	celero::DoNotOptimizeAway(std::string(buffer));
-}
-
 /// http://ideone.com/GkPcy
 BENCHMARK(DemoToString, hopmanFast, 128, 1000000)
 {
