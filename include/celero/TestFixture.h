@@ -53,11 +53,20 @@ namespace celero
 
 			enum class Constants : int64_t
 			{
-				NoProblemSpaceValue = std::numeric_limits<int64_t>::min()
+				#ifdef _MSC_VER
+					#if(_MSC_VER < 1900)
+						NoProblemSpaceValue = -9223372036854775807
+					#else
+						NoProblemSpaceValue = std::numeric_limits<int64_t>::min()
+					#endif
+				#else
+					NoProblemSpaceValue = std::numeric_limits<int64_t>::min()
+				#endif
 			};
 
 			///
 			/// Allows a test fixture to supply values to use for experiments.
+			///
 			/// This is used to create multiple runs of the same experiment
 			/// and varrying the data set size, for example.  The second value
 			/// of the pair is an optional override for the number of iterations
@@ -69,8 +78,9 @@ namespace celero
 			virtual std::vector<std::pair<int64_t, uint64_t>> getExperimentValues() const { return std::vector<std::pair<int64_t, uint64_t>>(); };
 
 			///
-			/// Provide a units result scale of each experiment value. If the value
-			/// is greater than 0 then additional statistic value will be printed
+			/// Provide a units result scale of each experiment value. 
+			///
+			/// If the value is greater than 0 then additional statistic value will be printed
 			/// in output - [ xxxx units/sec ]. For example for measure speed of
 			/// file IO operations method might return 1024 * 1024 to get megabytes 
 			/// per second.
@@ -80,9 +90,9 @@ namespace celero
 			virtual double getExperimentValueResultScale() const { return 1.0; };
 
 			///
-			/// Allows the text fixture to run code that will be executed once
-			/// immediately before the benchmark. Unlike setUp, the evaluation
-			/// of this function IS included in the total experiment execution
+			/// Allows the text fixture to run code that will be executed once immediately before the benchmark. 
+			///
+			/// Unlike setUp, the evaluation of this function IS included in the total experiment execution
 			/// time.
 			///
 			/// \param experimentValue The value for the experiment.  This can be ignored if the test does not utilize experiment values.
@@ -90,9 +100,8 @@ namespace celero
 			virtual void onExperimentStart(int64_t experimentValue);
 
 			///
-			/// Allows the text fixture to run code that will be executed once
-			/// immediately after the benchmark. Unlike tearDown, the evaluation
-			/// of this function IS included in the total experiment execution
+			/// Allows the text fixture to run code that will be executed once immediately after the benchmark. 
+			/// Unlike tearDown, the evaluation of this function IS included in the total experiment execution
 			/// time.
 			///
 			virtual void onExperimentEnd();
@@ -100,12 +109,20 @@ namespace celero
 			///
 			/// Set up the test fixture before benchmark execution.
 			///
+			/// This code is NOT included in the benchmark timing.
+			/// It is executed once before all iterations are executed and between each Sample.
+			/// Your experiment should NOT rely on "setUp" methods to be called before EACH experiment run, only between each sample.
+			///
 			/// \param experimentValue The value for the experiment.  This can be ignored if the test does not utilize experiment values.
 			///
 			virtual void setUp(int64_t experimentValue);
 
 			///
 			/// Called after test completion to destroy the fixture.
+			///
+			/// This code is NOT included in the benchmark timing.
+			/// It is executed once after all iterations are executed and between each Sample.
+			/// Your experiment should NOT rely on "tearDown" methods to be called after EACH experiment run, only between each sample.
 			///
 			virtual void tearDown();
 

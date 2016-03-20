@@ -23,6 +23,10 @@
 #include <unistd.h>
 #endif
 
+#ifdef __FreeBSD__
+#include <stdio.h>
+#endif
+
 #include <cstdlib>
 #include <cstdint>
 #include <cstdio>
