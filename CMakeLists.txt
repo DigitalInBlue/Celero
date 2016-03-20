@@ -1,7 +1,7 @@
 #
 # Top level makefile for Celero
 #
-# Copyright 2015 John Farrier
+# Copyright 2016 John Farrier
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -29,7 +29,9 @@ PROJECT(CeleroProject)
 include(CheckFunctionExists)
 include(CheckCXXSourceCompiles)
 include(CheckIncludeFile)
-cmake_policy(SET CMP0042 OLD) # MACOSX_RPATH migration
+if(POLICY CMP0042)
+	cmake_policy(SET CMP0042 OLD) # MACOSX_RPATH migration
+endif()
 
 
 #

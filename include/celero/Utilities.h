@@ -4,7 +4,7 @@
 ///
 /// \author	John Farrier
 ///
-/// \copyright Copyright 2015 John Farrier
+/// \copyright Copyright 2016 John Farrier
 ///
 /// Licensed under the Apache License, Version 2.0 (the "License");
 /// you may not use this file except in compliance with the License.
@@ -23,9 +23,14 @@
 #include <unistd.h>
 #endif
 
+#ifdef __FreeBSD__
+#include <stdio.h>
+#endif
+
 #include <cstdlib>
+#include <cstdint>
+#include <cstdio>
 #include <thread>
-#include <stdint.h>
 
 #include <celero/Export.h>
 
