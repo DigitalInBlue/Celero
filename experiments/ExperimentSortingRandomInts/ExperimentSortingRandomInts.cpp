@@ -62,15 +62,20 @@ class SortFixture : public celero::TestFixture
 		virtual void setUp(int64_t experimentValue)
 		{
 			this->arraySize = experimentValue;
+			this->array.reserve(this->arraySize);
+		}
 
+		/// Before each iteration. A common utility function to push back random ints to sort.
+		void randomize()
+		{
 			for(int i = 0; i < this->arraySize; i++)
 			{
 				this->array.push_back(rand());
 			}
 		}
 
-		/// After each run, clear the vector of random integers.
-		virtual void tearDown()
+		/// After each iteration, clear the vector of random integers.
+		void clear()
 		{
 			this->array.clear();
 		}
@@ -82,6 +87,8 @@ class SortFixture : public celero::TestFixture
 // For a baseline, I'll choose Bubble Sort.
 BASELINE_F(SortRandInts, BubbleSort, SortFixture, 30, 10000)
 {
+	this->randomize();
+
 	for(int x = 0; x < this->arraySize; x++)
 	{
 		for(int y = 0; y < this->arraySize - 1; y++)
@@ -92,10 +99,14 @@ BASELINE_F(SortRandInts, BubbleSort, SortFixture, 30, 10000)
 			}
 		}
 	}
+
+	this->clear();
 }
 
 BENCHMARK_F(SortRandInts, SelectionSort, SortFixture, 30, 10000)
 {
+	this->randomize();
+
 	for(int x = 0; x < this->arraySize; x++)
 	{
 		auto minIdx = x;
@@ -110,15 +121,21 @@ BENCHMARK_F(SortRandInts, SelectionSort, SortFixture, 30, 10000)
 
 		std::swap(this->array[x], this->array[minIdx]);
 	}
+
+	this->clear();
 }
 
 // http://www.bfilipek.com/2014/12/top-5-beautiful-c-std-algorithms.html
 BENCHMARK_F(SortRandInts, InsertionSort, SortFixture, 30, 10000)
 {
+	this->randomize();
+
 	for(auto i = std::begin(this->array); i != std::end(this->array); ++i)
 	{
 		std::rotate(std::upper_bound(std::begin(this->array), i, *i), i, std::next(i));
 	}
+	
+	this->clear();
 }
 
 // http://www.bfilipek.com/2014/12/top-5-beautiful-c-std-algorithms.html
@@ -136,10 +153,18 @@ void quickSort(FwdIt first, FwdIt last, U cmp = U())
 
 BENCHMARK_F(SortRandInts, QuickSort, SortFixture, 30, 10000)
 {
+	this->randomize();
+
 	quickSort(std::begin(this->array), std::end(this->array), std::less<int64_t>());
+
+	this->clear();
 }
 
 BENCHMARK_F(SortRandInts, stdSort, SortFixture, 30, 10000)
 {
+	this->randomize();
+
 	std::sort(this->array.begin(), this->array.end());
+	
+	this->clear();
 }

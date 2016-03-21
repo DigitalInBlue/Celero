@@ -2,9 +2,16 @@
 
 ###C++ Benchmarking Library
 
-Copyright 2015 John Farrier 
+Copyright 2016 John Farrier 
 
 Apache 2.0 License
+
+####Travis CI
+
+Branch                 | Status
+---------------------- | --------------------------------------------------------------------------------------------------------------------------------------
+```origin/master: ```  | [![Build Status (Master)](https://travis-ci.org/DigitalInBlue/Celero.svg?branch=master)](https://travis-ci.org/DigitalInBlue/Celero)
+```origin/develop: ``` | [![Build Status (Develop)](https://travis-ci.org/DigitalInBlue/Celero.svg?branch=develop)](https://travis-ci.org/DigitalInBlue/Celero)
 
 ###Overview
 
@@ -55,6 +62,45 @@ Celero reports its outputs to the command line.  Since colors are nice (and perh
 Measuring benchmark execution time takes place in the TestFixture base class, from which all benchmarks written are ultimately derived.  First, the test fixture setup code is executed.  Then, the start time for the test is retrieved and stored in microseconds using an unsigned long.  This is done to reduce floating point error.  Next, the specified number of operations (iterations) are executed.  When complete, the end time is retrieved, the test fixture is torn down, and the measured time for the execution is returned and the results are saved. 
 
 This cycle is repeated for however many samples were specified.  If no samples were specified (zero), then the test is repeated until it as ran for at least one second or at least 30 samples have been taken.  While writing this specific part of the code, there was a definite "if-else" relationship.  However, the bulk of the code was repeated within the "if" and "else" sections.  An old fashioned function could have been used here, but it was very natural to utilize std::function to define a lambda that could be called and keep all of the code clean.  (C++11 is a fantastic thing.)  Finally, the results are printed to the screen.
+
+###General Program Flow
+To summarize, this pseudo-code illustrates how the tests are executed internally:
+
+```C++
+for(Each Experiment)
+{
+	// Call the virtual function
+	experiment->onExperimentStart(x);
+
+	for(Each Sample)
+	{
+		// Call the virtual function
+		experiment->setUp();
+
+		// Start the Timer
+		timer->start();
+
+		// Run all iterations
+		for(Each Iteration)
+		{
+			// Run the code under test
+			experiment->run(threads, iterations, experimentValue);
+		}
+
+		// Stop the Timer
+		timer->stop();
+
+		// Record data...
+
+		// Call the virtual teardown function.
+		experiment->tearDown();
+	}
+
+	// Call the virtual function
+	experiment->onExperimentEnd();
+}
+
+```
 
 ###Using the Code
 
@@ -230,40 +276,45 @@ class SortFixture : public celero::TestFixture
         {
         }
 
-        virtual std::vector<int64_t> getExperimentValues() const
-        {
-            std::vector<int64_t> problemSpace;
+        virtual std::vector<std::pair<int64_t, uint64_t>> getExperimentValues() const override
+		{
+			std::vector<std::pair<int64_t, uint64_t>> problemSpace;
 
-            // We will run some total number of sets of tests all together. 
-            // Each one growing by a power of 2.
-            const int totalNumberOfTests = 6;
+			// We will run some total number of sets of tests all together. 
+			// Each one growing by a power of 2.
+			const int totalNumberOfTests = 6;
 
-            for(int i = 0; i < totalNumberOfTests; i++)
-            {
-                // ExperimentValues is part of the base class and allows us to specify
-                // some values to control various test runs to end up building a nice graph.
-                problemSpace.push_back(static_cast<int64_t>(pow(2, i+1)));
-            }
+			for(int i = 0; i < totalNumberOfTests; i++)
+			{
+				// ExperimentValues is part of the base class and allows us to specify
+				// some values to control various test runs to end up building a nice graph.
+				problemSpace.push_back(std::make_pair(int64_t(pow(2, i+1)), uint64_t(0)));
+			}
 
-            return problemSpace;
-        }
+			return problemSpace;
+		}
 
-        /// Before each run, build a vector of random integers.
-        virtual void setUp(int64_t experimentValue)
-        {
-            this->arraySize = experimentValue;
+       	/// Before each run, build a vector of random integers.
+		virtual void setUp(int64_t experimentValue)
+		{
+			this->arraySize = experimentValue;
+			this->array.reserve(this->arraySize);
+		}
 
-            for(int i = 0; i < this->arraySize; i++)
-            {
-                this->array.push_back(rand());
-            }
-        }
+		/// Before each iteration. A common utility function to push back random ints to sort.
+		void randomize()
+		{
+			for(int i = 0; i < this->arraySize; i++)
+			{
+				this->array.push_back(rand());
+			}
+		}
 
-        /// After each run, clear the vector of random integers.
-        virtual void tearDown()
-        {
-            this->array.clear();
-        }
+		/// After each iteration, clear the vector of random integers.
+		void clear()
+		{
+			this->array.clear();
+		}
 
         std::vector<int64_t> array;
         int64_t arraySize;
@@ -280,16 +331,20 @@ Now for implementing the actual sorting algorithms. For the baseline case, I imp
 // For a baseline, I'll choose Bubble Sort.
 BASELINE_F(SortRandInts, BubbleSort, SortFixture, 30, 10000)
 {
-    for(int x = 0; x < this->arraySize; x++)
-    {
-        for(int y = 0; y < this->arraySize - 1; y++)
-        {
-            if(this->array[y] > this->array[y+1])
-            {
-                std::swap(this->array[y], this->array[y+1]);
-            }
-        }
-    }
+    this->randomize();
+
+	for(int x = 0; x < this->arraySize; x++)
+	{
+		for(int y = 0; y < this->arraySize - 1; y++)
+		{
+			if(this->array[y] > this->array[y+1])
+			{
+				std::swap(this->array[y], this->array[y+1]);
+			}
+		}
+	}
+
+	this->clear();
 }
 ```
 
@@ -300,20 +355,24 @@ Next, we will implement the Selection Sort algorithm.
 ```C++
 BENCHMARK_F(SortRandInts, SelectionSort, SortFixture, 30, 10000)
 {
-    for(int x = 0; x < this->arraySize; x++)
-    {
-        auto minIdx = x;
- 
-        for(int y = x; y < this->arraySize; y++)
-        {
-            if(this->array[minIdx] > this->array[y])
-            {
-                minIdx = y;
-            }
-        }
- 
-        std::swap(this->array[x], this->array[minIdx]);
-    }
+    this->randomize();
+
+	for(int x = 0; x < this->arraySize; x++)
+	{
+		auto minIdx = x;
+
+		for(int y = x; y < this->arraySize; y++)
+		{
+			if(this->array[minIdx] > this->array[y])
+			{
+				minIdx = y;
+			}
+		}
+
+		std::swap(this->array[x], this->array[minIdx]);
+	}
+
+	this->clear();
 }
 ```
 
@@ -322,7 +381,11 @@ Finally, for good measure, we will simply use the Standard Library's sorting alg
 ```C++
 BENCHMARK_F(SortRandInts, stdSort, SortFixture, 30, 10000)
 {
-    std::sort(this->array.begin(), this->array.end());
+    this->randomize();
+
+	std::sort(this->array.begin(), this->array.end());
+	
+	this->clear();
 }
 ```
 
@@ -340,32 +403,78 @@ While not particularly surprising std::sort is by far the best option with any m
 
 ```
 Celero
-Timer resolution: 0.069841 us
+Celero: CPU processor throttling disabled.
+Timer resolution: 0.254288 us
+Writing results to: results.csv
 -----------------------------------------------------------------------------------------------------------------------------------------------
      Group      |   Experiment    |   Prob. Space   |     Samples     |   Iterations    |    Baseline     |  us/Iteration   | Iterations/sec  |
 -----------------------------------------------------------------------------------------------------------------------------------------------
-SortRandInts    | BubbleSort      |               2 |              30 |           10000 |         1.00000 |         0.00500 |    200000000.00 |
-SortRandInts    | BubbleSort      |               4 |              30 |           10000 |         1.00000 |         0.01820 |     54945054.95 |
-SortRandInts    | BubbleSort      |               8 |              30 |           10000 |         1.00000 |         0.08380 |     11933174.22 |
-SortRandInts    | BubbleSort      |              16 |              30 |           10000 |         1.00000 |         0.34860 |      2868617.33 |
-SortRandInts    | BubbleSort      |              32 |              30 |           10000 |         1.00000 |         1.38200 |       723589.00 |
-SortRandInts    | BubbleSort      |              64 |              30 |           10000 |         1.00000 |         5.19970 |       192318.79 |
-SortRandInts    | SelectionSort   |               2 |              30 |           10000 |         1.54000 |         0.00770 |    129870129.87 |
-SortRandInts    | SelectionSort   |               4 |              30 |           10000 |         0.91758 |         0.01670 |     59880239.52 |
-SortRandInts    | SelectionSort   |               8 |              30 |           10000 |         0.81265 |         0.06810 |     14684287.81 |
-SortRandInts    | SelectionSort   |              16 |              30 |           10000 |         0.74154 |         0.25850 |      3868471.95 |
-SortRandInts    | SelectionSort   |              32 |              30 |           10000 |         0.62171 |         0.85920 |      1163873.37 |
-SortRandInts    | SelectionSort   |              64 |              30 |           10000 |         0.60811 |         3.16200 |       316255.53 |
-SortRandInts    | stdSort         |               2 |              30 |           10000 |         1.42000 |         0.00710 |    140845070.42 |
-SortRandInts    | stdSort         |               4 |              30 |           10000 |         0.51099 |         0.00930 |    107526881.72 |
-SortRandInts    | stdSort         |               8 |              30 |           10000 |         0.18377 |         0.01540 |     64935064.94 |
-SortRandInts    | stdSort         |              16 |              30 |           10000 |         0.08233 |         0.02870 |     34843205.57 |
-SortRandInts    | stdSort         |              32 |              30 |           10000 |         0.03915 |         0.05410 |     18484288.35 |
-SortRandInts    | stdSort         |              64 |              30 |           10000 |         0.03831 |         0.19920 |      5020080.32 |
-Complete.
+SortRandInts    | BubbleSort      |               2 |              30 |           10000 |         1.00000 |         0.05270 |     18975332.07 |
+SortRandInts    | BubbleSort      |               4 |              30 |           10000 |         1.00000 |         0.12060 |      8291873.96 |
+SortRandInts    | BubbleSort      |               8 |              30 |           10000 |         1.00000 |         0.31420 |      3182686.19 |
+SortRandInts    | BubbleSort      |              16 |              30 |           10000 |         1.00000 |         1.09130 |       916338.31 |
+SortRandInts    | BubbleSort      |              32 |              30 |           10000 |         1.00000 |         3.23470 |       309147.68 |
+SortRandInts    | BubbleSort      |              64 |              30 |           10000 |         1.00000 |        10.82530 |        92376.19 |
+SortRandInts    | SelectionSort   |               2 |              30 |           10000 |         1.09108 |         0.05750 |     17391304.35 |
+SortRandInts    | SelectionSort   |               4 |              30 |           10000 |         1.03317 |         0.12460 |      8025682.18 |
+SortRandInts    | SelectionSort   |               8 |              30 |           10000 |         1.01464 |         0.31880 |      3136762.86 |
+SortRandInts    | SelectionSort   |              16 |              30 |           10000 |         0.72253 |         0.78850 |      1268230.82 |
+SortRandInts    | SelectionSort   |              32 |              30 |           10000 |         0.63771 |         2.06280 |       484777.97 |
+SortRandInts    | SelectionSort   |              64 |              30 |           10000 |         0.54703 |         5.92180 |       168867.57 |
+SortRandInts    | InsertionSort   |               2 |              30 |           10000 |         1.07021 |         0.05640 |     17730496.45 |
+SortRandInts    | InsertionSort   |               4 |              30 |           10000 |         1.05970 |         0.12780 |      7824726.13 |
+SortRandInts    | InsertionSort   |               8 |              30 |           10000 |         1.00382 |         0.31540 |      3170577.05 |
+SortRandInts    | InsertionSort   |              16 |              30 |           10000 |         0.74104 |         0.80870 |      1236552.49 |
+SortRandInts    | InsertionSort   |              32 |              30 |           10000 |         0.61508 |         1.98960 |       502613.59 |
+SortRandInts    | InsertionSort   |              64 |              30 |           10000 |         0.45097 |         4.88190 |       204838.28 |
+SortRandInts    | QuickSort       |               2 |              30 |           10000 |         1.18027 |         0.06220 |     16077170.42 |
+SortRandInts    | QuickSort       |               4 |              30 |           10000 |         1.16169 |         0.14010 |      7137758.74 |
+SortRandInts    | QuickSort       |               8 |              30 |           10000 |         1.01400 |         0.31860 |      3138731.95 |
+SortRandInts    | QuickSort       |              16 |              30 |           10000 |         0.65060 |         0.71000 |      1408450.70 |
+SortRandInts    | QuickSort       |              32 |              30 |           10000 |         0.48542 |         1.57020 |       636861.55 |
+SortRandInts    | QuickSort       |              64 |              30 |           10000 |         0.34431 |         3.72730 |       268290.72 |
+SortRandInts    | stdSort         |               2 |              30 |           10000 |         1.08539 |         0.05720 |     17482517.48 |
+SortRandInts    | stdSort         |               4 |              30 |           10000 |         0.94776 |         0.11430 |      8748906.39 |
+SortRandInts    | stdSort         |               8 |              30 |           10000 |         0.76926 |         0.24170 |      4137360.36 |
+SortRandInts    | stdSort         |              16 |              30 |           10000 |         0.45954 |         0.50150 |      1994017.95 |
+SortRandInts    | stdSort         |              32 |              30 |           10000 |         0.33573 |         1.08600 |       920810.31 |
+SortRandInts    | stdSort         |              64 |              30 |           10000 |         0.23979 |         2.59580 |       385237.69 |
 ```
 
-The data shows first the test group name. Next, all of the data sizes are output. Then each row shows the baseline or benchmark name and the corresponding time for the algorithm to complete measured in useconds. This data, in CSV format, can be directly read by programs such as Microsoft Excel and plotted without any modification.
+The data shows first the test group name. Next, all of the data sizes are output. Then each row shows the baseline or benchmark name and the corresponding time for the algorithm to complete measured in useconds. This data, in CSV format, can be directly read by programs such as Microsoft Excel and plotted without any modification.  The CSV contains the following data:
+
+Group | Experiment | Problem Space | Samples | Iterations | Baseline | us/Iteration | Iterations/sec | Min (us) | Mean (us) | Max (us) | Variance | Standard Deviation | Skewness | Kurtosis | Z Score
+----- | ---------- | ------------- | ------- | ---------- | -------- | ------------ | -------------- | -------- | --------- | -------- | -------- | ------------------ | -------- | -------- | -------
+SortRandInts | BubbleSort | 2 | 30 | 10000 | 1 | 0.0527 | 1.89753e+07 | 527 | 532.533 | 582 | 118.74 | 10.8968 | 3.64316 | 13.0726 | 0.507794
+SortRandInts | BubbleSort | 4 | 30 | 10000 | 1 | 0.1206 | 8.29187e+06 | 1206 | 1230.77 | 1455 | 1941.22 | 44.0593 | 4.60056 | 20.9542 | 0.562122
+SortRandInts | BubbleSort | 8 | 30 | 10000 | 1 | 0.3142 | 3.18269e+06 | 3142 | 3195.73 | 3425 | 3080.41 | 55.5014 | 2.48383 | 7.72605 | 0.968143
+SortRandInts | BubbleSort | 16 | 30 | 10000 | 1 | 1.0913 | 916338 | 10913 | 11022.1 | 11228 | 5450.26 | 73.8259 | 0.71778 | 0.387441 | 1.47825
+SortRandInts | BubbleSort | 32 | 30 | 10000 | 1 | 3.2347 | 309148 | 32347 | 32803.9 | 36732 | 650545 | 806.563 | 4.1236 | 17.2616 | 0.566519
+SortRandInts | BubbleSort | 64 | 30 | 10000 | 1 | 10.8253 | 92376.2 | 108253 | 110999 | 133389 | 2.8152e+07 | 5305.85 | 3.15455 | 9.60246 | 0.517542
+SortRandInts | SelectionSort | 2 | 30 | 10000 | 1.09108 | 0.0575 | 1.73913e+07 | 575 | 620.167 | 753 | 2170.97 | 46.5937 | 1.33794 | 1.19871 | 0.969373
+SortRandInts | SelectionSort | 4 | 30 | 10000 | 1.03317 | 0.1246 | 8.02568e+06 | 1246 | 1339.57 | 1413 | 2261.7 | 47.5574 | -0.263592 | -0.727621 | 1.96745
+SortRandInts | SelectionSort | 8 | 30 | 10000 | 1.01464 | 0.3188 | 3.13676e+06 | 3188 | 3500.63 | 3742 | 20181.2 | 142.061 | -0.438792 | -0.522354 | 2.2007
+SortRandInts | SelectionSort | 16 | 30 | 10000 | 0.722533 | 0.7885 | 1.26823e+06 | 7885 | 8504.67 | 9482 | 322584 | 567.965 | 0.274438 | -1.43741 | 1.09103
+SortRandInts | SelectionSort | 32 | 30 | 10000 | 0.63771 | 2.0628 | 484778 | 20628 | 20826.7 | 21378 | 26307.7 | 162.196 | 1.64431 | 2.96239 | 1.22526
+SortRandInts | SelectionSort | 64 | 30 | 10000 | 0.547033 | 5.9218 | 168868 | 59218 | 59517.7 | 60308 | 55879.5 | 236.389 | 1.42419 | 2.38341 | 1.26783
+SortRandInts | InsertionSort | 2 | 30 | 10000 | 1.07021 | 0.0564 | 1.77305e+07 | 564 | 585.4 | 814 | 2239.42 | 47.3225 | 4.06868 | 16.6254 | 0.452216
+SortRandInts | InsertionSort | 4 | 30 | 10000 | 1.0597 | 0.1278 | 7.82473e+06 | 1278 | 1312 | 1574 | 3857.17 | 62.1061 | 3.06791 | 9.38706 | 0.54745
+SortRandInts | InsertionSort | 8 | 30 | 10000 | 1.00382 | 0.3154 | 3.17058e+06 | 3154 | 3208.57 | 3617 | 8053.91 | 89.7436 | 3.40649 | 12.5161 | 0.608029
+SortRandInts | InsertionSort | 16 | 30 | 10000 | 0.741043 | 0.8087 | 1.23655e+06 | 8087 | 8198.43 | 8556 | 11392.8 | 106.737 | 1.66984 | 3.10417 | 1.044
+SortRandInts | InsertionSort | 32 | 30 | 10000 | 0.61508 | 1.9896 | 502614 | 19896 | 20088.9 | 20593 | 20955.8 | 144.761 | 1.97818 | 4.12296 | 1.33254
+SortRandInts | InsertionSort | 64 | 30 | 10000 | 0.450971 | 4.8819 | 204838 | 48819 | 49152 | 50253 | 129327 | 359.62 | 1.7583 | 2.51588 | 0.925884
+SortRandInts | QuickSort | 2 | 30 | 10000 | 1.18027 | 0.0622 | 1.60772e+07 | 622 | 647.4 | 836 | 2492.52 | 49.9252 | 2.83628 | 7.08836 | 0.508761
+SortRandInts | QuickSort | 4 | 30 | 10000 | 1.16169 | 0.1401 | 7.13776e+06 | 1401 | 1450 | 1655 | 4476.21 | 66.9045 | 1.94538 | 2.90363 | 0.732388
+SortRandInts | QuickSort | 8 | 30 | 10000 | 1.014 | 0.3186 | 3.13873e+06 | 3186 | 3245.8 | 3549 | 5043.89 | 71.0203 | 2.88396 | 9.36231 | 0.842012
+SortRandInts | QuickSort | 16 | 30 | 10000 | 0.6506 | 0.71 | 1.40845e+06 | 7100 | 7231.07 | 7670 | 17248.2 | 131.332 | 1.93858 | 3.21011 | 0.997977
+SortRandInts | QuickSort | 32 | 30 | 10000 | 0.485424 | 1.5702 | 636862 | 15702 | 15863.2 | 16469 | 33518 | 183.079 | 2.01833 | 3.2763 | 0.880494
+SortRandInts | QuickSort | 64 | 30 | 10000 | 0.344314 | 3.7273 | 268291 | 37273 | 37554.4 | 37999 | 34113.3 | 184.698 | 0.822276 | -0.0186633 | 1.52339
+SortRandInts | stdSort | 2 | 30 | 10000 | 1.08539 | 0.0572 | 1.74825e+07 | 572 | 591.233 | 764 | 1863.15 | 43.1642 | 2.86875 | 7.63924 | 0.445585
+SortRandInts | stdSort | 4 | 30 | 10000 | 0.947761 | 0.1143 | 8.74891e+06 | 1143 | 1185.33 | 1385 | 3435.4 | 58.6123 | 2.53277 | 5.69826 | 0.72226
+SortRandInts | stdSort | 8 | 30 | 10000 | 0.769255 | 0.2417 | 4.13736e+06 | 2417 | 2459.47 | 2838 | 6555.84 | 80.9682 | 3.78132 | 14.5264 | 0.524486
+SortRandInts | stdSort | 16 | 30 | 10000 | 0.459544 | 0.5015 | 1.99402e+06 | 5015 | 5120.97 | 5283 | 6486.65 | 80.5398 | 0.55161 | -0.798651 | 1.31571
+SortRandInts | stdSort | 32 | 30 | 10000 | 0.335734 | 1.086 | 920810 | 10860 | 13398 | 24592 | 8.85889e+06 | 2976.39 | 2.1597 | 4.93241 | 0.852722
+SortRandInts | stdSort | 64 | 30 | 10000 | 0.23979 | 2.5958 | 385238 | 25958 | 27384.8 | 35800 | 4.88819e+06 | 2210.92 | 2.24632 | 5.15422 | 0.645326
 
 The point here is not that std::sort is better than more elementary sorting methods, but how easily measureable results can be obtained. In making such measurements more accessible and easier to code, they can become part of the way we code just as automated testing has become.
 
