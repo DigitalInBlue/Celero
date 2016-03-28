@@ -211,6 +211,16 @@ The first test that executes will be the group's baseline.  Celero took 10 sampl
 
 After the baseline is complete, each individual test is ran.  Each test is executed and measured in the same way, however, there is an additional metric reported: Baseline.  This compares the time it takes to compute the benchmark to the baseline.  The data here shows that CeleroBenchTest.Complex1 takes 1.007949 times longer to execute than the baseline.
 
+####Statistically Sound Results
+
+In order to use Celero for real science, there are three primary factors to consider when reviewing results.  Firstly, you MUST check the generated assembly for your test.  There are different paths to viewing the assembly for different compilers, but essentially this must be done to ensure that you did not optimize out critical code.  You must also verify, via assembly, that you are comparing apples to apples.  
+
+Once that is sorted out, you should run just the "Baseline" case several times.  The "us/Iteration" and "Iterations/sec" should not fluctuate by any significant degree between runs.  If they do, then ensure that your number of iterations is sufficiently large as to overcome the timer resolution on your machine.  Once the number of iterations is high enough, ensure that you are performing a statistically significant number of samples.  Lore has it that 30 samples is good, but use your own science to figure out the best number for your situation.
+
+Finally, you need to ensure that the number of iterations and samples is producing stable output for your experiment cases.  These numbers may be the same as your now-stable baseline case.
+
+One factor that can impact the number of samples and iterations required is the amount of work that your experiment is doing.  For cases where you are utilizing Celero's "problem space" functionality to scale up the algorithms, you can corresponding scale down the number of iterations.  Doing so can reduce the total run time of the larger experiments by doing less iterations, buy while still maintaining a statistically meaningful measurement.  (It saves you time.)
+
 ###Threaded Benchmarks
 Celero can automatically run threaded benchmarks.  BASELINE_T and BENCHMARK_T can be used to launch the given code on its own thread using a user-defined number of concurrent executions.  celeroDemoMultithread illustrates using this feature.  When defining these macros, the use the following format:
 

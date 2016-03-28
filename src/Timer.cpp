@@ -45,10 +45,8 @@ double celero::timer::ConvertSystemTime(uint64_t x)
 	return x * 1.0e-6;
 }
 
-void celero::timer::CachePerformanceFrequency()
+double celero::timer::CachePerformanceFrequency(bool quiet)
 {
-	std::cout << "Timer resolution: ";
-
 	#ifdef WIN32
 		QueryPerformanceFrequency(&QPCFrequency);
 		auto precision = ((1.0/static_cast<double>(QPCFrequency.QuadPart)) * 1000000.0);
@@ -57,5 +55,10 @@ void celero::timer::CachePerformanceFrequency()
 			static_cast<double>(std::chrono::high_resolution_clock::period::den)) * 1000000.0;
 	#endif
 
-	std::cout << std::to_string(precision) << " us\n";
+	if(quiet == false)
+	{
+		std::cout << "Timer resolution: " << std::to_string(precision) << " us\n";
+	}
+
+	return precision;
 }

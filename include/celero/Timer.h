@@ -57,7 +57,9 @@ namespace celero
 		///
 		/// On Windows, this caches the frequency of the high performance clock.
 		///
-		void CachePerformanceFrequency();
+		/// \return  The number of microseconds of precision that we have.
+		///
+		double CachePerformanceFrequency(bool quiet);
 	}
 }
 

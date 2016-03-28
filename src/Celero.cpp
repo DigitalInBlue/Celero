@@ -123,7 +123,7 @@ void celero::Run(int argc, char** argv)
 
 	// Disable dynamic CPU frequency scaling
 	celero::DisableDynamicCPUScaling();
-	celero::timer::CachePerformanceFrequency();
+	celero::timer::CachePerformanceFrequency(false);
 	
 	// Shall we build a distribution?
 	auto intArgument = args.get<uint64_t>("distribution");
