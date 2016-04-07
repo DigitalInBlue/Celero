@@ -132,7 +132,7 @@ namespace celero
 			/// \param iterations The number of times to loop over the UserBenchmark function.
 			/// \param experimentValue The experiment value to pass in setUp function.
 			///
-			/// \return Returns a pair of the number of microseconds the run took.
+			/// \return Returns the number of microseconds the run took.
 			///
 			virtual uint64_t run(uint64_t threads, uint64_t iterations, int64_t experimentValue);
 
