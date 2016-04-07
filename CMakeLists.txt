@@ -153,6 +153,7 @@ set(TARGET_H
 	include/celero/CommandLine.h
 	include/celero/Console.h
 	include/celero/Distribution.h
+	include/celero/Exceptions.h
 	include/celero/Executor.h
 	include/celero/Export.h
 	include/celero/Factory.h
@@ -181,6 +182,7 @@ set(TARGET_SRC
 	src/Celero.cpp
 	src/Console.cpp
 	src/Distribution.cpp
+	src/Exceptions.cpp
 	src/Executor.cpp
 	src/JUnit.cpp
 	src/Print.cpp

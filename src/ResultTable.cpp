@@ -51,7 +51,7 @@ class celero::ResultTable::Impl
 			// Print the header for the table.
 			if(this->ofs.is_open() == true)
 			{
-				this->ofs << "Group,Experiment,Problem Space,Samples,Iterations,Baseline,";
+				this->ofs << "Group,Experiment,Problem Space,Samples,Iterations,Failure,Baseline,";
 				this->ofs << "us/Iteration,Iterations/sec,Min (us),Mean (us),Max (us),Variance,Standard Deviation,Skewness,Kurtosis,Z Score\n";
 			}
 		}
@@ -97,7 +97,8 @@ void ResultTable::add(std::shared_ptr<Result> x)
 			<< x->getExperiment()->getName() << ","
 			<< x->getProblemSpaceValue() << ","
 			<< x->getExperiment()->getSamples() << ","
-			<< x->getProblemSpaceIterations() << ",";
+			<< x->getProblemSpaceIterations() << ","
+			<< x->getFailure() << ",";
 
 		this->pimpl->ofs << x->getBaselineMeasurement() << ","
 			<< x->getUsPerCall() << ","

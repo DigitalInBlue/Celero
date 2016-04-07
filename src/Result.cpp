@@ -39,7 +39,8 @@ class Result::Impl
 			problemSpaceValueScale(1.0),
 			problemSpaceIterations(0),
 			parent(nullptr),
-			complete(false)
+			complete(false),
+			failure(false)
 		{
 		}
 
@@ -49,7 +50,8 @@ class Result::Impl
 			problemSpaceValueScale(1.0),
 			problemSpaceIterations(1),
 			parent(p),
-			complete(false)
+			complete(false),
+			failure(false)
 		{
 		}
 
@@ -65,6 +67,9 @@ class Result::Impl
 
 		/// A "completed" flag.
 		bool complete;
+
+		/// A "failure" flag.
+		bool failure;
 };
 
 Result::Result()
@@ -123,11 +128,17 @@ uint64_t Result::getRunTime() const
 
 double Result::getUsPerCall() const
 {
+	if (this->pimpl->failure)
+		return 0.0;
+
 	return static_cast<double>(this->pimpl->stats.getMin()) / static_cast<double>(this->pimpl->problemSpaceIterations);
 }
 
 double Result::getCallsPerSecond() const
 {
+	if (this->pimpl->failure)
+		return 0.0;
+
 	return 1.0 / (this->getUsPerCall() * 1.0e-6);
 }
 
@@ -148,7 +159,10 @@ double Result::getBaselineMeasurement()
 
 			if(baselineExperiment != nullptr)
 			{
-				return this->getUsPerCall() / baselineExperiment->getResultByValue(this->getProblemSpaceValue())->getUsPerCall();
+				auto baselineResult = baselineExperiment->getResultByValue(this->getProblemSpaceValue());
+				if (baselineResult->getFailure())
+					return 0.0;
+				return this->getUsPerCall() / baselineResult->getUsPerCall();
 			}
 		}
 
@@ -167,3 +181,14 @@ bool Result::getComplete() const
 {
 	return this->pimpl->complete;
 }
+
+void Result::setFailure(bool x)
+{
+	this->pimpl->failure = x;
+}
+
+bool Result::getFailure() const
+{
+	return this->pimpl->failure;
+}
+

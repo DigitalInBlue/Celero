@@ -95,12 +95,18 @@ void JUnit::save()
 		{
 			uint64_t testSuiteTime = 0;
 			size_t testSuiteFailures = 0;
+			size_t testSuiteErrors = 0;
 
 			auto runs = i.second;
 
 			for(auto j : runs)
 			{
-				if((j->getExperiment()->getBaselineTarget() > 0.0) && (j->getBaselineMeasurement() > j->getExperiment()->getBaselineTarget()))
+				if (j->getFailure())
+				{
+					testSuiteErrors++;
+					continue;
+				}
+				else if ((j->getExperiment()->getBaselineTarget() > 0.0) && (j->getBaselineMeasurement() > j->getExperiment()->getBaselineTarget()))
 				{
 					testSuiteFailures++;
 				}
@@ -108,7 +114,7 @@ void JUnit::save()
 				testSuiteTime += j->getRunTime();
 			}
 
-			*os << "<testsuite errors=\"0\" ";
+			*os << "<testsuite errors=\"" << testSuiteErrors << "\" ";
 			*os << "tests=\"" << i.second.size() << "\" ";
 			*os << "time=\"" << celero::timer::ConvertSystemTime(testSuiteTime) << "\" ";
 			*os << "failures=\"" << testSuiteFailures << "\" ";
@@ -117,11 +123,22 @@ void JUnit::save()
 			for(auto j : runs)
 			{
 				*os << "\t<testcase ";
-				*os << "time=\"" << celero::timer::ConvertSystemTime(j->getRunTime()) << "\" ";
+				*os << "time=\"" << celero::timer::ConvertSystemTime(j->getFailure() ? 0 : j->getRunTime()) << "\" ";
 				*os << "name=\"" << j->getExperiment()->getName() << "#" << j->getProblemSpaceValue() << "\"";
 								
 				// Compare measured to objective
-				if((j->getExperiment()->getBaselineTarget() > 0.0) && (j->getBaselineMeasurement() > j->getExperiment()->getBaselineTarget()))
+				if (j->getFailure())
+				{
+					// Error
+					*os << ">\n";
+
+					*os << "\t\t<error ";
+					*os << "type=\"exception\"";
+					*os << "/>\n";
+
+					*os << "\t</testcase>\n";
+				}
+				else if ((j->getExperiment()->getBaselineTarget() > 0.0) && (j->getBaselineMeasurement() > j->getExperiment()->getBaselineTarget()))
 				{
 					// Failure
 					*os << ">\n";

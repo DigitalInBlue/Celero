@@ -20,6 +20,7 @@
 #include <celero/Celero.h>
 #include <celero/Console.h>
 #include <celero/Benchmark.h>
+#include <celero/Exceptions.h>
 #include <celero/TestVector.h>
 #include <celero/Utilities.h>
 #include <celero/Executor.h>
@@ -94,6 +95,7 @@ void celero::Run(int argc, char** argv)
 	args.add<std::string>("junit", 'j', "Saves a JUnit XML-formatted file to the named file.", false, "");
 	args.add<std::string>("archive", 'a', "Saves or updates a result archive file.", false, "");
 	args.add<uint64_t>("distribution", 'd', "Builds a file to help characterize the distribution of measurements and exits.", false, 0);
+	args.add<bool>("catchExceptions", 'e', "Allows Celero to catch exceptions and continue processing following benchmarks.", false, true);
 	args.parse_check(argc, argv);
 	
 	if(args.exist("list") == true)
@@ -173,6 +175,10 @@ void celero::Run(int argc, char** argv)
 				celero::JUnit::Instance().add(p);
 			});
 	}
+
+	// Has a flag to catch exceptions or not been specified?
+	if (args.exist("catchExceptions"))
+		ExceptionSettings::setCatchExceptions(args.get<bool>("catchExceptions"));
 
 	print::TableBanner();
 
