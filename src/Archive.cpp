@@ -169,7 +169,7 @@ std::ostream& operator<<(std::ostream& str, ArchiveEntry const& data)
 	str << data.MaxBaseline_TimeSinceEpoch << ",";
 	str << data.MaxStats << ",";
 	str << data.CurrentBaseline << ",";
-	str << data.CurrentBaseline_TimeSinceEpoch << ", ";
+	str << data.CurrentBaseline_TimeSinceEpoch << ",";
 	str << data.CurrentStats << "\n";
 	return str;
 }
@@ -319,7 +319,7 @@ void Archive::add(std::shared_ptr<celero::Result> x)
 		{
 				found->MaxBaseline = found->CurrentBaseline;
 				found->MaxBaseline_TimeSinceEpoch = found->CurrentBaseline_TimeSinceEpoch;
-				found->MaxStats = found->MaxStats;
+				found->MaxStats = found->CurrentStats;
 		}
 
 		// This is not good IEEE math.
