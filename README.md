@@ -108,7 +108,7 @@ Celero uses CMake to provide cross-platform builds.  It does require a modern co
 
 Once Celero is added to your project.  You can create dedicated benchmark projects and source files. For convenience, there is single header file and a CELERO_MAIN macro that can be used to provide a main() for your benchmark project that will automatically execute all of your benchmark tests.
 
-Here is an example of a simple Celero Benchmark:
+Here is an example of a simple Celero Benchmark. (Note: This is a complete, runnable example.)
 
 ```C++
 #include <celero/Celero.h>
@@ -225,11 +225,11 @@ One factor that can impact the number of samples and iterations required is the 
 Celero can automatically run threaded benchmarks.  BASELINE_T and BENCHMARK_T can be used to launch the given code on its own thread using a user-defined number of concurrent executions.  celeroDemoMultithread illustrates using this feature.  When defining these macros, the use the following format:
 
 ```C++
-BASELINE_T(groupName, baselineName, fixtureName, samples, iterations, threads)
-BASELINE_FIXED_T(groupName, baselineName, fixtureName, samples, iterations, threads, useconds)
+BASELINE_T(groupName, baselineName, fixtureName, samples, iterations, threads);
+BASELINE_FIXED_T(groupName, baselineName, fixtureName, samples, iterations, threads, useconds);
 
-BENCHMARK_T(groupName, benchmarkName, fixtureName, samples, iterations, threads)
-BENCHMARK_TEST_T(groupName, benchmarkName, fixtureName, samples, iterations, threads, target)
+BENCHMARK_T(groupName, benchmarkName, fixtureName, samples, iterations, threads);
+BENCHMARK_TEST_T(groupName, benchmarkName, fixtureName, samples, iterations, threads, target);
 ```
 
 ###Fixed Measurement Benchmarks
@@ -237,13 +237,13 @@ While celero normally measures the baseline time and then executes benchmark cas
 
 ```C++
 // No threads or test fixtures.
-BASELINE_FIXED(groupName, baselineName, samples, iterations, useconds)
+BASELINE_FIXED(groupName, baselineName, samples, iterations, useconds);
 
 // For using test fixtures:
-BASELINE_FIXED_F(groupName, baselineName, fixtureName, samples, iterations, useconds)
+BASELINE_FIXED_F(groupName, baselineName, fixtureName, samples, iterations, useconds);
 
 // For using threads and test fixtures.
-BASELINE_FIXED_T(groupName, baselineName, fixtureName, samples, iterations, threads, useconds)
+BASELINE_FIXED_T(groupName, baselineName, fixtureName, samples, iterations, threads, useconds);
 ```
 
 Example:
