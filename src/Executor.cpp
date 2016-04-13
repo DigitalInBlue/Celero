@@ -27,8 +27,45 @@
 
 #include <iostream>
 #include <cassert>
+#include <algorithm>
 
 using namespace celero;
+
+///
+/// A local function to figure out how many iterations and samples are required when the user doesn't specify any.
+///
+void AdjustSampleAndIterationSize(std::shared_ptr<Result> r)
+{
+	if(r->getExperiment()->getSamples() == 0)
+	{
+		// The smallest test should take at least twice as long as our timer's resolution.
+		// I chose "twice" arbitrarily.
+		const auto minTestTime = static_cast<int64_t>(celero::timer::CachePerformanceFrequency(true) * 1e6) * 2;
+
+		// Compute a good number to use for iterations and set the sample size to 30.
+		auto test = r->getExperiment()->getFactory()->Create();
+		auto testTime = int64_t(0);
+		auto testIterations = int64_t(1);
+		
+		while(testTime < minTestTime)
+		{
+			testTime = test->run(r->getExperiment()->getThreads(), testIterations, r->getProblemSpaceValue());
+
+			if(testTime < minTestTime)
+			{
+				testIterations *= 2;
+			}
+		}
+
+		auto iterations = static_cast<uint64_t>(std::max(static_cast<double>(testIterations), 1000000.0 / testTime));
+		auto experiment = r->getExperiment();
+
+		experiment->setIterations(iterations);
+		experiment->setSamples(30);
+
+		r->setProblemSpaceValue(r->getProblemSpaceValue(), r->getProblemSpaceValueScale(), iterations);
+	}
+}
 
 ///
 /// A local function to support running an individual user-defined function for measurement.
@@ -123,6 +160,9 @@ void executor::RunBaseline(std::shared_ptr<Benchmark> bmark)
 			auto r = baselineExperiment->getResult(i);
 			assert(r != nullptr);
 
+			// Do a quick sample, if necessary, and adjust sample and iteration sizes, if necessary.
+			AdjustSampleAndIterationSize(r);
+
 			// Describe the beginning of the run.
 			print::TableRowHeader(r);
 
@@ -193,6 +233,9 @@ void executor::Run(std::shared_ptr<Experiment> e)
 	for(size_t i = 0; i < e->getResultSize(); i++)
 	{
 		auto r = e->getResult(i);
+
+		// Do a quick sample, if necessary, and adjust sample and iteration sizes, if necessary.
+		AdjustSampleAndIterationSize(r);
 
 		// Describe the beginning of the run.
 		print::TableRowHeader(r);

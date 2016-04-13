@@ -26,9 +26,9 @@ BASELINE(DemoSimple, Baseline, 30, 1000000)
 	celero::DoNotOptimizeAway(static_cast<float>(sin(fmod(UniformDistribution(RandomDevice), 3.14159265))));
 }
 
-/// Run a test consisting of 1 sample of 710000 iterations per measurement.
-/// There are not enough samples here to likely get a meaningful result.
-BENCHMARK(DemoSimple, Complex1, 1, 710000)
+/// Run a test consisting of 0 samples of 0 iterations per measurement.
+/// Since the sample size is equal to 0, celero will compute a number to use for both samples and iterations.
+BENCHMARK(DemoSimple, Complex1, 0, 0)
 {
 	celero::DoNotOptimizeAway(static_cast<float>(sin(fmod(UniformDistribution(RandomDevice), 3.14159265))));
 }

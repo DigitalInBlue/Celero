@@ -101,7 +101,7 @@ class Experiment::Impl
 		/// Iterations per test run.  (Size of each sample.)
 		uint64_t iterations;
 
-		/// Threads per test run.  (Size of each sample.)
+		/// Threads per test run.
 		uint64_t threads;
 
 		/// The best run time for this test
