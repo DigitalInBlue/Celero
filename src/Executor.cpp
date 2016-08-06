@@ -73,21 +73,24 @@ void AdjustSampleAndIterationSize(std::shared_ptr<Result> r)
 void ExecuteProblemSpace(std::shared_ptr<Result> r)
 {
 	// Define a small internal function object to use to uniformly execute the tests.
-	auto testRunner = [r]()
+	auto testRunner = [r](const bool record)
 		{
 			auto test = r->getExperiment()->getFactory()->Create();
 			const auto testTime = test->run(r->getExperiment()->getThreads(), r->getProblemSpaceIterations(), r->getProblemSpaceValue());
 
 			// Save test results
-			r->getStatistics()->addSample(testTime);
-			r->getExperiment()->incrementTotalRunTime(testTime);
+			if(record){
+				r->getStatistics()->addSample(testTime);
+				r->getExperiment()->incrementTotalRunTime(testTime);
+			}
 		};
 
 	if(r->getExperiment()->getSamples() > 0)
 	{
+		testRunner(false);//make a first past to maybe cache instructions/data or other kinds of fist-run-only costs
 		for(auto i = r->getExperiment()->getSamples(); i > 0; --i)
 		{
-			testRunner();
+			testRunner(true);
 		}
 
 		r->setComplete(true);
