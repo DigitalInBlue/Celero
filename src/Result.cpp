@@ -148,7 +148,10 @@ double Result::getBaselineMeasurement()
 
 			if(baselineExperiment != nullptr)
 			{
-				return this->getUsPerCall() / baselineExperiment->getResultByValue(this->getProblemSpaceValue())->getUsPerCall();
+				auto baselineResult = baselineExperiment->getResultByValue(this->getProblemSpaceValue());
+				if(baselineResult){
+						return this->getUsPerCall() / baselineResult->getUsPerCall();
+				}
 			}
 		}
 
