@@ -40,6 +40,7 @@ struct ArchiveEntry
 	ArchiveEntry() :
 		GroupName(),
 		RunName(),
+		Failure(false),
 		ExperimentValue(0),
 		ExperimentValueScale(0),
 		FirstRanDate(0),
@@ -59,7 +60,7 @@ struct ArchiveEntry
 
 	static void WriteHeader(std::ostream& str)
 	{
-		str << "GroupName,RunName,ExperimentValue,ExperimentValueScale,FirstRanDate,TotalSamplesCollected,AverageBaseline,";
+		str << "GroupName,RunName,Failure,ExperimentValue,ExperimentValueScale,FirstRanDate,TotalSamplesCollected,AverageBaseline,";
 		str << "MinBaseline,MinBaselineTimeSinceEpoch,";
 		str << "MinStatSize,MinStatMean,MinStatVariance,MinStatStandardDeviation,MinStatSkewness,MinStatKurtosis,";
 		str << "MinStatMin,MinStatMax,";
@@ -112,6 +113,8 @@ struct ArchiveEntry
 	std::string GroupName;
 	std::string RunName;
 
+	bool Failure;
+
 	/// The data set size, if one was specified.
 	int64_t ExperimentValue;
 	double ExperimentValueScale;
@@ -157,6 +160,7 @@ std::ostream& operator<<(std::ostream& str, ArchiveEntry const& data)
 {
 	str << data.GroupName << ",";
 	str << data.RunName << ",";
+	str << data.Failure << ",";
 	str << data.ExperimentValue << ",";
 	str << data.ExperimentValueScale << ",";
 	str << data.FirstRanDate << ",";
@@ -203,6 +207,7 @@ std::istream& operator>>(std::istream& str, ArchiveEntry& data)
 
 	str >> data.GroupName;
 	str >> data.RunName;
+	str >> data.Failure;
 	str >> data.ExperimentValue;
 	str >> data.ExperimentValueScale;
 	str >> data.FirstRanDate;
@@ -304,18 +309,21 @@ void Archive::add(std::shared_ptr<celero::Result> x)
 
 	if(found != std::end(this->pimpl->results))
 	{
+		if (x->getFailure())
+				return;
+
 		found->CurrentBaseline = x->getBaselineMeasurement();
 		found->CurrentBaseline_TimeSinceEpoch = this->pimpl->now();
 		found->CurrentStats = *x->getStatistics();
 
-		if(found->CurrentBaseline <= found->MinBaseline)
+		if(found->Failure || found->CurrentBaseline <= found->MinBaseline)
 		{
 				found->MinBaseline = found->CurrentBaseline;
 				found->MinBaseline_TimeSinceEpoch = found->CurrentBaseline_TimeSinceEpoch;
 				found->MinStats = found->CurrentStats;
 		}
 
-		if(found->CurrentBaseline >= found->MaxBaseline)
+		if(found->Failure || found->CurrentBaseline >= found->MaxBaseline)
 		{
 				found->MaxBaseline = found->CurrentBaseline;
 				found->MaxBaseline_TimeSinceEpoch = found->CurrentBaseline_TimeSinceEpoch;
@@ -323,7 +331,10 @@ void Archive::add(std::shared_ptr<celero::Result> x)
 		}
 
 		// This is not good IEEE math.
-		found->AverageBaseline = ((found->AverageBaseline * found->TotalSamplesCollected) + found->CurrentBaseline) / (found->TotalSamplesCollected + 1);
+		if (!found->Failure)
+				found->AverageBaseline = ((found->AverageBaseline * found->TotalSamplesCollected) + found->CurrentBaseline) / (found->TotalSamplesCollected + 1);
+		else
+				found->AverageBaseline = found->CurrentBaseline;
 		found->TotalSamplesCollected++;
 	}
 	else
@@ -332,11 +343,12 @@ void Archive::add(std::shared_ptr<celero::Result> x)
 
 		r.GroupName = x->getExperiment()->getBenchmark()->getName();
 		r.RunName = x->getExperiment()->getName();
+		r.Failure = x->getFailure();
 		r.FirstRanDate = this->pimpl->now();
 		r.AverageBaseline = x->getBaselineMeasurement();
 		r.ExperimentValue = x->getProblemSpaceValue();
 		r.ExperimentValueScale = x->getProblemSpaceValueScale();
-		r.TotalSamplesCollected = 1;
+		r.TotalSamplesCollected = x->getFailure() ? 0 : 1;
 
 		r.CurrentBaseline = x->getBaselineMeasurement();
 		r.CurrentBaseline_TimeSinceEpoch = r.FirstRanDate;

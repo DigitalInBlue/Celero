@@ -45,6 +45,9 @@ namespace celero
 
 		void Console(const std::string& x);
 		void TableBanner();
+		void TableRowExperimentHeader(Experiment * x);
+		void TableRowFailure(const std::string& msg);
+		void TableRowProblemSpaceHeader(std::shared_ptr<Result> x);
 		void TableRowHeader(std::shared_ptr<Result> x);
 		void TableResult(std::shared_ptr<Result> x);
 	}

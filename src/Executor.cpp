@@ -19,6 +19,7 @@
 #include <celero/Celero.h>
 #include <celero/Console.h>
 #include <celero/Benchmark.h>
+#include <celero/Exceptions.h>
 #include <celero/TestVector.h>
 #include <celero/Utilities.h>
 #include <celero/Executor.h>
@@ -34,7 +35,7 @@ using namespace celero;
 ///
 /// A local function to figure out how many iterations and samples are required when the user doesn't specify any.
 ///
-void AdjustSampleAndIterationSize(std::shared_ptr<Result> r)
+bool AdjustSampleAndIterationSize(std::shared_ptr<Result> r)
 {
 	if(r->getExperiment()->getSamples() == 0)
 	{
@@ -49,7 +50,13 @@ void AdjustSampleAndIterationSize(std::shared_ptr<Result> r)
 		
 		while(testTime < minTestTime)
 		{
-			testTime = test->run(r->getExperiment()->getThreads(), testIterations, r->getProblemSpaceValue());
+			std::pair<bool, uint64_t> runResult = RunAndCatchExc(*test,
+				r->getExperiment()->getThreads(), testIterations, r->getProblemSpaceValue());
+
+			if (!runResult.first)
+				return false; // something bad happened
+
+			testTime = runResult.second;
 
 			if(testTime < minTestTime)
 			{
@@ -65,32 +72,51 @@ void AdjustSampleAndIterationSize(std::shared_ptr<Result> r)
 
 		r->setProblemSpaceValue(r->getProblemSpaceValue(), r->getProblemSpaceValueScale(), iterations);
 	}
+	return true;
 }
 
 ///
 /// A local function to support running an individual user-defined function for measurement.
 ///
-void ExecuteProblemSpace(std::shared_ptr<Result> r)
+bool ExecuteProblemSpace(std::shared_ptr<Result> r)
 {
 	// Define a small internal function object to use to uniformly execute the tests.
 	auto testRunner = [r](const bool record)
 		{
 			auto test = r->getExperiment()->getFactory()->Create();
-			const auto testTime = test->run(r->getExperiment()->getThreads(), r->getProblemSpaceIterations(), r->getProblemSpaceValue());
+
+			std::pair<bool, uint64_t> runResult = RunAndCatchExc(*test,
+				r->getExperiment()->getThreads(), r->getProblemSpaceIterations(), r->getProblemSpaceValue());
+
+			if (!runResult.first)
+				return false; // something bad happened
+
+			const auto testTime = runResult.second;
 
 			// Save test results
-			if(record){
+			if(record)
+			{
 				r->getStatistics()->addSample(testTime);
 				r->getExperiment()->incrementTotalRunTime(testTime);
 			}
+
+			return true;
 		};
 
 	if(r->getExperiment()->getSamples() > 0)
 	{
-		testRunner(false);//make a first past to maybe cache instructions/data or other kinds of fist-run-only costs
+		if (!testRunner(false)) // make a first pass to maybe cache instructions/data or other kinds of fist-run-only costs
+		{
+			r->setFailure(true);
+			return false;
+		}
 		for(auto i = r->getExperiment()->getSamples(); i > 0; --i)
 		{
-			testRunner(true);
+			if (!testRunner(true))
+			{
+				r->setFailure(true);
+				return false;
+			}
 		}
 
 		r->setComplete(true);
@@ -98,7 +124,10 @@ void ExecuteProblemSpace(std::shared_ptr<Result> r)
 	else
 	{
 		std::cerr << "Celero: Test \"" << r->getExperiment()->getBenchmark()->getName() << "::" << r->getExperiment()->getName() << "\" must have at least 1 sample.\n";
+		return false;
 	}
+
+	return true;
 }
 
 void executor::RunAll()
@@ -163,16 +192,25 @@ void executor::RunBaseline(std::shared_ptr<Benchmark> bmark)
 			auto r = baselineExperiment->getResult(i);
 			assert(r != nullptr);
 
+			print::TableRowExperimentHeader(r->getExperiment());
+
 			// Do a quick sample, if necessary, and adjust sample and iteration sizes, if necessary.
-			AdjustSampleAndIterationSize(r);
+			bool adjustSuccess = AdjustSampleAndIterationSize(r);
 
-			// Describe the beginning of the run.
-			print::TableRowHeader(r);
+			if (adjustSuccess)
+			{
+				// Describe the beginning of the run.
+				print::TableRowProblemSpaceHeader(r);
 
-			ExecuteProblemSpace(r);
+				if (ExecuteProblemSpace(r))
+				{
+					// Describe the end of the run.
+					print::TableResult(r);
+				}
+			}
+			else
+				r->setFailure(true);
 
-			// Describe the end of the run.
-			print::TableResult(r);
 			celero::impl::ExperimentResultComplete(r);
 		}
 
@@ -205,6 +243,19 @@ void executor::Run(std::shared_ptr<Experiment> e)
 	auto baseline = bmark->getBaseline();
 	if(baseline->getResultSize() == 0 || baseline->getResult(0)->getComplete() == false)
 	{
+		if (baseline->getResultSize() != 0 && baseline->getResult(0)->getFailure())
+		{
+			print::TableRowExperimentHeader(e.get());
+			print::TableRowFailure("Baseline failure, skip");
+
+			// Add result output failed result
+			e->addProblemSpace(0);
+			auto r = e->getResult(0);
+			r->setFailure(true);
+			celero::impl::ExperimentResultComplete(r);
+			return;
+		}
+
 		executor::RunBaseline(bmark);
 	}
 
@@ -237,16 +288,25 @@ void executor::Run(std::shared_ptr<Experiment> e)
 	{
 		auto r = e->getResult(i);
 
+		print::TableRowExperimentHeader(r->getExperiment());
+
 		// Do a quick sample, if necessary, and adjust sample and iteration sizes, if necessary.
-		AdjustSampleAndIterationSize(r);
+		bool adjustSuccess = AdjustSampleAndIterationSize(r);
 
-		// Describe the beginning of the run.
-		print::TableRowHeader(r);
+		if (adjustSuccess)
+		{
+			// Describe the beginning of the run.
+			print::TableRowProblemSpaceHeader(r);
 
-		ExecuteProblemSpace(r);
+			if (ExecuteProblemSpace(r))
+			{
+				// Describe the end of the run.
+				print::TableResult(r);
+			}
+		}
+		else
+			r->setFailure(true);
 
-		// Describe the end of the run.
-		print::TableResult(r);
 		celero::impl::ExperimentResultComplete(r);
 	}
 

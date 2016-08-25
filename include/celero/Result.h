@@ -119,6 +119,16 @@ namespace celero
 			///
 			bool getComplete() const;
 
+			///
+			/// Sets a flag indicating if failure happened during evaluation.
+			///
+			void setFailure(bool x);
+
+			///
+			/// Gets a flag indicating if failure happened during evaluation.
+			///
+			bool getFailure() const;
+
 		private:
 			///
 			/// Disable default constructor

@@ -132,10 +132,10 @@ std::string PrintColumn(const uint64_t x, const size_t width = PrintConstants::C
 /// http://stackoverflow.com/questions/14765155/how-can-i-easily-format-my-data-table-in-c
 /// Convert double to string with specified number of places after the decimal.
 ///
-std::string PrintColumn(const std::string& x, const size_t width = PrintConstants::ColumnWidth)
+std::string PrintStrColumnAligned(const std::string& x, const size_t width = PrintConstants::ColumnWidth, bool alignLeft = true)
 {
 	std::stringstream ss;
-	ss << std::fixed << std::left;
+	ss << std::fixed << (alignLeft ? std::left : std::right);
 
 	// fill space around displayed #
 	ss.fill(' ');
@@ -156,6 +156,16 @@ std::string PrintColumn(const std::string& x, const size_t width = PrintConstant
 	}
 
 	return ss.str();
+}
+
+std::string PrintColumn(const std::string& x, const size_t width = PrintConstants::ColumnWidth)
+{
+	return PrintStrColumnAligned(x, width);
+}
+
+std::string PrintColumnRight(const std::string& x, const size_t width = PrintConstants::ColumnWidth)
+{
+	return PrintStrColumnAligned(x, width, false);
 }
 
 std::string PrintHRule()
@@ -187,15 +197,27 @@ void celero::print::TableBanner()
 	std::cout << PrintHRule();
 }
 
-void celero::print::TableRowHeader(std::shared_ptr<Result> x)
+void celero::print::TableRowExperimentHeader(Experiment * x)
 {
 	celero::console::SetConsoleColor(celero::console::ConsoleColor_Default);
-	std::cout << PrintColumn(x->getExperiment()->getBenchmark()->getName())
-				<< PrintColumn(x->getExperiment()->getName());
+	std::cout << PrintColumn(x->getBenchmark()->getName())
+				<< PrintColumn(x->getName());
+}
 
+void celero::print::TableRowFailure(const std::string& msg)
+{
+	std::cout << PrintColumnRight("-") << PrintColumnRight("-") << PrintColumnRight("-");
+	celero::console::SetConsoleColor(celero::console::ConsoleColor_Red);
+	std::cout << msg << std::endl;
+	celero::console::SetConsoleColor(celero::console::ConsoleColor_Default);
+}
+
+void celero::print::TableRowProblemSpaceHeader(std::shared_ptr<Result> x)
+{
+	celero::console::SetConsoleColor(celero::console::ConsoleColor_Default);
 	if(x->getProblemSpaceValue() == static_cast<int64_t>(TestFixture::Constants::NoProblemSpaceValue))
 	{
-		std::cout << std::fixed << std::right << PrintColumn("Null");
+		std::cout << PrintColumnRight("Null");
 	}
 	else
 	{
@@ -204,6 +226,12 @@ void celero::print::TableRowHeader(std::shared_ptr<Result> x)
 
 	std::cout << PrintColumn(x->getExperiment()->getSamples())
 				<< PrintColumn(x->getProblemSpaceIterations());
+}
+
+void celero::print::TableRowHeader(std::shared_ptr<Result> x)
+{
+	TableRowExperimentHeader(x->getExperiment());
+	TableRowProblemSpaceHeader(x);
 }
 
 void celero::print::TableResult(std::shared_ptr<Result> x)
