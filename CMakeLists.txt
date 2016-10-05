@@ -213,6 +213,7 @@ include_directories(${HEADER_PATH})
 install(TARGETS ${PROJECT_NAME}
 	LIBRARY DESTINATION ${CMAKE_INSTALL_PREFIX}/bin
 	ARCHIVE DESTINATION ${CMAKE_INSTALL_PREFIX}/lib)
+install(DIRECTORY include DESTINATION include)
 
 # ---------------------------------------------------------------------------
 # Google Test Application
