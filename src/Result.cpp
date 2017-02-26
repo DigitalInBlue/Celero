@@ -160,9 +160,9 @@ double Result::getBaselineMeasurement()
 			if(baselineExperiment != nullptr)
 			{
 				auto baselineResult = baselineExperiment->getResultByValue(this->getProblemSpaceValue());
-				if (baselineResult->getFailure())
-					return 0.0;
-				return this->getUsPerCall() / baselineResult->getUsPerCall();
+				if(baselineResult){
+						return this->getUsPerCall() / baselineResult->getUsPerCall();
+				}
 			}
 		}
 
