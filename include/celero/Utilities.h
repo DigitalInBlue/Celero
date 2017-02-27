@@ -4,7 +4,7 @@
 ///
 /// \author	John Farrier
 ///
-/// \copyright Copyright 2016 John Farrier
+/// \copyright Copyright 2015, 2016, 2017 John Farrier
 ///
 /// Licensed under the Apache License, Version 2.0 (the "License");
 /// you may not use this file except in compliance with the License.
@@ -27,9 +27,9 @@
 #include <stdio.h>
 #endif
 
-#include <cstdlib>
 #include <cstdint>
 #include <cstdio>
+#include <cstdlib>
 #include <thread>
 
 #include <celero/Export.h>
@@ -97,7 +97,8 @@ namespace celero
 	///
 	/// It would be great if that were portable with respect to both compilers and 32/64-bit targets.
 	///
-	template<class T> void DoNotOptimizeAway(T&& x)
+	template <class T>
+	void DoNotOptimizeAway(T&& x)
 	{
 		//
 		// We must always do this test, but it will never pass.
@@ -115,7 +116,8 @@ namespace celero
 	}
 
 	/// Specialization for std::function objects.
-	template<> CELERO_EXPORT void DoNotOptimizeAway(std::function<void(void)>&& x);
+	template <>
+	CELERO_EXPORT void DoNotOptimizeAway(std::function<void(void)>&& x);
 
 	///
 	/// Quick definition of the number of microseconds per second.
@@ -123,8 +125,8 @@ namespace celero
 	const uint64_t UsPerSec(1000000);
 
 	///
-	/// Disable dynamic CPU scaling which allows the clock speed of the processor 
-	/// to be adjusted to different P-states by software. 
+	/// Disable dynamic CPU scaling which allows the clock speed of the processor
+	/// to be adjusted to different P-states by software.
 	///
 	CELERO_EXPORT void DisableDynamicCPUScaling();
 }

@@ -1,12 +1,12 @@
-#include <celero/Celero.h>
 #include <celero/Benchmark.h>
+#include <celero/Celero.h>
 
 #include <algorithm>
 #include <functional>
 
 #ifndef WIN32
-#include <cstdlib>
 #include <cmath>
+#include <cstdlib>
 #endif
 
 ///
@@ -18,7 +18,7 @@ CELERO_MAIN
 ///
 /// \class	DemoTransformFixture
 ///	\autho	John Farrier
-/// 
+///
 ///	\brief	A Celero Test Fixture for array transforms.
 ///
 /// This test fixture will build a experiment of powers of two.  When executed,
@@ -38,60 +38,60 @@ CELERO_MAIN
 ///
 class DemoTransformFixture : public celero::TestFixture
 {
-	public:
-		enum Constants
-		{
-			Multiple = 2112
-		};
+public:
+	enum Constants
+	{
+		Multiple = 2112
+	};
 
-		DemoTransformFixture()
+	DemoTransformFixture()
+	{
+	}
+
+	virtual std::vector<std::pair<int64_t, uint64_t>> getExperimentValues() const override
+	{
+		std::vector<std::pair<int64_t, uint64_t>> problemSpaceValues;
+
+		// We will run some total number of sets of tests all together.
+		// Each one growing by a power of 2.
+		const int totalNumberOfTests = 12;
+
+		for(int i = 0; i < totalNumberOfTests; i++)
 		{
+			// ExperimentValues is part of the base class and allows us to specify
+			// some values to control various test runs to end up building a nice graph.
+			// We make the number of iterations decrease as the size of our problem space increases
+			// to demonstrate how to adjust the number of iterations per sample based on the
+			// problem space size.
+			problemSpaceValues.push_back(std::make_pair(int64_t(pow(2, i + 1)), uint64_t(pow(2, totalNumberOfTests - i))));
 		}
 
-		virtual std::vector<std::pair<int64_t, uint64_t>> getExperimentValues() const override
+		return problemSpaceValues;
+	}
+
+	/// Before each run, build a vector of random integers.
+	virtual void setUp(int64_t experimentValue)
+	{
+		this->arraySize = static_cast<int>(experimentValue);
+
+		for(int i = 0; i < this->arraySize; i++)
 		{
-			std::vector<std::pair<int64_t, uint64_t>> problemSpaceValues;
-
-			// We will run some total number of sets of tests all together. 
-			// Each one growing by a power of 2.
-			const int totalNumberOfTests = 12;
-
-			for(int i = 0; i < totalNumberOfTests; i++)
-			{
-				// ExperimentValues is part of the base class and allows us to specify
-				// some values to control various test runs to end up building a nice graph.
-				// We make the number of iterations decrease as the size of our problem space increases
-				// to demonstrate how to adjust the number of iterations per sample based on the 
-				// problem space size.
-				problemSpaceValues.push_back(std::make_pair(int64_t(pow(2, i + 1)), uint64_t(pow(2, totalNumberOfTests - i))));
-			}
-
-			return problemSpaceValues;
+			this->arrayIn.push_back(rand());
 		}
 
-		/// Before each run, build a vector of random integers.
-		virtual void setUp(int64_t experimentValue)
-		{
-			this->arraySize = static_cast<int>(experimentValue);
+		this->arrayOut.resize(this->arraySize);
+	}
 
-			for(int i = 0; i < this->arraySize; i++)
-			{
-				this->arrayIn.push_back(rand());
-			}
+	/// After each run, clear the vector of random integers.
+	virtual void tearDown()
+	{
+		this->arrayIn.clear();
+		this->arrayOut.clear();
+	}
 
-			this->arrayOut.resize(this->arraySize);
-		}
-
-		/// After each run, clear the vector of random integers.
-		virtual void tearDown()
-		{
-			this->arrayIn.clear();
-			this->arrayOut.clear();
-		}
-
-		std::vector<int> arrayIn;
-		std::vector<int> arrayOut;
-		int arraySize;
+	std::vector<int> arrayIn;
+	std::vector<int> arrayOut;
+	int arraySize;
 };
 
 #include <iostream>
@@ -105,8 +105,8 @@ BASELINE_F(DemoTransform, ForLoop, DemoTransformFixture, 30, 10000)
 		this->arrayOut[i] = this->arrayIn[i] * DemoTransformFixture::Multiple;
 	}
 	iterationCount++;
-	if(iterationCount%1000== 0)	std::cout << "Baseline " << iterationCount << std::endl;
-	
+	if(iterationCount % 1000 == 0)
+		std::cout << "Baseline " << iterationCount << std::endl;
 }
 
 // BASELINE_FIXED_F(DemoTransform, FixedTime, DemoTransformFixture, 30, 10000, 100)
@@ -115,19 +115,20 @@ BASELINE_F(DemoTransform, ForLoop, DemoTransformFixture, 30, 10000)
 BENCHMARK_F(DemoTransform, StdTransform, DemoTransformFixture, 30, 10000)
 {
 	static int iterationCount = 0;
-	std::transform(this->arrayIn.begin(), this->arrayIn.end(), this->arrayOut.begin(), std::bind1st(std::multiplies<int>(), DemoTransformFixture::Multiple));
+	std::transform(this->arrayIn.begin(), this->arrayIn.end(), this->arrayOut.begin(),
+				   std::bind1st(std::multiplies<int>(), DemoTransformFixture::Multiple));
 
 	iterationCount++;
-	if(iterationCount%1000== 0)	std::cout << "Benchmark " << iterationCount << std::endl;
+	if(iterationCount % 1000 == 0)
+	{
+		std::cout << "Benchmark " << iterationCount << std::endl;
+	}
 }
 
 BENCHMARK_F(DemoTransform, StdTransformLambda, DemoTransformFixture, 30, 10000)
 {
-	std::transform(this->arrayIn.begin(), this->arrayIn.end(), this->arrayOut.begin(), 
-		[](int in)->int
-		{
-			return in * DemoTransformFixture::Multiple;
-		});
+	std::transform(this->arrayIn.begin(), this->arrayIn.end(), this->arrayOut.begin(),
+				   [](int in) -> int { return in * DemoTransformFixture::Multiple; });
 }
 
 BENCHMARK_F(DemoTransform, SelfForLoop, DemoTransformFixture, 30, 10000)
@@ -140,14 +141,12 @@ BENCHMARK_F(DemoTransform, SelfForLoop, DemoTransformFixture, 30, 10000)
 
 BENCHMARK_F(DemoTransform, SelfStdTransform, DemoTransformFixture, 30, 10000)
 {
-	std::transform(this->arrayIn.begin(), this->arrayIn.end(), this->arrayIn.begin(), std::bind1st(std::multiplies<int>(), DemoTransformFixture::Multiple));
+	std::transform(this->arrayIn.begin(), this->arrayIn.end(), this->arrayIn.begin(),
+				   std::bind1st(std::multiplies<int>(), DemoTransformFixture::Multiple));
 }
 
 BENCHMARK_F(DemoTransform, SelfStdTransformLambda, DemoTransformFixture, 30, 10000)
 {
-	std::transform(this->arrayIn.begin(), this->arrayIn.end(), this->arrayIn.begin(), 
-		[](int in)->int
-		{
-			return in * DemoTransformFixture::Multiple;
-		});
+	std::transform(this->arrayIn.begin(), this->arrayIn.end(), this->arrayIn.begin(),
+				   [](int in) -> int { return in * DemoTransformFixture::Multiple; });
 }

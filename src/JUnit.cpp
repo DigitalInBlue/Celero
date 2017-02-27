@@ -1,14 +1,14 @@
 ///
 /// \author	John Farrier
 ///
-/// \copyright Copyright 2016 John Farrier 
+/// \copyright Copyright 2015, 2016, 2017 John Farrier
 ///
 /// Licensed under the Apache License, Version 2.0 (the "License");
 /// you may not use this file except in compliance with the License.
 /// You may obtain a copy of the License at
-/// 
+///
 /// http://www.apache.org/licenses/LICENSE-2.0
-/// 
+///
 /// Unless required by applicable law or agreed to in writing, software
 /// distributed under the License is distributed on an "AS IS" BASIS,
 /// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -16,20 +16,20 @@
 /// limitations under the License.
 ///
 
+#include <celero/Benchmark.h>
 #include <celero/JUnit.h>
 #include <celero/PimplImpl.h>
-#include <celero/Utilities.h>
-#include <celero/Benchmark.h>
 #include <celero/Timer.h>
+#include <celero/Utilities.h>
 
 #include <assert.h>
 
-#include <map>
-#include <vector>
 #include <algorithm>
-#include <iostream>
 #include <fstream>
+#include <iostream>
+#include <map>
 #include <tuple>
+#include <vector>
 
 using namespace celero;
 
@@ -38,20 +38,17 @@ using namespace celero;
 ///
 class celero::JUnit::Impl
 {
-	public:
-		Impl() : 
-			fileName(),
-			results(),
-			totalTime(0)
-		{
-		}
+public:
+	Impl() : fileName(), results(), totalTime(0)
+	{
+	}
 
-		std::string fileName;
+	std::string fileName;
 
-		/// Store the test case size, measured baseline, objective baseline, and total run time in seconds.
-		std::map<std::string, std::vector<std::shared_ptr<Result>>> results;
+	/// Store the test case size, measured baseline, objective baseline, and total run time in seconds.
+	std::map<std::string, std::vector<std::shared_ptr<Result>>> results;
 
-		double totalTime;
+	double totalTime;
 };
 
 JUnit::JUnit() : pimpl()
@@ -95,12 +92,18 @@ void JUnit::save()
 		{
 			uint64_t testSuiteTime = 0;
 			size_t testSuiteFailures = 0;
+			size_t testSuiteErrors = 0;
 
 			auto runs = i.second;
 
 			for(auto j : runs)
 			{
-				if((j->getExperiment()->getBaselineTarget() > 0.0) && (j->getBaselineMeasurement() > j->getExperiment()->getBaselineTarget()))
+				if(j->getFailure())
+				{
+					testSuiteErrors++;
+					continue;
+				}
+				else if((j->getExperiment()->getBaselineTarget() > 0.0) && (j->getBaselineMeasurement() > j->getExperiment()->getBaselineTarget()))
 				{
 					testSuiteFailures++;
 				}
@@ -108,27 +111,39 @@ void JUnit::save()
 				testSuiteTime += j->getRunTime();
 			}
 
-			*os << "<testsuite errors=\"0\" ";
+			*os << "<testsuite errors=\"" << testSuiteErrors << "\" ";
 			*os << "tests=\"" << i.second.size() << "\" ";
 			*os << "time=\"" << celero::timer::ConvertSystemTime(testSuiteTime) << "\" ";
 			*os << "failures=\"" << testSuiteFailures << "\" ";
 			*os << "name=\"" << i.first << "\">\n";
-			
+
 			for(auto j : runs)
 			{
 				*os << "\t<testcase ";
-				*os << "time=\"" << celero::timer::ConvertSystemTime(j->getRunTime()) << "\" ";
+				*os << "time=\"" << celero::timer::ConvertSystemTime(j->getFailure() ? 0 : j->getRunTime()) << "\" ";
 				*os << "name=\"" << j->getExperiment()->getName() << "#" << j->getProblemSpaceValue() << "\"";
-								
+
 				// Compare measured to objective
-				if((j->getExperiment()->getBaselineTarget() > 0.0) && (j->getBaselineMeasurement() > j->getExperiment()->getBaselineTarget()))
+				if(j->getFailure())
+				{
+					// Error
+					*os << ">\n";
+
+					*os << "\t\t<error ";
+					*os << "type=\"exception\"";
+					*os << "/>\n";
+
+					*os << "\t</testcase>\n";
+				}
+				else if((j->getExperiment()->getBaselineTarget() > 0.0) && (j->getBaselineMeasurement() > j->getExperiment()->getBaselineTarget()))
 				{
 					// Failure
 					*os << ">\n";
 
 					*os << "\t\t<failure ";
 					*os << "type=\"Performance objective not met.\" ";
-					*os << "message=\"Measurement of " << j->getBaselineMeasurement() << " exceeds objective baseline of " << j->getExperiment()->getBaselineTarget() << "\" ";
+					*os << "message=\"Measurement of " << j->getBaselineMeasurement() << " exceeds objective baseline of "
+						<< j->getExperiment()->getBaselineTarget() << "\" ";
 					*os << "/>\n";
 
 					*os << "\t</testcase>\n";
@@ -139,7 +154,7 @@ void JUnit::save()
 					*os << "/>\n";
 				}
 			}
-				
+
 			*os << "</testsuite>\n";
 		}
 

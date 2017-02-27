@@ -69,16 +69,18 @@ To summarize, this pseudo-code illustrates how the tests are executed internally
 ```C++
 for(Each Experiment)
 {
-	// Call the virtual function
-	experiment->onExperimentStart(x);
-
 	for(Each Sample)
 	{
 		// Call the virtual function
+		// and DO NOT include its time in the measurement.
 		experiment->setUp();
 
 		// Start the Timer
 		timer->start();
+
+		// Call the virtual function
+		// and include its time in the measurement.
+		experiment->onExperimentStart(x);
 
 		// Run all iterations
 		for(Each Iteration)
@@ -87,17 +89,19 @@ for(Each Experiment)
 			experiment->run(threads, iterations, experimentValue);
 		}
 
+		// Call the virtual function
+		// and include its time in the measurement.
+		experiment->onExperimentEnd();
+
 		// Stop the Timer
 		timer->stop();
 
 		// Record data...
 
-		// Call the virtual teardown function.
+		// Call the virtual teardown function
+		// and DO NOT include its time in the measurement.
 		experiment->tearDown();
 	}
-
-	// Call the virtual function
-	experiment->onExperimentEnd();
 }
 
 ```

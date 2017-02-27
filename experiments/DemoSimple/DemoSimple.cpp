@@ -19,7 +19,7 @@ std::uniform_int_distribution<int> UniformDistribution(0, 1024);
 /// In reality, all of the "Complex" cases take the same amount of time to run.
 /// The difference in the results is a product of measurement error.
 ///
-/// Interestingly, taking the sin of a constant number here resulted in a 
+/// Interestingly, taking the sin of a constant number here resulted in a
 /// great deal of optimization in clang and gcc.
 BASELINE(DemoSimple, Baseline, 30, 1000000)
 {

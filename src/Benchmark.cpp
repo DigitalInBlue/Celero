@@ -1,14 +1,14 @@
 ///
 /// \author	John Farrier
 ///
-/// \copyright Copyright 2016 John Farrier 
+/// \copyright Copyright 2015, 2016, 2017 John Farrier
 ///
 /// Licensed under the Apache License, Version 2.0 (the "License");
 /// you may not use this file except in compliance with the License.
 /// You may obtain a copy of the License at
-/// 
+///
 /// http://www.apache.org/licenses/LICENSE-2.0
-/// 
+///
 /// Unless required by applicable law or agreed to in writing, software
 /// distributed under the License is distributed on an "AS IS" BASIS,
 /// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -27,60 +27,45 @@ using namespace celero;
 
 class Benchmark::Impl
 {
-	public:
-		Impl() : 
-			stats(),
-			name(),
-			baseline(),
-			experiments()
-		{
-		}
+public:
+	Impl() : stats(), name(), baseline(), experiments()
+	{
+	}
 
-		Impl(const std::string& x) :
-			stats(),
-			name(x),
-			baseline(),
-			experiments()
-		{
-		}
+	Impl(const std::string& x) : stats(), name(x), baseline(), experiments()
+	{
+	}
 
-		Impl(const Benchmark& other) : 
-			stats(),
-			name(other.pimpl->name),
-			baseline(),
-			experiments()
-		{
-		}
+	Impl(const Benchmark& other) : stats(), name(other.pimpl->name), baseline(), experiments()
+	{
+	}
 
-		void copy(const Benchmark& other)
-		{
-			stats = other.pimpl->stats;
-			name = other.pimpl->name;
-			baseline = other.pimpl->baseline;
-			experiments = other.pimpl->experiments;
-		}
+	void copy(const Benchmark& other)
+	{
+		stats = other.pimpl->stats;
+		name = other.pimpl->name;
+		baseline = other.pimpl->baseline;
+		experiments = other.pimpl->experiments;
+	}
 
-		Statistics stats;
+	Statistics stats;
 
-		/// Group name
-		std::string name;
-		
-		std::shared_ptr<Experiment> baseline;
-		std::vector<std::shared_ptr<Experiment>> experiments;
+	/// Group name
+	std::string name;
+
+	std::shared_ptr<Experiment> baseline;
+	std::vector<std::shared_ptr<Experiment>> experiments;
 };
 
-Benchmark::Benchmark() : 
-	pimpl()
+Benchmark::Benchmark() : pimpl()
 {
 }
 
-Benchmark::Benchmark(const std::string& name) :
-	pimpl(name)
+Benchmark::Benchmark(const std::string& name) : pimpl(name)
 {
 }
 
-Benchmark::Benchmark(const Benchmark& other) : 
-	pimpl(other)
+Benchmark::Benchmark(const Benchmark& other) : pimpl(other)
 {
 }
 
@@ -127,10 +112,7 @@ std::shared_ptr<Experiment> Benchmark::getExperiment(size_t x)
 std::shared_ptr<Experiment> Benchmark::getExperiment(const std::string& x)
 {
 	return *std::find_if(std::begin(this->pimpl->experiments), std::end(this->pimpl->experiments),
-		[x](decltype(*std::begin(this->pimpl->experiments)) i)->bool
-		{
-			return (i->getName() == x);
-		});
+						 [x](decltype(*std::begin(this->pimpl->experiments)) i) -> bool { return (i->getName() == x); });
 }
 
 size_t Benchmark::getExperimentSize() const

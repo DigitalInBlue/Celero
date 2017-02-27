@@ -1,7 +1,7 @@
 #
 # Top level makefile for Celero
 #
-# Copyright 2016 John Farrier
+# Copyright 2015, 2016, 2017 John Farrier
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -29,6 +29,7 @@ PROJECT(CeleroProject)
 include(CheckFunctionExists)
 include(CheckCXXSourceCompiles)
 include(CheckIncludeFile)
+
 if(POLICY CMP0042)
 	cmake_policy(SET CMP0042 OLD) # MACOSX_RPATH migration
 endif()
@@ -153,6 +154,7 @@ set(TARGET_H
 	include/celero/CommandLine.h
 	include/celero/Console.h
 	include/celero/Distribution.h
+	include/celero/Exceptions.h
 	include/celero/Executor.h
 	include/celero/Export.h
 	include/celero/Factory.h
@@ -181,6 +183,7 @@ set(TARGET_SRC
 	src/Celero.cpp
 	src/Console.cpp
 	src/Distribution.cpp
+	src/Exceptions.cpp
 	src/Executor.cpp
 	src/JUnit.cpp
 	src/Print.cpp

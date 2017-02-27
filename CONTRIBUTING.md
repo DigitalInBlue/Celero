@@ -18,16 +18,14 @@ New functionality would reside inside the core project for Celero.  Here it is m
 
 Change should generally follow the [Git Flow](http://nvie.com/posts/a-successful-git-branching-model/) branching model.
 
-
-* Create a topic branch from where you want to base your work.
-  * This is usually the master branch.
-  * Only target release branches if you are certain your fix must be on that branch.
-  * To quickly create a topic branch based on master; `git checkout -b fix/master/my_contribution master`. Please avoid working directly on the `master` branch.
+* Create a topic branch from where you want to base your work. [Understanding the GitHub Flow](https://guides.github.com/introduction/flow/).
+* All pull requests should be made against the "develop" branch.
 * Make commits of logical units.
 * Check for unnecessary whitespace with `git diff --check` before committing.
 * Make sure your commit messages are in the proper format.
+* Use clang-format to format your files after you make changes.  Use Celero's custom .clang-format file for its configuration.
 
-For details, see ["Writing good commit messages.""](https://github.com/erlang/otp/wiki/Writing-good-commit-messages)
+For details, see ["Writing good commit messages.""](https://github.com/erlang/otp/wiki/Writing-good-commit-messages).
 
 * Make sure you have added the necessary Google tests for your changes.
 * Run _all_ the tests to assure nothing else was accidentally broken.
@@ -48,5 +46,8 @@ For changes to how a user would run Celero from a command line or how a user mig
 
 # Additional Resources
 
+* ["Writing good commit messages.""](https://github.com/erlang/otp/wiki/Writing-good-commit-messages)
 * [General GitHub documentation](http://help.github.com/)
+* [Git Flow](http://nvie.com/posts/a-successful-git-branching-model/)
 * [GitHub pull request documentation](http://help.github.com/send-pull-requests/)
+* [Understanding the GitHub Flow](https://guides.github.com/introduction/flow/)

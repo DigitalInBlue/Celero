@@ -20,8 +20,7 @@ CELERO_MAIN
 
 struct Foo
 {
-	Foo() : 
-		nonPodType()
+	Foo() : nonPodType()
 	{
 	}
 
@@ -274,7 +273,6 @@ BENCHMARK(NonPODParamPassingUseAfter, TypeByConstRefWithMove, MY_NUMBER_OF_SAMPL
 	bar += "food";
 	celero::DoNotOptimizeAway(&bar);
 }
-
 
 // --------------------------------------------------
 // Now repeat all of the tests above with a POD type.
