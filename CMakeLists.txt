@@ -29,6 +29,7 @@ PROJECT(CeleroProject)
 include(CheckFunctionExists)
 include(CheckCXXSourceCompiles)
 include(CheckIncludeFile)
+
 if(POLICY CMP0042)
 	cmake_policy(SET CMP0042 OLD) # MACOSX_RPATH migration
 endif()
