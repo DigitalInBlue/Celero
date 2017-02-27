@@ -27,7 +27,6 @@
 namespace celero
 {
 	class Benchmark;
-	class Statistics;
 
 	///
 	/// \class Experiment

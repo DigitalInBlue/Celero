@@ -106,6 +106,9 @@ Statistics Statistics::operator+(const Statistics& other)
 			/ (combined.pimpl->sampleSize * combined.pimpl->sampleSize)
 		+ 4.0 * delta * (this->pimpl->sampleSize * other.pimpl->M3 - other.pimpl->sampleSize * this->pimpl->M3) / combined.pimpl->sampleSize;
 
+	combined.pimpl->min = std::min(this->pimpl->min, other.pimpl->min);
+	combined.pimpl->max = std::max(this->pimpl->max, other.pimpl->max);
+
 	return combined;
 }
 
