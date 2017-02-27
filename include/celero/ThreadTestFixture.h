@@ -4,7 +4,7 @@
 ///
 /// \author	Ivan Shynkarenka
 ///
-/// \copyright Copyright 2016 John Farrier
+/// \copyright Copyright 2015, 2016, 2017 John Farrier
 ///
 /// Licensed under the Apache License, Version 2.0 (the "License");
 /// you may not use this file except in compliance with the License.
@@ -19,8 +19,8 @@
 /// limitations under the License.
 ///
 
-#include <celero/TestFixture.h>
 #include <celero/Pimpl.h>
+#include <celero/TestFixture.h>
 
 namespace celero
 {
@@ -33,52 +33,52 @@ namespace celero
 	///
 	class CELERO_EXPORT ThreadTestFixture : public TestFixture
 	{
-		public:
-			///
-			/// Default Constructor.
-			///
-			ThreadTestFixture();
+	public:
+		///
+		/// Default Constructor.
+		///
+		ThreadTestFixture();
 
-			///
-			/// Virtual destructor for inheritance.
-			///
-			virtual ~ThreadTestFixture();
+		///
+		/// Virtual destructor for inheritance.
+		///
+		virtual ~ThreadTestFixture();
 
-			///
-			/// Start threads before benchmark execution.
-			///
-			/// \param threads Count of working threads to start.
-			/// \param calls The total number of times to loop over the UserBenchmark function.
-			///
-			virtual void startThreads(uint64_t threads, uint64_t calls);
+		///
+		/// Start threads before benchmark execution.
+		///
+		/// \param threads Count of working threads to start.
+		/// \param calls The total number of times to loop over the UserBenchmark function.
+		///
+		virtual void startThreads(uint64_t threads, uint64_t calls);
 
-			///
-			/// Called after test completion to stop threads.
-			///
-			virtual void stopThreads();
+		///
+		/// Called after test completion to stop threads.
+		///
+		virtual void stopThreads();
 
-			///
-			/// \param threads The number of working threads.
-			/// \param calls The total number of times to loop over the UserBenchmark function.
-			/// \param experimentValue The experiment value to pass in setUp function.
-			///
-			/// \return Returns the number of microseconds the run took.
-			///
-			uint64_t run(uint64_t threads, uint64_t calls, int64_t experimentValue) override;
+		///
+		/// \param threads The number of working threads.
+		/// \param calls The total number of times to loop over the UserBenchmark function.
+		/// \param experimentValue The experiment value to pass in setUp function.
+		///
+		/// \return Returns the number of microseconds the run took.
+		///
+		uint64_t run(uint64_t threads, uint64_t calls, int64_t experimentValue) override;
 
-			///
-			/// Get the current call number starting from 1.
-			///
-			uint64_t getCallId() const;
+		///
+		/// Get the current call number starting from 1.
+		///
+		uint64_t getCallId() const;
 
-			///
-			/// Get the current thread Id starting from 1.
-			///
-			uint64_t getThreadId() const;
+		///
+		/// Get the current thread Id starting from 1.
+		///
+		uint64_t getThreadId() const;
 
-		private:
-			class Impl;
-			Pimpl<Impl> pimpl;
+	private:
+		class Impl;
+		Pimpl<Impl> pimpl;
 	};
 }
 

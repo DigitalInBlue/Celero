@@ -6,14 +6,14 @@
 ///
 /// \author	John Farrier
 ///
-/// \copyright Copyright 2016 John Farrier 
+/// \copyright Copyright 2015, 2016, 2017 John Farrier
 ///
 /// Licensed under the Apache License, Version 2.0 (the "License");
 /// you may not use this file except in compliance with the License.
 /// You may obtain a copy of the License at
-/// 
+///
 /// http://www.apache.org/licenses/LICENSE-2.0
-/// 
+///
 /// Unless required by applicable law or agreed to in writing, software
 /// distributed under the License is distributed on an "AS IS" BASIS,
 /// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -26,7 +26,7 @@
 ///
 /// "Iterations" refers to how many loops of the test function are measured as a time.
 /// For very fast code, many iterations would help amoratize measurement error.
-/// 
+///
 /// "Samples" refers to how many sets of "iterations" will be performed.  Each "sample" is
 /// a single measurement.  Set to 0 to have Celero decide how many samples are required
 /// for a minimally significant answer.
@@ -37,8 +37,8 @@
 #include <functional>
 #include <memory>
 
-#include <celero/Export.h>
 #include <celero/Experiment.h>
+#include <celero/Export.h>
 
 namespace celero
 {

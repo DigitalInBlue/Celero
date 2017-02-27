@@ -1,7 +1,7 @@
 ///
 /// \author	John Farrier
 ///
-/// \copyright Copyright 2016 John Farrier
+/// \copyright Copyright 2015, 2016, 2017 John Farrier
 ///
 /// Licensed under the Apache License, Version 2.0 (the "License");
 /// you may not use this file except in compliance with the License.
@@ -16,15 +16,15 @@
 /// limitations under the License.
 ///
 
-#include <celero/Utilities.h>
 #include <celero/Print.h>
+#include <celero/Utilities.h>
 
 #ifdef WIN32
-	#include <Windows.h>
-	#include <Powerbase.h>
+#include <Windows.h>
+#include <Powerbase.h>
 #endif
 
-template<>
+template <>
 void celero::DoNotOptimizeAway(std::function<void(void)>&& x)
 {
 	x();
@@ -46,53 +46,43 @@ void celero::DoNotOptimizeAway(std::function<void(void)>&& x)
 
 void celero::DisableDynamicCPUScaling()
 {
-	#ifdef WIN32
-		// http://stackoverflow.com/questions/3975551/how-to-disable-dynamic-frequency-scaling
-		// https://msdn.microsoft.com/en-us/library/aa372675(v=vs.85).aspx
-		//
-		// NTSTATUS WINAPI CallNtPowerInformation(
-		//   _In_   POWER_INFORMATION_LEVEL InformationLevel,
-		//   _In_   PVOID lpInputBuffer,
-		//   _In_   ULONG nInputBufferSize,
-		//   _Out_  PVOID lpOutputBuffer,
-		//   _In_   ULONG nOutputBufferSize
-		// );
+#ifdef WIN32
+	// http://stackoverflow.com/questions/3975551/how-to-disable-dynamic-frequency-scaling
+	// https://msdn.microsoft.com/en-us/library/aa372675(v=vs.85).aspx
+	//
+	// NTSTATUS WINAPI CallNtPowerInformation(
+	//   _In_   POWER_INFORMATION_LEVEL InformationLevel,
+	//   _In_   PVOID lpInputBuffer,
+	//   _In_   ULONG nInputBufferSize,
+	//   _Out_  PVOID lpOutputBuffer,
+	//   _In_   ULONG nOutputBufferSize
+	// );
 
-		// https://msdn.microsoft.com/en-us/library/aa373215(v=vs.85).aspx
-		SYSTEM_POWER_CAPABILITIES spc;
-		
-		CallNtPowerInformation(
-			SystemPowerCapabilities, 
-			NULL,
-			NULL,
-			&spc,
-			sizeof(SYSTEM_POWER_CAPABILITIES));
-		
-		if(spc.ProcessorThrottle == TRUE)
+	// https://msdn.microsoft.com/en-us/library/aa373215(v=vs.85).aspx
+	SYSTEM_POWER_CAPABILITIES spc;
+
+	CallNtPowerInformation(SystemPowerCapabilities, NULL, NULL, &spc, sizeof(SYSTEM_POWER_CAPABILITIES));
+
+	if(spc.ProcessorThrottle == TRUE)
+	{
+		celero::print::Console("CPU supports processor throttling.  Attempting to disable.");
+
+		if(spc.ProcessorMinThrottle != 100)
 		{
-			celero::print::Console("CPU supports processor throttling.  Attempting to disable.");
-			
-			if(spc.ProcessorMinThrottle != 100)
-			{
-				spc.ProcessorMaxThrottle = 100;
-				spc.ProcessorMinThrottle = 100;
-		
-				CallNtPowerInformation(
-					SystemPowerCapabilities,
-					&spc,
-					sizeof(SYSTEM_POWER_CAPABILITIES),
-					NULL,
-					NULL);
-			}
-		
-			celero::DisableDynamicCPUScaling();
+			spc.ProcessorMaxThrottle = 100;
+			spc.ProcessorMinThrottle = 100;
+
+			CallNtPowerInformation(SystemPowerCapabilities, &spc, sizeof(SYSTEM_POWER_CAPABILITIES), NULL, NULL);
 		}
-		else
-		{
-			celero::print::Console("CPU processor throttling disabled.");
-		}
-	#else
-		// The Linux kernel has full SpeedStep support 
-		// integrated since version 2.6.
-	#endif
+
+		celero::DisableDynamicCPUScaling();
+	}
+	else
+	{
+		celero::print::Console("CPU processor throttling disabled.");
+	}
+#else
+// The Linux kernel has full SpeedStep support
+// integrated since version 2.6.
+#endif
 }

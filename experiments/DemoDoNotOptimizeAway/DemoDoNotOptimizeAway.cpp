@@ -1,12 +1,12 @@
-#include <celero/Celero.h>
 #include <celero/Benchmark.h>
+#include <celero/Celero.h>
 
-#include <thread>
 #include <chrono>
+#include <thread>
 
 #ifndef WIN32
-#include <cstdlib>
 #include <cmath>
+#include <cstdlib>
 #endif
 
 ///
@@ -20,22 +20,22 @@ CELERO_MAIN
 /// The basic form of the functions being tested is this:
 ///
 /// \verbatim
-/// 
+///
 ///	#ifndef WIN32
 ///	#include <unistd.h>
 ///	#endif
-///	
+///
 ///	#include <cstdlib>
 ///	#include <thread>
 ///	#include <functional>
 ///	#include <chrono>
 ///	#include <atomic>
 ///	#include <stdint.h>
-///	
+///
 ///	template<class T> void DoNotOptimizeAway1(T&& x)
 ///	{
 ///	  x();
-///	  
+///
 ///	  if(std::chrono::system_clock::now() == std::chrono::time_point<std::chrono::system_clock>())
 ///	  {
 ///	     	const auto* p = &x;
@@ -43,17 +43,17 @@ CELERO_MAIN
 ///	      std::abort();
 ///	  }
 ///	}
-///	
+///
 ///	void Benchmark()
 ///	{
 ///	  int x = 0;
-///	  
+///
 ///	  for(int i = 0; i < 512; i++)
 ///	  {
 ///	    DoNotOptimizeAway1([&x](){x += 1;});
 ///	  }
 ///	}
-///	
+///
 ///
 /// \endverbatim
 ///
@@ -93,7 +93,7 @@ BASELINE(DemoDNOA, Optimized, 30, 67108864)
 ///		call	_IO_putc
 ///		call	abort
 /// \endverbatim
-///	
+///
 BENCHMARK(DemoDNOA, Chrono, 30, 67108864)
 {
 	int x = 0;
@@ -134,7 +134,7 @@ BENCHMARK(DemoDNOA, Chrono, 30, 67108864)
 ///		call	_IO_putc
 ///		call	abort
 /// \endverbatim
-///	
+///
 BENCHMARK(DemoDNOA, Thread, 30, 100000)
 {
 	int x = 0;
@@ -186,7 +186,7 @@ BENCHMARK(DemoDNOA, Thread, 30, 100000)
 ///		call	_IO_putc
 ///		call	abort
 /// \endverbatim
-///	
+///
 BENCHMARK(DemoDNOA, StaticThread, 30, 67108864)
 {
 	int x = 0;
@@ -203,5 +203,5 @@ BENCHMARK(DemoDNOA, StaticThread, 30, 67108864)
 BENCHMARK(DemoDNOA, DNOA, 30, 67108864)
 {
 	int x = 0;
-	celero::DoNotOptimizeAway([&](){x++;});
+	celero::DoNotOptimizeAway([&]() { x++; });
 }

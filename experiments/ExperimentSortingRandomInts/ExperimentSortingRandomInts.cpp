@@ -15,7 +15,7 @@ CELERO_MAIN
 ///
 /// \class	SortFixture
 ///	\autho	John Farrier
-/// 
+///
 ///	\brief	A Celero Test Fixture for sorting functions.
 ///
 /// This test fixture will build a experiment of powers of two.  When executed,
@@ -35,53 +35,53 @@ CELERO_MAIN
 ///
 class SortFixture : public celero::TestFixture
 {
-	public:
-		SortFixture()
+public:
+	SortFixture()
+	{
+	}
+
+	virtual std::vector<std::pair<int64_t, uint64_t>> getExperimentValues() const override
+	{
+		std::vector<std::pair<int64_t, uint64_t>> problemSpace;
+
+		// We will run some total number of sets of tests all together.
+		// Each one growing by a power of 2.
+		const int totalNumberOfTests = 6;
+
+		for(int i = 0; i < totalNumberOfTests; i++)
 		{
+			// ExperimentValues is part of the base class and allows us to specify
+			// some values to control various test runs to end up building a nice graph.
+			problemSpace.push_back(std::make_pair(int64_t(pow(2, i + 1)), uint64_t(0)));
 		}
 
-		virtual std::vector<std::pair<int64_t, uint64_t>> getExperimentValues() const override
+		return problemSpace;
+	}
+
+	/// Before each run, build a vector of random integers.
+	virtual void setUp(int64_t experimentValue)
+	{
+		this->arraySize = experimentValue;
+		this->array.reserve(this->arraySize);
+	}
+
+	/// Before each iteration. A common utility function to push back random ints to sort.
+	void randomize()
+	{
+		for(int i = 0; i < this->arraySize; i++)
 		{
-			std::vector<std::pair<int64_t, uint64_t>> problemSpace;
-
-			// We will run some total number of sets of tests all together. 
-			// Each one growing by a power of 2.
-			const int totalNumberOfTests = 6;
-
-			for(int i = 0; i < totalNumberOfTests; i++)
-			{
-				// ExperimentValues is part of the base class and allows us to specify
-				// some values to control various test runs to end up building a nice graph.
-				problemSpace.push_back(std::make_pair(int64_t(pow(2, i+1)), uint64_t(0)));
-			}
-
-			return problemSpace;
+			this->array.push_back(rand());
 		}
+	}
 
-		/// Before each run, build a vector of random integers.
-		virtual void setUp(int64_t experimentValue)
-		{
-			this->arraySize = experimentValue;
-			this->array.reserve(this->arraySize);
-		}
+	/// After each iteration, clear the vector of random integers.
+	void clear()
+	{
+		this->array.clear();
+	}
 
-		/// Before each iteration. A common utility function to push back random ints to sort.
-		void randomize()
-		{
-			for(int i = 0; i < this->arraySize; i++)
-			{
-				this->array.push_back(rand());
-			}
-		}
-
-		/// After each iteration, clear the vector of random integers.
-		void clear()
-		{
-			this->array.clear();
-		}
-
-		std::vector<int64_t> array;
-		int64_t arraySize;
+	std::vector<int64_t> array;
+	int64_t arraySize;
 };
 
 // For a baseline, I'll choose Bubble Sort.
@@ -93,9 +93,9 @@ BASELINE_F(SortRandInts, BubbleSort, SortFixture, 30, 10000)
 	{
 		for(int y = 0; y < this->arraySize - 1; y++)
 		{
-			if(this->array[y] > this->array[y+1])
+			if(this->array[y] > this->array[y + 1])
 			{
-				std::swap(this->array[y], this->array[y+1]);
+				std::swap(this->array[y], this->array[y + 1]);
 			}
 		}
 	}
@@ -134,21 +134,21 @@ BENCHMARK_F(SortRandInts, InsertionSort, SortFixture, 30, 10000)
 	{
 		std::rotate(std::upper_bound(std::begin(this->array), i, *i), i, std::next(i));
 	}
-	
+
 	this->clear();
 }
 
 // http://www.bfilipek.com/2014/12/top-5-beautiful-c-std-algorithms.html
-template<class FwdIt, typename U>
+template <class FwdIt, typename U>
 void quickSort(FwdIt first, FwdIt last, U cmp = U())
 {
 	auto const N = std::distance(first, last);
-	if(N <= 1) return;
+	if(N <= 1)
+		return;
 	auto const pivot = std::next(first, N / 2);
 	std::nth_element(first, pivot, last, cmp);
 	quickSort(first, pivot, cmp);
 	quickSort(pivot, last, cmp);
-
 }
 
 BENCHMARK_F(SortRandInts, QuickSort, SortFixture, 30, 10000)
@@ -165,6 +165,6 @@ BENCHMARK_F(SortRandInts, stdSort, SortFixture, 30, 10000)
 	this->randomize();
 
 	std::sort(this->array.begin(), this->array.end());
-	
+
 	this->clear();
 }

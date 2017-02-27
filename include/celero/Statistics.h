@@ -4,14 +4,14 @@
 ///
 /// \author	John Farrier
 ///
-/// \copyright Copyright 2016 John Farrier 
+/// \copyright Copyright 2015, 2016, 2017 John Farrier
 ///
 /// Licensed under the Apache License, Version 2.0 (the "License");
 /// you may not use this file except in compliance with the License.
 /// You may obtain a copy of the License at
-/// 
+///
 /// http://www.apache.org/licenses/LICENSE-2.0
-/// 
+///
 /// Unless required by applicable law or agreed to in writing, software
 /// distributed under the License is distributed on an "AS IS" BASIS,
 /// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -39,58 +39,58 @@ namespace celero
 	///
 	class Statistics
 	{
-		public:
-			///
-			/// \brief	Default constructor
-			///
-			Statistics();
+	public:
+		///
+		/// \brief	Default constructor
+		///
+		Statistics();
 
-			Statistics(const Statistics& other);
+		Statistics(const Statistics& other);
 
-			~Statistics();
+		~Statistics();
 
-			Statistics operator+(const Statistics& other);
+		Statistics operator+(const Statistics& other);
 
-			Statistics& operator+=(const Statistics& other);
+		Statistics& operator+=(const Statistics& other);
 
-			Statistics& operator=(const Statistics& other);
+		Statistics& operator=(const Statistics& other);
 
-			///
-			/// Resets all accumulated statistics.
-			///
-			void reset();
+		///
+		/// Resets all accumulated statistics.
+		///
+		void reset();
 
-			///
-			/// Adds a statistical sample.
-			///
-			void addSample(uint64_t x);
+		///
+		/// Adds a statistical sample.
+		///
+		void addSample(uint64_t x);
 
-			size_t getSize() const;
+		size_t getSize() const;
 
-			double getMean() const;
+		double getMean() const;
 
-			double getVariance() const;
+		double getVariance() const;
 
-			double getStandardDeviation() const;
+		double getStandardDeviation() const;
 
-			double getSkewness() const;
+		double getSkewness() const;
 
-			double getKurtosis() const;
+		double getKurtosis() const;
 
-			///
-			/// Computed as (mean - hypothesis)/standard_deviation
-			///
-			/// Here, the hypothesis is our minimum value.
-			///
-			double getZScore() const;
+		///
+		/// Computed as (mean - hypothesis)/standard_deviation
+		///
+		/// Here, the hypothesis is our minimum value.
+		///
+		double getZScore() const;
 
-			uint64_t getMin() const;
+		uint64_t getMin() const;
 
-			uint64_t getMax() const;
+		uint64_t getMax() const;
 
-		private:
-			class Impl;
-			Pimpl<Impl> pimpl;
+	private:
+		class Impl;
+		Pimpl<Impl> pimpl;
 	};
 }
 

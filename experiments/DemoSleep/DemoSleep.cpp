@@ -1,7 +1,7 @@
 #include <celero/Celero.h>
 
-#include <thread>
 #include <chrono>
+#include <thread>
 
 ///
 /// This is the main(int argc, char** argv) for the entire celero program.

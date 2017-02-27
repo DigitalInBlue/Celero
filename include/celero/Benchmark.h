@@ -4,14 +4,14 @@
 ///
 /// \author	John Farrier
 ///
-/// \copyright Copyright 2016 John Farrier 
+/// \copyright Copyright 2015, 2016, 2017 John Farrier
 ///
 /// Licensed under the Apache License, Version 2.0 (the "License");
 /// you may not use this file except in compliance with the License.
 /// You may obtain a copy of the License at
-/// 
+///
 /// http://www.apache.org/licenses/LICENSE-2.0
-/// 
+///
 /// Unless required by applicable law or agreed to in writing, software
 /// distributed under the License is distributed on an "AS IS" BASIS,
 /// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -19,10 +19,10 @@
 /// limitations under the License.
 ///
 
-#include <string>
+#include <celero/Experiment.h>
 #include <functional>
 #include <memory>
-#include <celero/Experiment.h>
+#include <string>
 
 namespace celero
 {
@@ -33,75 +33,75 @@ namespace celero
 	///
 	class CELERO_EXPORT Benchmark
 	{
-		public:
-			///
-			/// \brief	Default constructor
-			///
-			Benchmark();
+	public:
+		///
+		/// \brief	Default constructor
+		///
+		Benchmark();
 
-			///
-			/// \brief	Overloaded constructor.
-			///
-			/// \param name Name of the test group.
-			///
-			Benchmark(const std::string& name);
-			
-			///
-			///
-			///
-			Benchmark(const Benchmark& other);
+		///
+		/// \brief	Overloaded constructor.
+		///
+		/// \param name Name of the test group.
+		///
+		Benchmark(const std::string& name);
 
-			///
-			/// \brief	Default destructor.
-			///
-			~Benchmark();
+		///
+		///
+		///
+		Benchmark(const Benchmark& other);
 
-			///
-			/// Assignment Operator
-			///
-			Benchmark& operator=(const Benchmark& other);
+		///
+		/// \brief	Default destructor.
+		///
+		~Benchmark();
 
-			///
-			/// The name to group all experiment under.
-			///
-			std::string getName() const;
+		///
+		/// Assignment Operator
+		///
+		Benchmark& operator=(const Benchmark& other);
 
-			///
-			///
-			///
-			void setBaseline(std::shared_ptr<Experiment> x);
+		///
+		/// The name to group all experiment under.
+		///
+		std::string getName() const;
 
-			///
-			/// Gets the baseline case associated this benchmark.
-			///
-			std::shared_ptr<Experiment> getBaseline() const;
+		///
+		///
+		///
+		void setBaseline(std::shared_ptr<Experiment> x);
 
-			///
-			///
-			///
-			void addExperiment(std::shared_ptr<Experiment> x);
+		///
+		/// Gets the baseline case associated this benchmark.
+		///
+		std::shared_ptr<Experiment> getBaseline() const;
 
-			///
-			/// Gets the test case associated with the given experiment index.
-			///
-			std::shared_ptr<Experiment> getExperiment(size_t experimentIndex);
-			std::shared_ptr<Experiment> getExperiment(const std::string& experimentName);
+		///
+		///
+		///
+		void addExperiment(std::shared_ptr<Experiment> x);
 
-			///
-			/// Returns the total number of experiments per benchmark.
-			///
-			size_t getExperimentSize() const;
+		///
+		/// Gets the test case associated with the given experiment index.
+		///
+		std::shared_ptr<Experiment> getExperiment(size_t experimentIndex);
+		std::shared_ptr<Experiment> getExperiment(const std::string& experimentName);
 
-		private:
-			///
-			/// \brief	Pimpl Idiom
-			///
-			class Impl;
+		///
+		/// Returns the total number of experiments per benchmark.
+		///
+		size_t getExperimentSize() const;
 
-			///
-			/// \brief	Pimpl Idiom
-			///
-			Pimpl<Impl> pimpl;	
+	private:
+		///
+		/// \brief	Pimpl Idiom
+		///
+		class Impl;
+
+		///
+		/// \brief	Pimpl Idiom
+		///
+		Pimpl<Impl> pimpl;
 	};
 }
 

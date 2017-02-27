@@ -1,7 +1,7 @@
 ///
 /// \author	John Farrier
 ///
-/// \copyright Copyright 2016 John Farrier
+/// \copyright Copyright 2015, 2016, 2017 John Farrier
 ///
 /// Licensed under the Apache License, Version 2.0 (the "License");
 /// you may not use this file except in compliance with the License.
@@ -16,15 +16,13 @@
 /// limitations under the License.
 ///
 
-#include <celero/Result.h>
-#include <celero/PimplImpl.h>
-
 #include <celero/Benchmark.h>
+#include <celero/Experiment.h>
+#include <celero/PimplImpl.h>
+#include <celero/Result.h>
 #include <celero/Statistics.h>
 #include <celero/Timer.h>
 #include <celero/Utilities.h>
-#include <celero/Experiment.h>
-
 #include <algorithm>
 #include <cassert>
 
@@ -32,44 +30,31 @@ using namespace celero;
 
 class Result::Impl
 {
-	public:
-		Impl() :
-			stats(),
-			problemSpaceValue(0),
-			problemSpaceValueScale(1.0),
-			problemSpaceIterations(0),
-			parent(nullptr),
-			complete(false),
-			failure(false)
-		{
-		}
+public:
+	Impl() : stats(), problemSpaceValue(0), problemSpaceValueScale(1.0), problemSpaceIterations(0), parent(nullptr), complete(false), failure(false)
+	{
+	}
 
-		explicit Impl(Experiment* const p) :
-			stats(),
-			problemSpaceValue(0),
-			problemSpaceValueScale(1.0),
-			problemSpaceIterations(1),
-			parent(p),
-			complete(false),
-			failure(false)
-		{
-		}
+	explicit Impl(Experiment* const p)
+		: stats(), problemSpaceValue(0), problemSpaceValueScale(1.0), problemSpaceIterations(1), parent(p), complete(false), failure(false)
+	{
+	}
 
-		/// Track statistics about this specific experiment.
-		Statistics stats;
+	/// Track statistics about this specific experiment.
+	Statistics stats;
 
-		int64_t problemSpaceValue;
-		double problemSpaceValueScale;
-		uint64_t problemSpaceIterations;
+	int64_t problemSpaceValue;
+	double problemSpaceValueScale;
+	uint64_t problemSpaceIterations;
 
-		/// A pointer back to our owning Experiment parent.
-		Experiment* parent;
+	/// A pointer back to our owning Experiment parent.
+	Experiment* parent;
 
-		/// A "completed" flag.
-		bool complete;
+	/// A "completed" flag.
+	bool complete;
 
-		/// A "failure" flag.
-		bool failure;
+	/// A "failure" flag.
+	bool failure;
 };
 
 Result::Result()
@@ -128,7 +113,7 @@ uint64_t Result::getRunTime() const
 
 double Result::getUsPerCall() const
 {
-	if (this->pimpl->failure)
+	if(this->pimpl->failure)
 		return 0.0;
 
 	return static_cast<double>(this->pimpl->stats.getMin()) / static_cast<double>(this->pimpl->problemSpaceIterations);
@@ -136,7 +121,7 @@ double Result::getUsPerCall() const
 
 double Result::getCallsPerSecond() const
 {
-	if (this->pimpl->failure)
+	if(this->pimpl->failure)
 		return 0.0;
 
 	return 1.0 / (this->getUsPerCall() * 1.0e-6);
@@ -144,7 +129,10 @@ double Result::getCallsPerSecond() const
 
 double Result::getUnitsPerSecond() const
 {
-	return (this->pimpl->problemSpaceValueScale > 0) ? ((this->pimpl->problemSpaceValue * this->pimpl->problemSpaceIterations / this->pimpl->problemSpaceValueScale) / (this->pimpl->stats.getMin() * 1.0e-6)) : 0;
+	return (this->pimpl->problemSpaceValueScale > 0)
+			   ? ((this->pimpl->problemSpaceValue * this->pimpl->problemSpaceIterations / this->pimpl->problemSpaceValueScale)
+				  / (this->pimpl->stats.getMin() * 1.0e-6))
+			   : 0;
 }
 
 double Result::getBaselineMeasurement()
@@ -160,8 +148,9 @@ double Result::getBaselineMeasurement()
 			if(baselineExperiment != nullptr)
 			{
 				auto baselineResult = baselineExperiment->getResultByValue(this->getProblemSpaceValue());
-				if(baselineResult){
-						return this->getUsPerCall() / baselineResult->getUsPerCall();
+				if(baselineResult)
+				{
+					return this->getUsPerCall() / baselineResult->getUsPerCall();
 				}
 			}
 		}
@@ -191,4 +180,3 @@ bool Result::getFailure() const
 {
 	return this->pimpl->failure;
 }
-

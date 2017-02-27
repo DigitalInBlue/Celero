@@ -1,7 +1,7 @@
 ///
 /// \author	John Farrier
 ///
-/// \copyright Copyright 2016 John Farrier
+/// \copyright Copyright 2015, 2016, 2017 John Farrier
 ///
 /// Licensed under the Apache License, Version 2.0 (the "License");
 /// you may not use this file except in compliance with the License.
@@ -17,18 +17,18 @@
 ///
 
 #include <celero/Archive.h>
-#include <celero/PimplImpl.h>
 #include <celero/Benchmark.h>
 #include <celero/FileReader.h>
+#include <celero/PimplImpl.h>
 
 #include <assert.h>
 
+#include <algorithm>
+#include <chrono>
+#include <fstream>
+#include <iostream>
 #include <map>
 #include <vector>
-#include <algorithm>
-#include <iostream>
-#include <fstream>
-#include <chrono>
 
 using namespace celero;
 
@@ -37,24 +37,24 @@ using namespace celero;
 ///
 struct ArchiveEntry
 {
-	ArchiveEntry() :
-		GroupName(),
-		RunName(),
-		Failure(false),
-		ExperimentValue(0),
-		ExperimentValueScale(0),
-		FirstRanDate(0),
-		TotalSamplesCollected(0),
-		AverageBaseline(0),
-		MinBaseline(0),
-		MinBaseline_TimeSinceEpoch(0),
-		MinStats(),
-		MaxBaseline(0),
-		MaxBaseline_TimeSinceEpoch(0),
-		MaxStats(),
-		CurrentBaseline(0),
-		CurrentBaseline_TimeSinceEpoch(0),
-		CurrentStats()
+	ArchiveEntry()
+		: GroupName(),
+		  RunName(),
+		  Failure(false),
+		  ExperimentValue(0),
+		  ExperimentValueScale(0),
+		  FirstRanDate(0),
+		  TotalSamplesCollected(0),
+		  AverageBaseline(0),
+		  MinBaseline(0),
+		  MinBaseline_TimeSinceEpoch(0),
+		  MinStats(),
+		  MaxBaseline(0),
+		  MaxBaseline_TimeSinceEpoch(0),
+		  MaxStats(),
+		  CurrentBaseline(0),
+		  CurrentBaseline_TimeSinceEpoch(0),
+		  CurrentStats()
 	{
 	}
 
@@ -74,15 +74,7 @@ struct ArchiveEntry
 
 	struct Stat
 	{
-		Stat() :
-			Size(0),
-			Mean(0),
-			Variance(0),
-			StandardDeviation(0),
-			Skewness(0),
-			Kurtosis(0),
-			Min(0),
-			Max(0)
+		Stat() : Size(0), Mean(0), Variance(0), StandardDeviation(0), Skewness(0), Kurtosis(0), Min(0), Max(0)
 		{
 		}
 
@@ -230,50 +222,48 @@ std::istream& operator>>(std::istream& str, ArchiveEntry& data)
 ///
 class celero::Archive::Impl
 {
-	public:
-		Impl() :
-			results(),
-			fileName()
+public:
+	Impl() : results(), fileName()
+	{
+	}
+
+	/// Return milliseconds since epoch.
+	uint64_t now() const
+	{
+		return static_cast<uint64_t>(
+			std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count());
+	}
+
+	void readExistingResults()
+	{
+		// Read in existing results?
+		std::ifstream is;
+		is.open(this->fileName, std::fstream::in);
+
+		if((is.is_open() == true) && (is.good() == true) && (is.fail() == false))
 		{
+			// Throw away the header.
+			is.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 
-		}
-
-		/// Return milliseconds since epoch.
-		uint64_t now() const
-		{
-			return static_cast<uint64_t>(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count());
-		}
-
-		void readExistingResults()
-		{
-			// Read in existing results?
-			std::ifstream is;
-			is.open(this->fileName, std::fstream::in);
-
-			if((is.is_open() == true) && (is.good() == true) && (is.fail() == false))
+			// Read in existing results.
+			while((is.eof() == false) && (is.tellg() >= 0))
 			{
-				// Throw away the header.
-				is.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+				ArchiveEntry r;
+				is >> r;
 
-				// Read in existing results.
-				while((is.eof() == false) && (is.tellg() >= 0))
+				if(r.GroupName.empty() == false)
 				{
-					ArchiveEntry r;
-					is >> r;
-
-					if(r.GroupName.empty() == false)
-					{
-						this->results.push_back(r);
-					}
+					this->results.push_back(r);
 				}
-
-				// Close the file for reading.
-				is.close();
 			}
-		}
 
-		std::vector<ArchiveEntry> results;
-		std::string fileName;
+			// Close the file for reading.
+			is.close();
+		}
+	}
+
+	std::vector<ArchiveEntry> results;
+	std::string fileName;
 };
 
 Archive::Archive() : pimpl()
@@ -299,18 +289,15 @@ void Archive::setFileName(const std::string& x)
 
 void Archive::add(std::shared_ptr<celero::Result> x)
 {
-	const auto found = std::find_if(std::begin(this->pimpl->results), std::end(this->pimpl->results),
-		[x](const ArchiveEntry& r)->bool
-		{
-			return (r.GroupName == x->getExperiment()->getBenchmark()->getName()) &&
-				(r.RunName == x->getExperiment()->getName()) &&
-				(r.ExperimentValue == x->getProblemSpaceValue());
-		});
+	const auto found = std::find_if(std::begin(this->pimpl->results), std::end(this->pimpl->results), [x](const ArchiveEntry& r) -> bool {
+		return (r.GroupName == x->getExperiment()->getBenchmark()->getName()) && (r.RunName == x->getExperiment()->getName())
+			   && (r.ExperimentValue == x->getProblemSpaceValue());
+	});
 
 	if(found != std::end(this->pimpl->results))
 	{
-		if (x->getFailure())
-				return;
+		if(x->getFailure())
+			return;
 
 		found->CurrentBaseline = x->getBaselineMeasurement();
 		found->CurrentBaseline_TimeSinceEpoch = this->pimpl->now();
@@ -318,23 +305,24 @@ void Archive::add(std::shared_ptr<celero::Result> x)
 
 		if(found->Failure || found->CurrentBaseline <= found->MinBaseline)
 		{
-				found->MinBaseline = found->CurrentBaseline;
-				found->MinBaseline_TimeSinceEpoch = found->CurrentBaseline_TimeSinceEpoch;
-				found->MinStats = found->CurrentStats;
+			found->MinBaseline = found->CurrentBaseline;
+			found->MinBaseline_TimeSinceEpoch = found->CurrentBaseline_TimeSinceEpoch;
+			found->MinStats = found->CurrentStats;
 		}
 
 		if(found->Failure || found->CurrentBaseline >= found->MaxBaseline)
 		{
-				found->MaxBaseline = found->CurrentBaseline;
-				found->MaxBaseline_TimeSinceEpoch = found->CurrentBaseline_TimeSinceEpoch;
-				found->MaxStats = found->CurrentStats;
+			found->MaxBaseline = found->CurrentBaseline;
+			found->MaxBaseline_TimeSinceEpoch = found->CurrentBaseline_TimeSinceEpoch;
+			found->MaxStats = found->CurrentStats;
 		}
 
 		// This is not good IEEE math.
-		if (!found->Failure)
-				found->AverageBaseline = ((found->AverageBaseline * found->TotalSamplesCollected) + found->CurrentBaseline) / (found->TotalSamplesCollected + 1);
+		if(!found->Failure)
+			found->AverageBaseline =
+				((found->AverageBaseline * found->TotalSamplesCollected) + found->CurrentBaseline) / (found->TotalSamplesCollected + 1);
 		else
-				found->AverageBaseline = found->CurrentBaseline;
+			found->AverageBaseline = found->CurrentBaseline;
 		found->TotalSamplesCollected++;
 	}
 	else

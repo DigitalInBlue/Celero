@@ -1,14 +1,14 @@
 ///
 /// \author	John Farrier
 ///
-/// \copyright Copyright 2016 John Farrier 
+/// \copyright Copyright 2015, 2016, 2017 John Farrier
 ///
 /// Licensed under the Apache License, Version 2.0 (the "License");
 /// you may not use this file except in compliance with the License.
 /// You may obtain a copy of the License at
-/// 
+///
 /// http://www.apache.org/licenses/LICENSE-2.0
-/// 
+///
 /// Unless required by applicable law or agreed to in writing, software
 /// distributed under the License is distributed on an "AS IS" BASIS,
 /// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -17,28 +17,30 @@
 ///
 
 #include <celero/Archive.h>
-#include <celero/Celero.h>
-#include <celero/Console.h>
 #include <celero/Benchmark.h>
+#include <celero/Callbacks.h>
+#include <celero/Celero.h>
+#include <celero/CommandLine.h>
+#include <celero/Console.h>
+#include <celero/Distribution.h>
 #include <celero/Exceptions.h>
-#include <celero/TestVector.h>
-#include <celero/Utilities.h>
 #include <celero/Executor.h>
+#include <celero/JUnit.h>
 #include <celero/Print.h>
 #include <celero/ResultTable.h>
-#include <celero/JUnit.h>
-#include <celero/CommandLine.h>
-#include <celero/Distribution.h>
-#include <celero/Callbacks.h>
+#include <celero/TestVector.h>
+#include <celero/Utilities.h>
 
-#include <iostream>
-#include <fstream>
-#include <cmath>
 #include <cassert>
+#include <cmath>
+#include <fstream>
+#include <iostream>
 
 using namespace celero;
 
-std::shared_ptr<celero::Benchmark> celero::RegisterTest(const char* groupName, const char* benchmarkName, const uint64_t samples, const uint64_t iterations, const uint64_t threads, std::shared_ptr<celero::Factory> experimentFactory, const double target)
+std::shared_ptr<celero::Benchmark> celero::RegisterTest(const char* groupName, const char* benchmarkName, const uint64_t samples,
+														const uint64_t iterations, const uint64_t threads,
+														std::shared_ptr<celero::Factory> experimentFactory, const double target)
 {
 	auto bm = celero::TestVector::Instance()[groupName];
 
@@ -62,7 +64,9 @@ std::shared_ptr<celero::Benchmark> celero::RegisterTest(const char* groupName, c
 	return bm;
 }
 
-std::shared_ptr<celero::Benchmark> celero::RegisterBaseline(const char* groupName, const char* benchmarkName, const uint64_t samples, const uint64_t iterations, const uint64_t threads, std::shared_ptr<celero::Factory> experimentFactory)
+std::shared_ptr<celero::Benchmark> celero::RegisterBaseline(const char* groupName, const char* benchmarkName, const uint64_t samples,
+															const uint64_t iterations, const uint64_t threads,
+															std::shared_ptr<celero::Factory> experimentFactory)
 {
 	auto bm = celero::TestVector::Instance()[groupName];
 
@@ -97,12 +101,12 @@ void celero::Run(int argc, char** argv)
 	args.add<uint64_t>("distribution", 'd', "Builds a file to help characterize the distribution of measurements and exits.", false, 0);
 	args.add<bool>("catchExceptions", 'e', "Allows Celero to catch exceptions and continue processing following benchmarks.", false, true);
 	args.parse_check(argc, argv);
-	
+
 	if(args.exist("list") == true)
 	{
 		auto& tests = celero::TestVector::Instance();
 		std::vector<std::string> testNames;
-		
+
 		for(auto i = size_t(0); i < tests.size(); i++)
 		{
 			auto bm = celero::TestVector::Instance()[i];
@@ -126,7 +130,7 @@ void celero::Run(int argc, char** argv)
 	// Disable dynamic CPU frequency scaling
 	celero::DisableDynamicCPUScaling();
 	celero::timer::CachePerformanceFrequency(false);
-	
+
 	// Shall we build a distribution?
 	auto intArgument = args.get<uint64_t>("distribution");
 	if(intArgument > 0)
@@ -141,11 +145,7 @@ void celero::Run(int argc, char** argv)
 		std::cout << "Writing results to: " << argument << std::endl;
 		celero::ResultTable::Instance().setFileName(argument);
 
-		celero::AddExperimentResultCompleteFunction(
-			[](std::shared_ptr<celero::Result> p)
-			{
-				celero::ResultTable::Instance().add(p);
-			});
+		celero::AddExperimentResultCompleteFunction([](std::shared_ptr<celero::Result> p) { celero::ResultTable::Instance().add(p); });
 	}
 
 	// Has a result output file been specified?
@@ -154,12 +154,8 @@ void celero::Run(int argc, char** argv)
 	{
 		std::cout << "Archiving results to: " << argument << std::endl;
 		celero::Archive::Instance().setFileName(argument);
-		
-		celero::AddExperimentResultCompleteFunction(
-			[](std::shared_ptr<celero::Result> p)
-			{
-				celero::Archive::Instance().add(p);
-			});
+
+		celero::AddExperimentResultCompleteFunction([](std::shared_ptr<celero::Result> p) { celero::Archive::Instance().add(p); });
 	}
 
 	// Has a JUnit output file been specified?
@@ -169,15 +165,11 @@ void celero::Run(int argc, char** argv)
 		std::cout << "Writing JUnit results to: " << argument << std::endl;
 		celero::JUnit::Instance().setFileName(argument);
 
-		celero::AddExperimentResultCompleteFunction(
-			[](std::shared_ptr<celero::Result> p)
-			{
-				celero::JUnit::Instance().add(p);
-			});
+		celero::AddExperimentResultCompleteFunction([](std::shared_ptr<celero::Result> p) { celero::JUnit::Instance().add(p); });
 	}
 
 	// Has a flag to catch exceptions or not been specified?
-	if (args.exist("catchExceptions"))
+	if(args.exist("catchExceptions"))
 		ExceptionSettings::setCatchExceptions(args.get<bool>("catchExceptions"));
 
 	print::TableBanner();

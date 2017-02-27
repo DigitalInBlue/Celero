@@ -1,7 +1,7 @@
 ///
 /// \author	Ivan Shynkarenka
 ///
-/// \copyright Copyright 2016 John Farrier
+/// \copyright Copyright 2015, 2016, 2017 John Farrier
 ///
 /// Licensed under the Apache License, Version 2.0 (the "License");
 /// you may not use this file except in compliance with the License.
@@ -19,9 +19,9 @@
 #include <celero/ThreadTestFixture.h>
 #include <celero/PimplImpl.h>
 
-#include <iostream>
 #include <algorithm>
 #include <future>
+#include <iostream>
 
 #include <assert.h>
 
@@ -29,10 +29,10 @@ using namespace celero;
 
 class ThreadTestFixture::Impl
 {
-	public:
-		static thread_local uint64_t currentCallId;
-		static thread_local uint64_t currentThreadId;
-		std::vector<std::future<void>> futures;
+public:
+	static thread_local uint64_t currentCallId;
+	static thread_local uint64_t currentThreadId;
+	std::vector<std::future<void>> futures;
 };
 
 thread_local uint64_t ThreadTestFixture::Impl::currentCallId = 0;
@@ -55,10 +55,8 @@ void ThreadTestFixture::startThreads(uint64_t threads, uint64_t iterations)
 		try
 		{
 			this->pimpl->futures.push_back(
-			//std::async(std::launch::deferred, 
-			std::async(std::launch::async, 
-				[this, i, iterationsPerThread]()
-				{
+				// std::async(std::launch::deferred,
+				std::async(std::launch::async, [this, i, iterationsPerThread]() {
 					this->pimpl->currentThreadId = i + 1;
 					for(auto threadIterationCounter = size_t(0); threadIterationCounter < iterationsPerThread;)
 					{
@@ -76,7 +74,7 @@ void ThreadTestFixture::startThreads(uint64_t threads, uint64_t iterations)
 
 void ThreadTestFixture::stopThreads()
 {
-	// This part will be more effective after 
+	// This part will be more effective after
 	// wait_for_all() will be avaliable for futures!
 	for(auto& f : this->pimpl->futures)
 	{

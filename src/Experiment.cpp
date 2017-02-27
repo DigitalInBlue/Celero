@@ -1,7 +1,7 @@
 ///
 /// \author	John Farrier
 ///
-/// \copyright Copyright 2016 John Farrier
+/// \copyright Copyright 2015, 2016, 2017 John Farrier
 ///
 /// Licensed under the Apache License, Version 2.0 (the "License");
 /// you may not use this file except in compliance with the License.
@@ -17,9 +17,9 @@
 ///
 
 #include <celero/Experiment.h>
-#include <celero/TestFixture.h>
 #include <celero/Factory.h>
 #include <celero/PimplImpl.h>
+#include <celero/TestFixture.h>
 #include <celero/TestVector.h>
 #include <celero/Utilities.h>
 
@@ -30,98 +30,97 @@ using namespace celero;
 
 class Experiment::Impl
 {
-	public:
-		Impl() :
-			results(),
-			benchmark(),
-			factory(),
-			name(),
-			baselineUnit(0),
-			baselineTarget(0),
-			samples(0),
-			iterations(0),
-			threads(1),
-			totalRunTime(0),
-			isBaselineCase(false)
-		{
-		}
+public:
+	Impl()
+		: results(),
+		  benchmark(),
+		  factory(),
+		  name(),
+		  baselineUnit(0),
+		  baselineTarget(0),
+		  samples(0),
+		  iterations(0),
+		  threads(1),
+		  totalRunTime(0),
+		  isBaselineCase(false)
+	{
+	}
 
-		Impl(std::weak_ptr<Benchmark> bm, const std::string& n, const uint64_t s, const uint64_t c, const uint64_t t, const double pBaselineTarget) :
-			results(),
-			benchmark(bm),
-			factory(),
-			name(n),
-			baselineUnit(0),
-			baselineTarget(pBaselineTarget),
-			samples(s),
-			iterations(c),
-			threads(t),
-			totalRunTime(0),
-			isBaselineCase(false)
-		{
-		}
+	Impl(std::weak_ptr<Benchmark> bm, const std::string& n, const uint64_t s, const uint64_t c, const uint64_t t, const double pBaselineTarget)
+		: results(),
+		  benchmark(bm),
+		  factory(),
+		  name(n),
+		  baselineUnit(0),
+		  baselineTarget(pBaselineTarget),
+		  samples(s),
+		  iterations(c),
+		  threads(t),
+		  totalRunTime(0),
+		  isBaselineCase(false)
+	{
+	}
 
-		Impl(std::weak_ptr<Benchmark> bm) :
-			results(),
-			benchmark(bm),
-			factory(),
-			name(),
-			baselineUnit(0),
-			baselineTarget(0),
-			samples(0),
-			iterations(0),
-			threads(1),
-			totalRunTime(0),
-			isBaselineCase(false)
-		{
-		}
+	Impl(std::weak_ptr<Benchmark> bm)
+		: results(),
+		  benchmark(bm),
+		  factory(),
+		  name(),
+		  baselineUnit(0),
+		  baselineTarget(0),
+		  samples(0),
+		  iterations(0),
+		  threads(1),
+		  totalRunTime(0),
+		  isBaselineCase(false)
+	{
+	}
 
-		/// There is one result for each problem space value.
-		/// In the event there are not any problem spaces, there shal be a single result.
-		std::vector<std::shared_ptr<Result>> results;
+	/// There is one result for each problem space value.
+	/// In the event there are not any problem spaces, there shal be a single result.
+	std::vector<std::shared_ptr<Result>> results;
 
-		/// The owning benchmark object which groups together all experiments.
-		std::weak_ptr<Benchmark> benchmark;
+	/// The owning benchmark object which groups together all experiments.
+	std::weak_ptr<Benchmark> benchmark;
 
-		/// The factory to associate with this benchmark.
-		std::shared_ptr<Factory> factory;
+	/// The factory to associate with this benchmark.
+	std::shared_ptr<Factory> factory;
 
-		/// The name of this experiment.
-		std::string name;
+	/// The name of this experiment.
+	std::string name;
 
-		/// The number of microseconds per test (which makes up one baseline unit).
-		double baselineUnit;
+	/// The number of microseconds per test (which makes up one baseline unit).
+	double baselineUnit;
 
-		/// Used to pass/fail benchmarks when outputting JUnit.
-		double baselineTarget;
+	/// Used to pass/fail benchmarks when outputting JUnit.
+	double baselineTarget;
 
-		/// Test samples to complete.
-		uint64_t samples;
+	/// Test samples to complete.
+	uint64_t samples;
 
-		/// Iterations per test run.  (Size of each sample.)
-		uint64_t iterations;
+	/// Iterations per test run.  (Size of each sample.)
+	uint64_t iterations;
 
-		/// Threads per test run.
-		uint64_t threads;
+	/// Threads per test run.
+	uint64_t threads;
 
-		/// The best run time for this test
-		uint64_t totalRunTime;
+	/// The best run time for this test
+	uint64_t totalRunTime;
 
-		bool isBaselineCase;
+	bool isBaselineCase;
 };
 
-Experiment::Experiment() :
-	pimpl()
+Experiment::Experiment() : pimpl()
 {
 }
 
-Experiment::Experiment(std::weak_ptr<Benchmark> benchmark) :
-	pimpl(benchmark)
+Experiment::Experiment(std::weak_ptr<Benchmark> benchmark) : pimpl(benchmark)
 {
 }
 
-Experiment::Experiment(std::weak_ptr<Benchmark> benchmark, const std::string& name, uint64_t samples, uint64_t iterations, uint64_t threads, double baselineTarget) :
-	pimpl(benchmark, name, samples, iterations, threads, baselineTarget)
+Experiment::Experiment(std::weak_ptr<Benchmark> benchmark, const std::string& name, uint64_t samples, uint64_t iterations, uint64_t threads,
+					   double baselineTarget)
+	: pimpl(benchmark, name, samples, iterations, threads, baselineTarget)
 {
 }
 
@@ -305,10 +304,7 @@ std::shared_ptr<Result> Experiment::getResultByValue(int64_t x)
 	std::shared_ptr<Result> r;
 
 	const auto found = std::find_if(std::begin(this->pimpl->results), std::end(this->pimpl->results),
-		[x](std::shared_ptr<Result> i)->bool
-		{
-			return (i->getProblemSpaceValue() == x);
-		});
+									[x](std::shared_ptr<Result> i) -> bool { return (i->getProblemSpaceValue() == x); });
 
 	if(found != std::end(this->pimpl->results))
 	{
