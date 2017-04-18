@@ -1,19 +1,19 @@
-#Celero
+# Celero
 
-###C++ Benchmarking Library
+### C++ Benchmarking Library
 
 Copyright 2016 John Farrier 
 
 Apache 2.0 License
 
-####Travis CI
+#### Travis CI
 
 Branch                 | Status
 ---------------------- | --------------------------------------------------------------------------------------------------------------------------------------
 ```origin/master: ```  | [![Build Status (Master)](https://travis-ci.org/DigitalInBlue/Celero.svg?branch=master)](https://travis-ci.org/DigitalInBlue/Celero)
 ```origin/develop: ``` | [![Build Status (Develop)](https://travis-ci.org/DigitalInBlue/Celero.svg?branch=develop)](https://travis-ci.org/DigitalInBlue/Celero)
 
-###Overview
+### Overview
 
 Developing consistent and meaningful benchmark results for code is a complex task. Measurement tools exist (Intel® VTune™ Amplifier, SmartBear AQTime, Valgrind, etc.) external to applications, but they are sometimes expensive for small teams or cumbersome to utilize. This project, Celero, aims to be a small library which can be added to a C++ project and perform benchmarks on code in a way which is easy to reproduce, share, and compare among individual runs, developers, or projects. Celero uses a framework similar to that of GoogleTest to make its API easier to use and integrate into a project. Make automated benchmarking as much a part of your development process as automated testing.
 
@@ -21,7 +21,7 @@ Celero uses CMake to provide cross-platform builds. It does require a modern com
 
 Once Celero is added to your project. You can create dedicated benchmark projects and source files. For convenience, there is single header file and a CELERO_MAIN macro that can be used to provide a main() for your benchmark project that will automatically execute all of your benchmark tests.
 
-###Command Line
+### Command Line
 
 ```
 <celeroOutputExecutable> [-g groupNameToRun] [-t resultsTable.csv] [-j junitOutputFile.xml] [-a resultArchive.csv] [-d numberOfIterationsPerDistribution] [-h]
@@ -33,9 +33,9 @@ Once Celero is added to your project. You can create dedicated benchmark project
 -a Builds or updates an archive of historical results, tracking current, best, and worst results for each benchmark.
 -d (Experimental) builds a plot of four different sample sizes to investigate the distribution of sample results.
 
-##Celero Basics
+## Celero Basics
 
-###Background
+### Background
 
 The goal, generally, of writing benchmarks is to measure the performance of a piece of code.  Benchmarks are useful for comparing multiple solutions to the same problem to select the most appropriate one.  Other times, benchmarks can highlight the performance impact of design or algorithm changes and quantify them in a meaningful way. 
 
@@ -49,7 +49,7 @@ These extraneous contributors to our measurement of "t" fluctuate over time.  Th
 
 Once this measurement is obtained, it has little meaning in isolation.  It is important to create a baseline test by which to compare.  A baseline should generally be a "classic" or "pure" solution to the problem on which you are measuring a solution.   Once you have a baseline, you have a meaningful time to compare your algorithm against.  Simply saying that your fancy sorting algorithm (fSort) sorted a million elements in 10 milliseconds is not sufficient by itself.  However, compare that to a classic sorting algorithm baseline such as quick sort (qSort) and then you can say that fSort is 50% faster than qSort on a million elements.  That is a meaningful and powerful measurement.
 
-###Implementation
+### Implementation
 
 Celero heavily utilizes C++11 features that are available in both Visual C++ 2012 and GCC 4.7.  This greatly aided in making the code clean and portable.  To make adopting the code easier, all definitions needed by a user are defined in a celero namespace within a single include file: Celero.h
 
@@ -63,7 +63,7 @@ Measuring benchmark execution time takes place in the TestFixture base class, fr
 
 This cycle is repeated for however many samples were specified.  If no samples were specified (zero), then the test is repeated until it as ran for at least one second or at least 30 samples have been taken.  While writing this specific part of the code, there was a definite "if-else" relationship.  However, the bulk of the code was repeated within the "if" and "else" sections.  An old fashioned function could have been used here, but it was very natural to utilize std::function to define a lambda that could be called and keep all of the code clean.  (C++11 is a fantastic thing.)  Finally, the results are printed to the screen.
 
-###General Program Flow
+### General Program Flow
 To summarize, this pseudo-code illustrates how the tests are executed internally:
 
 ```C++
@@ -106,7 +106,7 @@ for(Each Experiment)
 
 ```
 
-###Using the Code
+### Using the Code
 
 Celero uses CMake to provide cross-platform builds.  It does require a modern compiler (Visual C++ 2012 or GCC 4.7+) due to its use of C++11.
 
@@ -194,7 +194,7 @@ The celero::DoNotOptimizeAway template is provided to ensure that the optimizing
 
 After the baseline is defined, various benchmarks are then defined.  They syntax for the BENCHMARK macro is identical to that of the macro.
 
-###Results
+### Results
 
 Running Celero's simple example experiment (celeroDemoSimple.exe) benchmark gave the following output on a PC:
 
@@ -215,7 +215,7 @@ The first test that executes will be the group's baseline.  Celero took 10 sampl
 
 After the baseline is complete, each individual test is ran.  Each test is executed and measured in the same way, however, there is an additional metric reported: Baseline.  This compares the time it takes to compute the benchmark to the baseline.  The data here shows that CeleroBenchTest.Complex1 takes 1.007949 times longer to execute than the baseline.
 
-####Statistically Sound Results
+#### Statistically Sound Results
 
 In order to use Celero for real science, there are three primary factors to consider when reviewing results.  Firstly, you MUST check the generated assembly for your test.  There are different paths to viewing the assembly for different compilers, but essentially this must be done to ensure that you did not optimize out critical code.  You must also verify, via assembly, that you are comparing apples to apples.  
 
@@ -225,7 +225,7 @@ Finally, you need to ensure that the number of iterations and samples is produci
 
 One factor that can impact the number of samples and iterations required is the amount of work that your experiment is doing.  For cases where you are utilizing Celero's "problem space" functionality to scale up the algorithms, you can corresponding scale down the number of iterations.  Doing so can reduce the total run time of the larger experiments by doing less iterations, buy while still maintaining a statistically meaningful measurement.  (It saves you time.)
 
-###Threaded Benchmarks
+### Threaded Benchmarks
 Celero can automatically run threaded benchmarks.  BASELINE_T and BENCHMARK_T can be used to launch the given code on its own thread using a user-defined number of concurrent executions.  celeroDemoMultithread illustrates using this feature.  When defining these macros, the use the following format:
 
 ```C++
@@ -236,7 +236,7 @@ BENCHMARK_T(groupName, benchmarkName, fixtureName, samples, iterations, threads)
 BENCHMARK_TEST_T(groupName, benchmarkName, fixtureName, samples, iterations, threads, target);
 ```
 
-###Fixed Measurement Benchmarks
+### Fixed Measurement Benchmarks
 While celero normally measures the baseline time and then executes benchmark cases for comparison, you can also specify a fixed measurement time.  This is useful for measuring performance against a real-time requirement.  To use, utilize the ```_FIXED_``` version of the BASELINE and BENCHMARK macros.
 
 ```C++
@@ -257,16 +257,16 @@ BASELINE_FIXED_F(DemoTransform, FixedTime, DemoTransformFixture, 30, 10000, 100)
 { /* Nothing to do */ }
 ```
 
-###Notes
+### Notes
 
 - Benchmarks should always be performed on Release builds.  Never measure the performance of a Debug build and make changes based on the results.  The (optimizing) compiler is your friend with respect to code performance.
 - Accuracy is tied very closely to the total number of samples and the sample sizes.  As a general rule, you should aim to execute your baseline code for about as long as your longest benchmark test.  Further, it is helpful if all of the benchmark tests take about the same order of magnitude of execution time.  (Don't compare a baseline that executed in 0.1 seconds with benchmarks that take 60 seconds and an hour, respectivly.)
 - Celero has Doxygen documentation of its API.
 - Celero supports test fixtures for each baseline group.
 
-##Celero Charts
+## Celero Charts
 
-###Background
+### Background
 
 It has been noted many times that writing an algorithm to solve small problems is relatively easy. "Brute force" methods tend to function just as well as more graceful approaches. However, as the size of data increases, truly effective algorithms scale their performance to match.
 
@@ -274,7 +274,7 @@ Theoretically, the best we can hope for with an algorithm is that is scales line
 
 Even well performing algorithms eventually run into problems with available memory or CPU cache. When making decisions within our software about algorithms and improvements to existing code, only through measurement and experimentation can we know our complex algorithms perform acceptably.
 
-###Using the Code
+### Using the Code
 
 While Celero offers simple benchmarking of code and algorithms, it also offers a more complex method or directly producing performance graphs of how the benchmarks change with respect to some independent variable, referred to here as the Problem Set.
 
@@ -403,7 +403,7 @@ BENCHMARK_F(SortRandInts, stdSort, SortFixture, 30, 10000)
 }
 ```
 
-###Results
+### Results
 
 This test was ran on a 4.00 GHz AMD with four cores, eight logical processors, and 32 GB of memory. (Hardware aside, the relative performance of these algorithms should be the same on any modern hardware.) 
 
@@ -494,7 +494,7 @@ The point here is not that std::sort is better than more elementary sorting meth
 
 Test early and test often!
 
-###Notes
+### Notes
 
 - Because I like explicitness as much as the next programmer, I want to note that the actual sorting algorithm used by std::sort is not defined in the standard, but references cite Introsort as a likely contender for how an STL implementation would approach std::sort. http://en.wikipedia.org/wiki/Introsort.
 - When choosing a sorting algorithm, start with std::sort and see if you can make improvements from there.
