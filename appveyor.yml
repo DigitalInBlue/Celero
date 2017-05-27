@@ -1,0 +1,32 @@
+version: 1.0.{build}
+
+shallow_clone: true
+clone_depth: 5
+
+image:
+  - Visual Studio 2015
+  - Visual Studio 2017
+
+configuration: Release
+
+environment:
+  matrix:
+    - PLATFORM: Win32
+    - PLATFORM: Win64
+
+before_build:
+  - ps: |
+      if ($env:APPVEYOR_BUILD_WORKER_IMAGE -match "2017") {
+        $env:GENERATOR="Visual Studio 15 2017"
+      } elseif ($env:APPVEYOR_BUILD_WORKER_IMAGE -match "2015") {
+        $env:GENERATOR="Visual Studio 14 2015"
+      }
+      if ($env:PLATOFORM -match "Win64") {
+        $env:GENERATOR += " Win64"
+      }
+
+build_script:
+  - ps: 'Write-Host "Running cmake: $env:GENERATOR" -ForegroundColor Magenta'
+  - cmake.exe -G "%GENERATOR%" -DCELERO_COMPILE_DYNAMIC_LIBRARIES:BOOL=OFF -DCELERO_ENABLE_TESTS:BOOL=ON -DCELERO_RUN_EXAMPLE_ON_BUILD:BOOL=ON %APPVEYOR_BUILD_FOLDER%
+  - ps: 'Write-Host "Running cmake --build:" -ForegroundColor Magenta'
+  - cmake --build . --config Release -- %MSBUILD_ARGS%
