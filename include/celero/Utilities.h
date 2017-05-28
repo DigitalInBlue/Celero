@@ -30,6 +30,7 @@
 #include <cstdint>
 #include <cstdio>
 #include <cstdlib>
+#include <functional>
 #include <thread>
 
 #include <celero/Export.h>
