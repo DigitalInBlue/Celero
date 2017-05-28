@@ -23,6 +23,11 @@
 CMAKE_MINIMUM_REQUIRED(VERSION 2.8)
 
 #
+# Visual Stidio Only
+#
+if(${CMAKE_CXX_COMPILER_ID} STREQUAL MSVC)
+
+#
 # Set the experiment's name here.  Start it with "celero" and use camel case naming.
 #
 SET(PROJECT_EXPERIMENT_NAME celeroExperimentCompressBools)
@@ -74,3 +79,5 @@ if(CELEROExperiment_${PROJECT_EXPERIMENT_NAME})
     endif()
     
 endif(CELEROExperiment_${PROJECT_EXPERIMENT_NAME})
+
+endif()
