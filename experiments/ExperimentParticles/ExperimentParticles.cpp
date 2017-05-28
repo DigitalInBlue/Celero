@@ -1,6 +1,6 @@
 // Original code at: https://github.com/fenbf/benchmarkLibsTest
 
-#include <celero\Celero.h>
+#include <celero/Celero.h>
 #include "Particles.h"
 
 CELERO_MAIN;
