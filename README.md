@@ -2,7 +2,7 @@
 
 ### C++ Benchmarking Library
 
-Copyright 2016 John Farrier 
+Copyright 2017 John Farrier 
 
 Apache 2.0 License
 
