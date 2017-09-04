@@ -70,7 +70,7 @@ public:
 	}
 
 	/// Before each run, build a vector of random integers.
-	virtual void setUp(int64_t experimentValue)
+	virtual void setUp(int64_t experimentValue) override
 	{
 		this->arraySize = static_cast<int>(experimentValue);
 
@@ -83,7 +83,7 @@ public:
 	}
 
 	/// After each run, clear the vector of random integers.
-	virtual void tearDown()
+	virtual void tearDown() override
 	{
 		this->arrayIn.clear();
 		this->arrayOut.clear();

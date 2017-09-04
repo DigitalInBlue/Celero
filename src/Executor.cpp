@@ -39,9 +39,9 @@ bool AdjustSampleAndIterationSize(std::shared_ptr<Result> r)
 {
 	if(r->getExperiment()->getSamples() == 0)
 	{
-		// The smallest test should take at least twice as long as our timer's resolution.
-		// I chose "twice" arbitrarily.
-		const auto minTestTime = static_cast<int64_t>(celero::timer::CachePerformanceFrequency(true) * 1e6) * 2;
+		// The smallest test should take at least 10x as long as our timer's resolution.
+		// I chose "10x" arbitrarily.
+		const auto minTestTime = static_cast<int64_t>(celero::timer::CachePerformanceFrequency(true) * 1e6) * 10;
 
 		// Compute a good number to use for iterations and set the sample size to 30.
 		auto test = r->getExperiment()->getFactory()->Create();
@@ -52,8 +52,10 @@ bool AdjustSampleAndIterationSize(std::shared_ptr<Result> r)
 		{
 			std::pair<bool, uint64_t> runResult = RunAndCatchExc(*test, r->getExperiment()->getThreads(), testIterations, r->getProblemSpaceValue());
 
-			if(!runResult.first)
+			if(runResult.first == false)
+			{
 				return false; // something bad happened
+			}
 
 			testTime = runResult.second;
 
@@ -87,12 +89,14 @@ bool ExecuteProblemSpace(std::shared_ptr<Result> r)
 			RunAndCatchExc(*test, r->getExperiment()->getThreads(), r->getProblemSpaceIterations(), r->getProblemSpaceValue());
 
 		if(!runResult.first)
+		{
 			return false; // something bad happened
+		}
 
 		const auto testTime = runResult.second;
 
 		// Save test results
-		if(record)
+		if(record == true)
 		{
 			r->getStatistics()->addSample(testTime);
 			r->getExperiment()->incrementTotalRunTime(testTime);
@@ -108,9 +112,10 @@ bool ExecuteProblemSpace(std::shared_ptr<Result> r)
 			r->setFailure(true);
 			return false;
 		}
+
 		for(auto i = r->getExperiment()->getSamples(); i > 0; --i)
 		{
-			if(!testRunner(true))
+			if(testRunner(true) == false)
 			{
 				r->setFailure(true);
 				return false;
