@@ -99,13 +99,13 @@ uint64_t ThreadTestFixture::run(uint64_t threads, uint64_t calls, int64_t experi
 		// Set up the testing fixture.
 		this->setUp(experimentValue);
 
-		// Start working threads.
-		this->startThreads(threads, calls);
-
 		// Get the starting time.
 		const auto startTime = celero::timer::GetSystemTime();
 
 		this->onExperimentStart(experimentValue);
+
+		// Start working threads.
+		this->startThreads(threads, calls);
 
 		// Stop working threads.
 		this->stopThreads();

@@ -14,7 +14,7 @@
 
 CELERO_MAIN;
 
-static const int SamplesCount = 30;
+static const int SamplesCount = 1000;
 static const int IterationsCount = 5;
 static const int ThresholdValue = 127;
 static const int MaximumDistribution = 255;

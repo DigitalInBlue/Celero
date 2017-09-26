@@ -66,28 +66,31 @@ public:
 	std::uniform_int_distribution<int> RandomInt;
 };
 
+static const int SamplesCount = 10000;
+static const int IterationsCount = 2000;
+
 // Shortened up the name from "StackOverflowSimpleComparison"
-BASELINE_F(SOSimpleComparison, Baseline, StackOverflowFixture, 100, 5000000)
+BASELINE_F(SOSimpleComparison, Baseline, StackOverflowFixture, SamplesCount, IterationsCount)
 {
 	celero::DoNotOptimizeAway(NoOp(this->RandomBool(this->Gen), this->RandomInt(this->Gen), this->RandomInt(this->Gen)));
 }
 
-BENCHMARK_F(SOSimpleComparison, Compare, StackOverflowFixture, 100, 5000000)
+BENCHMARK_F(SOSimpleComparison, Compare, StackOverflowFixture, SamplesCount, IterationsCount)
 {
 	celero::DoNotOptimizeAway(Compare(this->RandomBool(this->Gen), this->RandomInt(this->Gen), this->RandomInt(this->Gen)));
 }
 
-BENCHMARK_F(SOSimpleComparison, Compare2, StackOverflowFixture, 100, 5000000)
+BENCHMARK_F(SOSimpleComparison, Compare2, StackOverflowFixture, SamplesCount, IterationsCount)
 {
 	celero::DoNotOptimizeAway(Compare2(this->RandomBool(this->Gen), this->RandomInt(this->Gen), this->RandomInt(this->Gen)));
 }
 
-BENCHMARK_F(SOSimpleComparison, Compare3, StackOverflowFixture, 100, 5000000)
+BENCHMARK_F(SOSimpleComparison, Compare3, StackOverflowFixture, SamplesCount, IterationsCount)
 {
 	celero::DoNotOptimizeAway(Compare3(this->RandomBool(this->Gen), this->RandomInt(this->Gen), this->RandomInt(this->Gen)));
 }
 
-BENCHMARK_F(SOSimpleComparison, Compare4, StackOverflowFixture, 100, 5000000)
+BENCHMARK_F(SOSimpleComparison, Compare4, StackOverflowFixture, SamplesCount, IterationsCount)
 {
 	celero::DoNotOptimizeAway(Compare4(this->RandomBool(this->Gen), this->RandomInt(this->Gen), this->RandomInt(this->Gen)));
 }

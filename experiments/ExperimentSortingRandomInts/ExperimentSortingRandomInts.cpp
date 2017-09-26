@@ -44,51 +44,54 @@ public:
 	{
 		std::vector<std::pair<int64_t, uint64_t>> problemSpace;
 
-		// We will run some total number of sets of tests all together.
-		// Each one growing by a power of 2.
-		const int totalNumberOfTests = 6;
-
-		for(int i = 0; i < totalNumberOfTests; i++)
+		// ExperimentValues is part of the base class and allows us to specify
+		// some values to control various test runs to end up building a nice graph.
+		for(int64_t elements = 64; elements <= int64_t(4096); elements *= 2)
 		{
-			// ExperimentValues is part of the base class and allows us to specify
-			// some values to control various test runs to end up building a nice graph.
-			problemSpace.push_back(std::make_pair(int64_t(pow(2, i + 1)), uint64_t(0)));
+			problemSpace.push_back(std::make_pair(int64_t(elements), uint64_t(0)));
 		}
 
 		return problemSpace;
 	}
 
-	/// Before each run, build a vector of random integers.
-	virtual void setUp(int64_t experimentValue)
+	/// Before each sample, build a vector of random integers.
+	virtual void setUp(int64_t experimentValue) override
 	{
 		this->arraySize = experimentValue;
-		this->array.reserve(this->arraySize);
+		this->array.resize(this->arraySize);
 	}
 
-	/// Before each iteration. A common utility function to push back random ints to sort.
-	void randomize()
+	// Before each iteration
+	virtual void onExperimentStart(int64_t experimentValue) override
 	{
 		for(int i = 0; i < this->arraySize; i++)
 		{
-			this->array.push_back(rand());
+			this->array[i] = rand();
 		}
 	}
 
-	/// After each iteration, clear the vector of random integers.
-	void clear()
+	// After each iteration
+	virtual void onExperimentEnd() override
 	{
+		/// After each iteration, clear the vector of random integers.
 		this->array.clear();
+	}
+
+	// After each sample
+	virtual void tearDown() override
+	{
 	}
 
 	std::vector<int64_t> array;
 	int64_t arraySize;
 };
 
-// For a baseline, I'll choose Bubble Sort.
-BASELINE_F(SortRandInts, BubbleSort, SortFixture, 30, 10000)
-{
-	this->randomize();
+static const int SamplesCount = 2000;
+static const int IterationsCount = 2;
 
+// For a baseline, I'll choose Bubble Sort.
+BASELINE_F(SortRandInts, BubbleSort, SortFixture, SamplesCount, IterationsCount)
+{
 	for(int x = 0; x < this->arraySize; x++)
 	{
 		for(int y = 0; y < this->arraySize - 1; y++)
@@ -99,14 +102,10 @@ BASELINE_F(SortRandInts, BubbleSort, SortFixture, 30, 10000)
 			}
 		}
 	}
-
-	this->clear();
 }
 
-BENCHMARK_F(SortRandInts, SelectionSort, SortFixture, 30, 10000)
+BENCHMARK_F(SortRandInts, SelectionSort, SortFixture, SamplesCount, IterationsCount)
 {
-	this->randomize();
-
 	for(int x = 0; x < this->arraySize; x++)
 	{
 		auto minIdx = x;
@@ -121,21 +120,15 @@ BENCHMARK_F(SortRandInts, SelectionSort, SortFixture, 30, 10000)
 
 		std::swap(this->array[x], this->array[minIdx]);
 	}
-
-	this->clear();
 }
 
 // http://www.bfilipek.com/2014/12/top-5-beautiful-c-std-algorithms.html
-BENCHMARK_F(SortRandInts, InsertionSort, SortFixture, 30, 10000)
+BENCHMARK_F(SortRandInts, InsertionSort, SortFixture, SamplesCount, IterationsCount)
 {
-	this->randomize();
-
 	for(auto i = std::begin(this->array); i != std::end(this->array); ++i)
 	{
 		std::rotate(std::upper_bound(std::begin(this->array), i, *i), i, std::next(i));
 	}
-
-	this->clear();
 }
 
 // http://www.bfilipek.com/2014/12/top-5-beautiful-c-std-algorithms.html
@@ -151,20 +144,12 @@ void quickSort(FwdIt first, FwdIt last, U cmp = U())
 	quickSort(pivot, last, cmp);
 }
 
-BENCHMARK_F(SortRandInts, QuickSort, SortFixture, 30, 10000)
+BENCHMARK_F(SortRandInts, QuickSort, SortFixture, SamplesCount, IterationsCount)
 {
-	this->randomize();
-
 	quickSort(std::begin(this->array), std::end(this->array), std::less<int64_t>());
-
-	this->clear();
 }
 
-BENCHMARK_F(SortRandInts, stdSort, SortFixture, 30, 10000)
+BENCHMARK_F(SortRandInts, stdSort, SortFixture, SamplesCount, IterationsCount)
 {
-	this->randomize();
-
-	std::sort(this->array.begin(), this->array.end());
-
-	this->clear();
+	std::sort(std::begin(this->array), std::end(this->array));
 }
