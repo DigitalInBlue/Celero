@@ -38,6 +38,16 @@ public:
 	{
 	}
 
+    ~Impl() {
+        closeFile();
+    }
+
+    void closeFile() {
+        if (this->ofs.is_open() == true) {
+            this->ofs.close();
+        }
+    }
+
 	void setFileName(const std::string& x)
 	{
 		if(this->ofs.is_open() == true)
@@ -86,6 +96,10 @@ void ResultTable::setFileName(const std::string& x)
 {
 	assert(x.empty() == false);
 	this->pimpl->setFileName(x);
+}
+
+void ResultTable::closeFile() {
+    this->pimpl->closeFile();
 }
 
 void ResultTable::add(std::shared_ptr<Result> x)

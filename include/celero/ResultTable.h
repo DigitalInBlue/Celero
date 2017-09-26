@@ -45,6 +45,10 @@ namespace celero
 		///
 		void setFileName(const std::string& x);
 
+        ///
+        /// Force the output file (if any) to close
+        ///
+        void closeFile();
 		///
 		/// Add a new result to the result table.
 		///
