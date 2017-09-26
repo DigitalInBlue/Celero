@@ -135,25 +135,28 @@ public:
 	SutterPointer sutterPtr;
 };
 
+static const int SamplesCount = 10000;
+static const int IterationsCount = 10000;
+
 // The number of iterations is very large because the operation is very quick.  We want to
 // look at a large enough chunk of time to reduce the reliance on the resolution of the
 // clock.  Then, do 30 samples of this large number of runs and keep the quickest.
-BASELINE_F(CostOfPimpl, Baseline, DemoFixture, 30, 1000000000)
+BASELINE_F(CostOfPimpl, Baseline, DemoFixture, SamplesCount, IterationsCount)
 {
 	celero::DoNotOptimizeAway(noPtr.getValue());
 }
 
-BENCHMARK_F(CostOfPimpl, RawPtr, DemoFixture, 30, 1000000000)
+BENCHMARK_F(CostOfPimpl, RawPtr, DemoFixture, SamplesCount, IterationsCount)
 {
 	celero::DoNotOptimizeAway(rawPtr.getValue());
 }
 
-BENCHMARK_F(CostOfPimpl, UniquePtr, DemoFixture, 30, 1000000000)
+BENCHMARK_F(CostOfPimpl, UniquePtr, DemoFixture, SamplesCount, IterationsCount)
 {
 	celero::DoNotOptimizeAway(uniquePtr.getValue());
 }
 
-BENCHMARK_F(CostOfPimpl, SutterPtr, DemoFixture, 30, 1000000000)
+BENCHMARK_F(CostOfPimpl, SutterPtr, DemoFixture, SamplesCount, IterationsCount)
 {
 	celero::DoNotOptimizeAway(sutterPtr.getValue());
 }

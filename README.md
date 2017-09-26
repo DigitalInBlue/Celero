@@ -78,20 +78,20 @@ for(Each Experiment)
 		// Start the Timer
 		timer->start();
 
-		// Call the virtual function
-		// and include its time in the measurement.
-		experiment->onExperimentStart(x);
-
 		// Run all iterations
 		for(Each Iteration)
 		{
+			// Call the virtual function
+			// and include its time in the measurement.
+			experiment->onExperimentStart(x);
+
 			// Run the code under test
 			experiment->run(threads, iterations, experimentValue);
+		
+			// Call the virtual function
+			// and include its time in the measurement.
+			experiment->onExperimentEnd();
 		}
-
-		// Call the virtual function
-		// and include its time in the measurement.
-		experiment->onExperimentEnd();
 
 		// Stop the Timer
 		timer->stop();

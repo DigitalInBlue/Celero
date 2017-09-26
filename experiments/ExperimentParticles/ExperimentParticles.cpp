@@ -17,7 +17,9 @@ public:
 		{
 			// ExperimentValues is part of the base class and allows us to specify
 			// some values to control various test runs to end up building a nice graph.
-			problemSpace.push_back(std::make_pair(1000 + i * 1000, uint64_t(i + 1)));
+			problemSpace.push_back(std::make_pair(
+				1000 + i * 1000, 
+				static_cast<int64_t>(totalNumberOfTests - i)));
 		}
 
 		return problemSpace;
@@ -47,9 +49,12 @@ public:
 	std::vector<Particle> particles;
 };
 
+static const int SamplesCount = 100;
+static const int IterationsCount = 1;
+
 // Run an automatic baseline.
 // Celero will help make sure enough samples are taken to get a reasonable measurement
-BASELINE_F(ParticlesTest, ObjVector, ParticlesObjVectorFixture, 20, 1)
+BASELINE_F(ParticlesTest, ObjVector, ParticlesObjVectorFixture, SamplesCount, IterationsCount)
 {
 	for(size_t u = 0; u < UPDATES; ++u)
 	{
@@ -107,7 +112,7 @@ public:
 	std::vector<std::shared_ptr<Particle>> particles;
 };
 
-BENCHMARK_F(ParticlesTest, PtrVector, ParticlesPtrVectorFixture, 20, 1)
+BENCHMARK_F(ParticlesTest, PtrVector, ParticlesPtrVectorFixture, SamplesCount, IterationsCount)
 {
 	for(size_t u = 0; u < UPDATES; ++u)
 	{
@@ -127,7 +132,7 @@ public:
 	}
 };
 
-BENCHMARK_F(ParticlesTest, PtrVectorNoRand, ParticlesPtrVectorNoRandFixture, 20, 1)
+BENCHMARK_F(ParticlesTest, PtrVectorNoRand, ParticlesPtrVectorNoRandFixture, SamplesCount, IterationsCount)
 {
 	for(size_t u = 0; u < UPDATES; ++u)
 	{

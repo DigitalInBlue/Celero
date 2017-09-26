@@ -51,8 +51,12 @@ void TestFixture::tearDown()
 
 uint64_t TestFixture::run(const uint64_t, const uint64_t iterations, int64_t experimentValue)
 {
+	// This function constitutes one sample consisting of several iterations for a single experiment value.
+
 	if(this->HardCodedMeasurement() == 0)
 	{
+		uint64_t totalTime = 0;
+
 		// Set up the testing fixture.
 		this->setUp(experimentValue);
 
@@ -61,24 +65,28 @@ uint64_t TestFixture::run(const uint64_t, const uint64_t iterations, int64_t exp
 
 		// Get the starting time.
 		const auto startTime = celero::timer::GetSystemTime();
-
-		this->onExperimentStart(experimentValue);
-
+	
 		// Count down to zero
+		// Iterations are used when the benchmarks are very fast.
+		// Do not start/stop the timer inside this loop.
+		// The purpose of the loop is to help counter timer quantization/errors.
 		while(iterationCounter--)
 		{
+			this->onExperimentStart(experimentValue);
+
 			this->UserBenchmark();
+
+			this->onExperimentEnd();
 		}
 
-		this->onExperimentEnd();
-
-		const auto endTime = celero::timer::GetSystemTime();
-
+		// See how long it took.
+		totalTime += celero::timer::GetSystemTime() - startTime;
+	
 		// Tear down the testing fixture.
 		this->tearDown();
 
 		// Return the duration in microseconds for the given problem size.
-		return (endTime - startTime);
+		return totalTime;
 	}
 
 	return this->HardCodedMeasurement();
