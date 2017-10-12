@@ -63,49 +63,6 @@ endif()
 
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
-#
-# Compiler Settings
-#
-
-if(MSVC)
-  # Force to always compile with warning level 4
-  if(CMAKE_CXX_FLAGS MATCHES "/W[0-4]")
-	string(REGEX REPLACE "/W[0-4]" "/W4" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
-  else()
-	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W4")
-  endif()
-
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}" CACHE STRING "Compiler Flags for All Builds" FORCE)
-  set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG}" CACHE STRING "Compiler Flags for Debug Builds" FORCE)
-  set(CMAKE_CXX_FLAGS_RELEASE  "${CMAKE_CXX_FLAGS_RELEASE}" CACHE STRING "Compiler Flags for Release Builds" FORCE)
-
-  add_definitions("/D_CRT_SECURE_NO_WARNINGS /wd4251 /nologo")
-endif()
-
-if(BORLAND)
-  set(CMAKE_CXX_FLAGS "" CACHE STRING "Compiler Flags for All Builds" FORCE)
-  set(CMAKE_CXX_FLAGS_DEBUG "" CACHE STRING "Compiler Flags for Debug Builds" FORCE)
-  set(CMAKE_CXX_FLAGS_RELEASE  "" CACHE STRING "Compiler Flags for Release Builds" FORCE)
-endif()
-
-#message (STATUS "SYSTEM: ${CMAKE_SYSTEM_NAME}")
-if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
-	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libc++")
-	set(CMAKE_COMPILER_IS_GNUCXX 1)
-endif()
-
-if(UNIX)
-	if(CMAKE_COMPILER_IS_GNUCXX)
-	  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -std=gnu++11 -Wall -O3" CACHE STRING "Compiler Flags for All Builds" FORCE)
-	  set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -pedantic -O0 -g" CACHE STRING "Compiler Flags for Debug Builds" FORCE)
-	  set(CMAKE_CXX_FLAGS_RELEASE  "${CMAKE_CXX_FLAGS_RELEASE}" CACHE STRING "Compiler Flags for Release Builds" FORCE)
-	else()
-	  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -std=gnu++11 -Wall -fPIC -O3" CACHE STRING "Compiler Flags for All Builds" FORCE)
-	  set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -pedantic -O0 -g" CACHE STRING "Compiler Flags for Debug Builds" FORCE)
-	  set(CMAKE_CXX_FLAGS_RELEASE  "${CMAKE_CXX_FLAGS_RELEASE}" CACHE STRING "Compiler Flags for Release Builds" FORCE)
-	endif()
-endif()
-
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
 
 #
@@ -210,7 +167,46 @@ else()
 endif()
 
 add_library(${PROJECT_NAME} ${CELERO_USER_DEFINED_SHARED_OR_STATIC} ${TARGET_SRC} ${TARGET_H})
+
+#
+# Compiler Settings
+#
+
+if(MSVC)
+ target_compile_options(${PROJECT_NAME} PRIVATE /W4)
+ target_compile_options(${PROJECT_NAME} PRIVATE /D_CRT_SECURE_NO_WARNINGS)
+ target_compile_options(${PROJECT_NAME} PRIVATE /wd4251)
+ target_compile_options(${PROJECT_NAME} PRIVATE /nologo)
+endif()
+
+if(BORLAND)
+  set(CMAKE_CXX_FLAGS "" CACHE STRING "Compiler Flags for All Builds" FORCE)
+  set(CMAKE_CXX_FLAGS_DEBUG "" CACHE STRING "Compiler Flags for Debug Builds" FORCE)
+  set(CMAKE_CXX_FLAGS_RELEASE  "" CACHE STRING "Compiler Flags for Release Builds" FORCE)
+endif()
+
+#message (STATUS "SYSTEM: ${CMAKE_SYSTEM_NAME}")
+if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+	target_compile_options(${PROJECT_NAME} PRIVATE -stdlib=libc++)
+	set(CMAKE_COMPILER_IS_GNUCXX 1)
+endif()
+
+if(UNIX)
+	if(CMAKE_COMPILER_IS_GNUCXX)
+	  target_compile_options(${PROJECT_NAME} PRIVATE -std=c++11 -std=gnu++11 -Wall -O3)
+	  target_compile_options(${PROJECT_NAME} PRIVATE $<$<CONFIG:Debug>:-O0 -pedantic -g>)
+	else()
+	  target_compile_options(${PROJECT_NAME} PRIVATE -std=c++11 -std=gnu++11 -Wall -O3 -fPIC)
+	  target_compile_options(${PROJECT_NAME} PRIVATE $<$<CONFIG:Debug>:-O0 -pedantic -g>)
+	endif()
+endif()
+
+#
+# Linker Settings
+#
+
 target_link_libraries(${PROJECT_NAME} ${SYSLIBS})
+
 include_directories(${HEADER_PATH})
 
 install(TARGETS ${PROJECT_NAME}
