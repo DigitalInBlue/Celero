@@ -1,7 +1,7 @@
 #include <celero/Celero.h>
 
 #include <cstdlib>
-#include <strstream>
+#include <sstream>
 
 ///
 /// This is the main(int argc, char** argv) for the entire celero program.
@@ -107,11 +107,11 @@ BENCHMARK(DemoToString, to_string, 10000, 1000)
 	celero::DoNotOptimizeAway(std::to_string(x));
 }
 
-BENCHMARK(DemoToString, strstream, 10000, 1000)
+BENCHMARK(DemoToString, stringstream, 10000, 1000)
 {
 	const int x = rand() % 42;
 	celero::DoNotOptimizeAway(x);
-	std::strstream ss;
+	std::stringstream ss;
 	ss << x;
 	celero::DoNotOptimizeAway(ss.str());
 }
