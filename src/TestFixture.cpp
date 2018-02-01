@@ -16,12 +16,10 @@
 /// limitations under the License.
 ///
 
+#include <assert.h>
 #include <celero/TestFixture.h>
-
 #include <algorithm>
 #include <iostream>
-
-#include <assert.h>
 
 using namespace celero;
 
@@ -65,7 +63,7 @@ uint64_t TestFixture::run(const uint64_t, const uint64_t iterations, int64_t exp
 
 		// Get the starting time.
 		const auto startTime = celero::timer::GetSystemTime();
-	
+
 		// Count down to zero
 		// Iterations are used when the benchmarks are very fast.
 		// Do not start/stop the timer inside this loop.
@@ -81,7 +79,7 @@ uint64_t TestFixture::run(const uint64_t, const uint64_t iterations, int64_t exp
 
 		// See how long it took.
 		totalTime += celero::timer::GetSystemTime() - startTime;
-	
+
 		// Tear down the testing fixture.
 		this->tearDown();
 

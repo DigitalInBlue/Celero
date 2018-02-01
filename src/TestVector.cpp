@@ -19,7 +19,6 @@
 #include <celero/Benchmark.h>
 #include <celero/PimplImpl.h>
 #include <celero/TestVector.h>
-
 #include <algorithm>
 #include <mutex>
 #include <vector>

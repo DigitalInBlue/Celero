@@ -16,14 +16,12 @@
 /// limitations under the License.
 ///
 
+#include <assert.h>
 #include <celero/Benchmark.h>
 #include <celero/JUnit.h>
 #include <celero/PimplImpl.h>
 #include <celero/Timer.h>
 #include <celero/Utilities.h>
-
-#include <assert.h>
-
 #include <algorithm>
 #include <fstream>
 #include <iostream>
@@ -94,7 +92,7 @@ void JUnit::save()
 			size_t testSuiteFailures = 0;
 			size_t testSuiteErrors = 0;
 
-			auto runs = i.second;
+			const auto runs = i.second;
 
 			for(auto j : runs)
 			{

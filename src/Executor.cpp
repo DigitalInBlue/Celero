@@ -25,7 +25,6 @@
 #include <celero/Print.h>
 #include <celero/TestVector.h>
 #include <celero/Utilities.h>
-
 #include <algorithm>
 #include <cassert>
 #include <iostream>
@@ -50,7 +49,7 @@ bool AdjustSampleAndIterationSize(std::shared_ptr<Result> r)
 
 		while(testTime < minTestTime)
 		{
-			std::pair<bool, uint64_t> runResult = RunAndCatchExc(*test, r->getExperiment()->getThreads(), testIterations, r->getProblemSpaceValue());
+			const auto runResult = RunAndCatchExc(*test, r->getExperiment()->getThreads(), testIterations, r->getProblemSpaceValue());
 
 			if(runResult.first == false)
 			{
@@ -65,7 +64,7 @@ bool AdjustSampleAndIterationSize(std::shared_ptr<Result> r)
 			}
 		}
 
-		auto iterations = static_cast<uint64_t>(std::max(static_cast<double>(testIterations), 1000000.0 / testTime));
+		const auto iterations = static_cast<uint64_t>(std::max(static_cast<double>(testIterations), 1000000.0 / testTime));
 		auto experiment = r->getExperiment();
 
 		experiment->setIterations(iterations);
@@ -85,8 +84,7 @@ bool ExecuteProblemSpace(std::shared_ptr<Result> r)
 	auto testRunner = [r](const bool record) {
 		auto test = r->getExperiment()->getFactory()->Create();
 
-		std::pair<bool, uint64_t> runResult =
-			RunAndCatchExc(*test, r->getExperiment()->getThreads(), r->getProblemSpaceIterations(), r->getProblemSpaceValue());
+		const auto runResult = RunAndCatchExc(*test, r->getExperiment()->getThreads(), r->getProblemSpaceIterations(), r->getProblemSpaceValue());
 
 		if(runResult.first == false)
 		{
@@ -170,8 +168,8 @@ void executor::RunBaseline(std::shared_ptr<Benchmark> bmark)
 	{
 		// Populate the problem space with a test fixture instantiation.
 		{
-			auto testValues = baselineExperiment->getFactory()->Create()->getExperimentValues();
-			auto valueResultScale = baselineExperiment->getFactory()->Create()->getExperimentValueResultScale();
+			const auto testValues = baselineExperiment->getFactory()->Create()->getExperimentValues();
+			const auto valueResultScale = baselineExperiment->getFactory()->Create()->getExperimentValueResultScale();
 
 			for(auto i : testValues)
 			{
@@ -215,7 +213,9 @@ void executor::RunBaseline(std::shared_ptr<Benchmark> bmark)
 				}
 			}
 			else
+			{
 				r->setFailure(true);
+			}
 
 			celero::impl::ExperimentResultComplete(r);
 		}
@@ -231,7 +231,7 @@ void executor::RunBaseline(std::shared_ptr<Benchmark> bmark)
 
 void executor::RunExperiments(std::shared_ptr<Benchmark> bmark)
 {
-	auto experimentSize = bmark->getExperimentSize();
+	const auto experimentSize = bmark->getExperimentSize();
 
 	for(size_t i = 0; i < experimentSize; i++)
 	{
@@ -245,8 +245,8 @@ void executor::RunExperiments(std::shared_ptr<Benchmark> bmark)
 void executor::Run(std::shared_ptr<Experiment> e)
 {
 	auto bmark = e->getBenchmark();
-
 	auto baseline = bmark->getBaseline();
+
 	if(baseline->getResultSize() == 0 || baseline->getResult(0)->getComplete() == false)
 	{
 		if(baseline->getResultSize() != 0 && baseline->getResult(0)->getFailure())
@@ -256,9 +256,11 @@ void executor::Run(std::shared_ptr<Experiment> e)
 
 			// Add result output failed result
 			e->addProblemSpace(0);
+
 			auto r = e->getResult(0);
 			r->setFailure(true);
 			celero::impl::ExperimentResultComplete(r);
+
 			return;
 		}
 
@@ -267,8 +269,9 @@ void executor::Run(std::shared_ptr<Experiment> e)
 
 	// Populate the problem space with a fake test fixture instantiation.
 	{
-		auto testValues = e->getFactory()->Create()->getExperimentValues();
-		auto valueResultScale = e->getFactory()->Create()->getExperimentValueResultScale();
+		const auto testValues = e->getFactory()->Create()->getExperimentValues();
+		const auto valueResultScale = e->getFactory()->Create()->getExperimentValueResultScale();
+
 		for(auto i : testValues)
 		{
 			if(i.second != 0)
@@ -297,9 +300,9 @@ void executor::Run(std::shared_ptr<Experiment> e)
 		print::TableRowExperimentHeader(r->getExperiment());
 
 		// Do a quick sample, if necessary, and adjust sample and iteration sizes, if necessary.
-		bool adjustSuccess = AdjustSampleAndIterationSize(r);
+		const auto adjustSuccess = AdjustSampleAndIterationSize(r);
 
-		if(adjustSuccess)
+		if(adjustSuccess == true)
 		{
 			// Describe the beginning of the run.
 			print::TableRowProblemSpaceHeader(r);
@@ -311,7 +314,9 @@ void executor::Run(std::shared_ptr<Experiment> e)
 			}
 		}
 		else
+		{
 			r->setFailure(true);
+		}
 
 		celero::impl::ExperimentResultComplete(r);
 	}

@@ -22,7 +22,6 @@
 #include <celero/TestVector.h>
 #include <celero/Timer.h>
 #include <celero/Utilities.h>
-
 #include <chrono>
 #include <iomanip>
 #include <iostream>

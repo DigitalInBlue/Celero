@@ -17,13 +17,12 @@
 ///
 
 #include <celero/ThreadTestFixture.h>
-#include <celero/PimplImpl.h>
 
+#include <assert.h>
+#include <celero/PimplImpl.h>
 #include <algorithm>
 #include <future>
 #include <iostream>
-
-#include <assert.h>
 
 using namespace celero;
 

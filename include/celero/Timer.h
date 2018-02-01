@@ -52,7 +52,10 @@ namespace celero
 		///
 		///	\return	The time, in seconds.
 		///
-		double ConvertSystemTime(const uint64_t x);
+		constexpr double ConvertSystemTime(const uint64_t x)
+		{
+			return x * 1.0e-6;
+		}
 
 		///
 		/// On Windows, this caches the frequency of the high performance clock.
@@ -60,7 +63,7 @@ namespace celero
 		/// \return  The number of microseconds of precision that we have.
 		///
 		double CachePerformanceFrequency(bool quiet);
-	}
-}
+	} // namespace timer
+} // namespace celero
 
 #endif

@@ -19,7 +19,6 @@
 #include <celero/Benchmark.h>
 #include <celero/PimplImpl.h>
 #include <celero/Utilities.h>
-
 #include <algorithm>
 #include <cassert>
 

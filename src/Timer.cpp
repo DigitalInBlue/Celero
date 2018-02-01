@@ -18,6 +18,7 @@
 
 #include <celero/Print.h>
 #include <celero/Timer.h>
+#include <iostream>
 
 #ifdef WIN32
 #include <Windows.h>
@@ -25,8 +26,6 @@ LARGE_INTEGER QPCFrequency;
 #else
 #include <chrono>
 #endif
-
-#include <iostream>
 
 uint64_t celero::timer::GetSystemTime()
 {
@@ -38,11 +37,6 @@ uint64_t celero::timer::GetSystemTime()
 	auto timePoint = std::chrono::high_resolution_clock::now();
 	return std::chrono::duration_cast<std::chrono::microseconds>(timePoint.time_since_epoch()).count();
 #endif
-}
-
-double celero::timer::ConvertSystemTime(uint64_t x)
-{
-	return x * 1.0e-6;
 }
 
 double celero::timer::CachePerformanceFrequency(bool quiet)

@@ -17,7 +17,6 @@
 ///
 
 #include <celero/Callbacks.h>
-
 #include <algorithm>
 #include <vector>
 

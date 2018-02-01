@@ -16,13 +16,11 @@
 /// limitations under the License.
 ///
 
+#include <assert.h>
 #include <celero/Archive.h>
 #include <celero/Benchmark.h>
 #include <celero/FileReader.h>
 #include <celero/PimplImpl.h>
-
-#include <assert.h>
-
 #include <algorithm>
 #include <chrono>
 #include <fstream>
@@ -40,7 +38,6 @@ struct ArchiveEntry
 	ArchiveEntry() :
 		GroupName(),
 		RunName(),
-		Failure(false),
 		ExperimentValue(0),
 		ExperimentValueScale(0),
 		FirstRanDate(0),
@@ -54,7 +51,8 @@ struct ArchiveEntry
 		MaxStats(),
 		CurrentBaseline(0),
 		CurrentBaseline_TimeSinceEpoch(0),
-		CurrentStats()
+		CurrentStats(),
+		Failure(false)
 	{
 	}
 
@@ -105,8 +103,6 @@ struct ArchiveEntry
 	std::string GroupName;
 	std::string RunName;
 
-	bool Failure;
-
 	/// The data set size, if one was specified.
 	int64_t ExperimentValue;
 	double ExperimentValueScale;
@@ -127,6 +123,8 @@ struct ArchiveEntry
 	double CurrentBaseline;
 	uint64_t CurrentBaseline_TimeSinceEpoch;
 	Stat CurrentStats;
+
+	bool Failure;
 };
 
 ///
@@ -296,8 +294,10 @@ void Archive::add(std::shared_ptr<celero::Result> x)
 
 	if(found != std::end(this->pimpl->results))
 	{
-		if(x->getFailure())
+		if(x->getFailure() == true)
+		{
 			return;
+		}
 
 		found->CurrentBaseline = x->getBaselineMeasurement();
 		found->CurrentBaseline_TimeSinceEpoch = this->pimpl->now();
