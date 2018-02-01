@@ -88,9 +88,10 @@ bool ExecuteProblemSpace(std::shared_ptr<Result> r)
 		std::pair<bool, uint64_t> runResult =
 			RunAndCatchExc(*test, r->getExperiment()->getThreads(), r->getProblemSpaceIterations(), r->getProblemSpaceValue());
 
-		if(!runResult.first)
+		if(runResult.first == false)
 		{
-			return false; // something bad happened
+			// something bad happened
+			return false;
 		}
 
 		const auto testTime = runResult.second;
@@ -107,7 +108,8 @@ bool ExecuteProblemSpace(std::shared_ptr<Result> r)
 
 	if(r->getExperiment()->getSamples() > 0)
 	{
-		if(!testRunner(false)) // make a first pass to maybe cache instructions/data or other kinds of fist-run-only costs
+		// make a first pass to maybe cache instructions/data or other kinds of fist-run-only costs
+		if(testRunner(false) == false)
 		{
 			r->setFailure(true);
 			return false;

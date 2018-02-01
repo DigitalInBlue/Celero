@@ -34,7 +34,6 @@ if(POLICY CMP0042)
 	cmake_policy(SET CMP0042 OLD) # MACOSX_RPATH migration
 endif()
 
-
 #
 # User Options
 #
@@ -68,6 +67,8 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
 #
 # Build and Install Settings
 #
+
+set(CMAKE_CXX_STANDARD 14)
 
 set(CMAKE_DEBUG_POSTFIX          "d" CACHE STRING "add a postfix, usually d on windows")
 set(CMAKE_RELEASE_POSTFIX        ""  CACHE STRING "add a postfix, usually empty on windows")

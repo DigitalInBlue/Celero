@@ -122,8 +122,8 @@ namespace celero
 			return handle ? EXCEPTION_EXECUTE_HANDLER : EXCEPTION_CONTINUE_SEARCH;
 		}
 
-#define EXC_CODE_TO_STR(code) \
-	case code:                \
+#define EXC_CODE_TO_STR(code)                                                                                                                        \
+	case code:                                                                                                                                       \
 		return #code;
 
 		char const* ExceptionCodeToStr(DWORD exceptionCode)
@@ -159,7 +159,7 @@ namespace celero
 		}
 
 #undef EXC_CODE_TO_STR
-	}
+	}  // namespace
 #endif // CELERO_HAS_SEH
 
 	std::pair<bool, uint64_t> RunAndCatchSEHExc(TestFixture& test, uint64_t threads, uint64_t calls, int64_t experimentValue)
@@ -184,7 +184,7 @@ namespace celero
 
 	std::pair<bool, uint64_t> RunAndCatchExc(TestFixture& test, uint64_t threads, uint64_t calls, int64_t experimentValue)
 	{
-		if(ExceptionSettings::catchExceptions())
+		if(ExceptionSettings::catchExceptions() == true)
 		{
 #if CELERO_HAS_EXCEPTIONS
 			try
@@ -203,6 +203,7 @@ namespace celero
 				std::cout << "Unknown C++ exception" << std::endl;
 				celero::console::SetConsoleColor(celero::console::ConsoleColor_Default);
 			}
+
 			return std::make_pair(false, 0);
 #else  // CELERO_HAS_EXCEPTIONS
 			return RunAndCatchSEHExc(test, threads, calls, experimentValue);
@@ -213,4 +214,4 @@ namespace celero
 			return std::make_pair(true, test.run(threads, calls, experimentValue));
 		}
 	}
-}
+} // namespace celero

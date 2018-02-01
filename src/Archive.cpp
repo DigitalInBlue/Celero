@@ -37,24 +37,24 @@ using namespace celero;
 ///
 struct ArchiveEntry
 {
-	ArchiveEntry()
-		: GroupName(),
-		  RunName(),
-		  Failure(false),
-		  ExperimentValue(0),
-		  ExperimentValueScale(0),
-		  FirstRanDate(0),
-		  TotalSamplesCollected(0),
-		  AverageBaseline(0),
-		  MinBaseline(0),
-		  MinBaseline_TimeSinceEpoch(0),
-		  MinStats(),
-		  MaxBaseline(0),
-		  MaxBaseline_TimeSinceEpoch(0),
-		  MaxStats(),
-		  CurrentBaseline(0),
-		  CurrentBaseline_TimeSinceEpoch(0),
-		  CurrentStats()
+	ArchiveEntry() :
+		GroupName(),
+		RunName(),
+		Failure(false),
+		ExperimentValue(0),
+		ExperimentValueScale(0),
+		FirstRanDate(0),
+		TotalSamplesCollected(0),
+		AverageBaseline(0),
+		MinBaseline(0),
+		MinBaseline_TimeSinceEpoch(0),
+		MinStats(),
+		MaxBaseline(0),
+		MaxBaseline_TimeSinceEpoch(0),
+		MaxStats(),
+		CurrentBaseline(0),
+		CurrentBaseline_TimeSinceEpoch(0),
+		CurrentStats()
 	{
 	}
 
@@ -318,11 +318,16 @@ void Archive::add(std::shared_ptr<celero::Result> x)
 		}
 
 		// This is not good IEEE math.
-		if(!found->Failure)
+		if(found->Failure == false)
+		{
 			found->AverageBaseline =
 				((found->AverageBaseline * found->TotalSamplesCollected) + found->CurrentBaseline) / (found->TotalSamplesCollected + 1);
+		}
 		else
+		{
 			found->AverageBaseline = found->CurrentBaseline;
+		}
+
 		found->TotalSamplesCollected++;
 	}
 	else
