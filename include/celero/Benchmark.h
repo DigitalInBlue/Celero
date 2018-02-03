@@ -4,7 +4,7 @@
 ///
 /// \author	John Farrier
 ///
-/// \copyright Copyright 2015, 2016, 2017 John Farrier
+/// \copyright Copyright 2015, 2016, 2017, 2018 John Farrier
 ///
 /// Licensed under the Apache License, Version 2.0 (the "License");
 /// you may not use this file except in compliance with the License.
@@ -85,6 +85,10 @@ namespace celero
 		/// Gets the test case associated with the given experiment index.
 		///
 		std::shared_ptr<Experiment> getExperiment(size_t experimentIndex);
+
+		///
+		/// Gets the test case associated with the given experiment name.
+		///
 		std::shared_ptr<Experiment> getExperiment(const std::string& experimentName);
 
 		///
@@ -103,6 +107,6 @@ namespace celero
 		///
 		Pimpl<Impl> pimpl;
 	};
-}
+} // namespace celero
 
 #endif

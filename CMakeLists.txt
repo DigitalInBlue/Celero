@@ -1,7 +1,7 @@
 #
 # Top level makefile for Celero
 #
-# Copyright 2015, 2016, 2017 John Farrier
+# Copyright 2015, 2016, 2017, 2018 John Farrier
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -174,10 +174,10 @@ add_library(${PROJECT_NAME} ${CELERO_USER_DEFINED_SHARED_OR_STATIC} ${TARGET_SRC
 #
 
 if(MSVC)
- target_compile_options(${PROJECT_NAME} PRIVATE /W4)
- target_compile_options(${PROJECT_NAME} PRIVATE /D_CRT_SECURE_NO_WARNINGS)
- target_compile_options(${PROJECT_NAME} PRIVATE /wd4251)
- target_compile_options(${PROJECT_NAME} PRIVATE /nologo)
+	target_compile_options(${PROJECT_NAME} PRIVATE /W4)
+	target_compile_options(${PROJECT_NAME} PRIVATE /D_CRT_SECURE_NO_WARNINGS)
+	target_compile_options(${PROJECT_NAME} PRIVATE /wd4251)
+	target_compile_options(${PROJECT_NAME} PRIVATE /nologo)
 endif()
 
 if(BORLAND)

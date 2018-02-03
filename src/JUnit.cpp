@@ -1,7 +1,7 @@
 ///
 /// \author	John Farrier
 ///
-/// \copyright Copyright 2015, 2016, 2017 John Farrier
+/// \copyright Copyright 2015, 2016, 2017, 2018 John Farrier
 ///
 /// Licensed under the Apache License, Version 2.0 (the "License");
 /// you may not use this file except in compliance with the License.
@@ -32,30 +32,18 @@
 using namespace celero;
 
 ///
-/// \class Impl
+/// \struct celero::JUnit::Impl
 ///
 class celero::JUnit::Impl
 {
 public:
-	Impl() : fileName(), results(), totalTime(0)
-	{
-	}
-
 	std::string fileName;
 
 	/// Store the test case size, measured baseline, objective baseline, and total run time in seconds.
 	std::map<std::string, std::vector<std::shared_ptr<Result>>> results;
 
-	double totalTime;
+	double totalTime = {0.0};
 };
-
-JUnit::JUnit() : pimpl()
-{
-}
-
-JUnit::~JUnit()
-{
-}
 
 JUnit& JUnit::Instance()
 {

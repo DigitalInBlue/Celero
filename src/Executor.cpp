@@ -1,7 +1,7 @@
 ///
 /// \author	John Farrier
 ///
-/// \copyright Copyright 2015, 2016, 2017 John Farrier
+/// \copyright Copyright 2015, 2016, 2017, 2018 John Farrier
 ///
 /// Licensed under the Apache License, Version 2.0 (the "License");
 /// you may not use this file except in compliance with the License.
@@ -199,9 +199,7 @@ void executor::RunBaseline(std::shared_ptr<Benchmark> bmark)
 			print::TableRowExperimentHeader(r->getExperiment());
 
 			// Do a quick sample, if necessary, and adjust sample and iteration sizes, if necessary.
-			bool adjustSuccess = AdjustSampleAndIterationSize(r);
-
-			if(adjustSuccess)
+			if(AdjustSampleAndIterationSize(r) == true)
 			{
 				// Describe the beginning of the run.
 				print::TableRowProblemSpaceHeader(r);

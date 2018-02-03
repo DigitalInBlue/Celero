@@ -1,7 +1,7 @@
 ///
 /// \author	John Farrier
 ///
-/// \copyright Copyright 2015, 2016, 2017 John Farrier
+/// \copyright Copyright 2015, 2016, 2017, 2018 John Farrier
 ///
 /// Licensed under the Apache License, Version 2.0 (the "License");
 /// you may not use this file except in compliance with the License.
@@ -31,48 +31,48 @@ using namespace celero;
 class Experiment::Impl
 {
 public:
-	Impl()
-		: results(),
-		  benchmark(),
-		  factory(),
-		  name(),
-		  baselineUnit(0),
-		  baselineTarget(0),
-		  samples(0),
-		  iterations(0),
-		  threads(1),
-		  totalRunTime(0),
-		  isBaselineCase(false)
+	Impl() :
+		results(),
+		benchmark(),
+		factory(),
+		name(),
+		baselineUnit(0),
+		baselineTarget(0),
+		samples(0),
+		iterations(0),
+		threads(1),
+		totalRunTime(0),
+		isBaselineCase(false)
 	{
 	}
 
-	Impl(std::weak_ptr<Benchmark> bm, const std::string& n, const uint64_t s, const uint64_t c, const uint64_t t, const double pBaselineTarget)
-		: results(),
-		  benchmark(bm),
-		  factory(),
-		  name(n),
-		  baselineUnit(0),
-		  baselineTarget(pBaselineTarget),
-		  samples(s),
-		  iterations(c),
-		  threads(t),
-		  totalRunTime(0),
-		  isBaselineCase(false)
+	Impl(std::weak_ptr<Benchmark> bm, const std::string& n, const uint64_t s, const uint64_t c, const uint64_t t, const double pBaselineTarget) :
+		results(),
+		benchmark(bm),
+		factory(),
+		name(n),
+		baselineUnit(0),
+		baselineTarget(pBaselineTarget),
+		samples(s),
+		iterations(c),
+		threads(t),
+		totalRunTime(0),
+		isBaselineCase(false)
 	{
 	}
 
-	Impl(std::weak_ptr<Benchmark> bm)
-		: results(),
-		  benchmark(bm),
-		  factory(),
-		  name(),
-		  baselineUnit(0),
-		  baselineTarget(0),
-		  samples(0),
-		  iterations(0),
-		  threads(1),
-		  totalRunTime(0),
-		  isBaselineCase(false)
+	Impl(std::weak_ptr<Benchmark> bm) :
+		results(),
+		benchmark(bm),
+		factory(),
+		name(),
+		baselineUnit(0),
+		baselineTarget(0),
+		samples(0),
+		iterations(0),
+		threads(1),
+		totalRunTime(0),
+		isBaselineCase(false)
 	{
 	}
 
@@ -119,8 +119,8 @@ Experiment::Experiment(std::weak_ptr<Benchmark> benchmark) : pimpl(benchmark)
 }
 
 Experiment::Experiment(std::weak_ptr<Benchmark> benchmark, const std::string& name, uint64_t samples, uint64_t iterations, uint64_t threads,
-					   double baselineTarget)
-	: pimpl(benchmark, name, samples, iterations, threads, baselineTarget)
+					   double baselineTarget) :
+	pimpl(benchmark, name, samples, iterations, threads, baselineTarget)
 {
 }
 

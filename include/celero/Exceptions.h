@@ -4,7 +4,7 @@
 ///
 /// \author	Peter Azmanov
 ///
-/// \copyright Copyright 2016 Peter Azmanov
+/// \copyright Copyright 2015, 2016, 2017, 2018 John Farrier
 ///
 /// Licensed under the Apache License, Version 2.0 (the "License");
 /// you may not use this file except in compliance with the License.
@@ -26,27 +26,38 @@ namespace celero
 {
 	class TestFixture;
 
-	// Singleton storing exception settings (currently only one flag)
-	struct ExceptionSettings
+	///
+	/// A Singleton storing exception settings (currently only one flag)
+	///
+	class ExceptionSettings
 	{
-		ExceptionSettings();
+	public:
+		///
+		/// Get a flag indicating whether Celero should catch exceptions or not
+		///
+		static bool GetCatchExceptions();
 
-		// Flag indicating whether Celero should catch exceptions or not
-		static bool catchExceptions();
-		static void setCatchExceptions(bool catchExceptions);
+		///
+		/// Set a flag indicating whether Celero should catch exceptions or not
+		///
+		static void SetCatchExceptions(bool catchExceptions);
 
 	private:
 		static ExceptionSettings& instance();
 
 	private:
-		bool catchExceptions_;
+		bool catchExceptions{true};
 	};
 
-	// Run test and catch SEH exceptions if they are supported by compiler
+	///
+	/// Run test and catch SEH exceptions if they are supported by compiler
+	///
 	std::pair<bool, uint64_t> RunAndCatchSEHExc(TestFixture& test, uint64_t threads, uint64_t calls, int64_t experimentValue);
 
-	// Run test and catch all exceptions we can
+	///
+	/// Run test and catch all exceptions we can
+	///
 	std::pair<bool, uint64_t> RunAndCatchExc(TestFixture& test, uint64_t threads, uint64_t calls, int64_t experimentValue);
-}
+} // namespace celero
 
 #endif
