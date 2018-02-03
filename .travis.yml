@@ -21,6 +21,8 @@ addons:
   apt:
     packages:
       - g++-6
+      - g++-7
+
     sources: &sources
       - ubuntu-toolchain-r-test
 
@@ -35,21 +37,11 @@ matrix:
 
   include:
     ##########################################################################
-    # Check for code formatting errors
-    ##########################################################################
-    - os: osx
-      env: CHECK_FORMATTING=true
-      osx_image: xcode8
-
-    ##########################################################################
     # Build with the main configuration on all the supported compilers
     #
     # Note that we only use the memory checker on the main configuration to
     # speed up Travis builds.
     ##########################################################################
-    # Clang 3.5
-    # TODO: Find out why this fails to compile the test suite.
-    # - env: UNIT_TESTS=true LLVM_VERSION=3.5.2 BOOST_VERSION=default ENABLE_MEMCHECK=true
 
     # Clang 3.8
     - os: linux
@@ -71,31 +63,13 @@ matrix:
       env: COMPILER=g++-7
       compiler: gcc
 
-    # Xcode 7.3
-    - os: osx
-      osx_image: xcode7.3
-
-    # Xcode 8
-    - os: osx
-      osx_image: xcode8
-
     ##########################################################################
     # Build with variations in the configuration
     ##########################################################################
     # With debug mode
     - os: linux
-      env: UNIT_TESTS=true LLVM_VERSION=default BOOST_VERSION=default CMAKE_OPTIONS="-DBOOST_HANA_ENABLE_DEBUG_MODE=ON"
+      env: LLVM_VERSION=default CMAKE_OPTIONS="-DCMAKE_BUILD_TYPE=DEBUG"
       compiler: clang
-
-    # Without exceptions
-    - os: linux
-      env: UNIT_TESTS=true LLVM_VERSION=default BOOST_VERSION=default CMAKE_OPTIONS="-DBOOST_HANA_ENABLE_EXCEPTIONS=OFF"
-      compiler: clang
-
-    # Without exceptions on OS X
-    - os: osx
-      env: UNIT_TESTS=true BOOST_VERSION=default CMAKE_OPTIONS="-DBOOST_HANA_ENABLE_EXCEPTIONS=OFF"
-      osx_image: xcode8
 
 install:
   ############################################################################
