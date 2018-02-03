@@ -1,81 +1,169 @@
-# Build matrix / environment variable are explained on:
-# http://about.travis-ci.org/docs/user/build-configuration/
-# This file can be validated on:
-# http://lint.travis-ci.org/
+# Copyright Louis Dionne 2013-2017
+# Distributed under the Boost Software License, Version 1.0.
+# (See accompanying file LICENSE.md or copy at http://boost.org/LICENSE_1_0.txt)
+# Originally pulled from https://gist.githubusercontent.com/Kimundi/10d299e905941e82bee4969acc7b64a8/raw/a354ad14ba0da0f05d4ce07e06d92b8ed18fa8f5/c++%2520example%2520travis.yml
 
+language: c++
 sudo: false
-language: cpp
 
-# Define the matrix explicitly, manually expanding the combinations of (os, compiler, env).
-# It is more tedious, but grants us far more flexibility.
-matrix:
-  include:
-    - os: linux
-      compiler: gcc
-      sudo : true
-      install: ./ci/install-linux.sh && ./ci/log-config.sh
-      script: ./ci/build-linux-bazel.sh
-    - os: linux
-      compiler: clang
-      sudo : true
-      install: ./ci/install-linux.sh && ./ci/log-config.sh
-      script: ./ci/build-linux-bazel.sh
-    - os: linux
-      group: deprecated-2017Q4
-      compiler: gcc
-      install: ./ci/install-linux.sh && ./ci/log-config.sh
-      script: ./ci/build-linux-autotools.sh
-    - os: linux
-      group: deprecated-2017Q4
-      compiler: gcc
-      env: BUILD_TYPE=Debug VERBOSE=1 CXX_FLAGS=-std=c++11
-    - os: linux
-      group: deprecated-2017Q4
-      compiler: clang
-      env: BUILD_TYPE=Debug VERBOSE=1
-    - os: linux
-      group: deprecated-2017Q4
-      compiler: clang
-      env: BUILD_TYPE=Release VERBOSE=1 CXX_FLAGS=-std=c++11
-    - os: osx
-      compiler: gcc
-      env: BUILD_TYPE=Debug VERBOSE=1
-      if: type != pull_request
-    - os: osx
-      compiler: gcc
-      env: BUILD_TYPE=Release VERBOSE=1 CXX_FLAGS=-std=c++11
-      if: type != pull_request
-    - os: osx
-      compiler: clang
-      env: BUILD_TYPE=Debug VERBOSE=1
-      if: type != pull_request
-    - os: osx
-      compiler: clang
-      env: BUILD_TYPE=Release VERBOSE=1 CXX_FLAGS=-std=c++11
-      if: type != pull_request
+# Do not build branches of the form "pr/*". By prefixing pull requests coming
+# from branches inside the repository with pr/, this avoids building both the
+# branch push _and_ the pull request.
+branches:
+  except: /pr\/.*/
 
-# These are the install and build (script) phases for the most common entries in the matrix.  They could be included
-# in each entry in the matrix, but that is just repetitive.
-install:
-  - ./ci/install-${TRAVIS_OS_NAME}.sh
-  - . ./ci/env-${TRAVIS_OS_NAME}.sh
-  - ./ci/log-config.sh
+env:
+  # Workaround for https://github.com/travis-ci/travis-ci/issues/4681
+  matrix:
+    - TRAVIS_EMPTY_JOB_WORKAROUND=true
 
-script: ./ci/travis.sh
-
-# For sudo=false builds this section installs the necessary dependencies.
 addons:
   apt:
-    # List of whitelisted in travis packages for ubuntu-precise can be found here:
-    #   https://github.com/travis-ci/apt-package-whitelist/blob/master/ubuntu-precise
-    # List of whitelisted in travis apt-sources:
-    #   https://github.com/travis-ci/apt-source-whitelist/blob/master/ubuntu.json
-    sources:
-    - ubuntu-toolchain-r-test
-    - llvm-toolchain-precise-3.7
     packages:
-    - g++-4.9
-    - clang-3.7
+      - g++-6
+    sources: &sources
+      - ubuntu-toolchain-r-test
 
-notifications:
-  email: false
+cache:
+  directories:
+    - ${TRAVIS_BUILD_DIR}/deps/llvm-3.9.0
+    - ${TRAVIS_BUILD_DIR}/deps/llvm-5.0.1
+
+matrix:
+  exclude:
+    - env: TRAVIS_EMPTY_JOB_WORKAROUND=true
+
+  include:
+    ##########################################################################
+    # Check for code formatting errors
+    ##########################################################################
+    - os: osx
+      env: CHECK_FORMATTING=true
+      osx_image: xcode8
+
+    ##########################################################################
+    # Build with the main configuration on all the supported compilers
+    #
+    # Note that we only use the memory checker on the main configuration to
+    # speed up Travis builds.
+    ##########################################################################
+    # Clang 3.5
+    # TODO: Find out why this fails to compile the test suite.
+    # - env: UNIT_TESTS=true LLVM_VERSION=3.5.2 BOOST_VERSION=default ENABLE_MEMCHECK=true
+
+    # Clang 3.8
+    - os: linux
+      env: LLVM_VERSION=3.9.0
+      compiler: clang
+
+    # Clang 3.9
+    - os: linux
+      env: LLVM_VERSION=5.0.1
+      compiler: clang
+
+    # GCC 6
+    - os: linux
+      env: COMPILER=g++-6
+      compiler: gcc
+
+    # GCC 7
+    - os: linux
+      env: COMPILER=g++-7
+      compiler: gcc
+
+    # Xcode 7.3
+    - os: osx
+      osx_image: xcode7.3
+
+    # Xcode 8
+    - os: osx
+      osx_image: xcode8
+
+    ##########################################################################
+    # Build with variations in the configuration
+    ##########################################################################
+    # With debug mode
+    - os: linux
+      env: UNIT_TESTS=true LLVM_VERSION=default BOOST_VERSION=default CMAKE_OPTIONS="-DBOOST_HANA_ENABLE_DEBUG_MODE=ON"
+      compiler: clang
+
+    # Without exceptions
+    - os: linux
+      env: UNIT_TESTS=true LLVM_VERSION=default BOOST_VERSION=default CMAKE_OPTIONS="-DBOOST_HANA_ENABLE_EXCEPTIONS=OFF"
+      compiler: clang
+
+    # Without exceptions on OS X
+    - os: osx
+      env: UNIT_TESTS=true BOOST_VERSION=default CMAKE_OPTIONS="-DBOOST_HANA_ENABLE_EXCEPTIONS=OFF"
+      osx_image: xcode8
+
+install:
+  ############################################################################
+  # All the dependencies are installed in ${TRAVIS_BUILD_DIR}/deps/
+  ############################################################################
+  - DEPS_DIR="${TRAVIS_BUILD_DIR}/deps"
+  - mkdir -p ${DEPS_DIR} && cd ${DEPS_DIR}
+
+  ############################################################################
+  # Setup default versions and override compiler if needed
+  ############################################################################
+  - if [[ "${LLVM_VERSION}" == "default" ]]; then LLVM_VERSION=3.9.0; fi
+  - if [[ "${COMPILER}" != "" ]]; then export CXX=${COMPILER}; fi
+
+  ############################################################################
+  # Install a recent CMake
+  ############################################################################
+  - |
+    if [[ "${TRAVIS_OS_NAME}" == "linux" ]]; then
+      CMAKE_URL="https://cmake.org/files/v3.10/cmake-3.10.2-Linux-x86_64.tar.gz"
+      mkdir cmake && travis_retry wget --no-check-certificate --quiet -O - ${CMAKE_URL} | tar --strip-components=1 -xz -C cmake
+      export PATH=${DEPS_DIR}/cmake/bin:${PATH}
+    else
+      brew upgrade cmake || brew install cmake
+    fi
+  - cmake --version
+
+  ############################################################################
+  # Install Clang, libc++ and libc++abi
+  ############################################################################
+  - |
+    if [[ "${LLVM_VERSION}" != "" ]]; then
+      LLVM_DIR=${DEPS_DIR}/llvm-${LLVM_VERSION}
+      if [[ -z "$(ls -A ${LLVM_DIR})" ]]; then
+        LLVM_URL="http://llvm.org/releases/${LLVM_VERSION}/llvm-${LLVM_VERSION}.src.tar.xz"
+        LIBCXX_URL="http://llvm.org/releases/${LLVM_VERSION}/libcxx-${LLVM_VERSION}.src.tar.xz"
+        LIBCXXABI_URL="http://llvm.org/releases/${LLVM_VERSION}/libcxxabi-${LLVM_VERSION}.src.tar.xz"
+        CLANG_URL="http://llvm.org/releases/${LLVM_VERSION}/clang+llvm-${LLVM_VERSION}-x86_64-linux-gnu-ubuntu-14.04.tar.xz"
+
+        mkdir -p ${LLVM_DIR} ${LLVM_DIR}/build ${LLVM_DIR}/projects/libcxx ${LLVM_DIR}/projects/libcxxabi ${LLVM_DIR}/clang
+        travis_retry wget --quiet -O - ${LLVM_URL}      | tar --strip-components=1 -xJ -C ${LLVM_DIR}
+        travis_retry wget --quiet -O - ${LIBCXX_URL}    | tar --strip-components=1 -xJ -C ${LLVM_DIR}/projects/libcxx
+        travis_retry wget --quiet -O - ${LIBCXXABI_URL} | tar --strip-components=1 -xJ -C ${LLVM_DIR}/projects/libcxxabi
+        travis_retry wget --quiet -O - ${CLANG_URL}     | tar --strip-components=1 -xJ -C ${LLVM_DIR}/clang
+        (cd ${LLVM_DIR}/build && cmake .. -DCMAKE_INSTALL_PREFIX=${LLVM_DIR}/install -DCMAKE_CXX_COMPILER=clang++)
+        (cd ${LLVM_DIR}/build/projects/libcxx && make install -j2)
+        (cd ${LLVM_DIR}/build/projects/libcxxabi && make install -j2)
+      fi
+
+      export CXXFLAGS="-nostdinc++ -isystem ${LLVM_DIR}/install/include/c++/v1"
+      export LDFLAGS="-L ${LLVM_DIR}/install/lib -l c++ -l c++abi"
+      export LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:${LLVM_DIR}/install/lib"
+      export PATH="${LLVM_DIR}/clang/bin:${PATH}"
+    fi
+  - ${CXX} --version
+
+before_script:
+  ############################################################################
+  # Go back to the root of the project and setup the build directory
+  ############################################################################
+  - cd ${TRAVIS_BUILD_DIR}
+  - (mkdir build && cd build && cmake .. ${CMAKE_OPTIONS})
+
+
+script:
+  ############################################################################
+  # Build
+  ############################################################################
+  - cd ${TRAVIS_BUILD_DIR}
+  - cd build
+  - make
