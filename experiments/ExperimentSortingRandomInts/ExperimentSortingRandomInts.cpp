@@ -62,7 +62,7 @@ public:
 	}
 
 	// Before each iteration
-	virtual void onExperimentStart(int64_t experimentValue) override
+	virtual void onExperimentStart(int64_t) override
 	{
 		for(int i = 0; i < this->arraySize; i++)
 		{

@@ -1,7 +1,7 @@
 ///
 /// \author	John Farrier
 ///
-/// \copyright Copyright 2015, 2016, 2017 John Farrier
+/// \copyright Copyright 2015, 2016, 2017, 2018 John Farrier
 ///
 /// Licensed under the Apache License, Version 2.0 (the "License");
 /// you may not use this file except in compliance with the License.
@@ -22,7 +22,6 @@
 #include <celero/TestVector.h>
 #include <celero/Timer.h>
 #include <celero/Utilities.h>
-
 #include <chrono>
 #include <iomanip>
 #include <iostream>
@@ -59,7 +58,7 @@ std::string PrintCenter(const std::string s, const size_t w = PrintConstants::Co
 	ss << spaces.str() << s << spaces.str();
 
 	// if odd #, add 1 space
-	if(padding > 0 && padding % 2 != 0)
+	if((padding > 0) && (padding % 2 != 0))
 	{
 		ss << " ";
 	}
@@ -211,6 +210,7 @@ void celero::print::TableRowFailure(const std::string& msg)
 void celero::print::TableRowProblemSpaceHeader(std::shared_ptr<Result> x)
 {
 	celero::console::SetConsoleColor(celero::console::ConsoleColor_Default);
+
 	if(x->getProblemSpaceValue() == static_cast<int64_t>(TestFixture::Constants::NoProblemSpaceValue))
 	{
 		std::cout << PrintColumnRight("Null");

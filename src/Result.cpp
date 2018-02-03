@@ -1,7 +1,7 @@
 ///
 /// \author	John Farrier
 ///
-/// \copyright Copyright 2015, 2016, 2017 John Farrier
+/// \copyright Copyright 2015, 2016, 2017, 2018 John Farrier
 ///
 /// Licensed under the Apache License, Version 2.0 (the "License");
 /// you may not use this file except in compliance with the License.
@@ -35,8 +35,14 @@ public:
 	{
 	}
 
-	explicit Impl(Experiment* const p)
-		: stats(), problemSpaceValue(0), problemSpaceValueScale(1.0), problemSpaceIterations(1), parent(p), complete(false), failure(false)
+	explicit Impl(Experiment* const p) :
+		stats(),
+		problemSpaceValue(0),
+		problemSpaceValueScale(1.0),
+		problemSpaceIterations(1),
+		parent(p),
+		complete(false),
+		failure(false)
 	{
 	}
 
@@ -148,9 +154,15 @@ double Result::getBaselineMeasurement()
 			if(baselineExperiment != nullptr)
 			{
 				auto baselineResult = baselineExperiment->getResultByValue(this->getProblemSpaceValue());
-				if(baselineResult)
+				if(baselineResult != nullptr)
 				{
-					return this->getUsPerCall() / baselineResult->getUsPerCall();
+					const auto baselineResultUs = baselineResult->getUsPerCall();
+
+					// Prevent possible divide by zero.
+					if(baselineResultUs > 0)
+					{
+						return this->getUsPerCall() / baselineResult->getUsPerCall();
+					}
 				}
 			}
 		}

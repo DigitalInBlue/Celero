@@ -1,7 +1,7 @@
 ///
 /// \author	Peter Azmanov
 ///
-/// \copyright Copyright 2016 Peter Azmanov
+/// \copyright Copyright 2016, 2017, 2018 John Farrier
 ///
 /// Licensed under the Apache License, Version 2.0 (the "License");
 /// you may not use this file except in compliance with the License.
@@ -85,18 +85,14 @@
 
 namespace celero
 {
-	ExceptionSettings::ExceptionSettings() : catchExceptions_(true)
+	bool ExceptionSettings::GetCatchExceptions()
 	{
+		return ExceptionSettings::instance().catchExceptions;
 	}
 
-	bool ExceptionSettings::catchExceptions()
+	void ExceptionSettings::SetCatchExceptions(bool x)
 	{
-		return instance().catchExceptions_;
-	}
-
-	void ExceptionSettings::setCatchExceptions(bool catchExceptions)
-	{
-		instance().catchExceptions_ = catchExceptions;
+		ExceptionSettings::instance().catchExceptions = x;
 	}
 
 	ExceptionSettings& ExceptionSettings::instance()
@@ -106,59 +102,95 @@ namespace celero
 	}
 
 #if CELERO_HAS_SEH
-	namespace
+	int HandleSEH(DWORD exceptionCode)
 	{
-		int HandleSEH(DWORD exceptionCode)
+		// see https://support.microsoft.com/en-us/kb/185294
+		const DWORD cppExceptionCode = 0xe06d7363;
+
+		if((exceptionCode == EXCEPTION_BREAKPOINT) || (exceptionCode == cppExceptionCode))
 		{
-			// see https://support.microsoft.com/en-us/kb/185294
-			DWORD const cppExceptionCode = 0xe06d7363;
-
-			bool handle = true;
-			if(exceptionCode == EXCEPTION_BREAKPOINT)
-				handle = false;
-			else if(exceptionCode == cppExceptionCode)
-				handle = false;
-
-			return handle ? EXCEPTION_EXECUTE_HANDLER : EXCEPTION_CONTINUE_SEARCH;
+			return EXCEPTION_EXECUTE_HANDLER;
 		}
 
-#define EXC_CODE_TO_STR(code) \
-	case code:                \
-		return #code;
+		return EXCEPTION_CONTINUE_SEARCH;
+	}
 
-		char const* ExceptionCodeToStr(DWORD exceptionCode)
+	const char* const ExceptionCodeToStr(DWORD exceptionCode)
+	{
+		switch(exceptionCode)
 		{
-			switch(exceptionCode)
-			{
-				EXC_CODE_TO_STR(EXCEPTION_ACCESS_VIOLATION);
-				EXC_CODE_TO_STR(EXCEPTION_ARRAY_BOUNDS_EXCEEDED);
-				EXC_CODE_TO_STR(EXCEPTION_BREAKPOINT);
-				EXC_CODE_TO_STR(EXCEPTION_DATATYPE_MISALIGNMENT);
-				EXC_CODE_TO_STR(EXCEPTION_FLT_DENORMAL_OPERAND);
-				EXC_CODE_TO_STR(EXCEPTION_FLT_DIVIDE_BY_ZERO);
-				EXC_CODE_TO_STR(EXCEPTION_FLT_INEXACT_RESULT);
-				EXC_CODE_TO_STR(EXCEPTION_FLT_INVALID_OPERATION);
-				EXC_CODE_TO_STR(EXCEPTION_FLT_OVERFLOW);
-				EXC_CODE_TO_STR(EXCEPTION_FLT_STACK_CHECK);
-				EXC_CODE_TO_STR(EXCEPTION_FLT_UNDERFLOW);
-				EXC_CODE_TO_STR(EXCEPTION_GUARD_PAGE);
-				EXC_CODE_TO_STR(EXCEPTION_ILLEGAL_INSTRUCTION);
-				EXC_CODE_TO_STR(EXCEPTION_IN_PAGE_ERROR);
-				EXC_CODE_TO_STR(EXCEPTION_INT_DIVIDE_BY_ZERO);
-				EXC_CODE_TO_STR(EXCEPTION_INT_OVERFLOW);
-				EXC_CODE_TO_STR(EXCEPTION_INVALID_DISPOSITION);
-				EXC_CODE_TO_STR(EXCEPTION_INVALID_HANDLE);
-				EXC_CODE_TO_STR(EXCEPTION_NONCONTINUABLE_EXCEPTION);
-				EXC_CODE_TO_STR(EXCEPTION_PRIV_INSTRUCTION);
-				EXC_CODE_TO_STR(EXCEPTION_SINGLE_STEP);
-				EXC_CODE_TO_STR(EXCEPTION_STACK_OVERFLOW);
-				EXC_CODE_TO_STR(STATUS_UNWIND_CONSOLIDATE);
-				default:
-					return "Unknown code!";
-			}
-		}
+			case EXCEPTION_ACCESS_VIOLATION:
+				return "EXCEPTION_ACCESS_VIOLATION";
 
-#undef EXC_CODE_TO_STR
+			case EXCEPTION_ARRAY_BOUNDS_EXCEEDED:
+				return "EXCEPTION_ARRAY_BOUNDS_EXCEEDED";
+
+			case EXCEPTION_BREAKPOINT:
+				return "EXCEPTION_BREAKPOINT";
+
+			case EXCEPTION_DATATYPE_MISALIGNMENT:
+				return "EXCEPTION_DATATYPE_MISALIGNMENT";
+
+			case EXCEPTION_FLT_DENORMAL_OPERAND:
+				return "EXCEPTION_FLT_DENORMAL_OPERAND";
+
+			case EXCEPTION_FLT_DIVIDE_BY_ZERO:
+				return "EXCEPTION_FLT_DIVIDE_BY_ZERO";
+
+			case EXCEPTION_FLT_INEXACT_RESULT:
+				return "EXCEPTION_FLT_INEXACT_RESULT";
+
+			case EXCEPTION_FLT_INVALID_OPERATION:
+				return "EXCEPTION_FLT_INVALID_OPERATION";
+
+			case EXCEPTION_FLT_OVERFLOW:
+				return "EXCEPTION_FLT_OVERFLOW";
+
+			case EXCEPTION_FLT_STACK_CHECK:
+				return "EXCEPTION_FLT_STACK_CHECK";
+
+			case EXCEPTION_FLT_UNDERFLOW:
+				return "EXCEPTION_FLT_UNDERFLOW";
+
+			case EXCEPTION_GUARD_PAGE:
+				return "EXCEPTION_GUARD_PAGE";
+
+			case EXCEPTION_ILLEGAL_INSTRUCTION:
+				return "EXCEPTION_ILLEGAL_INSTRUCTION";
+
+			case EXCEPTION_IN_PAGE_ERROR:
+				return "EXCEPTION_IN_PAGE_ERROR";
+
+			case EXCEPTION_INT_DIVIDE_BY_ZERO:
+				return "EXCEPTION_INT_DIVIDE_BY_ZERO";
+
+			case EXCEPTION_INT_OVERFLOW:
+				return "EXCEPTION_INT_OVERFLOW";
+
+			case EXCEPTION_INVALID_DISPOSITION:
+				return "EXCEPTION_INVALID_DISPOSITION";
+
+			case EXCEPTION_INVALID_HANDLE:
+				return "EXCEPTION_INVALID_HANDLE";
+
+			case EXCEPTION_NONCONTINUABLE_EXCEPTION:
+				return "EXCEPTION_NONCONTINUABLE_EXCEPTION";
+
+			case EXCEPTION_PRIV_INSTRUCTION:
+				return "EXCEPTION_PRIV_INSTRUCTION";
+
+			case EXCEPTION_SINGLE_STEP:
+				return "EXCEPTION_SINGLE_STEP";
+
+			case EXCEPTION_STACK_OVERFLOW:
+				return "EXCEPTION_STACK_OVERFLOW";
+
+			case STATUS_UNWIND_CONSOLIDATE:
+				return "STATUS_UNWIND_CONSOLIDATE";
+
+			default:
+				return "Unknown exception code.";
+		}
 	}
 #endif // CELERO_HAS_SEH
 
@@ -171,7 +203,7 @@ namespace celero
 		}
 		__except(HandleSEH(GetExceptionCode()))
 		{
-			DWORD exceptionCode = GetExceptionCode();
+			const auto exceptionCode = GetExceptionCode();
 			celero::console::SetConsoleColor(celero::console::ConsoleColor_Red);
 			std::cout << "SEH exception " << ExceptionCodeToStr(exceptionCode) << std::endl;
 			celero::console::SetConsoleColor(celero::console::ConsoleColor_Default);
@@ -184,7 +216,7 @@ namespace celero
 
 	std::pair<bool, uint64_t> RunAndCatchExc(TestFixture& test, uint64_t threads, uint64_t calls, int64_t experimentValue)
 	{
-		if(ExceptionSettings::catchExceptions())
+		if(ExceptionSettings::GetCatchExceptions() == true)
 		{
 #if CELERO_HAS_EXCEPTIONS
 			try
@@ -203,6 +235,7 @@ namespace celero
 				std::cout << "Unknown C++ exception" << std::endl;
 				celero::console::SetConsoleColor(celero::console::ConsoleColor_Default);
 			}
+
 			return std::make_pair(false, 0);
 #else  // CELERO_HAS_EXCEPTIONS
 			return RunAndCatchSEHExc(test, threads, calls, experimentValue);
@@ -213,4 +246,4 @@ namespace celero
 			return std::make_pair(true, test.run(threads, calls, experimentValue));
 		}
 	}
-}
+} // namespace celero

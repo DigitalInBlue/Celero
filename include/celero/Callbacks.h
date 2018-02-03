@@ -6,7 +6,7 @@
 ///
 /// \author	John Farrier
 ///
-/// \copyright Copyright 2015, 2016, 2017 John Farrier
+/// \copyright Copyright 2015, 2016, 2017, 2018 John Farrier
 ///
 /// Licensed under the Apache License, Version 2.0 (the "License");
 /// you may not use this file except in compliance with the License.
@@ -34,11 +34,10 @@
 /// It is highly encouraged to only run this code compiled in a "Release" mode to use all available optimizations.
 ///
 
-#include <functional>
-#include <memory>
-
 #include <celero/Experiment.h>
 #include <celero/Export.h>
+#include <functional>
+#include <memory>
 
 namespace celero
 {
@@ -60,7 +59,7 @@ namespace celero
 	{
 		void ExperimentComplete(std::shared_ptr<Experiment> x);
 		void ExperimentResultComplete(std::shared_ptr<Result> x);
-	}
-}
+	} // namespace impl
+} // namespace celero
 
 #endif
