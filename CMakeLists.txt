@@ -205,12 +205,30 @@ endif()
 
 target_link_libraries(${PROJECT_NAME} ${SYSLIBS})
 
-target_include_directories(${PROJECT_NAME} PUBLIC include)
+target_include_directories(${PROJECT_NAME} PUBLIC
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+  $<INSTALL_INTERFACE:${CMAKE_INSTALL_PREFIX}/include>
+)
+
+# ---------------------------------------------------------------------------
+# Install and exports
+# ---------------------------------------------------------------------------
 
 install(TARGETS ${PROJECT_NAME}
-	LIBRARY DESTINATION ${CMAKE_INSTALL_PREFIX}/bin
-	ARCHIVE DESTINATION ${CMAKE_INSTALL_PREFIX}/lib)
+  EXPORT ${PROJECT_NAME}-target
+  LIBRARY DESTINATION ${CMAKE_INSTALL_PREFIX}/lib
+  ARCHIVE DESTINATION ${CMAKE_INSTALL_PREFIX}/lib/static
+)
 install(DIRECTORY include DESTINATION ${CMAKE_INSTALL_PREFIX})
+
+# export to be used from install location
+install(EXPORT ${PROJECT_NAME}-target
+  DESTINATION ${CMAKE_INSTALL_PREFIX}/share
+)
+# export to be used from build directory
+export(EXPORT ${PROJECT_NAME}-target
+  FILE ${PROJECT_NAME}-target.cmake
+)
 
 # ---------------------------------------------------------------------------
 # Google Test Application
