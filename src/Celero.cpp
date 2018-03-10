@@ -91,6 +91,13 @@ std::shared_ptr<celero::Benchmark> celero::RegisterBaseline(const char* groupNam
 
 void celero::Run(int argc, char** argv)
 {
+#ifdef _DEBUG
+	std::cout << "Celero is running in Debug.  Results are for debugging only as any measurements made while in Debug are likely not representative "
+				 "of non-debug results."
+			  << std::endl
+			  << std::endl;
+#endif
+
 	cmdline::parser args;
 	args.add("list", 'l', "Prints a list of all available benchmarks.");
 	args.add<std::string>("group", 'g', "Runs a specific group of benchmarks.", false, "");
@@ -127,7 +134,6 @@ void celero::Run(int argc, char** argv)
 	std::cout << "Celero" << std::endl;
 
 	// Disable dynamic CPU frequency scaling
-	celero::DisableDynamicCPUScaling();
 	celero::timer::CachePerformanceFrequency(false);
 
 	// Shall we build a distribution?
@@ -194,5 +200,5 @@ void celero::Run(int argc, char** argv)
 	}
 
 	// Final output.
-	std::cout << "Complete.\n";
+	std::cout << "Complete." << std::endl;
 }

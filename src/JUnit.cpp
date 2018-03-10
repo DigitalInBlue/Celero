@@ -72,7 +72,7 @@ void JUnit::save()
 	{
 		const auto os = &ofs;
 
-		*os << "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>\n";
+		*os << "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>" << std::endl;
 
 		for(auto i : this->pimpl->results)
 		{
@@ -101,7 +101,7 @@ void JUnit::save()
 			*os << "tests=\"" << i.second.size() << "\" ";
 			*os << "time=\"" << celero::timer::ConvertSystemTime(testSuiteTime) << "\" ";
 			*os << "failures=\"" << testSuiteFailures << "\" ";
-			*os << "name=\"" << i.first << "\">\n";
+			*os << "name=\"" << i.first << "\">" << std::endl;
 
 			for(auto j : runs)
 			{
@@ -113,35 +113,35 @@ void JUnit::save()
 				if(j->getFailure())
 				{
 					// Error
-					*os << ">\n";
+					*os << ">" << std::endl;
 
 					*os << "\t\t<error ";
 					*os << "type=\"exception\"";
-					*os << "/>\n";
+					*os << "/>" << std::endl;
 
-					*os << "\t</testcase>\n";
+					*os << "\t</testcase>" << std::endl;
 				}
 				else if((j->getExperiment()->getBaselineTarget() > 0.0) && (j->getBaselineMeasurement() > j->getExperiment()->getBaselineTarget()))
 				{
 					// Failure
-					*os << ">\n";
+					*os << ">" << std::endl;
 
 					*os << "\t\t<failure ";
 					*os << "type=\"Performance objective not met.\" ";
 					*os << "message=\"Measurement of " << j->getBaselineMeasurement() << " exceeds objective baseline of "
 						<< j->getExperiment()->getBaselineTarget() << "\" ";
-					*os << "/>\n";
+					*os << "/>" << std::endl;
 
-					*os << "\t</testcase>\n";
+					*os << "\t</testcase>" << std::endl;
 				}
 				else
 				{
 					// Success
-					*os << "/>\n";
+					*os << "/>" << std::endl;
 				}
 			}
 
-			*os << "</testsuite>\n";
+			*os << "</testsuite" << std::endl;
 		}
 
 		ofs.close();

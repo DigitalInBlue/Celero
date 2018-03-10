@@ -127,7 +127,7 @@ bool ExecuteProblemSpace(std::shared_ptr<Result> r)
 	else
 	{
 		std::cerr << "Celero: Test \"" << r->getExperiment()->getBenchmark()->getName() << "::" << r->getExperiment()->getName()
-				  << "\" must have at least 1 sample.\n";
+				  << "\" must have at least 1 sample." << std::endl;
 		return false;
 	}
 

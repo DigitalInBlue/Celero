@@ -153,7 +153,7 @@ void celero::RunDistribution(uint64_t intArgument)
 			}
 		}
 
-		os << "\n";
+		os << std::endl;
 	}
 
 	os.close();

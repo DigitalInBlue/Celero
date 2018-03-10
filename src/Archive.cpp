@@ -67,7 +67,7 @@ struct ArchiveEntry
 		str << "MaxStatMin,MaxStatMax,";
 		str << "CurrentBaseline,CurrentBaselineTimeSinceEpoch,";
 		str << "CurrentStatSize,CurrentStatMean,CurrentStatVariance,CurrentStatStandardDeviation,CurrentStatSkewness,CurrentStatKurtosis,";
-		str << "CurrentStatMin,CurrentStatMax\n";
+		str << "CurrentStatMin,CurrentStatMax" << std::endl;
 	}
 
 	struct Stat
@@ -164,7 +164,7 @@ std::ostream& operator<<(std::ostream& str, ArchiveEntry const& data)
 	str << data.MaxStats << ",";
 	str << data.CurrentBaseline << ",";
 	str << data.CurrentBaseline_TimeSinceEpoch << ",";
-	str << data.CurrentStats << "\n";
+	str << data.CurrentStats << std::endl;
 	return str;
 }
 
@@ -384,7 +384,7 @@ void Archive::save()
 		}
 		else
 		{
-			std::cerr << "Celero: Could not open result output file: \"" << this->pimpl->fileName << "\"\n";
+			std::cerr << "Celero: Could not open result output file: \"" << this->pimpl->fileName << "\"" << std::endl;
 		}
 	}
 }

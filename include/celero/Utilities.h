@@ -125,11 +125,6 @@ namespace celero
 	///
 	const uint64_t UsPerSec(1000000);
 
-	///
-	/// Disable dynamic CPU scaling which allows the clock speed of the processor
-	/// to be adjusted to different P-states by software.
-	///
-	CELERO_EXPORT void DisableDynamicCPUScaling();
 } // namespace celero
 
 #endif
