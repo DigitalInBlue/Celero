@@ -21,17 +21,28 @@ Celero uses CMake to provide cross-platform builds. It does require a modern com
 
 Once Celero is added to your project. You can create dedicated benchmark projects and source files. For convenience, there is single header file and a CELERO_MAIN macro that can be used to provide a main() for your benchmark project that will automatically execute all of your benchmark tests.
 
+### Key Features
+
+- Supports Windows, Linux, and OSX using C++11.
+- Console table output is formatted for Markdown.
+- Archive results to track performance over time.
+- Integrates into CI/CT/CD environments with JUnit-formatted output.
+- Optional user-defined problem spaces to scale test results and sample sizes.
+- Supports Test Fixtures.
+- Optionally captures a rich set of statistics to a file.
+- Easily installed using CMake, Conan, or VCPkg.
+
 ### Command Line
 
 ```
 <celeroOutputExecutable> [-g groupNameToRun] [-t resultsTable.csv] [-j junitOutputFile.xml] [-a resultArchive.csv] [-d numberOfIterationsPerDistribution] [-h]
 ```
 
--g Use this option to run only one benchmark group out of all benchmarks contained within a test executable.
--t Writes all results to a CSV file.  Very useful when using problem sets to graph performance.
--j Writes JUnit formatted XML output. To utilize JUnit output, benchmarks must use the "_TEST" version of the macros and specify an expected baseline multiple.  When the test exceeds this multiple, the JUnit output will indicate a failure.
--a Builds or updates an archive of historical results, tracking current, best, and worst results for each benchmark.
--d (Experimental) builds a plot of four different sample sizes to investigate the distribution of sample results.
+- `-g` Use this option to run only one benchmark group out of all benchmarks contained within a test executable.
+- `-t` Writes all results to a CSV file.  Very useful when using problem sets to graph performance.
+- `-j` Writes JUnit formatted XML output. To utilize JUnit output, benchmarks must use the `_TEST` version of the macros and specify an expected baseline multiple.  When the test exceeds this multiple, the JUnit output will indicate a failure.
+- `-a` Builds or updates an archive of historical results, tracking current, best, and worst results for each benchmark.
+- `-d` (Experimental) builds a plot of four different sample sizes to investigate the distribution of sample results.
 
 ## Celero Basics
 
