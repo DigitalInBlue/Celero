@@ -144,7 +144,7 @@ void celero::Run(int argc, char** argv)
 	}
 
 	// Has a result output file been specified?
-	bool must_close_file = false;
+	auto mustCloseFile = false;
 	auto argument = args.get<std::string>("outputTable");
 	if(argument.empty() == false)
 	{
@@ -152,7 +152,7 @@ void celero::Run(int argc, char** argv)
 		celero::ResultTable::Instance().setFileName(argument);
 
 		celero::AddExperimentResultCompleteFunction([](std::shared_ptr<celero::Result> p) { celero::ResultTable::Instance().add(p); });
-		must_close_file = true;
+		mustCloseFile = true;
 	}
 
 	// Has a result output file been specified?
@@ -194,7 +194,7 @@ void celero::Run(int argc, char** argv)
 		executor::RunAll();
 	}
 
-	if(must_close_file)
+	if(mustCloseFile == true)
 	{
 		celero::ResultTable::Instance().closeFile();
 	}
