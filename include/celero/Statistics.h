@@ -21,7 +21,6 @@
 
 #include <celero/Export.h>
 #include <celero/Pimpl.h>
-
 #include <cstdint>
 
 namespace celero

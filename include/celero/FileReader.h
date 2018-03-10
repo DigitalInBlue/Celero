@@ -23,6 +23,7 @@
 
 namespace celero
 {
+	///
 	/// \struct FileReader
 	///
 	/// A helper struct to aid in reading CSV files.

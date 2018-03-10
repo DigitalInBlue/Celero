@@ -170,10 +170,26 @@ std::string PrintColumnRight(const std::string& x, const size_t width = PrintCon
 std::string PrintHRule()
 {
 	std::stringstream ss;
-	ss << std::string(PrintConstants::ColumnWidth * PrintConstants::NumberOfColumns
-						  + PrintConstants::ColumnSeperatorWidth * (PrintConstants::NumberOfColumns - 1) + 2,
-					  '-')
-	   << "\n";
+	std::string column{":"};
+
+	while(column.length() < PrintConstants::ColumnWidth)
+	{
+		column += "-";
+	}
+
+	std::string firstColumn = column + ":|";
+
+	column += "-:|";
+
+	ss << "|" << firstColumn;
+
+	for(int i = 0; i < PrintConstants::NumberOfColumns - 1; ++i)
+	{
+		ss << column;
+	}
+
+	ss << std::endl;
+
 	return ss.str();
 }
 
@@ -185,18 +201,16 @@ void celero::print::Console(const std::string& x)
 void celero::print::TableBanner()
 {
 	celero::console::SetConsoleColor(celero::console::ConsoleColor_Default);
-	std::cout << PrintHRule();
-	std::cout << PrintCenter("Group") << PrintCenter("Experiment") << PrintCenter("Prob. Space") << PrintCenter("Samples")
-			  << PrintCenter("Iterations")
 
-			  << PrintCenter("Baseline") << PrintCenter("us/Iteration") << PrintCenter("Iterations/sec") << "\n";
+	std::cout << "|" << PrintCenter("Group") << PrintCenter("Experiment") << PrintCenter("Prob. Space") << PrintCenter("Samples")
+			  << PrintCenter("Iterations") << PrintCenter("Baseline") << PrintCenter("us/Iteration") << PrintCenter("Iterations/sec") << "\n";
 	std::cout << PrintHRule();
 }
 
 void celero::print::TableRowExperimentHeader(Experiment* x)
 {
 	celero::console::SetConsoleColor(celero::console::ConsoleColor_Default);
-	std::cout << PrintColumn(x->getBenchmark()->getName()) << PrintColumn(x->getName());
+	std::cout << "|" << PrintColumn(x->getBenchmark()->getName()) << PrintColumn(x->getName());
 }
 
 void celero::print::TableRowFailure(const std::string& msg)
