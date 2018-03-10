@@ -2,7 +2,7 @@
 
 ### C++ Benchmarking Library
 
-Copyright 2017 John Farrier 
+Copyright 2017-2018 John Farrier 
 
 Apache 2.0 License
 
@@ -291,44 +291,44 @@ class SortFixture : public celero::TestFixture
         }
 
         virtual std::vector<std::pair<int64_t, uint64_t>> getExperimentValues() const override
+	{
+		std::vector<std::pair<int64_t, uint64_t>> problemSpace;
+
+		// We will run some total number of sets of tests all together. 
+		// Each one growing by a power of 2.
+		const int totalNumberOfTests = 6;
+
+		for(int i = 0; i < totalNumberOfTests; i++)
 		{
-			std::vector<std::pair<int64_t, uint64_t>> problemSpace;
-
-			// We will run some total number of sets of tests all together. 
-			// Each one growing by a power of 2.
-			const int totalNumberOfTests = 6;
-
-			for(int i = 0; i < totalNumberOfTests; i++)
-			{
-				// ExperimentValues is part of the base class and allows us to specify
-				// some values to control various test runs to end up building a nice graph.
-				problemSpace.push_back(std::make_pair(int64_t(pow(2, i+1)), uint64_t(0)));
-			}
-
-			return problemSpace;
+			// ExperimentValues is part of the base class and allows us to specify
+			// some values to control various test runs to end up building a nice graph.
+			problemSpace.push_back(std::make_pair(int64_t(pow(2, i+1)), uint64_t(0)));
 		}
+
+		return problemSpace;
+	}
 
        	/// Before each run, build a vector of random integers.
-		virtual void setUp(int64_t experimentValue)
-		{
-			this->arraySize = experimentValue;
-			this->array.reserve(this->arraySize);
-		}
+	virtual void setUp(int64_t experimentValue)
+	{
+		this->arraySize = experimentValue;
+		this->array.reserve(this->arraySize);
+	}
 
-		/// Before each iteration. A common utility function to push back random ints to sort.
-		void randomize()
+	/// Before each iteration. A common utility function to push back random ints to sort.
+	void randomize()
+	{
+		for(int i = 0; i < this->arraySize; i++)
 		{
-			for(int i = 0; i < this->arraySize; i++)
-			{
-				this->array.push_back(rand());
-			}
+			this->array.push_back(rand());
 		}
+	}
 
-		/// After each iteration, clear the vector of random integers.
-		void clear()
-		{
-			this->array.clear();
-		}
+	/// After each iteration, clear the vector of random integers.
+	void clear()
+	{
+		this->array.clear();
+	}
 
         std::vector<int64_t> array;
         int64_t arraySize;
@@ -499,6 +499,14 @@ Test early and test often!
 - Because I like explicitness as much as the next programmer, I want to note that the actual sorting algorithm used by std::sort is not defined in the standard, but references cite Introsort as a likely contender for how an STL implementation would approach std::sort. http://en.wikipedia.org/wiki/Introsort.
 - When choosing a sorting algorithm, start with std::sort and see if you can make improvements from there.
 - Don't just trust your experience, measure your code!
+
+## FAQ
+
+### Q: I asked for `N` iterations, but Celero ran `N+1` iterations.
+The internal code will do one un-measured "warm up" pass.  This helps account for caching which may otherwise influence measurements.
+
+### Q: As my problem space increases in size, my runs take longer and longer.  How do I account for the increased complexity?
+When defining a problem space, you set up a `std::pair<>`.  If the second value in the pair is greater than zero, that number will be used to control the number of iterations for the corresponding problem space size.
 
 ## Example and Demo Code
 
