@@ -52,7 +52,7 @@ double celero::timer::CachePerformanceFrequency(bool quiet)
 
 	if(quiet == false)
 	{
-		std::cout << "Timer resolution: " << std::to_string(precision) << " us\n";
+		std::cout << "Timer resolution: " << std::to_string(precision) << " us" << std::endl;
 	}
 
 	return precision;

@@ -21,7 +21,7 @@
 # Cmake Configuration
 #
 
-CMAKE_MINIMUM_REQUIRED(VERSION 2.8)
+CMAKE_MINIMUM_REQUIRED(VERSION 3.0.2)
 
 # Project Name
 PROJECT(CeleroProject)
@@ -40,7 +40,7 @@ endif()
 
 option(CELERO_COMPILE_DYNAMIC_LIBRARIES "Set to ON to build Celero for dynamic linking.  Use OFF for static." ON)
 option(CELERO_RUN_EXAMPLE_ON_BUILD "Set to ON to automatically run the example after a successful build." OFF)
-option(CELERO_ENABLE_EXPERIMENTS "Set to ON to automatically build all examples." ON)
+option(CELERO_ENABLE_EXPERIMENTS "Set to ON to automatically build all examples." OFF)
 option(CELERO_ENABLE_FOLDERS "Enable to put Celero in its own solution folder under Visual Studio" ON)
 option(CELERO_ENABLE_TESTS "Enable building and running unit tests." OFF)
 
@@ -53,16 +53,14 @@ endif()
 if(CELERO_ENABLE_TESTS)
 	set(CELERO_ENABLE_AUTO_RUN_TESTS ON CACHE BOOL "Enable Celero tests to automatically run after building")
 	set(GTEST_DIRECTORY test/gtest-1.7.0)
-	set(GTEST_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/${GTEST_DIRECTORY}/include)
+	set(GTEST_INCLUDE_DIR ${GTEST_DIRECTORY}/include)
 	set(GTEST_LIBRARY gtest)
 	set(GTEST_MAIN_LIBRARY gtest_main)
-	include_directories(${CMAKE_CURRENT_SOURCE_DIR}/${GTEST_DIRECTORY}/include ${CMAKE_CURRENT_SOURCE_DIR}/${GTEST_DIRECTORY}/src)
+	include_directories(${GTEST_DIRECTORY}/include ${GTEST_DIRECTORY}/src)
 	ADD_SUBDIRECTORY(${GTEST_DIRECTORY})
 endif()
 
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
-
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
 
 #
 # Build and Install Settings
@@ -90,7 +88,6 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 # include path to be used by all projects
 #
 
-SET(HEADER_PATH ${celero_SOURCE_DIR}/include)
 
 set(PROJECT_NAME celero)
 
@@ -208,12 +205,30 @@ endif()
 
 target_link_libraries(${PROJECT_NAME} ${SYSLIBS})
 
-include_directories(${HEADER_PATH})
+target_include_directories(${PROJECT_NAME} PUBLIC
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+  $<INSTALL_INTERFACE:${CMAKE_INSTALL_PREFIX}/include>
+)
+
+# ---------------------------------------------------------------------------
+# Install and exports
+# ---------------------------------------------------------------------------
 
 install(TARGETS ${PROJECT_NAME}
-	LIBRARY DESTINATION ${CMAKE_INSTALL_PREFIX}/bin
-	ARCHIVE DESTINATION ${CMAKE_INSTALL_PREFIX}/lib)
+  EXPORT ${PROJECT_NAME}-target
+  LIBRARY DESTINATION ${CMAKE_INSTALL_PREFIX}/lib
+  ARCHIVE DESTINATION ${CMAKE_INSTALL_PREFIX}/lib/static
+)
 install(DIRECTORY include DESTINATION ${CMAKE_INSTALL_PREFIX})
+
+# export to be used from install location
+install(EXPORT ${PROJECT_NAME}-target
+  DESTINATION ${CMAKE_INSTALL_PREFIX}/share
+)
+# export to be used from build directory
+export(EXPORT ${PROJECT_NAME}-target
+  FILE ${PROJECT_NAME}-target.cmake
+)
 
 # ---------------------------------------------------------------------------
 # Google Test Application
@@ -232,11 +247,8 @@ if(CELERO_ENABLE_TESTS)
 		add_definitions( /D _VARIADIC_MAX=10 )
 	endif()
 
-	SET(HEADER_PATH ${celero_SOURCE_DIR}/include)
-	include_directories(${HEADER_PATH})
 	include_directories(${GTEST_INCLUDE_DIR})
 
-	add_dependencies(${PROJECT_NAME} celero)
 	target_link_libraries(${PROJECT_NAME} ${GTEST_LIBRARY} ${GTEST_MAIN_LIBRARY} celero)
 
 	if(CELERO_ENABLE_AUTO_RUN_TESTS)

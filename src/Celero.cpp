@@ -91,6 +91,13 @@ std::shared_ptr<celero::Benchmark> celero::RegisterBaseline(const char* groupNam
 
 void celero::Run(int argc, char** argv)
 {
+#ifdef _DEBUG
+	std::cout << "Celero is running in Debug.  Results are for debugging only as any measurements made while in Debug are likely not representative "
+				 "of non-debug results."
+			  << std::endl
+			  << std::endl;
+#endif
+
 	cmdline::parser args;
 	args.add("list", 'l', "Prints a list of all available benchmarks.");
 	args.add<std::string>("group", 'g', "Runs a specific group of benchmarks.", false, "");
@@ -127,7 +134,6 @@ void celero::Run(int argc, char** argv)
 	std::cout << "Celero" << std::endl;
 
 	// Disable dynamic CPU frequency scaling
-	celero::DisableDynamicCPUScaling();
 	celero::timer::CachePerformanceFrequency(false);
 
 	// Shall we build a distribution?
@@ -138,7 +144,7 @@ void celero::Run(int argc, char** argv)
 	}
 
 	// Has a result output file been specified?
-	bool must_close_file = false;
+	auto mustCloseFile = false;
 	auto argument = args.get<std::string>("outputTable");
 	if(argument.empty() == false)
 	{
@@ -146,7 +152,7 @@ void celero::Run(int argc, char** argv)
 		celero::ResultTable::Instance().setFileName(argument);
 
 		celero::AddExperimentResultCompleteFunction([](std::shared_ptr<celero::Result> p) { celero::ResultTable::Instance().add(p); });
-		must_close_file = true;
+		mustCloseFile = true;
 	}
 
 	// Has a result output file been specified?
@@ -188,11 +194,11 @@ void celero::Run(int argc, char** argv)
 		executor::RunAll();
 	}
 
-	if(must_close_file)
+	if(mustCloseFile == true)
 	{
 		celero::ResultTable::Instance().closeFile();
 	}
 
 	// Final output.
-	std::cout << "Complete.\n";
+	std::cout << "Complete." << std::endl;
 }

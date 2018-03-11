@@ -38,15 +38,18 @@ public:
 	{
 	}
 
-    ~Impl() {
-        closeFile();
-    }
+	~Impl()
+	{
+		closeFile();
+	}
 
-    void closeFile() {
-        if (this->ofs.is_open() == true) {
-            this->ofs.close();
-        }
-    }
+	void closeFile()
+	{
+		if(this->ofs.is_open() == true)
+		{
+			this->ofs.close();
+		}
+	}
 
 	void setFileName(const std::string& x)
 	{
@@ -60,8 +63,11 @@ public:
 		// Print the header for the table.
 		if(this->ofs.is_open() == true)
 		{
-			this->ofs << "Group,Experiment,Problem Space,Samples,Iterations,Failure,Baseline,";
-			this->ofs << "us/Iteration,Iterations/sec,Min (us),Mean (us),Max (us),Variance,Standard Deviation,Skewness,Kurtosis,Z Score\n";
+			this->ofs << "Group,Experiment,Problem "
+						 "Space,Samples,Iterations,Failure,Baseline,";
+			this->ofs << "us/Iteration,Iterations/sec,Min (us),Mean (us),Max "
+						 "(us),Variance,Standard Deviation,Skewness,Kurtosis,Z Score"
+					  << std::endl;
 		}
 	}
 
@@ -98,8 +104,9 @@ void ResultTable::setFileName(const std::string& x)
 	this->pimpl->setFileName(x);
 }
 
-void ResultTable::closeFile() {
-    this->pimpl->closeFile();
+void ResultTable::closeFile()
+{
+	this->pimpl->closeFile();
 }
 
 void ResultTable::add(std::shared_ptr<Result> x)
@@ -113,6 +120,6 @@ void ResultTable::add(std::shared_ptr<Result> x)
 						 << x->getStatistics()->getMin() << "," << x->getStatistics()->getMean() << "," << x->getStatistics()->getMax() << ","
 						 << x->getStatistics()->getVariance() << "," << x->getStatistics()->getStandardDeviation() << ","
 						 << x->getStatistics()->getSkewness() << "," << x->getStatistics()->getKurtosis() << "," << x->getStatistics()->getZScore()
-						 << "\n";
+						 << std::endl;
 	}
 }
