@@ -19,7 +19,7 @@
 #include <celero/Benchmark.h>
 #include <gtest/gtest.h>
 
-TEST(celero_Benchmark, Setters)
+TEST(benchmark, Setters)
 {
 	/*
 	celero::Benchmark original;

@@ -19,7 +19,7 @@
 #include <celero/Utilities.h>
 #include <gtest/gtest.h>
 
-TEST(celero_utilities, UsPerSec)
+TEST(utilities, UsPerSec)
 {
 	EXPECT_EQ(1000000, celero::UsPerSec);
 }
