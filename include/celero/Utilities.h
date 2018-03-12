@@ -101,22 +101,23 @@ namespace celero
 	template <class T>
 	void DoNotOptimizeAway(T&& x)
 	{
-		//
-		// We must always do this test, but it will never pass.
-		//
-		if(std::chrono::system_clock::now() == std::chrono::time_point<std::chrono::system_clock>())
-		{
-			// This forces the value to never be optimized away
-			// by taking a reference then using it.
-			const auto* p = &x;
-			putchar(*reinterpret_cast<const char*>(p));
+		volatile T foo = x;
 
-			// If we do get here, kick out because something has gone wrong.
-			std::abort();
-		}
+		// Foo is referenced here to avoid a compiler warning about an unused variable.  It may add one extra instruction.
+		foo;
 	}
 
-	/// Specialization for std::function objects.
+	/// Specialization for std::function objects which return a value.
+	template <class T>
+	void DoNotOptimizeAway(std::function<T(void)>&& x)
+	{
+		volatile auto foo = x();
+
+		// Foo is referenced here to avoid a compiler warning about an unused variable.  It may add one extra instruction.
+		foo;
+	}
+
+	/// Specialization for std::function objects which return void.
 	template <>
 	CELERO_EXPORT void DoNotOptimizeAway(std::function<void(void)>&& x);
 
