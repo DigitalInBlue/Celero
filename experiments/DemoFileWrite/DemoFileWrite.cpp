@@ -29,7 +29,7 @@ public:
 	{
 		for(auto i = 0; i < experimentValue.Value; ++i)
 		{
-			this->buffer.push_back(rand() % 256);
+			this->buffer.push_back(celero::Random() % 256);
 		}
 	}
 

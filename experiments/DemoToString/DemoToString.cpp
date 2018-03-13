@@ -95,21 +95,21 @@ std::string hopmanFast(T o)
 
 BASELINE(DemoToString, Baseline, 10000, 1000)
 {
-	const int x = rand() % 42;
+	const int x = celero::Random() % 42;
 	celero::DoNotOptimizeAway(x);
 	celero::DoNotOptimizeAway(std::string("42"));
 }
 
 BENCHMARK(DemoToString, to_string, 10000, 1000)
 {
-	const int x = rand() % 42;
+	const int x = celero::Random() % 42;
 	celero::DoNotOptimizeAway(x);
 	celero::DoNotOptimizeAway(std::to_string(x));
 }
 
 BENCHMARK(DemoToString, stringstream, 10000, 1000)
 {
-	const int x = rand() % 42;
+	const int x = celero::Random() % 42;
 	celero::DoNotOptimizeAway(x);
 	std::stringstream ss;
 	ss << x;
@@ -118,7 +118,7 @@ BENCHMARK(DemoToString, stringstream, 10000, 1000)
 
 BENCHMARK(DemoToString, table, 10000, 1000)
 {
-	const int x = rand() % 42;
+	const int x = celero::Random() % 42;
 	celero::DoNotOptimizeAway(x);
 	celero::DoNotOptimizeAway(uint8str[x]);
 }
@@ -137,7 +137,7 @@ BENCHMARK(DemoToString, itoa, 10000, 1000)
 /// http://ideone.com/GkPcy
 BENCHMARK(DemoToString, hopmanFast, 10000, 1000)
 {
-	const int x = rand() % 42;
+	const int x = celero::Random() % 42;
 	celero::DoNotOptimizeAway(x);
 	celero::DoNotOptimizeAway(std::string(hopmanFast(x)));
 }

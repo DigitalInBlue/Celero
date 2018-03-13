@@ -66,7 +66,7 @@ public:
 	{
 		for(int i = 0; i < this->arraySize; i++)
 		{
-			this->array[i] = rand();
+			this->array[i] = celero::Random();
 		}
 	}
 

@@ -25,6 +25,13 @@
 #include <PowrProf.h>
 #endif
 
+#ifdef max
+#undef max
+#endif
+
+#include <limits>
+#include <random>
+
 template <>
 void celero::DoNotOptimizeAway(std::function<void(void)>&& x)
 {
@@ -43,4 +50,19 @@ void celero::DoNotOptimizeAway(std::function<void(void)>&& x)
 		// If we do get here, kick out because something has gone wrong.
 		std::abort();
 	}
+}
+
+int celero::Random()
+{
+	// http://en.cppreference.com/w/cpp/numeric/random/uniform_int_distribution
+
+	// Will be used to obtain a seed for the random number engine
+	static std::random_device rd;
+
+	// Standard mersenne_twister_engine seeded with rd()
+	static std::mt19937 gen(rd());
+
+	static std::uniform_int_distribution<> dis(std::numeric_limits<int>::lowest(), std::numeric_limits<int>::max());
+
+	return dis(gen);
 }

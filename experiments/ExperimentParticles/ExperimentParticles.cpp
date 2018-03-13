@@ -85,8 +85,8 @@ public:
 		{
 			for(int64_t i = 0; i < experimentValue.Value / 2; ++i)
 			{
-				const auto a = rand() % experimentValue.Value;
-				const auto b = rand() % experimentValue.Value;
+				const auto a = celero::Random() % experimentValue.Value;
+				const auto b = celero::Random() % experimentValue.Value;
 
 				if(a != b)
 				{

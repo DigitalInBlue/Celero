@@ -76,7 +76,7 @@ public:
 
 		for(int i = 0; i < this->arraySize; i++)
 		{
-			this->arrayIn.push_back(rand());
+			this->arrayIn.push_back(celero::Random());
 		}
 
 		this->arrayOut.resize(this->arraySize);
