@@ -91,7 +91,7 @@ void ThreadTestFixture::stopThreads()
 	};
 }
 
-uint64_t ThreadTestFixture::run(uint64_t threads, uint64_t calls, int64_t experimentValue)
+uint64_t ThreadTestFixture::run(uint64_t threads, uint64_t calls, const celero::TestFixture::ExperimentValue& experimentValue)
 {
 	if(this->HardCodedMeasurement() == 0)
 	{

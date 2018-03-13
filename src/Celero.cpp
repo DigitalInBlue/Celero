@@ -151,7 +151,7 @@ void celero::Run(int argc, char** argv)
 		std::cout << "Writing results to: " << argument << std::endl;
 		celero::ResultTable::Instance().setFileName(argument);
 
-		celero::AddExperimentResultCompleteFunction([](std::shared_ptr<celero::Result> p) { celero::ResultTable::Instance().add(p); });
+		celero::AddExperimentResultCompleteFunction([](std::shared_ptr<celero::ExperimentResult> p) { celero::ResultTable::Instance().add(p); });
 		mustCloseFile = true;
 	}
 
@@ -162,7 +162,7 @@ void celero::Run(int argc, char** argv)
 		std::cout << "Archiving results to: " << argument << std::endl;
 		celero::Archive::Instance().setFileName(argument);
 
-		celero::AddExperimentResultCompleteFunction([](std::shared_ptr<celero::Result> p) { celero::Archive::Instance().add(p); });
+		celero::AddExperimentResultCompleteFunction([](std::shared_ptr<celero::ExperimentResult> p) { celero::Archive::Instance().add(p); });
 	}
 
 	// Has a JUnit output file been specified?
@@ -172,7 +172,7 @@ void celero::Run(int argc, char** argv)
 		std::cout << "Writing JUnit results to: " << argument << std::endl;
 		celero::JUnit::Instance().setFileName(argument);
 
-		celero::AddExperimentResultCompleteFunction([](std::shared_ptr<celero::Result> p) { celero::JUnit::Instance().add(p); });
+		celero::AddExperimentResultCompleteFunction([](std::shared_ptr<celero::ExperimentResult> p) { celero::JUnit::Instance().add(p); });
 	}
 
 	// Has a flag to catch exceptions or not been specified?

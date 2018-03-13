@@ -19,13 +19,12 @@
 /// limitations under the License.
 ///
 
+#include <celero/TestFixture.h>
 #include <cstdint>
 #include <utility>
 
 namespace celero
 {
-	class TestFixture;
-
 	///
 	/// A Singleton storing exception settings (currently only one flag)
 	///
@@ -52,12 +51,14 @@ namespace celero
 	///
 	/// Run test and catch SEH exceptions if they are supported by compiler
 	///
-	std::pair<bool, uint64_t> RunAndCatchSEHExc(TestFixture& test, uint64_t threads, uint64_t calls, int64_t experimentValue);
+	std::pair<bool, uint64_t> RunAndCatchSEHExc(TestFixture& test, uint64_t threads, uint64_t calls,
+												const celero::TestFixture::ExperimentValue& experimentValue);
 
 	///
 	/// Run test and catch all exceptions we can
 	///
-	std::pair<bool, uint64_t> RunAndCatchExc(TestFixture& test, uint64_t threads, uint64_t calls, int64_t experimentValue);
+	std::pair<bool, uint64_t> RunAndCatchExc(TestFixture& test, uint64_t threads, uint64_t calls,
+											 const celero::TestFixture::ExperimentValue& experimentValue);
 } // namespace celero
 
 #endif

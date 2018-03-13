@@ -78,7 +78,7 @@ public:
 
 	/// There is one result for each problem space value.
 	/// In the event there are not any problem spaces, there shal be a single result.
-	std::vector<std::shared_ptr<Result>> results;
+	std::vector<std::shared_ptr<celero::ExperimentResult>> results;
 
 	/// The owning benchmark object which groups together all experiments.
 	std::weak_ptr<Benchmark> benchmark;
@@ -276,7 +276,7 @@ std::shared_ptr<Factory> Experiment::getFactory() const
 
 void Experiment::addProblemSpace(int64_t x, double scale, uint64_t iterations)
 {
-	auto r = std::make_shared<Result>(this);
+	auto r = std::make_shared<celero::ExperimentResult>(this);
 	r->setProblemSpaceValue(x, scale, iterations);
 	this->pimpl->results.push_back(r);
 }
@@ -285,7 +285,7 @@ size_t Experiment::getResultSize()
 {
 	if(this->pimpl->results.empty() == true)
 	{
-		auto defaultResult = std::make_shared<Result>(this);
+		auto defaultResult = std::make_shared<celero::ExperimentResult>(this);
 		defaultResult->setProblemSpaceValue(static_cast<int64_t>(TestFixture::Constants::NoProblemSpaceValue), 1.0, this->getIterations());
 		this->pimpl->results.push_back(defaultResult);
 	}
@@ -293,18 +293,18 @@ size_t Experiment::getResultSize()
 	return this->pimpl->results.size();
 }
 
-std::shared_ptr<Result> Experiment::getResult(size_t x)
+std::shared_ptr<celero::ExperimentResult> Experiment::getResult(size_t x)
 {
 	// get the result OR thrown an exception if the result list is empty;
 	return this->pimpl->results.at(x);
 }
 
-std::shared_ptr<Result> Experiment::getResultByValue(int64_t x)
+std::shared_ptr<celero::ExperimentResult> Experiment::getResultByValue(int64_t x)
 {
-	std::shared_ptr<Result> r;
+	std::shared_ptr<celero::ExperimentResult> r;
 
 	const auto found = std::find_if(std::begin(this->pimpl->results), std::end(this->pimpl->results),
-									[x](std::shared_ptr<Result> i) -> bool { return (i->getProblemSpaceValue() == x); });
+									[x](std::shared_ptr<celero::ExperimentResult> i) -> bool { return (i->getProblemSpaceValue() == x); });
 
 	if(found != std::end(this->pimpl->results))
 	{

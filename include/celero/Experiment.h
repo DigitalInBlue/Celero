@@ -19,8 +19,8 @@
 /// limitations under the License.
 ///
 
+#include <celero/ExperimentResult.h>
 #include <celero/Factory.h>
-#include <celero/Result.h>
 #include <celero/Statistics.h>
 #include <string>
 
@@ -162,12 +162,12 @@ namespace celero
 		///
 		///
 		///
-		std::shared_ptr<Result> getResult(size_t x);
+		std::shared_ptr<celero::ExperimentResult> getResult(size_t x);
 
 		///
 		///
 		///
-		std::shared_ptr<Result> getResultByValue(int64_t x);
+		std::shared_ptr<celero::ExperimentResult> getResultByValue(int64_t x);
 
 	private:
 		///
@@ -191,6 +191,6 @@ namespace celero
 		///
 		Pimpl<Impl> pimpl;
 	};
-}
+} // namespace celero
 
 #endif

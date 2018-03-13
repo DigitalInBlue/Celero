@@ -64,22 +64,12 @@ namespace celero
 		///
 		/// \return Returns the number of microseconds the run took.
 		///
-		uint64_t run(uint64_t threads, uint64_t calls, int64_t experimentValue) override;
-
-		///
-		/// Get the current call number starting from 1.
-		///
-		uint64_t getCallId() const;
-
-		///
-		/// Get the current thread Id starting from 1.
-		///
-		uint64_t getThreadId() const;
+		uint64_t run(uint64_t threads, uint64_t calls, const celero::TestFixture::ExperimentValue& experimentValue) override;
 
 	private:
 		class Impl;
 		Pimpl<Impl> pimpl;
 	};
-}
+} // namespace celero
 
 #endif

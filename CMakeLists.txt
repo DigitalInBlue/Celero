@@ -111,7 +111,7 @@ set(TARGET_H
 	include/celero/PimplImpl.h
 	include/celero/Print.h
 	include/celero/Experiment.h
-	include/celero/Result.h
+	include/celero/ExperimentResult.h
 	include/celero/ResultTable.h
 	include/celero/Statistics.h
 	include/celero/TestFixture.h
@@ -135,7 +135,7 @@ set(TARGET_SRC
 	src/Memory.cpp
 	src/Print.cpp
 	src/Experiment.cpp
-	src/Result.cpp
+	src/ExperimentResult.cpp
 	src/ResultTable.cpp
 	src/Statistics.cpp
 	src/TestVector.cpp

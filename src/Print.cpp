@@ -221,7 +221,7 @@ void celero::print::TableRowFailure(const std::string& msg)
 	celero::console::SetConsoleColor(celero::console::ConsoleColor_Default);
 }
 
-void celero::print::TableRowProblemSpaceHeader(std::shared_ptr<Result> x)
+void celero::print::TableRowProblemSpaceHeader(std::shared_ptr<celero::ExperimentResult> x)
 {
 	celero::console::SetConsoleColor(celero::console::ConsoleColor_Default);
 
@@ -237,13 +237,13 @@ void celero::print::TableRowProblemSpaceHeader(std::shared_ptr<Result> x)
 	std::cout << PrintColumn(x->getExperiment()->getSamples()) << PrintColumn(x->getProblemSpaceIterations());
 }
 
-void celero::print::TableRowHeader(std::shared_ptr<Result> x)
+void celero::print::TableRowHeader(std::shared_ptr<celero::ExperimentResult> x)
 {
 	TableRowExperimentHeader(x->getExperiment());
 	TableRowProblemSpaceHeader(x);
 }
 
-void celero::print::TableResult(std::shared_ptr<Result> x)
+void celero::print::TableResult(std::shared_ptr<celero::ExperimentResult> x)
 {
 	celero::console::SetConsoleColor(celero::console::ConsoleColor_Default);
 

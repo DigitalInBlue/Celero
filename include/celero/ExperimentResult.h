@@ -29,16 +29,16 @@ namespace celero
 	class Statistics;
 
 	///
-	/// \class Experiment
+	/// \class ExperimentResult
 	///
 	/// \author	John Farrier
 	///
-	class CELERO_EXPORT Result
+	class CELERO_EXPORT ExperimentResult
 	{
 	public:
-		explicit Result(Experiment* x);
+		explicit ExperimentResult(Experiment* x);
 
-		~Result();
+		~ExperimentResult();
 
 		///
 		/// Gets a pointer to the owning experiment.
@@ -68,7 +68,7 @@ namespace celero
 		///
 		///
 		///
-		Statistics* getStatistics();
+		Statistics* getTimeStatistics();
 
 		///
 		/// Adds a run time sample during experiment execution.
@@ -107,7 +107,7 @@ namespace celero
 		/// If this IS a baseline experiment, the function will return 1.0;
 		/// Returns -1 on error.
 		///
-		double getBaselineMeasurement();
+		double getBaselineMeasurement() const;
 
 		///
 		/// Sets a flag indicating if this result is complete.
@@ -133,7 +133,7 @@ namespace celero
 		///
 		/// Disable default constructor
 		///
-		Result();
+		ExperimentResult();
 
 		///
 		/// \brief	Pimpl Idiom

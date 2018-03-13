@@ -37,19 +37,19 @@ namespace celero
 		// void Run(const std::string& x);
 		// void Status(const std::string& x);
 		// void Failure(const std::string& x);
-		// void Run(std::shared_ptr<Result> x);
-		// void Done(std::shared_ptr<Result> x);
-		// void Baseline(std::shared_ptr<Result> x);
+		// void Run(std::shared_ptr<celero::ExperimentResult> x);
+		// void Done(std::shared_ptr<celero::ExperimentResult> x);
+		// void Baseline(std::shared_ptr<celero::ExperimentResult> x);
 		// void SummaryTest(const std::string& x);
-		// void Summary(std::shared_ptr<Result> x);
+		// void Summary(std::shared_ptr<celero::ExperimentResult> x);
 
 		void Console(const std::string& x);
 		void TableBanner();
 		void TableRowExperimentHeader(Experiment* x);
 		void TableRowFailure(const std::string& msg);
-		void TableRowProblemSpaceHeader(std::shared_ptr<Result> x);
-		void TableRowHeader(std::shared_ptr<Result> x);
-		void TableResult(std::shared_ptr<Result> x);
+		void TableRowProblemSpaceHeader(std::shared_ptr<celero::ExperimentResult> x);
+		void TableRowHeader(std::shared_ptr<celero::ExperimentResult> x);
+		void TableResult(std::shared_ptr<celero::ExperimentResult> x);
 	}
 }
 

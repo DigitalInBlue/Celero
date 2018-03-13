@@ -285,7 +285,7 @@ void Archive::setFileName(const std::string& x)
 	this->pimpl->readExistingResults();
 }
 
-void Archive::add(std::shared_ptr<celero::Result> x)
+void Archive::add(std::shared_ptr<celero::ExperimentResult> x)
 {
 	const auto found = std::find_if(std::begin(this->pimpl->results), std::end(this->pimpl->results), [x](const ArchiveEntry& r) -> bool {
 		return (r.GroupName == x->getExperiment()->getBenchmark()->getName()) && (r.RunName == x->getExperiment()->getName())
@@ -301,7 +301,7 @@ void Archive::add(std::shared_ptr<celero::Result> x)
 
 		found->CurrentBaseline = x->getBaselineMeasurement();
 		found->CurrentBaseline_TimeSinceEpoch = this->pimpl->now();
-		found->CurrentStats = *x->getStatistics();
+		found->CurrentStats = *x->getTimeStatistics();
 
 		if(found->Failure || found->CurrentBaseline <= found->MinBaseline)
 		{
@@ -345,15 +345,15 @@ void Archive::add(std::shared_ptr<celero::Result> x)
 
 		r.CurrentBaseline = x->getBaselineMeasurement();
 		r.CurrentBaseline_TimeSinceEpoch = r.FirstRanDate;
-		r.CurrentStats = *x->getStatistics();
+		r.CurrentStats = *x->getTimeStatistics();
 
 		r.MaxBaseline = x->getBaselineMeasurement();
 		r.MaxBaseline_TimeSinceEpoch = r.FirstRanDate;
-		r.MaxStats = *x->getStatistics();
+		r.MaxStats = *x->getTimeStatistics();
 
 		r.MinBaseline = x->getBaselineMeasurement();
 		r.MinBaseline_TimeSinceEpoch = r.FirstRanDate;
-		r.MinStats = *x->getStatistics();
+		r.MinStats = *x->getTimeStatistics();
 
 		this->pimpl->results.push_back(r);
 	}

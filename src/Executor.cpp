@@ -34,7 +34,7 @@ using namespace celero;
 ///
 /// A local function to figure out how many iterations and samples are required when the user doesn't specify any.
 ///
-bool AdjustSampleAndIterationSize(std::shared_ptr<Result> r)
+bool AdjustSampleAndIterationSize(std::shared_ptr<celero::ExperimentResult> r)
 {
 	if(r->getExperiment()->getSamples() == 0)
 	{
@@ -78,7 +78,7 @@ bool AdjustSampleAndIterationSize(std::shared_ptr<Result> r)
 ///
 /// A local function to support running an individual user-defined function for measurement.
 ///
-bool ExecuteProblemSpace(std::shared_ptr<Result> r)
+bool ExecuteProblemSpace(std::shared_ptr<celero::ExperimentResult> r)
 {
 	// Define a small internal function object to use to uniformly execute the tests.
 	auto testRunner = [r](const bool record) {
@@ -97,7 +97,7 @@ bool ExecuteProblemSpace(std::shared_ptr<Result> r)
 		// Save test results
 		if(record == true)
 		{
-			r->getStatistics()->addSample(testTime);
+			r->getTimeStatistics()->addSample(testTime);
 			r->getExperiment()->incrementTotalRunTime(testTime);
 		}
 
@@ -173,13 +173,13 @@ void executor::RunBaseline(std::shared_ptr<Benchmark> bmark)
 
 			for(auto i : testValues)
 			{
-				if(i.second != 0)
+				if(i.Iterations > 0)
 				{
-					baselineExperiment->addProblemSpace(i.first, static_cast<double>(valueResultScale), i.second);
+					baselineExperiment->addProblemSpace(i.Value, static_cast<double>(valueResultScale), i.Iterations);
 				}
 				else
 				{
-					baselineExperiment->addProblemSpace(i.first, static_cast<double>(valueResultScale), baselineExperiment->getIterations());
+					baselineExperiment->addProblemSpace(i.Value, static_cast<double>(valueResultScale), baselineExperiment->getIterations());
 				}
 			}
 
@@ -272,13 +272,13 @@ void executor::Run(std::shared_ptr<Experiment> e)
 
 		for(auto i : testValues)
 		{
-			if(i.second != 0)
+			if(i.Iterations > 0)
 			{
-				e->addProblemSpace(i.first, valueResultScale, i.second);
+				e->addProblemSpace(i.Value, valueResultScale, i.Iterations);
 			}
 			else
 			{
-				e->addProblemSpace(i.first, valueResultScale, e->getIterations());
+				e->addProblemSpace(i.Value, valueResultScale, e->getIterations());
 			}
 		}
 

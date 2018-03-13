@@ -124,7 +124,12 @@ namespace celero
 	///
 	/// Quick definition of the number of microseconds per second.
 	///
-	const uint64_t UsPerSec(1000000);
+	constexpr uint64_t UsPerSec(1000000);
+
+	///
+	/// Conversion from Microseconds to Seconds.
+	///
+	constexpr double UsToSec{1.0e-6};
 
 } // namespace celero
 

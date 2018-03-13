@@ -194,7 +194,8 @@ namespace celero
 	}
 #endif // CELERO_HAS_SEH
 
-	std::pair<bool, uint64_t> RunAndCatchSEHExc(TestFixture& test, uint64_t threads, uint64_t calls, int64_t experimentValue)
+	std::pair<bool, uint64_t> RunAndCatchSEHExc(TestFixture& test, uint64_t threads, uint64_t calls,
+												const celero::TestFixture::ExperimentValue& experimentValue)
 	{
 #if CELERO_HAS_SEH
 		__try
@@ -214,7 +215,8 @@ namespace celero
 #endif // CELERO_HAS_SEH
 	}
 
-	std::pair<bool, uint64_t> RunAndCatchExc(TestFixture& test, uint64_t threads, uint64_t calls, int64_t experimentValue)
+	std::pair<bool, uint64_t> RunAndCatchExc(TestFixture& test, uint64_t threads, uint64_t calls,
+											 const celero::TestFixture::ExperimentValue& experimentValue)
 	{
 		if(ExceptionSettings::GetCatchExceptions() == true)
 		{

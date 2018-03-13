@@ -31,7 +31,7 @@ TestFixture::~TestFixture()
 {
 }
 
-void TestFixture::onExperimentStart(int64_t)
+void TestFixture::onExperimentStart(const celero::TestFixture::ExperimentValue&)
 {
 }
 
@@ -39,7 +39,7 @@ void TestFixture::onExperimentEnd()
 {
 }
 
-void TestFixture::setUp(int64_t)
+void TestFixture::setUp(const celero::TestFixture::ExperimentValue&)
 {
 }
 
@@ -47,7 +47,7 @@ void TestFixture::tearDown()
 {
 }
 
-uint64_t TestFixture::run(const uint64_t, const uint64_t iterations, int64_t experimentValue)
+uint64_t TestFixture::run(const uint64_t, const uint64_t iterations, const celero::TestFixture::ExperimentValue& experimentValue)
 {
 	// This function constitutes one sample consisting of several iterations for a single experiment value.
 

@@ -24,12 +24,14 @@ Once Celero is added to your project. You can create dedicated benchmark project
 ### Key Features
 
 - Supports Windows, Linux, and OSX using C++11.
-- Console table output is formatted for Markdown.
+- The timing utilities can be used directly in production code (independent of benchmarks).
+- Console table output is formatted as Markdown to easily copy/paste into documents.
 - Archive results to track performance over time.
 - Integrates into CI/CT/CD environments with JUnit-formatted output.
-- Optional user-defined problem spaces to scale test results and sample sizes.
+- User-defined Experiment Values can scale test results, sample sizes, and user-defined properties for each run.
 - Supports Test Fixtures.
-- Optionally captures a rich set of statistics to a file.
+- Supports fixed-time benchmark baselines.
+- Capture a rich set of timing statistics to a file.
 - Easily installed using CMake, Conan, or VCPkg.
 
 ### Command Line
@@ -62,11 +64,11 @@ Once this measurement is obtained, it has little meaning in isolation.  It is im
 
 ### Implementation
 
-Celero heavily utilizes C++11 features that are available in both Visual C++ 2012 and GCC 4.7.  This greatly aided in making the code clean and portable.  To make adopting the code easier, all definitions needed by a user are defined in a celero namespace within a single include file: Celero.h
+Celero heavily utilizes C++11 features that are available in both Visual C++ 2012 and GCC 4.7.  This greatly aided in making the code clean and portable.  To make adopting the code easier, all definitions needed by a user are defined in a celero namespace within a single include file: `Celero.h`
 
-Celero.h has within it the macro definitions that turn each of the user benchmark cases into its own unique class with the associated test fixture (if any) and then registers the test case within a Factory.  The macros automatically associate baseline test cases with their associated test benchmarks so that, at run time, benchmark-relative numbers can be computed.  This association is maintained by TestVector.
+`Celero.h` has within it the macro definitions that turn each of the user benchmark cases into its own unique class with the associated test fixture (if any) and then registers the test case within a Factory.  The macros automatically associate baseline test cases with their associated test benchmarks so that, at run time, benchmark-relative numbers can be computed.  This association is maintained by TestVector.
 
-The TestVector utilizes the PImpl idiom to help hide implementation and keep the include overhead of Celero.h to a minimum.
+The `TestVector` utilizes the PImpl idiom to help hide implementation and keep the include overhead of `Celero.h` to a minimum.
 
 Celero reports its outputs to the command line.  Since colors are nice (and perhaps contribute to the human factors/readability of the results), something beyond std::cout was called for.  Console.h defines a simple color function, SetConsoleColor, which is utilized by the functions in the celero::print namespace to nicely format the program's output.
 
@@ -296,57 +298,57 @@ To demonstrate, we will study the performance of three common sorting algorithms
 ```C++
 class SortFixture : public celero::TestFixture
 {
-    public:
-        SortFixture()
+public:
+    SortFixture()
+    {
+    }
+
+    virtual std::vector<celero::TestFixture::ExperimentValue> getExperimentValues() const override
+    {
+        std::vector<celero::TestFixture::ExperimentValue> problemSpace;
+
+        // We will run some total number of sets of tests all together. 
+        // Each one growing by a power of 2.
+        const int totalNumberOfTests = 6;
+
+        for(int i = 0; i < totalNumberOfTests; i++)
         {
+            // ExperimentValues is part of the base class and allows us to specify
+            // some values to control various test runs to end up building a nice graph.
+            problemSpace.push_back({int64_t(pow(2, i+1)});
         }
 
-        virtual std::vector<std::pair<int64_t, uint64_t>> getExperimentValues() const override
-	{
-		std::vector<std::pair<int64_t, uint64_t>> problemSpace;
+        return problemSpace;
+    }
 
-		// We will run some total number of sets of tests all together. 
-		// Each one growing by a power of 2.
-		const int totalNumberOfTests = 6;
+    /// Before each run, build a vector of random integers.
+    virtual void setUp(const celero::TestFixture::ExperimentValue& experimentValue)
+    {
+        this->arraySize = experimentValue.Value;
+        this->array.reserve(this->arraySize);
+    }
 
-		for(int i = 0; i < totalNumberOfTests; i++)
-		{
-			// ExperimentValues is part of the base class and allows us to specify
-			// some values to control various test runs to end up building a nice graph.
-			problemSpace.push_back(std::make_pair(int64_t(pow(2, i+1)), uint64_t(0)));
-		}
+    /// Before each iteration. A common utility function to push back random ints to sort.
+    void randomize()
+    {
+        for(int i = 0; i < this->arraySize; i++)
+        {
+            this->array.push_back(rand());
+        }
+    }
 
-		return problemSpace;
-	}
+    /// After each iteration, clear the vector of random integers.
+    void clear()
+    {
+        this->array.clear();
+    }
 
-       	/// Before each run, build a vector of random integers.
-	virtual void setUp(int64_t experimentValue)
-	{
-		this->arraySize = experimentValue;
-		this->array.reserve(this->arraySize);
-	}
-
-	/// Before each iteration. A common utility function to push back random ints to sort.
-	void randomize()
-	{
-		for(int i = 0; i < this->arraySize; i++)
-		{
-			this->array.push_back(rand());
-		}
-	}
-
-	/// After each iteration, clear the vector of random integers.
-	void clear()
-	{
-		this->array.clear();
-	}
-
-        std::vector<int64_t> array;
-        int64_t arraySize;
+    std::vector<int64_t> array;
+    int64_t arraySize;
 };
 ```
 
-Before the test fixture is utilized by a benchmark, Celero will create an instanciation of the class and call its "getExperimentValues()" function.  The test fixture can then build a vector of int64_t values.  For each value added to this array, benchmarks will be executed following calls to the "setUp" virtual function.  A new test fixture is created for each measurement.
+Before the test fixture is utilized by a benchmark, Celero will create an instanciation of the class and call its "getExperimentValues()" function.  The test fixture can then build a vector of TestFixture::ExperimentValue values.  For each value added to this array, benchmarks will be executed following calls to the "setUp" virtual function.  A new test fixture is created for each measurement.
 
 The SetUp() virtual function is called before each benchmark test is executed. When using a problem space values vector, the function will be given a value that was previously pushed into the array within the constructor. The function's code can then decide what to do with it. Here, we are using the value to indicate how many elements should be in the array that we intend to sort. For each of the array elements, we simply add a pseudo-random integer.
 
@@ -401,16 +403,14 @@ BENCHMARK_F(SortRandInts, SelectionSort, SortFixture, 30, 10000)
 }
 ```
 
-Finally, for good measure, we will simply use the Standard Library's sorting algorithm: Introsort*. We only need write a single line of code, but here it is for completeness.
+Finally, for good measure, we will simply use the Standard Library's sorting algorithm: `Introsort`. We only need write a single line of code, but here it is for completeness.
 
 ```C++
 BENCHMARK_F(SortRandInts, stdSort, SortFixture, 30, 10000)
 {
     this->randomize();
-
-	std::sort(this->array.begin(), this->array.end());
-	
-	this->clear();
+    std::sort(this->array.begin(), this->array.end());
+    this->clear();
 }
 ```
 
@@ -507,7 +507,7 @@ Test early and test often!
 
 ### Notes
 
-- Because I like explicitness as much as the next programmer, I want to note that the actual sorting algorithm used by std::sort is not defined in the standard, but references cite Introsort as a likely contender for how an STL implementation would approach std::sort. http://en.wikipedia.org/wiki/Introsort.
+- Because I like explicitness as much as the next programmer, I want to note that the actual sorting algorithm used by `std::sort` is not defined in the standard, but references cite Introsort as a likely contender for how an STL implementation would approach std::sort. http://en.wikipedia.org/wiki/Introsort.
 - When choosing a sorting algorithm, start with std::sort and see if you can make improvements from there.
 - Don't just trust your experience, measure your code!
 
@@ -517,7 +517,7 @@ Test early and test often!
 The internal code will do one un-measured "warm up" pass.  This helps account for caching which may otherwise influence measurements.
 
 ### Q: As my problem space increases in size, my runs take longer and longer.  How do I account for the increased complexity?
-When defining a problem space, you set up a `std::pair<>`.  If the second value in the pair is greater than zero, that number will be used to control the number of iterations for the corresponding problem space size.
+When defining a problem space, you set up a `celero::TestFixture::ExperimentValue`.  If the `Iterations` member in the class is greater than zero, that number will be used to control the number of iterations for the corresponding `celero::TestFixture::ExperimentValue`.
 
 ## Example and Demo Code
 

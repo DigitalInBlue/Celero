@@ -109,7 +109,7 @@ void ResultTable::closeFile()
 	this->pimpl->closeFile();
 }
 
-void ResultTable::add(std::shared_ptr<Result> x)
+void ResultTable::add(std::shared_ptr<celero::ExperimentResult> x)
 {
 	if(this->pimpl->ofs.is_open() == true)
 	{
@@ -117,9 +117,9 @@ void ResultTable::add(std::shared_ptr<Result> x)
 						 << "," << x->getExperiment()->getSamples() << "," << x->getProblemSpaceIterations() << "," << x->getFailure() << ",";
 
 		this->pimpl->ofs << x->getBaselineMeasurement() << "," << x->getUsPerCall() << "," << x->getCallsPerSecond() << ","
-						 << x->getStatistics()->getMin() << "," << x->getStatistics()->getMean() << "," << x->getStatistics()->getMax() << ","
-						 << x->getStatistics()->getVariance() << "," << x->getStatistics()->getStandardDeviation() << ","
-						 << x->getStatistics()->getSkewness() << "," << x->getStatistics()->getKurtosis() << "," << x->getStatistics()->getZScore()
-						 << std::endl;
+						 << x->getTimeStatistics()->getMin() << "," << x->getTimeStatistics()->getMean() << "," << x->getTimeStatistics()->getMax()
+						 << "," << x->getTimeStatistics()->getVariance() << "," << x->getTimeStatistics()->getStandardDeviation() << ","
+						 << x->getTimeStatistics()->getSkewness() << "," << x->getTimeStatistics()->getKurtosis() << ","
+						 << x->getTimeStatistics()->getZScore() << std::endl;
 	}
 }

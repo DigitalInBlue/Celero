@@ -48,9 +48,9 @@ public:
 	{
 	}
 
-	virtual std::vector<std::pair<int64_t, uint64_t>> getExperimentValues() const override
+	virtual std::vector<celero::TestFixture::ExperimentValue> getExperimentValues() const override
 	{
-		std::vector<std::pair<int64_t, uint64_t>> problemSpaceValues;
+		std::vector<celero::TestFixture::ExperimentValue> problemSpaceValues;
 
 		// We will run some total number of sets of tests all together.
 		// Each one growing by a power of 2.
@@ -63,16 +63,16 @@ public:
 			// We make the number of iterations decrease as the size of our problem space increases
 			// to demonstrate how to adjust the number of iterations per sample based on the
 			// problem space size.
-			problemSpaceValues.push_back(std::make_pair(int64_t(pow(2, i + 1)), uint64_t(pow(2, totalNumberOfTests - i))));
+			problemSpaceValues.push_back({int64_t(pow(2, i + 1)), int64_t(pow(2, totalNumberOfTests - i))});
 		}
 
 		return problemSpaceValues;
 	}
 
 	/// Before each run, build a vector of random integers.
-	virtual void setUp(int64_t experimentValue) override
+	virtual void setUp(const celero::TestFixture::ExperimentValue& experimentValue) override
 	{
-		this->arraySize = static_cast<int>(experimentValue);
+		this->arraySize = static_cast<int>(experimentValue.Value);
 
 		for(int i = 0; i < this->arraySize; i++)
 		{
@@ -94,19 +94,13 @@ public:
 	int arraySize;
 };
 
-#include <iostream>
-
 // For a baseline, I'll chose Bubble Sort.
 BASELINE_F(DemoTransform, ForLoop, DemoTransformFixture, 30, 10000)
 {
-	static int iterationCount = 0;
 	for(int i = 0; i < this->arraySize; i++)
 	{
 		this->arrayOut[i] = this->arrayIn[i] * DemoTransformFixture::Multiple;
 	}
-	iterationCount++;
-	if(iterationCount % 1000 == 0)
-		std::cout << "Baseline " << iterationCount << std::endl;
 }
 
 // BASELINE_FIXED_F(DemoTransform, FixedTime, DemoTransformFixture, 30, 10000, 100)
@@ -117,12 +111,6 @@ BENCHMARK_F(DemoTransform, StdTransform, DemoTransformFixture, 30, 10000)
 	static int iterationCount = 0;
 	std::transform(this->arrayIn.begin(), this->arrayIn.end(), this->arrayOut.begin(),
 				   std::bind1st(std::multiplies<int>(), DemoTransformFixture::Multiple));
-
-	iterationCount++;
-	if(iterationCount % 1000 == 0)
-	{
-		std::cout << "Benchmark " << iterationCount << std::endl;
-	}
 }
 
 BENCHMARK_F(DemoTransform, StdTransformLambda, DemoTransformFixture, 30, 10000)
