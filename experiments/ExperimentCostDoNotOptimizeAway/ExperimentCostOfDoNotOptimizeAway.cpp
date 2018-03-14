@@ -15,27 +15,21 @@ CELERO_MAIN
 static const int SamplesCount = 10000;
 static const int IterationsCount = 10000;
 
-// The number of iterations is very large because the operation is very quick.  We want to
-// look at a large enough chunk of time to reduce the reliance on the resolution of the
-// clock.  Then, do 30 samples of this large number of runs and keep the quickest.
-BASELINE(CostOfDNOA, Baseline, SamplesCount, IterationsCount)
+BASELINE(DNOA, Baseline, SamplesCount, IterationsCount)
 {
-	// GCC and Clang Optimize to:
-	// mov DWORD PTR[rsp - 4], 1024
-	// ret
-	volatile int x{1024};
+	volatile std::vector<int> x(1024);
 	x;
 }
 
-BENCHMARK(CostOfDNOA, VarImpl, SamplesCount, IterationsCount)
+BENCHMARK(DNOA, VarImpl, SamplesCount, IterationsCount)
 {
-	int x{1024};
+	std::vector<int> x(1024);
 	celero::DoNotOptimizeAway(x);
 }
 
-BENCHMARK(CostOfDNOA, VarChrono, SamplesCount, IterationsCount)
+BENCHMARK(DNOA, VarChrono, SamplesCount, IterationsCount)
 {
-	int x{1024};
+	std::vector<int> x(1024);
 
 	if(std::chrono::system_clock::now() == std::chrono::time_point<std::chrono::system_clock>())
 	{
@@ -49,9 +43,9 @@ BENCHMARK(CostOfDNOA, VarChrono, SamplesCount, IterationsCount)
 	}
 }
 
-BENCHMARK(CostOfDNOA, VarThreadID, SamplesCount, IterationsCount)
+BENCHMARK(DNOA, VarThreadID, SamplesCount, IterationsCount)
 {
-	int x{1024};
+	std::vector<int> x(1024);
 
 	if(std::this_thread::get_id() != std::this_thread::get_id())
 	{
@@ -65,34 +59,47 @@ BENCHMARK(CostOfDNOA, VarThreadID, SamplesCount, IterationsCount)
 	}
 }
 
-BENCHMARK(CostOfDNOA, VarVolatile, SamplesCount, IterationsCount)
+BENCHMARK(DNOA, VarThreadID2, SamplesCount, IterationsCount)
 {
-	int x{1024};
+	std::vector<int> x(1024);
+
+	static auto ttid = std::this_thread::get_id();
+	if(ttid == std::thread::id())
+	{
+		const auto* p = &x;
+		putchar(*reinterpret_cast<const char*>(p));
+		std::abort();
+	}
+}
+
+BENCHMARK(DNOA, VarVolatile, SamplesCount, IterationsCount)
+{
+	std::vector<int> x(1024);
 	volatile decltype(x) foo = x;
 	foo;
 }
 
-BENCHMARK(CostOfDNOA, LambdaImpl, SamplesCount, IterationsCount)
+BENCHMARK(DNOA, LambdaImpl, SamplesCount, IterationsCount)
 {
 	celero::DoNotOptimizeAway([]() {
-		int x{1024};
+		std::vector<int> x(1024);
 		return x;
 	});
 }
 
-BENCHMARK(CostOfDNOA, LambdaVoidImpl, SamplesCount, IterationsCount)
+BENCHMARK(DNOA, LambdaVoidImpl, SamplesCount, IterationsCount)
 {
 	// Because the lambda does not return, it will be completely optimized away.
 	celero::DoNotOptimizeAway([]() {
-		int x{1024};
+		std::vector<int> x(1024);
 		x;
 	});
 }
 
-BENCHMARK(CostOfDNOA, LambdaChrono, SamplesCount, IterationsCount)
+BENCHMARK(DNOA, LambdaChrono, SamplesCount, IterationsCount)
 {
 	auto x = []() {
-		int x{1024};
+		std::vector<int> x(1024);
 		return x;
 	};
 
@@ -110,10 +117,10 @@ BENCHMARK(CostOfDNOA, LambdaChrono, SamplesCount, IterationsCount)
 	}
 }
 
-BENCHMARK(CostOfDNOA, LambdaThreadID, SamplesCount, IterationsCount)
+BENCHMARK(DNOA, LambdaThreadID, SamplesCount, IterationsCount)
 {
 	auto x = []() {
-		int x{1024};
+		std::vector<int> x(1024);
 		return x;
 	};
 
@@ -131,14 +138,14 @@ BENCHMARK(CostOfDNOA, LambdaThreadID, SamplesCount, IterationsCount)
 	}
 }
 
-BENCHMARK(CostOfDNOA, LambdaVolatile, SamplesCount, IterationsCount)
+BENCHMARK(DNOA, LambdaVolatile, SamplesCount, IterationsCount)
 {
 	// GCC and Clang Optimize to:
 	// mov DWORD PTR[rsp - 4], 1024
 	//	ret
 
 	auto x = []() {
-		int x{1024};
+		std::vector<int> x(1024);
 		return x;
 	};
 
