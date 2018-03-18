@@ -6,12 +6,17 @@ Copyright 2017-2018 John Farrier
 
 Apache 2.0 License
 
-#### Travis CI
+#### Builds and Testing
 
 Branch                 | Status
 ---------------------- | --------------------------------------------------------------------------------------------------------------------------------------
 ```origin/master: ```  | [![Build Status (Master)](https://travis-ci.org/DigitalInBlue/Celero.svg?branch=master)](https://travis-ci.org/DigitalInBlue/Celero)
 ```origin/develop: ``` | [![Build Status (Develop)](https://travis-ci.org/DigitalInBlue/Celero.svg?branch=develop)](https://travis-ci.org/DigitalInBlue/Celero)
+
+<a href="https://scan.coverity.com/projects/celero">
+  <img alt="Coverity Scan Build Status"
+       src="https://scan.coverity.com/projects/910/badge.svg"/>
+</a>
 
 ### Overview
 
