@@ -23,15 +23,22 @@
 #include <Windows.h>
 
 #include <Psapi.h>
+#elif defined(__APPLE__)
+#include <unistd.h>
+#include <sys/types.h>
+#include <sys/param.h>
+#include <sys/sysctl.h>
+#include <sys/types.h>
+#include <array>
 #else
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <sys/resource.h>
-#include <sys/sysinfo.h>
 #include <sys/time.h>
 #include <sys/types.h>
 #include <unistd.h>
+#include <sys/sysinfo.h>
 #endif
 
 ///
@@ -119,7 +126,7 @@ int64_t celero::GetRAMSystemTotal()
 	memInfo.dwLength = sizeof(MEMORYSTATUSEX);
 	GlobalMemoryStatusEx(&memInfo);
 	return static_cast<int64_t>(memInfo.ullTotalPhys) + static_cast<int64_t>(memInfo.ullTotalVirtual);
-#else
+#elif defined(__unix__) || defined(__unix) || defined(unix) 
 	// Prefer sysctl() over sysconf() except sysctl() HW_REALMEM and HW_PHYSMEM
 	// return static_cast<int64_t>(sysconf(_SC_PHYS_PAGES)) * static_cast<int64_t>(sysconf(_SC_PAGE_SIZE));
 	struct sysinfo memInfo;
@@ -128,7 +135,22 @@ int64_t celero::GetRAMSystemTotal()
 	total += memInfo.totalswap;
 	total += memInfo.totalhigh;
 	return total * static_cast<int64_t>(memInfo.mem_unit);
+#elif defined(__APPLE__)
+	int mib[2];
+	mib[0] = CTL_HW;
+	mib[1] = HW_MEMSIZE;
+
+	int64_t memInfo{0};
+	auto len = sizeof(memInfo);
+
+	if(sysctl(mib, 2, &memInfo, &len, nullptr, 0) == 0)
+	{
+		return memInfo;
+	}
+
+	return -1;	
 #endif
+	return -1;	
 }
 
 int64_t celero::GetRAMSystemAvailable()
@@ -147,6 +169,23 @@ int64_t celero::GetRAMSystemUsed()
 {
 #ifdef WIN32
 	return celero::GetRAMSystemTotal() - celero::GetRAMSystemAvailable();
+#elif defined(__APPLE__)
+	int mib[2];
+	mib[0] = CTL_HW;
+	mib[1] = HW_MEMSIZE;
+
+	std::array<int64_t, 2> memInfo{{0, 0}};
+	auto len = sizeof(memInfo[0]);
+
+	if(sysctl(mib, 2, &memInfo[0], &len, nullptr, 0) == 0)
+	{
+		if(sysctl(mib, 2, &memInfo[1], &len, nullptr, 0) == 0)
+		{
+			return memInfo[0] + memInfo[1];
+		}
+	}
+
+	return -1;	
 #else
 	struct sysinfo memInfo;
 	sysinfo(&memInfo);
@@ -163,16 +202,6 @@ int64_t celero::GetRAMSystemUsedByCurrentProcess()
 	PROCESS_MEMORY_COUNTERS_EX pmc;
 	GetProcessMemoryInfo(GetCurrentProcess(), reinterpret_cast<PPROCESS_MEMORY_COUNTERS>(&pmc), sizeof(pmc));
 	return static_cast<int64_t>(pmc.WorkingSetSize);
-#elif defined(__APPLE__) && defined(__MACH__)
-	mach_task_basic_info info;
-	mach_msg_type_number_t infoCount = MACH_TASK_BASIC_INFO_COUNT;
-
-	if(task_info(mach_task_self(), MACH_TASK_BASIC_INFO, (task_info_t)&info, &infoCount) == KERN_SUCCESS)
-	{
-		return static_cast<int64_t>(info.resident_size);
-	}
-
-	return int64_t(-1);
 #else
 	return celero::GetRAMPhysicalUsedByCurrentProcess() + celero::GetRAMVirtualUsedByCurrentProcess();
 #endif
@@ -185,6 +214,8 @@ int64_t celero::GetRAMPhysicalTotal()
 	memInfo.dwLength = sizeof(MEMORYSTATUSEX);
 	GlobalMemoryStatusEx(&memInfo);
 	return static_cast<int64_t>(memInfo.ullTotalPhys);
+#elif defined(__APPLE__)
+	return -1;
 #else
 	struct sysinfo memInfo;
 	sysinfo(&memInfo);
@@ -208,6 +239,10 @@ int64_t celero::GetRAMPhysicalUsed()
 {
 #ifdef WIN32
 	return celero::GetRAMPhysicalTotal() - celero::GetRAMPhysicalAvailable();
+#elif defined(__APPLE__)
+	struct rusage rusage;
+	getrusage( RUSAGE_SELF, &rusage );
+	return (size_t)rusage.ru_maxrss;
 #else
 	struct sysinfo memInfo;
 	sysinfo(&memInfo);
@@ -276,6 +311,8 @@ int64_t celero::GetRAMVirtualTotal()
 	memInfo.dwLength = sizeof(MEMORYSTATUSEX);
 	GlobalMemoryStatusEx(&memInfo);
 	return memInfo.ullTotalPageFile;
+#elif defined(__APPLE__)
+	return -1;
 #else
 	struct sysinfo memInfo;
 	sysinfo(&memInfo);
@@ -299,6 +336,8 @@ int64_t celero::GetRAMVirtualUsed()
 {
 #ifdef WIN32
 	return celero::GetRAMVirtualTotal() - celero::GetRAMVirtualAvailable();
+#elif defined(__APPLE__)
+	return -1;
 #else
 	struct sysinfo memInfo;
 	sysinfo(&memInfo);
