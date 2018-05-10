@@ -138,6 +138,28 @@ BENCHMARK(DNOA, LambdaThreadID, SamplesCount, IterationsCount)
 	}
 }
 
+BENCHMARK(DNOA, LambdaThreadID2, SamplesCount, IterationsCount)
+{
+	auto x = []() {
+		std::vector<int> x(1024);
+		return x;
+	};
+
+	x();
+
+	static auto ttid = std::this_thread::get_id();
+	if(ttid == std::thread::id())
+	{
+		// This forces the value to never be optimized away
+		// by taking a reference then using it.
+		const auto* p = &x;
+		putchar(*reinterpret_cast<const char*>(p));
+
+		// If we do get here, kick out because something has gone wrong.
+		std::abort();
+	}
+}
+
 BENCHMARK(DNOA, LambdaVolatile, SamplesCount, IterationsCount)
 {
 	// GCC and Clang Optimize to:

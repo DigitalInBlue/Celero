@@ -183,7 +183,7 @@ std::string PrintHRule()
 
 	ss << "|" << firstColumn;
 
-	for(int i = 0; i < PrintConstants::NumberOfColumns - 1; ++i)
+	for(size_t i = 0; i < PrintConstants::NumberOfColumns - 1; ++i)
 	{
 		ss << column;
 	}

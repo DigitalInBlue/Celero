@@ -101,7 +101,8 @@ namespace celero
 	template <class T>
 	void DoNotOptimizeAway(T&& x)
 	{
-		if(std::chrono::system_clock::now() == std::chrono::time_point<std::chrono::system_clock>())
+		static auto ttid = std::this_thread::get_id();
+		if(ttid == std::thread::id())
 		{
 			// This forces the value to never be optimized away
 			// by taking a reference then using it.
@@ -119,11 +120,12 @@ namespace celero
 	{
 		volatile auto foo = x();
 
-		if(std::chrono::system_clock::now() == std::chrono::time_point<std::chrono::system_clock>())
+		static auto ttid = std::this_thread::get_id();
+		if(ttid == std::thread::id())
 		{
 			// This forces the value to never be optimized away
 			// by taking a reference then using it.
-			const auto* p = &foo;
+			const auto* p = &foo + &x;
 			putchar(*reinterpret_cast<const char*>(p));
 
 			// If we do get here, kick out because something has gone wrong.

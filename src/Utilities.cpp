@@ -37,10 +37,9 @@ void celero::DoNotOptimizeAway(std::function<void(void)>&& x)
 {
 	x();
 
-	//
 	// We must always do this test, but it will never pass.
-	//
-	if(std::chrono::system_clock::now() == std::chrono::time_point<std::chrono::system_clock>())
+	static auto ttid = std::this_thread::get_id();
+	if(ttid == std::thread::id())
 	{
 		// This forces the value to never be optimized away
 		// by taking a reference then using it.
