@@ -23,7 +23,7 @@
 using namespace celero;
 
 std::vector<std::function<void(std::shared_ptr<Experiment>)>> ExperimentFunctions;
-std::vector<std::function<void(std::shared_ptr<Result>)>> ExperimentResultFunctions;
+std::vector<std::function<void(std::shared_ptr<celero::ExperimentResult>)>> ExperimentResultFunctions;
 
 void celero::impl::ExperimentComplete(std::shared_ptr<Experiment> x)
 {
@@ -33,7 +33,7 @@ void celero::impl::ExperimentComplete(std::shared_ptr<Experiment> x)
 	}
 }
 
-void celero::impl::ExperimentResultComplete(std::shared_ptr<Result> x)
+void celero::impl::ExperimentResultComplete(std::shared_ptr<celero::ExperimentResult> x)
 {
 	for(auto& i : ExperimentResultFunctions)
 	{
@@ -46,7 +46,7 @@ void celero::AddExperimentCompleteFunction(std::function<void(std::shared_ptr<Ex
 	ExperimentFunctions.push_back(x);
 }
 
-void celero::AddExperimentResultCompleteFunction(std::function<void(std::shared_ptr<Result>)> x)
+void celero::AddExperimentResultCompleteFunction(std::function<void(std::shared_ptr<celero::ExperimentResult>)> x)
 {
 	ExperimentResultFunctions.push_back(x);
 }

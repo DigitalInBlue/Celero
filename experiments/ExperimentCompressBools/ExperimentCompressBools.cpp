@@ -34,12 +34,27 @@ bool GetBoolAt(int64_t pos, uint8_t* outputValues)
 	return ((*(outputValues + bytePos)) & (1 << bitPos)) > 0;
 }
 
+///
+/// \struct MyExperimentValue
+///
+/// \brief Simple extension of the ExperimentValue struct.
+///
+class MyExperimentValue : public celero::TestFixture::ExperimentValue
+{
+public:
+	MyExperimentValue() : celero::TestFixture::ExperimentValue(){};
+	virtual ~MyExperimentValue() = default;
+
+	uint64_t NumBytes{0};
+	uint64_t NumFullBytes{0};
+};
+
 class CompressBoolsFixture : public celero::TestFixture
 {
 public:
-	virtual std::vector<std::pair<int64_t, uint64_t>> getExperimentValues() const override
+	virtual std::vector<celero::TestFixture::ExperimentValue> getExperimentValues() const override
 	{
-		std::vector<std::pair<int64_t, uint64_t>> problemSpace;
+		std::vector<celero::TestFixture::ExperimentValue> problemSpace;
 
 		const auto stepCount = MaxArrayLength / BenchmarkSteps;
 
@@ -47,16 +62,21 @@ public:
 		{
 			// ExperimentValues is part of the base class and allows us to specify
 			// some values to control various test runs to end up building a nice graph.
-			problemSpace.push_back(std::make_pair(stepCount + i * stepCount, uint64_t(i + 1)));
+			MyExperimentValue ev;
+			ev.Value = stepCount + i * stepCount;
+			ev.Iterations = int64_t(i + 1);
+			ev.NumBytes = static_cast<unsigned int>((ev.Value + 7) / 8);
+			ev.NumFullBytes = static_cast<unsigned int>((ev.Value) / 8);
+			problemSpace.push_back(ev);
 		}
 
 		return problemSpace;
 	}
 
 	/// Before each run, build a vector of random integers.
-	virtual void setUp(int64_t experimentValue) override
+	virtual void setUp(const celero::TestFixture::ExperimentValue& experimentValue) override
 	{
-		this->arrayLength = static_cast<size_t>(experimentValue);
+		this->arrayLength = static_cast<size_t>(experimentValue.Value);
 		this->inputValues.reset(new int[arrayLength]);
 		this->referenceValues.reset(new bool[arrayLength]);
 
@@ -64,7 +84,7 @@ public:
 		std::uniform_int_distribution<> dist(0, MaximumDistribution);
 
 		// set every byte, copute reference values
-		for(int64_t i = 0; i < experimentValue; ++i)
+		for(int64_t i = 0; i < experimentValue.Value; ++i)
 		{
 			this->inputValues[i] = dist(gen);
 			this->referenceValues[i] = this->inputValues[i] > ThresholdValue;
@@ -87,9 +107,9 @@ public:
 class NoPackingFixture : public CompressBoolsFixture
 {
 public:
-	virtual void setUp(int64_t experimentValue) override
+	virtual void setUp(const celero::TestFixture::ExperimentValue& x) override
 	{
-		CompressBoolsFixture::setUp(experimentValue);
+		CompressBoolsFixture::setUp(x);
 		this->outputValues.reset(new bool[static_cast<unsigned int>(arrayLength)]);
 	}
 
@@ -139,10 +159,10 @@ BENCHMARK_F(CompressBoolsTest, StdBitset, StdBitsetFixture, SamplesCount, Iterat
 class StdVectorFixture : public CompressBoolsFixture
 {
 public:
-	virtual void setUp(int64_t experimentValue) override
+	virtual void setUp(const celero::TestFixture::ExperimentValue& experimentValue) override
 	{
 		CompressBoolsFixture::setUp(experimentValue);
-		this->outputVector.resize(static_cast<unsigned int>(experimentValue));
+		this->outputVector.resize(static_cast<unsigned int>(experimentValue.Value));
 	}
 
 	virtual void tearDown() override
@@ -171,12 +191,13 @@ public:
 	{
 	}
 
-	virtual void setUp(int64_t experimentValue) override
+	virtual void setUp(const celero::TestFixture::ExperimentValue& experimentValue) override
 	{
 		CompressBoolsFixture::setUp(experimentValue);
 
-		this->numBytes = static_cast<unsigned int>((experimentValue + 7) / 8);
-		this->numFullBytes = static_cast<unsigned int>((experimentValue) / 8);
+		auto ev = dynamic_cast<const MyExperimentValue&>(experimentValue);
+		this->numBytes = ev.NumBytes;
+		this->numFullBytes = ev.NumFullBytes;
 		this->outputValues.reset(new uint8_t[this->numBytes]);
 	}
 
@@ -188,8 +209,8 @@ public:
 		}
 	}
 
-	unsigned int numBytes;
-	unsigned int numFullBytes;
+	uint64_t numBytes{0};
+	uint64_t numFullBytes{0};
 	std::unique_ptr<uint8_t[]> outputValues;
 };
 
@@ -248,7 +269,7 @@ BENCHMARK_F(CompressBoolsTest, NotDepentendVersion, ManualVersionFixture, Sample
 		*pOutputByte++ = Bits[0] | Bits[1] | Bits[2] | Bits[3] | Bits[4] | Bits[5] | Bits[6] | Bits[7];
 		pInputData += 8;
 	}
-	 
+
 	if(arrayLength & 7)
 	{
 		// note that we'll use max 7 elements, so max is Bits[6]... (otherwise we would get another full byte)
@@ -271,8 +292,15 @@ struct bool8
 	{
 	}
 
-	bool8(bool v0, bool v1, bool v2, bool v3, bool v4, bool v5, bool v6, bool v7)
-		: val0(v0), val1(v1), val2(v2), val3(v3), val4(v4), val5(v5), val6(v6), val7(v7)
+	bool8(bool v0, bool v1, bool v2, bool v3, bool v4, bool v5, bool v6, bool v7) :
+		val0(v0),
+		val1(v1),
+		val2(v2),
+		val3(v3),
+		val4(v4),
+		val5(v5),
+		val6(v6),
+		val7(v7)
 	{
 	}
 
@@ -289,12 +317,12 @@ struct bool8
 class PackedStructFixture : public CompressBoolsFixture
 {
 public:
-	virtual void setUp(int64_t experimentValue) override
+	virtual void setUp(const celero::TestFixture::ExperimentValue& experimentValue) override
 	{
 		CompressBoolsFixture::setUp(experimentValue);
 
-		this->numBytes = static_cast<unsigned int>((experimentValue + 7) / 8);
-		this->numFullBytes = static_cast<unsigned int>((experimentValue) / 8);
+		this->numBytes = static_cast<unsigned int>((experimentValue.Value + 7) / 8);
+		this->numFullBytes = static_cast<unsigned int>((experimentValue.Value) / 8);
 		this->outputValues.reset(new bool8[numBytes]);
 	}
 
@@ -445,12 +473,12 @@ BENCHMARK_F(CompressBoolsTest, WithOpenMP, ManualVersionFixture, SamplesCount, I
 class SimdVersionFixture : public CompressBoolsFixture
 {
 public:
-	virtual void setUp(int64_t experimentValue) override
+	virtual void setUp(const celero::TestFixture::ExperimentValue& experimentValue) override
 	{
 		CompressBoolsFixture::setUp(experimentValue);
 
-		this->numBytes = static_cast<unsigned int>((experimentValue + 7) / 8);
-		this->numFullBytes = static_cast<unsigned int>((experimentValue) / 8);
+		this->numBytes = static_cast<unsigned int>((experimentValue.Value + 7) / 8);
+		this->numFullBytes = static_cast<unsigned int>((experimentValue.Value) / 8);
 		this->alignedOutputValues = (uint8_t*)_aligned_malloc(numBytes, 16);
 		this->signedInputValues.reset(new int8_t[arrayLength]);
 

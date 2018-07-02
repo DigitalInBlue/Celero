@@ -90,7 +90,7 @@ void Bar(T x)
 	if(x != nullptr)
 	{
 		auto data = x->getData();
-		data[rand() % ArraySize] = rand();
+		data[celero::Random() % ArraySize] = celero::Random();
 		x->setData(data);
 	}
 }

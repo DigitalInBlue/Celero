@@ -19,6 +19,7 @@
 /// limitations under the License.
 ///
 
+#include <celero/Utilities.h>
 #include <stdint.h>
 
 namespace celero
@@ -54,7 +55,7 @@ namespace celero
 		///
 		constexpr double ConvertSystemTime(const uint64_t x)
 		{
-			return x * 1.0e-6;
+			return x * celero::UsToSec;
 		}
 
 		///

@@ -50,7 +50,7 @@ namespace celero
 		///
 		/// This should re-save on every new result so that the output can be monitored externally.
 		///
-		void add(std::shared_ptr<celero::Result> x);
+		void add(std::shared_ptr<celero::ExperimentResult> x);
 
 		///
 		/// Save the JUnit (XUnit) formatted file to the given file name.

@@ -40,33 +40,33 @@ public:
 	{
 	}
 
-	virtual std::vector<std::pair<int64_t, uint64_t>> getExperimentValues() const override
+	virtual std::vector<celero::TestFixture::ExperimentValue> getExperimentValues() const override
 	{
-		std::vector<std::pair<int64_t, uint64_t>> problemSpace;
+		std::vector<celero::TestFixture::ExperimentValue> problemSpace;
 
 		// ExperimentValues is part of the base class and allows us to specify
 		// some values to control various test runs to end up building a nice graph.
 		for(int64_t elements = 64; elements <= int64_t(4096); elements *= 2)
 		{
-			problemSpace.push_back(std::make_pair(int64_t(elements), uint64_t(0)));
+			problemSpace.push_back(elements);
 		}
 
 		return problemSpace;
 	}
 
 	/// Before each sample, build a vector of random integers.
-	virtual void setUp(int64_t experimentValue) override
+	virtual void setUp(const celero::TestFixture::ExperimentValue& experimentValue) override
 	{
-		this->arraySize = experimentValue;
+		this->arraySize = experimentValue.Value;
 		this->array.resize(this->arraySize);
 	}
 
 	// Before each iteration
-	virtual void onExperimentStart(int64_t) override
+	virtual void onExperimentStart(const celero::TestFixture::ExperimentValue&) override
 	{
 		for(int i = 0; i < this->arraySize; i++)
 		{
-			this->array[i] = rand();
+			this->array[i] = celero::Random();
 		}
 	}
 

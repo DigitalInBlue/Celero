@@ -8,18 +8,16 @@ CELERO_MAIN;
 class ParticlesFixture : public celero::TestFixture
 {
 public:
-	virtual std::vector<std::pair<int64_t, uint64_t>> getExperimentValues() const override
+	virtual std::vector<celero::TestFixture::ExperimentValue> getExperimentValues() const override
 	{
-		std::vector<std::pair<int64_t, uint64_t>> problemSpace;
+		std::vector<celero::TestFixture::ExperimentValue> problemSpace;
 		const auto totalNumberOfTests = 10;
 
 		for(auto i = 0; i < totalNumberOfTests; i++)
 		{
 			// ExperimentValues is part of the base class and allows us to specify
 			// some values to control various test runs to end up building a nice graph.
-			problemSpace.push_back(std::make_pair(
-				1000 + i * 1000, 
-				static_cast<int64_t>(totalNumberOfTests - i)));
+			problemSpace.push_back({1000 + i * 1000, static_cast<int64_t>(totalNumberOfTests - i)});
 		}
 
 		return problemSpace;
@@ -30,9 +28,9 @@ class ParticlesObjVectorFixture : public ParticlesFixture
 {
 public:
 	/// Before each run, build a vector of random integers.
-	virtual void setUp(int64_t experimentValue) override
+	virtual void setUp(const celero::TestFixture::ExperimentValue& x) override
 	{
-		this->particles = std::vector<Particle>(experimentValue);
+		this->particles = std::vector<Particle>(x.Value);
 
 		for(auto& p : this->particles)
 		{
@@ -74,9 +72,9 @@ public:
 	}
 
 	/// Before each run, build a vector of random integers.
-	virtual void setUp(int64_t experimentValue) override
+	virtual void setUp(const celero::TestFixture::ExperimentValue& experimentValue) override
 	{
-		this->particles = std::vector<std::shared_ptr<Particle>>(experimentValue);
+		this->particles = std::vector<std::shared_ptr<Particle>>(experimentValue.Value);
 
 		for(auto& p : this->particles)
 		{
@@ -85,10 +83,10 @@ public:
 
 		if(this->randomizeAddresses() == true)
 		{
-			for(int64_t i = 0; i < experimentValue / 2; ++i)
+			for(int64_t i = 0; i < experimentValue.Value / 2; ++i)
 			{
-				const auto a = rand() % experimentValue;
-				const auto b = rand() % experimentValue;
+				const auto a = celero::Random() % experimentValue.Value;
+				const auto b = celero::Random() % experimentValue.Value;
 
 				if(a != b)
 				{

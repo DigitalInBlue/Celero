@@ -53,12 +53,12 @@ namespace celero
 	///
 	/// This will be called at the end of every benchmark or user experiment upon completion.
 	///
-	CELERO_EXPORT void AddExperimentResultCompleteFunction(std::function<void(std::shared_ptr<celero::Result>)> x);
+	CELERO_EXPORT void AddExperimentResultCompleteFunction(std::function<void(std::shared_ptr<celero::ExperimentResult>)> x);
 
 	namespace impl
 	{
 		void ExperimentComplete(std::shared_ptr<Experiment> x);
-		void ExperimentResultComplete(std::shared_ptr<Result> x);
+		void ExperimentResultComplete(std::shared_ptr<celero::ExperimentResult> x);
 	} // namespace impl
 } // namespace celero
 
