@@ -141,7 +141,7 @@ void JUnit::save()
 				}
 			}
 
-			*os << "</testsuite" << std::endl;
+			*os << "</testsuite>" << std::endl;
 		}
 
 		ofs.close();
