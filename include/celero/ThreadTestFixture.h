@@ -4,7 +4,7 @@
 ///
 /// \author	Ivan Shynkarenka
 ///
-/// \copyright Copyright 2015, 2016, 2017 John Farrier
+/// \copyright Copyright 2015, 2016, 2017, 2018 John Farrier
 ///
 /// Licensed under the Apache License, Version 2.0 (the "License");
 /// you may not use this file except in compliance with the License.
@@ -64,22 +64,12 @@ namespace celero
 		///
 		/// \return Returns the number of microseconds the run took.
 		///
-		uint64_t run(uint64_t threads, uint64_t calls, int64_t experimentValue) override;
-
-		///
-		/// Get the current call number starting from 1.
-		///
-		uint64_t getCallId() const;
-
-		///
-		/// Get the current thread Id starting from 1.
-		///
-		uint64_t getThreadId() const;
+		uint64_t run(uint64_t threads, uint64_t calls, const celero::TestFixture::ExperimentValue& experimentValue) override;
 
 	private:
 		class Impl;
 		Pimpl<Impl> pimpl;
 	};
-}
+} // namespace celero
 
 #endif

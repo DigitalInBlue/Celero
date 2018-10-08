@@ -1,7 +1,7 @@
 #include <celero/Celero.h>
 
 #include <cstdlib>
-#include <strstream>
+#include <sstream>
 
 ///
 /// This is the main(int argc, char** argv) for the entire celero program.
@@ -93,40 +93,40 @@ std::string hopmanFast(T o)
 	return std::string(f, (str + 12) - f);
 }
 
-BASELINE(DemoToString, Baseline, 128, 1000000)
+BASELINE(DemoToString, Baseline, 10000, 1000)
 {
-	const uint8_t x = rand() % 42;
+	const int x = celero::Random() % 42;
 	celero::DoNotOptimizeAway(x);
 	celero::DoNotOptimizeAway(std::string("42"));
 }
 
-BENCHMARK(DemoToString, to_string, 128, 1000000)
+BENCHMARK(DemoToString, to_string, 10000, 1000)
 {
-	const uint8_t x = rand() % 42;
+	const int x = celero::Random() % 42;
 	celero::DoNotOptimizeAway(x);
 	celero::DoNotOptimizeAway(std::to_string(x));
 }
 
-BENCHMARK(DemoToString, strstream, 128, 1000000)
+BENCHMARK(DemoToString, stringstream, 10000, 1000)
 {
-	const uint8_t x = rand() % 42;
+	const int x = celero::Random() % 42;
 	celero::DoNotOptimizeAway(x);
-	std::strstream ss;
+	std::stringstream ss;
 	ss << x;
 	celero::DoNotOptimizeAway(ss.str());
 }
 
-BENCHMARK(DemoToString, table, 128, 1000000)
+BENCHMARK(DemoToString, table, 10000, 1000)
 {
-	const uint8_t x = rand() % 42;
+	const int x = celero::Random() % 42;
 	celero::DoNotOptimizeAway(x);
 	celero::DoNotOptimizeAway(uint8str[x]);
 }
 
 #ifdef _itoa // Not supported for all compilers
-BENCHMARK(DemoToString, itoa, 128, 1000000)
+BENCHMARK(DemoToString, itoa, 10000, 1000)
 {
-	const uint8_t x = rand() % 42;
+	const int x = rand() % 42;
 	celero::DoNotOptimizeAway(x);
 	char buffer[64];
 	_itoa(x, buffer, 10);
@@ -135,9 +135,9 @@ BENCHMARK(DemoToString, itoa, 128, 1000000)
 #endif
 
 /// http://ideone.com/GkPcy
-BENCHMARK(DemoToString, hopmanFast, 128, 1000000)
+BENCHMARK(DemoToString, hopmanFast, 10000, 1000)
 {
-	const uint8_t x = rand() % 42;
+	const int x = celero::Random() % 42;
 	celero::DoNotOptimizeAway(x);
 	celero::DoNotOptimizeAway(std::string(hopmanFast(x)));
 }

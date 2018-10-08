@@ -1,7 +1,7 @@
 ///
 /// \author	John Farrier
 ///
-/// \copyright Copyright 2015, 2016, 2017 John Farrier
+/// \copyright Copyright 2015, 2016, 2017, 2018 John Farrier
 ///
 /// Licensed under the Apache License, Version 2.0 (the "License");
 /// you may not use this file except in compliance with the License.
@@ -16,12 +16,10 @@
 /// limitations under the License.
 ///
 
+#include <assert.h>
 #include <celero/TestFixture.h>
-
 #include <algorithm>
 #include <iostream>
-
-#include <assert.h>
 
 using namespace celero;
 
@@ -33,7 +31,7 @@ TestFixture::~TestFixture()
 {
 }
 
-void TestFixture::onExperimentStart(int64_t)
+void TestFixture::onExperimentStart(const celero::TestFixture::ExperimentValue&)
 {
 }
 
@@ -41,7 +39,7 @@ void TestFixture::onExperimentEnd()
 {
 }
 
-void TestFixture::setUp(int64_t)
+void TestFixture::setUp(const celero::TestFixture::ExperimentValue&)
 {
 }
 
@@ -49,10 +47,14 @@ void TestFixture::tearDown()
 {
 }
 
-uint64_t TestFixture::run(const uint64_t, const uint64_t iterations, int64_t experimentValue)
+uint64_t TestFixture::run(const uint64_t, const uint64_t iterations, const celero::TestFixture::ExperimentValue& experimentValue)
 {
+	// This function constitutes one sample consisting of several iterations for a single experiment value.
+
 	if(this->HardCodedMeasurement() == 0)
 	{
+		uint64_t totalTime = 0;
+
 		// Set up the testing fixture.
 		this->setUp(experimentValue);
 
@@ -62,23 +64,27 @@ uint64_t TestFixture::run(const uint64_t, const uint64_t iterations, int64_t exp
 		// Get the starting time.
 		const auto startTime = celero::timer::GetSystemTime();
 
-		this->onExperimentStart(experimentValue);
-
 		// Count down to zero
+		// Iterations are used when the benchmarks are very fast.
+		// Do not start/stop the timer inside this loop.
+		// The purpose of the loop is to help counter timer quantization/errors.
 		while(iterationCounter--)
 		{
+			this->onExperimentStart(experimentValue);
+
 			this->UserBenchmark();
+
+			this->onExperimentEnd();
 		}
 
-		this->onExperimentEnd();
-
-		const auto endTime = celero::timer::GetSystemTime();
+		// See how long it took.
+		totalTime += celero::timer::GetSystemTime() - startTime;
 
 		// Tear down the testing fixture.
 		this->tearDown();
 
 		// Return the duration in microseconds for the given problem size.
-		return (endTime - startTime);
+		return totalTime;
 	}
 
 	return this->HardCodedMeasurement();

@@ -54,6 +54,6 @@ BENCHMARK(DemoSimple, Complex3, 60, 710000)
 /*
 BENCHMARK(DemoSimple, Complex4, 600, 20000000)
 {
-	celero::DoNotOptimizeAway(static_cast<float>(sin(fmod(rand(), 3.14159265))));
+	celero::DoNotOptimizeAway(static_cast<float>(sin(fmod(celero::Random(), 3.14159265))));
 }
 */

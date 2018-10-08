@@ -1,7 +1,7 @@
 ///
 /// \author	John Farrier
 ///
-/// \copyright Copyright 2015, 2016, 2017 John Farrier
+/// \copyright Copyright 2015, 2016, 2017, 2018 John Farrier
 ///
 /// Licensed under the Apache License, Version 2.0 (the "License");
 /// you may not use this file except in compliance with the License.
@@ -17,14 +17,13 @@
 ///
 
 #include <celero/Callbacks.h>
-
 #include <algorithm>
 #include <vector>
 
 using namespace celero;
 
 std::vector<std::function<void(std::shared_ptr<Experiment>)>> ExperimentFunctions;
-std::vector<std::function<void(std::shared_ptr<Result>)>> ExperimentResultFunctions;
+std::vector<std::function<void(std::shared_ptr<celero::ExperimentResult>)>> ExperimentResultFunctions;
 
 void celero::impl::ExperimentComplete(std::shared_ptr<Experiment> x)
 {
@@ -34,7 +33,7 @@ void celero::impl::ExperimentComplete(std::shared_ptr<Experiment> x)
 	}
 }
 
-void celero::impl::ExperimentResultComplete(std::shared_ptr<Result> x)
+void celero::impl::ExperimentResultComplete(std::shared_ptr<celero::ExperimentResult> x)
 {
 	for(auto& i : ExperimentResultFunctions)
 	{
@@ -47,7 +46,7 @@ void celero::AddExperimentCompleteFunction(std::function<void(std::shared_ptr<Ex
 	ExperimentFunctions.push_back(x);
 }
 
-void celero::AddExperimentResultCompleteFunction(std::function<void(std::shared_ptr<Result>)> x)
+void celero::AddExperimentResultCompleteFunction(std::function<void(std::shared_ptr<celero::ExperimentResult>)> x)
 {
 	ExperimentResultFunctions.push_back(x);
 }

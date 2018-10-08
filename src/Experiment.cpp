@@ -1,7 +1,7 @@
 ///
 /// \author	John Farrier
 ///
-/// \copyright Copyright 2015, 2016, 2017 John Farrier
+/// \copyright Copyright 2015, 2016, 2017, 2018 John Farrier
 ///
 /// Licensed under the Apache License, Version 2.0 (the "License");
 /// you may not use this file except in compliance with the License.
@@ -31,54 +31,54 @@ using namespace celero;
 class Experiment::Impl
 {
 public:
-	Impl()
-		: results(),
-		  benchmark(),
-		  factory(),
-		  name(),
-		  baselineUnit(0),
-		  baselineTarget(0),
-		  samples(0),
-		  iterations(0),
-		  threads(1),
-		  totalRunTime(0),
-		  isBaselineCase(false)
+	Impl() :
+		results(),
+		benchmark(),
+		factory(),
+		name(),
+		baselineUnit(0),
+		baselineTarget(0),
+		samples(0),
+		iterations(0),
+		threads(1),
+		totalRunTime(0),
+		isBaselineCase(false)
 	{
 	}
 
-	Impl(std::weak_ptr<Benchmark> bm, const std::string& n, const uint64_t s, const uint64_t c, const uint64_t t, const double pBaselineTarget)
-		: results(),
-		  benchmark(bm),
-		  factory(),
-		  name(n),
-		  baselineUnit(0),
-		  baselineTarget(pBaselineTarget),
-		  samples(s),
-		  iterations(c),
-		  threads(t),
-		  totalRunTime(0),
-		  isBaselineCase(false)
+	Impl(std::weak_ptr<Benchmark> bm, const std::string& n, const uint64_t s, const uint64_t c, const uint64_t t, const double pBaselineTarget) :
+		results(),
+		benchmark(bm),
+		factory(),
+		name(n),
+		baselineUnit(0),
+		baselineTarget(pBaselineTarget),
+		samples(s),
+		iterations(c),
+		threads(t),
+		totalRunTime(0),
+		isBaselineCase(false)
 	{
 	}
 
-	Impl(std::weak_ptr<Benchmark> bm)
-		: results(),
-		  benchmark(bm),
-		  factory(),
-		  name(),
-		  baselineUnit(0),
-		  baselineTarget(0),
-		  samples(0),
-		  iterations(0),
-		  threads(1),
-		  totalRunTime(0),
-		  isBaselineCase(false)
+	Impl(std::weak_ptr<Benchmark> bm) :
+		results(),
+		benchmark(bm),
+		factory(),
+		name(),
+		baselineUnit(0),
+		baselineTarget(0),
+		samples(0),
+		iterations(0),
+		threads(1),
+		totalRunTime(0),
+		isBaselineCase(false)
 	{
 	}
 
 	/// There is one result for each problem space value.
 	/// In the event there are not any problem spaces, there shal be a single result.
-	std::vector<std::shared_ptr<Result>> results;
+	std::vector<std::shared_ptr<celero::ExperimentResult>> results;
 
 	/// The owning benchmark object which groups together all experiments.
 	std::weak_ptr<Benchmark> benchmark;
@@ -119,8 +119,8 @@ Experiment::Experiment(std::weak_ptr<Benchmark> benchmark) : pimpl(benchmark)
 }
 
 Experiment::Experiment(std::weak_ptr<Benchmark> benchmark, const std::string& name, uint64_t samples, uint64_t iterations, uint64_t threads,
-					   double baselineTarget)
-	: pimpl(benchmark, name, samples, iterations, threads, baselineTarget)
+					   double baselineTarget) :
+	pimpl(benchmark, name, samples, iterations, threads, baselineTarget)
 {
 }
 
@@ -276,7 +276,7 @@ std::shared_ptr<Factory> Experiment::getFactory() const
 
 void Experiment::addProblemSpace(int64_t x, double scale, uint64_t iterations)
 {
-	auto r = std::make_shared<Result>(this);
+	auto r = std::make_shared<celero::ExperimentResult>(this);
 	r->setProblemSpaceValue(x, scale, iterations);
 	this->pimpl->results.push_back(r);
 }
@@ -285,7 +285,7 @@ size_t Experiment::getResultSize()
 {
 	if(this->pimpl->results.empty() == true)
 	{
-		auto defaultResult = std::make_shared<Result>(this);
+		auto defaultResult = std::make_shared<celero::ExperimentResult>(this);
 		defaultResult->setProblemSpaceValue(static_cast<int64_t>(TestFixture::Constants::NoProblemSpaceValue), 1.0, this->getIterations());
 		this->pimpl->results.push_back(defaultResult);
 	}
@@ -293,18 +293,18 @@ size_t Experiment::getResultSize()
 	return this->pimpl->results.size();
 }
 
-std::shared_ptr<Result> Experiment::getResult(size_t x)
+std::shared_ptr<celero::ExperimentResult> Experiment::getResult(size_t x)
 {
 	// get the result OR thrown an exception if the result list is empty;
 	return this->pimpl->results.at(x);
 }
 
-std::shared_ptr<Result> Experiment::getResultByValue(int64_t x)
+std::shared_ptr<celero::ExperimentResult> Experiment::getResultByValue(int64_t x)
 {
-	std::shared_ptr<Result> r;
+	std::shared_ptr<celero::ExperimentResult> r;
 
 	const auto found = std::find_if(std::begin(this->pimpl->results), std::end(this->pimpl->results),
-									[x](std::shared_ptr<Result> i) -> bool { return (i->getProblemSpaceValue() == x); });
+									[x](std::shared_ptr<celero::ExperimentResult> i) -> bool { return (i->getProblemSpaceValue() == x); });
 
 	if(found != std::end(this->pimpl->results))
 	{

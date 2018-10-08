@@ -4,7 +4,7 @@
 ///
 /// \author	John Farrier
 ///
-/// \copyright Copyright 2015, 2016, 2017 John Farrier
+/// \copyright Copyright 2015, 2016, 2017, 2018 John Farrier
 ///
 /// Licensed under the Apache License, Version 2.0 (the "License");
 /// you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@
 /// limitations under the License.
 ///
 
+#include <celero/Utilities.h>
 #include <stdint.h>
 
 namespace celero
@@ -52,7 +53,10 @@ namespace celero
 		///
 		///	\return	The time, in seconds.
 		///
-		double ConvertSystemTime(const uint64_t x);
+		constexpr double ConvertSystemTime(const uint64_t x)
+		{
+			return x * celero::UsToSec;
+		}
 
 		///
 		/// On Windows, this caches the frequency of the high performance clock.
@@ -60,7 +64,7 @@ namespace celero
 		/// \return  The number of microseconds of precision that we have.
 		///
 		double CachePerformanceFrequency(bool quiet);
-	}
-}
+	} // namespace timer
+} // namespace celero
 
 #endif

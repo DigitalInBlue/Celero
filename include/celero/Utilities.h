@@ -4,7 +4,7 @@
 ///
 /// \author	John Farrier
 ///
-/// \copyright Copyright 2015, 2016, 2017 John Farrier
+/// \copyright Copyright 2015, 2016, 2017, 2018 John Farrier
 ///
 /// Licensed under the Apache License, Version 2.0 (the "License");
 /// you may not use this file except in compliance with the License.
@@ -101,10 +101,8 @@ namespace celero
 	template <class T>
 	void DoNotOptimizeAway(T&& x)
 	{
-		//
-		// We must always do this test, but it will never pass.
-		//
-		if(std::chrono::system_clock::now() == std::chrono::time_point<std::chrono::system_clock>())
+		static auto ttid = std::this_thread::get_id();
+		if(ttid == std::thread::id())
 		{
 			// This forces the value to never be optimized away
 			// by taking a reference then using it.
@@ -116,20 +114,43 @@ namespace celero
 		}
 	}
 
-	/// Specialization for std::function objects.
+	/// Specialization for std::function objects which return a value.
+	template <class T>
+	void DoNotOptimizeAway(std::function<T(void)>&& x)
+	{
+		volatile auto foo = x();
+
+		static auto ttid = std::this_thread::get_id();
+		if(ttid == std::thread::id())
+		{
+			// This forces the value to never be optimized away
+			// by taking a reference then using it.
+			const auto* p = &foo + &x;
+			putchar(*reinterpret_cast<const char*>(p));
+
+			// If we do get here, kick out because something has gone wrong.
+			std::abort();
+		}
+	}
+
+	/// Specialization for std::function objects which return void.
 	template <>
 	CELERO_EXPORT void DoNotOptimizeAway(std::function<void(void)>&& x);
 
 	///
 	/// Quick definition of the number of microseconds per second.
 	///
-	const uint64_t UsPerSec(1000000);
+	constexpr uint64_t UsPerSec(1000000);
 
 	///
-	/// Disable dynamic CPU scaling which allows the clock speed of the processor
-	/// to be adjusted to different P-states by software.
+	/// Conversion from Microseconds to Seconds.
 	///
-	CELERO_EXPORT void DisableDynamicCPUScaling();
-}
+	constexpr double UsToSec{1.0e-6};
+
+	///
+	/// Drop-in replacement for std::rand();
+	///
+	CELERO_EXPORT int Random();
+} // namespace celero
 
 #endif

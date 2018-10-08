@@ -1,7 +1,7 @@
 ///
 /// \author	John Farrier
 ///
-/// \copyright Copyright 2015, 2016, 2017 John Farrier
+/// \copyright Copyright 2015, 2016, 2017, 2018 John Farrier
 ///
 /// Licensed under the Apache License, Version 2.0 (the "License");
 /// you may not use this file except in compliance with the License.
@@ -22,7 +22,6 @@
 #include <celero/TestVector.h>
 #include <celero/Timer.h>
 #include <celero/Utilities.h>
-
 #include <chrono>
 #include <iomanip>
 #include <iostream>
@@ -59,7 +58,7 @@ std::string PrintCenter(const std::string s, const size_t w = PrintConstants::Co
 	ss << spaces.str() << s << spaces.str();
 
 	// if odd #, add 1 space
-	if(padding > 0 && padding % 2 != 0)
+	if((padding > 0) && (padding % 2 != 0))
 	{
 		ss << " ";
 	}
@@ -171,10 +170,26 @@ std::string PrintColumnRight(const std::string& x, const size_t width = PrintCon
 std::string PrintHRule()
 {
 	std::stringstream ss;
-	ss << std::string(PrintConstants::ColumnWidth * PrintConstants::NumberOfColumns
-						  + PrintConstants::ColumnSeperatorWidth * (PrintConstants::NumberOfColumns - 1) + 2,
-					  '-')
-	   << "\n";
+	std::string column{":"};
+
+	while(column.length() < PrintConstants::ColumnWidth)
+	{
+		column += "-";
+	}
+
+	std::string firstColumn = column + ":|";
+
+	column += "-:|";
+
+	ss << "|" << firstColumn;
+
+	for(size_t i = 0; i < PrintConstants::NumberOfColumns - 1; ++i)
+	{
+		ss << column;
+	}
+
+	ss << std::endl;
+
 	return ss.str();
 }
 
@@ -186,18 +201,16 @@ void celero::print::Console(const std::string& x)
 void celero::print::TableBanner()
 {
 	celero::console::SetConsoleColor(celero::console::ConsoleColor_Default);
-	std::cout << PrintHRule();
-	std::cout << PrintCenter("Group") << PrintCenter("Experiment") << PrintCenter("Prob. Space") << PrintCenter("Samples")
-			  << PrintCenter("Iterations")
 
-			  << PrintCenter("Baseline") << PrintCenter("us/Iteration") << PrintCenter("Iterations/sec") << "\n";
+	std::cout << "|" << PrintCenter("Group") << PrintCenter("Experiment") << PrintCenter("Prob. Space") << PrintCenter("Samples")
+			  << PrintCenter("Iterations") << PrintCenter("Baseline") << PrintCenter("us/Iteration") << PrintCenter("Iterations/sec") << "\n";
 	std::cout << PrintHRule();
 }
 
 void celero::print::TableRowExperimentHeader(Experiment* x)
 {
 	celero::console::SetConsoleColor(celero::console::ConsoleColor_Default);
-	std::cout << PrintColumn(x->getBenchmark()->getName()) << PrintColumn(x->getName());
+	std::cout << "|" << PrintColumn(x->getBenchmark()->getName()) << PrintColumn(x->getName());
 }
 
 void celero::print::TableRowFailure(const std::string& msg)
@@ -208,9 +221,10 @@ void celero::print::TableRowFailure(const std::string& msg)
 	celero::console::SetConsoleColor(celero::console::ConsoleColor_Default);
 }
 
-void celero::print::TableRowProblemSpaceHeader(std::shared_ptr<Result> x)
+void celero::print::TableRowProblemSpaceHeader(std::shared_ptr<celero::ExperimentResult> x)
 {
 	celero::console::SetConsoleColor(celero::console::ConsoleColor_Default);
+
 	if(x->getProblemSpaceValue() == static_cast<int64_t>(TestFixture::Constants::NoProblemSpaceValue))
 	{
 		std::cout << PrintColumnRight("Null");
@@ -223,13 +237,13 @@ void celero::print::TableRowProblemSpaceHeader(std::shared_ptr<Result> x)
 	std::cout << PrintColumn(x->getExperiment()->getSamples()) << PrintColumn(x->getProblemSpaceIterations());
 }
 
-void celero::print::TableRowHeader(std::shared_ptr<Result> x)
+void celero::print::TableRowHeader(std::shared_ptr<celero::ExperimentResult> x)
 {
 	TableRowExperimentHeader(x->getExperiment());
 	TableRowProblemSpaceHeader(x);
 }
 
-void celero::print::TableResult(std::shared_ptr<Result> x)
+void celero::print::TableResult(std::shared_ptr<celero::ExperimentResult> x)
 {
 	celero::console::SetConsoleColor(celero::console::ConsoleColor_Default);
 

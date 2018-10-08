@@ -1,7 +1,7 @@
 ///
 /// \author	John Farrier
 ///
-/// \copyright Copyright 2015, 2016, 2017 John Farrier
+/// \copyright Copyright 2015, 2016, 2017, 2018 John Farrier
 ///
 /// Licensed under the Apache License, Version 2.0 (the "License");
 /// you may not use this file except in compliance with the License.
@@ -30,7 +30,6 @@
 #include <celero/ResultTable.h>
 #include <celero/TestVector.h>
 #include <celero/Utilities.h>
-
 #include <cassert>
 #include <cmath>
 #include <fstream>
@@ -92,6 +91,13 @@ std::shared_ptr<celero::Benchmark> celero::RegisterBaseline(const char* groupNam
 
 void celero::Run(int argc, char** argv)
 {
+#ifdef _DEBUG
+	std::cout << "Celero is running in Debug.  Results are for debugging only as any measurements made while in Debug are likely not representative "
+				 "of non-debug results."
+			  << std::endl
+			  << std::endl;
+#endif
+
 	cmdline::parser args;
 	args.add("list", 'l', "Prints a list of all available benchmarks.");
 	args.add<std::string>("group", 'g', "Runs a specific group of benchmarks.", false, "");
@@ -128,7 +134,6 @@ void celero::Run(int argc, char** argv)
 	std::cout << "Celero" << std::endl;
 
 	// Disable dynamic CPU frequency scaling
-	celero::DisableDynamicCPUScaling();
 	celero::timer::CachePerformanceFrequency(false);
 
 	// Shall we build a distribution?
@@ -139,13 +144,15 @@ void celero::Run(int argc, char** argv)
 	}
 
 	// Has a result output file been specified?
+	auto mustCloseFile = false;
 	auto argument = args.get<std::string>("outputTable");
 	if(argument.empty() == false)
 	{
 		std::cout << "Writing results to: " << argument << std::endl;
 		celero::ResultTable::Instance().setFileName(argument);
 
-		celero::AddExperimentResultCompleteFunction([](std::shared_ptr<celero::Result> p) { celero::ResultTable::Instance().add(p); });
+		celero::AddExperimentResultCompleteFunction([](std::shared_ptr<celero::ExperimentResult> p) { celero::ResultTable::Instance().add(p); });
+		mustCloseFile = true;
 	}
 
 	// Has a result output file been specified?
@@ -155,7 +162,7 @@ void celero::Run(int argc, char** argv)
 		std::cout << "Archiving results to: " << argument << std::endl;
 		celero::Archive::Instance().setFileName(argument);
 
-		celero::AddExperimentResultCompleteFunction([](std::shared_ptr<celero::Result> p) { celero::Archive::Instance().add(p); });
+		celero::AddExperimentResultCompleteFunction([](std::shared_ptr<celero::ExperimentResult> p) { celero::Archive::Instance().add(p); });
 	}
 
 	// Has a JUnit output file been specified?
@@ -165,12 +172,14 @@ void celero::Run(int argc, char** argv)
 		std::cout << "Writing JUnit results to: " << argument << std::endl;
 		celero::JUnit::Instance().setFileName(argument);
 
-		celero::AddExperimentResultCompleteFunction([](std::shared_ptr<celero::Result> p) { celero::JUnit::Instance().add(p); });
+		celero::AddExperimentResultCompleteFunction([](std::shared_ptr<celero::ExperimentResult> p) { celero::JUnit::Instance().add(p); });
 	}
 
 	// Has a flag to catch exceptions or not been specified?
-	if(args.exist("catchExceptions"))
-		ExceptionSettings::setCatchExceptions(args.get<bool>("catchExceptions"));
+	if(args.exist("catchExceptions") == true)
+	{
+		ExceptionSettings::SetCatchExceptions(args.get<bool>("catchExceptions"));
+	}
 
 	print::TableBanner();
 
@@ -185,6 +194,11 @@ void celero::Run(int argc, char** argv)
 		executor::RunAll();
 	}
 
+	if(mustCloseFile == true)
+	{
+		celero::ResultTable::Instance().closeFile();
+	}
+
 	// Final output.
-	std::cout << "Complete.\n";
+	std::cout << "Complete." << std::endl;
 }

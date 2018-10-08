@@ -1,7 +1,7 @@
 ///
 /// \author	John Farrier
 ///
-/// \copyright Copyright 2015, 2016, 2017 John Farrier
+/// \copyright Copyright 2015, 2016, 2017, 2018 John Farrier
 ///
 /// Licensed under the Apache License, Version 2.0 (the "License");
 /// you may not use this file except in compliance with the License.
@@ -38,6 +38,19 @@ public:
 	{
 	}
 
+	~Impl()
+	{
+		closeFile();
+	}
+
+	void closeFile()
+	{
+		if(this->ofs.is_open() == true)
+		{
+			this->ofs.close();
+		}
+	}
+
 	void setFileName(const std::string& x)
 	{
 		if(this->ofs.is_open() == true)
@@ -50,8 +63,11 @@ public:
 		// Print the header for the table.
 		if(this->ofs.is_open() == true)
 		{
-			this->ofs << "Group,Experiment,Problem Space,Samples,Iterations,Failure,Baseline,";
-			this->ofs << "us/Iteration,Iterations/sec,Min (us),Mean (us),Max (us),Variance,Standard Deviation,Skewness,Kurtosis,Z Score\n";
+			this->ofs << "Group,Experiment,Problem "
+						 "Space,Samples,Iterations,Failure,Baseline,";
+			this->ofs << "us/Iteration,Iterations/sec,Min (us),Mean (us),Max "
+						 "(us),Variance,Standard Deviation,Skewness,Kurtosis,Z Score"
+					  << std::endl;
 		}
 	}
 
@@ -88,7 +104,12 @@ void ResultTable::setFileName(const std::string& x)
 	this->pimpl->setFileName(x);
 }
 
-void ResultTable::add(std::shared_ptr<Result> x)
+void ResultTable::closeFile()
+{
+	this->pimpl->closeFile();
+}
+
+void ResultTable::add(std::shared_ptr<celero::ExperimentResult> x)
 {
 	if(this->pimpl->ofs.is_open() == true)
 	{
@@ -96,9 +117,9 @@ void ResultTable::add(std::shared_ptr<Result> x)
 						 << "," << x->getExperiment()->getSamples() << "," << x->getProblemSpaceIterations() << "," << x->getFailure() << ",";
 
 		this->pimpl->ofs << x->getBaselineMeasurement() << "," << x->getUsPerCall() << "," << x->getCallsPerSecond() << ","
-						 << x->getStatistics()->getMin() << "," << x->getStatistics()->getMean() << "," << x->getStatistics()->getMax() << ","
-						 << x->getStatistics()->getVariance() << "," << x->getStatistics()->getStandardDeviation() << ","
-						 << x->getStatistics()->getSkewness() << "," << x->getStatistics()->getKurtosis() << "," << x->getStatistics()->getZScore()
-						 << "\n";
+						 << x->getTimeStatistics()->getMin() << "," << x->getTimeStatistics()->getMean() << "," << x->getTimeStatistics()->getMax()
+						 << "," << x->getTimeStatistics()->getVariance() << "," << x->getTimeStatistics()->getStandardDeviation() << ","
+						 << x->getTimeStatistics()->getSkewness() << "," << x->getTimeStatistics()->getKurtosis() << ","
+						 << x->getTimeStatistics()->getZScore() << std::endl;
 	}
 }

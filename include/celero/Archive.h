@@ -4,7 +4,7 @@
 ///
 /// \author	John Farrier
 ///
-/// \copyright Copyright 2015, 2016, 2017 John Farrier
+/// \copyright Copyright 2015, 2016, 2017, 2018 John Farrier
 ///
 /// Licensed under the Apache License, Version 2.0 (the "License");
 /// you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@
 ///
 
 #include <celero/Experiment.h>
-#include <celero/Result.h>
+#include <celero/ExperimentResult.h>
 #include <string>
 
 namespace celero
@@ -50,7 +50,7 @@ namespace celero
 		///
 		/// This should re-save on every new result so that the output can be monitored externally.
 		///
-		void add(std::shared_ptr<celero::Result> x);
+		void add(std::shared_ptr<celero::ExperimentResult> x);
 
 		///
 		/// Saves all current results to a results archive file.
@@ -97,6 +97,6 @@ namespace celero
 		///
 		Pimpl<Impl> pimpl;
 	};
-}
+} // namespace celero
 
 #endif

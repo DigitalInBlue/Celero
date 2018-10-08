@@ -1,7 +1,7 @@
 ///
 /// \author	John Farrier
 ///
-/// \copyright Copyright 2015, 2016, 2017 John Farrier
+/// \copyright Copyright 2015, 2016, 2017, 2018 John Farrier
 ///
 /// Licensed under the Apache License, Version 2.0 (the "License");
 /// you may not use this file except in compliance with the License.
@@ -21,18 +21,25 @@
 
 #ifdef WIN32
 #include <Windows.h>
-#include <Powerbase.h>
+
+#include <PowrProf.h>
 #endif
+
+#ifdef max
+#undef max
+#endif
+
+#include <limits>
+#include <random>
 
 template <>
 void celero::DoNotOptimizeAway(std::function<void(void)>&& x)
 {
 	x();
 
-	//
 	// We must always do this test, but it will never pass.
-	//
-	if(std::chrono::system_clock::now() == std::chrono::time_point<std::chrono::system_clock>())
+	static auto ttid = std::this_thread::get_id();
+	if(ttid == std::thread::id())
 	{
 		// This forces the value to never be optimized away
 		// by taking a reference then using it.
@@ -44,45 +51,17 @@ void celero::DoNotOptimizeAway(std::function<void(void)>&& x)
 	}
 }
 
-void celero::DisableDynamicCPUScaling()
+int celero::Random()
 {
-#ifdef WIN32
-	// http://stackoverflow.com/questions/3975551/how-to-disable-dynamic-frequency-scaling
-	// https://msdn.microsoft.com/en-us/library/aa372675(v=vs.85).aspx
-	//
-	// NTSTATUS WINAPI CallNtPowerInformation(
-	//   _In_   POWER_INFORMATION_LEVEL InformationLevel,
-	//   _In_   PVOID lpInputBuffer,
-	//   _In_   ULONG nInputBufferSize,
-	//   _Out_  PVOID lpOutputBuffer,
-	//   _In_   ULONG nOutputBufferSize
-	// );
+	// http://en.cppreference.com/w/cpp/numeric/random/uniform_int_distribution
 
-	// https://msdn.microsoft.com/en-us/library/aa373215(v=vs.85).aspx
-	SYSTEM_POWER_CAPABILITIES spc;
+	// Will be used to obtain a seed for the random number engine
+	static std::random_device rd;
 
-	CallNtPowerInformation(SystemPowerCapabilities, NULL, NULL, &spc, sizeof(SYSTEM_POWER_CAPABILITIES));
+	// Standard mersenne_twister_engine seeded with rd()
+	static std::mt19937 gen(rd());
 
-	if(spc.ProcessorThrottle == TRUE)
-	{
-		celero::print::Console("CPU supports processor throttling.  Attempting to disable.");
+	static std::uniform_int_distribution<> dis(std::numeric_limits<int>::lowest(), std::numeric_limits<int>::max());
 
-		if(spc.ProcessorMinThrottle != 100)
-		{
-			spc.ProcessorMaxThrottle = 100;
-			spc.ProcessorMinThrottle = 100;
-
-			CallNtPowerInformation(SystemPowerCapabilities, &spc, sizeof(SYSTEM_POWER_CAPABILITIES), NULL, NULL);
-		}
-
-		celero::DisableDynamicCPUScaling();
-	}
-	else
-	{
-		celero::print::Console("CPU processor throttling disabled.");
-	}
-#else
-// The Linux kernel has full SpeedStep support
-// integrated since version 2.6.
-#endif
+	return dis(gen);
 }

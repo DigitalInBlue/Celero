@@ -4,7 +4,7 @@
 ///
 /// \author	John Farrier
 ///
-/// \copyright Copyright 2015, 2016, 2017 John Farrier
+/// \copyright Copyright 2015, 2016, 2017, 2018 John Farrier
 ///
 /// Licensed under the Apache License, Version 2.0 (the "License");
 /// you may not use this file except in compliance with the License.
@@ -46,11 +46,15 @@ namespace celero
 		void setFileName(const std::string& x);
 
 		///
+		/// Force the output file (if any) to close
+		///
+		void closeFile();
+		///
 		/// Add a new result to the result table.
 		///
 		/// This should re-save on every new result so that the output can be monitored externally.
 		///
-		void add(std::shared_ptr<celero::Result> x);
+		void add(std::shared_ptr<celero::ExperimentResult> x);
 
 		///
 		///
@@ -78,6 +82,6 @@ namespace celero
 		///
 		Pimpl<Impl> pimpl;
 	};
-}
+} // namespace celero
 
 #endif

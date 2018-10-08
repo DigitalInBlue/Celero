@@ -4,7 +4,7 @@
 ///
 /// \author	John Farrier
 ///
-/// \copyright Copyright 2015, 2016, 2017 John Farrier
+/// \copyright Copyright 2015, 2016, 2017, 2018 John Farrier
 ///
 /// Licensed under the Apache License, Version 2.0 (the "License");
 /// you may not use this file except in compliance with the License.
@@ -19,15 +19,14 @@
 /// limitations under the License.
 ///
 
+#include <celero/Export.h>
+#include <celero/Timer.h>
 #include <cstddef>
 #include <cstdint>
 #include <limits>
-
-#include <celero/Export.h>
-#include <celero/ThreadLocal.h>
-#include <celero/Timer.h>
-
 #include <vector>
+
+#include <celero/ThreadLocal.h>
 
 namespace celero
 {
@@ -65,6 +64,28 @@ namespace celero
 		};
 
 		///
+		/// \class ExperimentValue
+		///
+		/// You can derive from this type to add your own information to the experiment value set.
+		///
+		class ExperimentValue
+		{
+		public:
+			ExperimentValue() = default;
+			ExperimentValue(int64_t v) : Value(v){};
+			ExperimentValue(int64_t v, int64_t i) : Value(v), Iterations(i){};
+
+			virtual ~ExperimentValue() = default;
+
+			/// An arbitrary integer value which can be used or translated for use by the test fixture.
+			int64_t Value{0};
+
+			/// The number of iterations to do with this test value.  0 (default) indicates that the default number of iterations set up for the test
+			/// case should be used.
+			int64_t Iterations{0};
+		};
+
+		///
 		/// Allows a test fixture to supply values to use for experiments.
 		///
 		/// This is used to create multiple runs of the same experiment
@@ -75,9 +96,9 @@ namespace celero
 		///
 		/// It is only guaranteed that the constructor is called prior to this function being called.
 		///
-		virtual std::vector<std::pair<int64_t, uint64_t>> getExperimentValues() const
+		virtual std::vector<celero::TestFixture::ExperimentValue> getExperimentValues() const
 		{
-			return std::vector<std::pair<int64_t, uint64_t>>();
+			return std::vector<celero::TestFixture::ExperimentValue>();
 		};
 
 		///
@@ -101,9 +122,9 @@ namespace celero
 		/// Unlike setUp, the evaluation of this function IS included in the total experiment execution
 		/// time.
 		///
-		/// \param experimentValue The value for the experiment.  This can be ignored if the test does not utilize experiment values.
+		/// \param x The value for the experiment.  This can be ignored if the test does not utilize experiment values.
 		///
-		virtual void onExperimentStart(int64_t experimentValue);
+		virtual void onExperimentStart(const celero::TestFixture::ExperimentValue& x);
 
 		///
 		/// Allows the text fixture to run code that will be executed once immediately after the benchmark.
@@ -119,9 +140,9 @@ namespace celero
 		/// It is executed once before all iterations are executed and between each Sample.
 		/// Your experiment should NOT rely on "setUp" methods to be called before EACH experiment run, only between each sample.
 		///
-		/// \param experimentValue The value for the experiment.  This can be ignored if the test does not utilize experiment values.
+		/// \param x The celero::TestFixture::ExperimentValue for the experiment.  This can be ignored if the test does not utilize experiment values.
 		///
-		virtual void setUp(int64_t experimentValue);
+		virtual void setUp(const celero::TestFixture::ExperimentValue& x);
 
 		///
 		/// Called after test completion to destroy the fixture.
@@ -140,7 +161,7 @@ namespace celero
 		///
 		/// \return Returns the number of microseconds the run took.
 		///
-		virtual uint64_t run(uint64_t threads, uint64_t iterations, int64_t experimentValue);
+		virtual uint64_t run(uint64_t threads, uint64_t iterations, const celero::TestFixture::ExperimentValue& experimentValue);
 
 	protected:
 		/// Executed for each operation the benchmarking test is run.
@@ -151,6 +172,6 @@ namespace celero
 		///
 		virtual uint64_t HardCodedMeasurement() const;
 	};
-}
+} // namespace celero
 
 #endif

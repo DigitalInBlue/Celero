@@ -1,7 +1,7 @@
 ///
 /// \author	John Farrier
 ///
-/// \copyright Copyright 2015, 2016, 2017 John Farrier
+/// \copyright Copyright 2015, 2016, 2017, 2018 John Farrier
 ///
 /// Licensed under the Apache License, Version 2.0 (the "License");
 /// you may not use this file except in compliance with the License.
@@ -16,13 +16,11 @@
 /// limitations under the License.
 ///
 
+#include <assert.h>
 #include <celero/Archive.h>
 #include <celero/Benchmark.h>
 #include <celero/FileReader.h>
 #include <celero/PimplImpl.h>
-
-#include <assert.h>
-
 #include <algorithm>
 #include <chrono>
 #include <fstream>
@@ -37,24 +35,24 @@ using namespace celero;
 ///
 struct ArchiveEntry
 {
-	ArchiveEntry()
-		: GroupName(),
-		  RunName(),
-		  Failure(false),
-		  ExperimentValue(0),
-		  ExperimentValueScale(0),
-		  FirstRanDate(0),
-		  TotalSamplesCollected(0),
-		  AverageBaseline(0),
-		  MinBaseline(0),
-		  MinBaseline_TimeSinceEpoch(0),
-		  MinStats(),
-		  MaxBaseline(0),
-		  MaxBaseline_TimeSinceEpoch(0),
-		  MaxStats(),
-		  CurrentBaseline(0),
-		  CurrentBaseline_TimeSinceEpoch(0),
-		  CurrentStats()
+	ArchiveEntry() :
+		GroupName(),
+		RunName(),
+		ExperimentValue(0),
+		ExperimentValueScale(0),
+		FirstRanDate(0),
+		TotalSamplesCollected(0),
+		AverageBaseline(0),
+		MinBaseline(0),
+		MinBaseline_TimeSinceEpoch(0),
+		MinStats(),
+		MaxBaseline(0),
+		MaxBaseline_TimeSinceEpoch(0),
+		MaxStats(),
+		CurrentBaseline(0),
+		CurrentBaseline_TimeSinceEpoch(0),
+		CurrentStats(),
+		Failure(false)
 	{
 	}
 
@@ -69,7 +67,7 @@ struct ArchiveEntry
 		str << "MaxStatMin,MaxStatMax,";
 		str << "CurrentBaseline,CurrentBaselineTimeSinceEpoch,";
 		str << "CurrentStatSize,CurrentStatMean,CurrentStatVariance,CurrentStatStandardDeviation,CurrentStatSkewness,CurrentStatKurtosis,";
-		str << "CurrentStatMin,CurrentStatMax\n";
+		str << "CurrentStatMin,CurrentStatMax" << std::endl;
 	}
 
 	struct Stat
@@ -105,8 +103,6 @@ struct ArchiveEntry
 	std::string GroupName;
 	std::string RunName;
 
-	bool Failure;
-
 	/// The data set size, if one was specified.
 	int64_t ExperimentValue;
 	double ExperimentValueScale;
@@ -127,6 +123,8 @@ struct ArchiveEntry
 	double CurrentBaseline;
 	uint64_t CurrentBaseline_TimeSinceEpoch;
 	Stat CurrentStats;
+
+	bool Failure;
 };
 
 ///
@@ -166,7 +164,7 @@ std::ostream& operator<<(std::ostream& str, ArchiveEntry const& data)
 	str << data.MaxStats << ",";
 	str << data.CurrentBaseline << ",";
 	str << data.CurrentBaseline_TimeSinceEpoch << ",";
-	str << data.CurrentStats << "\n";
+	str << data.CurrentStats << std::endl;
 	return str;
 }
 
@@ -287,7 +285,7 @@ void Archive::setFileName(const std::string& x)
 	this->pimpl->readExistingResults();
 }
 
-void Archive::add(std::shared_ptr<celero::Result> x)
+void Archive::add(std::shared_ptr<celero::ExperimentResult> x)
 {
 	const auto found = std::find_if(std::begin(this->pimpl->results), std::end(this->pimpl->results), [x](const ArchiveEntry& r) -> bool {
 		return (r.GroupName == x->getExperiment()->getBenchmark()->getName()) && (r.RunName == x->getExperiment()->getName())
@@ -296,12 +294,14 @@ void Archive::add(std::shared_ptr<celero::Result> x)
 
 	if(found != std::end(this->pimpl->results))
 	{
-		if(x->getFailure())
+		if(x->getFailure() == true)
+		{
 			return;
+		}
 
 		found->CurrentBaseline = x->getBaselineMeasurement();
 		found->CurrentBaseline_TimeSinceEpoch = this->pimpl->now();
-		found->CurrentStats = *x->getStatistics();
+		found->CurrentStats = *x->getTimeStatistics();
 
 		if(found->Failure || found->CurrentBaseline <= found->MinBaseline)
 		{
@@ -318,11 +318,16 @@ void Archive::add(std::shared_ptr<celero::Result> x)
 		}
 
 		// This is not good IEEE math.
-		if(!found->Failure)
+		if(found->Failure == false)
+		{
 			found->AverageBaseline =
 				((found->AverageBaseline * found->TotalSamplesCollected) + found->CurrentBaseline) / (found->TotalSamplesCollected + 1);
+		}
 		else
+		{
 			found->AverageBaseline = found->CurrentBaseline;
+		}
+
 		found->TotalSamplesCollected++;
 	}
 	else
@@ -340,15 +345,15 @@ void Archive::add(std::shared_ptr<celero::Result> x)
 
 		r.CurrentBaseline = x->getBaselineMeasurement();
 		r.CurrentBaseline_TimeSinceEpoch = r.FirstRanDate;
-		r.CurrentStats = *x->getStatistics();
+		r.CurrentStats = *x->getTimeStatistics();
 
 		r.MaxBaseline = x->getBaselineMeasurement();
 		r.MaxBaseline_TimeSinceEpoch = r.FirstRanDate;
-		r.MaxStats = *x->getStatistics();
+		r.MaxStats = *x->getTimeStatistics();
 
 		r.MinBaseline = x->getBaselineMeasurement();
 		r.MinBaseline_TimeSinceEpoch = r.FirstRanDate;
-		r.MinStats = *x->getStatistics();
+		r.MinStats = *x->getTimeStatistics();
 
 		this->pimpl->results.push_back(r);
 	}
@@ -379,7 +384,7 @@ void Archive::save()
 		}
 		else
 		{
-			std::cerr << "Celero: Could not open result output file: \"" << this->pimpl->fileName << "\"\n";
+			std::cerr << "Celero: Could not open result output file: \"" << this->pimpl->fileName << "\"" << std::endl;
 		}
 	}
 }

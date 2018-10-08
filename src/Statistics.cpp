@@ -1,7 +1,7 @@
 ///
 /// \author	John Farrier
 ///
-/// \copyright Copyright 2015, 2016, 2017 John Farrier
+/// \copyright Copyright 2015, 2016, 2017, 2018 John Farrier
 ///
 /// Licensed under the Apache License, Version 2.0 (the "License");
 /// you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@
 ///
 
 #include <celero/Statistics.h>
+
 #include <celero/PimplImpl.h>
 
 #include <algorithm>
@@ -28,25 +29,25 @@ using namespace celero;
 class Statistics::Impl
 {
 public:
-	Impl()
-		: sampleSize(0),
-		  M1(0),
-		  M2(0),
-		  M3(0),
-		  M4(0),
-		  min(std::numeric_limits<decltype(Impl::min)>::max()),
-		  max(std::numeric_limits<decltype(Impl::max)>::min())
+	Impl() :
+		sampleSize(0),
+		M1(0),
+		M2(0),
+		M3(0),
+		M4(0),
+		min(std::numeric_limits<decltype(Impl::min)>::max()),
+		max(std::numeric_limits<decltype(Impl::max)>::min())
 	{
 	}
 
-	explicit Impl(const Statistics& other)
-		: sampleSize(other.pimpl->sampleSize),
-		  M1(other.pimpl->M1),
-		  M2(other.pimpl->M2),
-		  M3(other.pimpl->M3),
-		  M4(other.pimpl->M4),
-		  min(other.pimpl->min),
-		  max(other.pimpl->max)
+	explicit Impl(const Statistics& other) :
+		sampleSize(other.pimpl->sampleSize),
+		M1(other.pimpl->M1),
+		M2(other.pimpl->M2),
+		M3(other.pimpl->M3),
+		M4(other.pimpl->M4),
+		min(other.pimpl->min),
+		max(other.pimpl->max)
 	{
 	}
 

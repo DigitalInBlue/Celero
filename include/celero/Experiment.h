@@ -4,7 +4,7 @@
 ///
 /// \author	John Farrier
 ///
-/// \copyright Copyright 2015, 2016, 2017 John Farrier
+/// \copyright Copyright 2015, 2016, 2017, 2018 John Farrier
 ///
 /// Licensed under the Apache License, Version 2.0 (the "License");
 /// you may not use this file except in compliance with the License.
@@ -19,8 +19,8 @@
 /// limitations under the License.
 ///
 
+#include <celero/ExperimentResult.h>
 #include <celero/Factory.h>
-#include <celero/Result.h>
 #include <celero/Statistics.h>
 #include <string>
 
@@ -162,12 +162,12 @@ namespace celero
 		///
 		///
 		///
-		std::shared_ptr<Result> getResult(size_t x);
+		std::shared_ptr<celero::ExperimentResult> getResult(size_t x);
 
 		///
 		///
 		///
-		std::shared_ptr<Result> getResultByValue(int64_t x);
+		std::shared_ptr<celero::ExperimentResult> getResultByValue(int64_t x);
 
 	private:
 		///
@@ -191,6 +191,6 @@ namespace celero
 		///
 		Pimpl<Impl> pimpl;
 	};
-}
+} // namespace celero
 
 #endif

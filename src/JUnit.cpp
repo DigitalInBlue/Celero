@@ -1,7 +1,7 @@
 ///
 /// \author	John Farrier
 ///
-/// \copyright Copyright 2015, 2016, 2017 John Farrier
+/// \copyright Copyright 2015, 2016, 2017, 2018 John Farrier
 ///
 /// Licensed under the Apache License, Version 2.0 (the "License");
 /// you may not use this file except in compliance with the License.
@@ -16,14 +16,12 @@
 /// limitations under the License.
 ///
 
+#include <assert.h>
 #include <celero/Benchmark.h>
 #include <celero/JUnit.h>
 #include <celero/PimplImpl.h>
 #include <celero/Timer.h>
 #include <celero/Utilities.h>
-
-#include <assert.h>
-
 #include <algorithm>
 #include <fstream>
 #include <iostream>
@@ -34,30 +32,18 @@
 using namespace celero;
 
 ///
-/// \class Impl
+/// \struct celero::JUnit::Impl
 ///
 class celero::JUnit::Impl
 {
 public:
-	Impl() : fileName(), results(), totalTime(0)
-	{
-	}
-
 	std::string fileName;
 
 	/// Store the test case size, measured baseline, objective baseline, and total run time in seconds.
-	std::map<std::string, std::vector<std::shared_ptr<Result>>> results;
+	std::map<std::string, std::vector<std::shared_ptr<celero::ExperimentResult>>> results;
 
-	double totalTime;
+	double totalTime = {0.0};
 };
-
-JUnit::JUnit() : pimpl()
-{
-}
-
-JUnit::~JUnit()
-{
-}
 
 JUnit& JUnit::Instance()
 {
@@ -71,7 +57,7 @@ void JUnit::setFileName(const std::string& x)
 	this->pimpl->fileName = x;
 }
 
-void JUnit::add(std::shared_ptr<celero::Result> x)
+void JUnit::add(std::shared_ptr<celero::ExperimentResult> x)
 {
 	this->pimpl->results[x->getExperiment()->getBenchmark()->getName()].push_back(x);
 	this->save();
@@ -86,7 +72,7 @@ void JUnit::save()
 	{
 		const auto os = &ofs;
 
-		*os << "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>\n";
+		*os << "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>" << std::endl;
 
 		for(auto i : this->pimpl->results)
 		{
@@ -94,7 +80,7 @@ void JUnit::save()
 			size_t testSuiteFailures = 0;
 			size_t testSuiteErrors = 0;
 
-			auto runs = i.second;
+			const auto runs = i.second;
 
 			for(auto j : runs)
 			{
@@ -115,7 +101,7 @@ void JUnit::save()
 			*os << "tests=\"" << i.second.size() << "\" ";
 			*os << "time=\"" << celero::timer::ConvertSystemTime(testSuiteTime) << "\" ";
 			*os << "failures=\"" << testSuiteFailures << "\" ";
-			*os << "name=\"" << i.first << "\">\n";
+			*os << "name=\"" << i.first << "\">" << std::endl;
 
 			for(auto j : runs)
 			{
@@ -127,35 +113,35 @@ void JUnit::save()
 				if(j->getFailure())
 				{
 					// Error
-					*os << ">\n";
+					*os << ">" << std::endl;
 
 					*os << "\t\t<error ";
 					*os << "type=\"exception\"";
-					*os << "/>\n";
+					*os << "/>" << std::endl;
 
-					*os << "\t</testcase>\n";
+					*os << "\t</testcase>" << std::endl;
 				}
 				else if((j->getExperiment()->getBaselineTarget() > 0.0) && (j->getBaselineMeasurement() > j->getExperiment()->getBaselineTarget()))
 				{
 					// Failure
-					*os << ">\n";
+					*os << ">" << std::endl;
 
 					*os << "\t\t<failure ";
 					*os << "type=\"Performance objective not met.\" ";
 					*os << "message=\"Measurement of " << j->getBaselineMeasurement() << " exceeds objective baseline of "
 						<< j->getExperiment()->getBaselineTarget() << "\" ";
-					*os << "/>\n";
+					*os << "/>" << std::endl;
 
-					*os << "\t</testcase>\n";
+					*os << "\t</testcase>" << std::endl;
 				}
 				else
 				{
 					// Success
-					*os << "/>\n";
+					*os << "/>" << std::endl;
 				}
 			}
 
-			*os << "</testsuite>\n";
+			*os << "</testsuite" << std::endl;
 		}
 
 		ofs.close();
