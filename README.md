@@ -34,6 +34,7 @@ Once Celero is added to your project. You can create dedicated benchmark project
 - Archive results to track performance over time.
 - Integrates into CI/CT/CD environments with JUnit-formatted output.
 - User-defined Experiment Values can scale test results, sample sizes, and user-defined properties for each run.
+- User-defined Measurements allow to measure anything besides timing.
 - Supports Test Fixtures.
 - Supports fixed-time benchmark baselines.
 - Capture a rich set of timing statistics to a file.
@@ -515,6 +516,80 @@ Test early and test often!
 - Because I like explicitness as much as the next programmer, I want to note that the actual sorting algorithm used by `std::sort` is not defined in the standard, but references cite Introsort as a likely contender for how an STL implementation would approach std::sort. http://en.wikipedia.org/wiki/Introsort.
 - When choosing a sorting algorithm, start with std::sort and see if you can make improvements from there.
 - Don't just trust your experience, measure your code!
+
+### User-Defined Measurements
+Celero by default measures the execution time of your experiments. If you want to measure anything else, say for example the number of page faults via [PAPI](http://icl.cs.utk.edu/projects/papi/wiki/PAPIC:Overview), *user-defined measurements* are for you.
+
+Adding user-defined measurements consists of three steps:
+
+* Define a class for your user-defined measurement, one per type of measurement. This class must derive from `celero::UserDefinedMeasurement`. Celero provides a convenience class `celero::DefaultDoubleMeasurement` which will be sufficient for most uses.
+* Add (an) instance(s) of your class(es) to your test fixture. Implement `getUserDefinedMeasurements` to return these instances.
+* At the appropriate point (most likely `tearDown()`), record your measurements in your user-defined measurement instances.
+
+As a rough example, say you want to measure the number of page faults. The class for your user-defined measurement could be as simple as this:
+
+```cpp
+class PageFaultUDM : public celero::DefaultDoubleMeasurement {
+  virtual std::string getName() const override {
+    return "Page Faults";
+  }
+};
+```
+
+That's right - the only thing you *need* to implement in this case is a unique name. Have a look at `celero::DefaultDoubleMeasurement` and `celero::UserDefinedMeasurement` for what else you can change. 
+
+Now, add it to your fixure:
+
+```cpp
+class SortFixture : public celero::TestFixture
+{
+private:
+	std::shared_ptr<CopyCountUDM> pageFaultUDM;
+
+public:
+    SortFixture()
+    {
+		this->pageFaultUDM.reset(new PageFaultUDM());
+    }
+	
+	[…]
+	
+	virtual std::vector<std::shared_ptr<celero::UserDefinedMeasurement>> getUserDefinedMeasurements() const override
+	{
+		return { this->pageFaultUDM };
+	}
+};
+```
+
+Finally, you somehow need to record your results. For this, I'm gonna assume two magical `resetPageFaultCounter()` and `getPageFaults()` functions, which reset the number of page faults and return the number of page faults since last reset, respectively. Then, add to the `setUp` and `tearDown` methods:
+
+```cpp
+class SortFixture : public celero::TestFixture
+{
+	[…]
+	
+	// After each sample
+	virtual void tearDown() override
+	{
+		[…]
+		this->pageFaultUDM->addValue(getPageFaults());
+	}
+
+	[…] 
+	
+	// Before each sample
+	virtual void setUp(const celero::TestFixture::ExperimentValue& experimentValue) override
+	{
+	    […]
+		resetPageFaultCounter();
+	}
+	
+	[…]
+};
+```
+
+That's all. You will now be reported the average, median, minimum, maximum and standard deviation of the number of page faults that occurred during your experiments. See the `ExperimentSortingRandomIntsWithUDM` example for more details.
+
 
 ## FAQ
 

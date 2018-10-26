@@ -295,7 +295,7 @@ namespace celero
 			if (udmValues.find(fieldName) == udmValues.end()) {
 				std::cout << PrintCenter("---", this->columnWidths[i + PrintConstants::NumberOfColumns]);
 			} else {
-				std::cout << PrintColumn(udmValues.at(fieldName), this->columnWidths[i + PrintConstants::NumberOfColumns], 2);
+				std::cout << PrintColumn(udmValues.at(fieldName), 2, this->columnWidths[i + PrintConstants::NumberOfColumns]);
 			}
 		}
 		
