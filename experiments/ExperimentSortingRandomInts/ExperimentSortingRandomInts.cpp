@@ -132,8 +132,8 @@ BENCHMARK_F(SortRandInts, InsertionSort, SortFixture, SamplesCount, IterationsCo
 }
 
 // http://www.bfilipek.com/2014/12/top-5-beautiful-c-std-algorithms.html
-template<typename FwdIt, typename Compare = std::less<typename FwdIt::value_type>>
-void quickSort(FwdIt first, FwdIt last, Compare cmp = Compare {})
+template <typename FwdIt, typename Compare = std::less<typename FwdIt::value_type>>
+void quickSort(FwdIt first, FwdIt last, Compare cmp = Compare{})
 {
 	auto const N = std::distance(first, last);
 	if(N <= 1)
@@ -146,9 +146,7 @@ void quickSort(FwdIt first, FwdIt last, Compare cmp = Compare {})
 
 BENCHMARK_F(SortRandInts, QuickSort, SortFixture, SamplesCount, IterationsCount)
 {
-	this->randomize();
 	quickSort(std::begin(this->array), std::end(this->array));
-	this->clear();
 }
 
 BENCHMARK_F(SortRandInts, stdSort, SortFixture, SamplesCount, IterationsCount)
