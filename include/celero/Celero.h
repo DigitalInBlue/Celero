@@ -38,6 +38,7 @@
 #include <celero/Benchmark.h>
 #include <celero/GenericFactory.h>
 #include <celero/TestFixture.h>
+#include <celero/UserDefinedMeasurement.h>
 #include <celero/ThreadTestFixture.h>
 #include <celero/Utilities.h>
 

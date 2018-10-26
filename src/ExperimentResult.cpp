@@ -20,6 +20,7 @@
 #include <celero/Experiment.h>
 #include <celero/ExperimentResult.h>
 #include <celero/PimplImpl.h>
+#include <celero/UserDefinedMeasurement.h>
 #include <celero/Statistics.h>
 #include <celero/Timer.h>
 #include <celero/Utilities.h>
@@ -55,6 +56,8 @@ public:
 
 	/// A "failure" flag.
 	bool failure{false};
+
+	std::shared_ptr<UDMCollector> udmCollector;
 };
 
 ExperimentResult::ExperimentResult()
@@ -190,4 +193,14 @@ void ExperimentResult::setFailure(bool x)
 bool ExperimentResult::getFailure() const
 {
 	return this->pimpl->failure;
+}
+
+void ExperimentResult::setUserDefinedMeasurements(std::shared_ptr<UDMCollector> newCollector)
+{
+	this->pimpl->udmCollector = newCollector;
+}
+
+std::shared_ptr<UDMCollector> ExperimentResult::getUserDefinedMeasurements() const
+{
+	return this->pimpl->udmCollector;
 }

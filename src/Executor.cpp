@@ -25,6 +25,7 @@
 #include <celero/Print.h>
 #include <celero/TestVector.h>
 #include <celero/Utilities.h>
+#include <celero/UserDefinedMeasurement.h>
 #include <algorithm>
 #include <cassert>
 #include <iostream>
@@ -81,7 +82,7 @@ bool AdjustSampleAndIterationSize(std::shared_ptr<celero::ExperimentResult> r)
 bool ExecuteProblemSpace(std::shared_ptr<celero::ExperimentResult> r)
 {
 	// Define a small internal function object to use to uniformly execute the tests.
-	auto testRunner = [r](const bool record) {
+	auto testRunner = [r](const bool record, std::shared_ptr<UDMCollector> udmCollector) {
 		auto test = r->getExperiment()->getFactory()->Create();
 
 		const auto runResult = RunAndCatchExc(*test, r->getExperiment()->getThreads(), r->getProblemSpaceIterations(), r->getProblemSpaceValue());
@@ -99,6 +100,7 @@ bool ExecuteProblemSpace(std::shared_ptr<celero::ExperimentResult> r)
 		{
 			r->getTimeStatistics()->addSample(testTime);
 			r->getExperiment()->incrementTotalRunTime(testTime);
+			udmCollector->collect(test);
 		}
 
 		return true;
@@ -107,21 +109,24 @@ bool ExecuteProblemSpace(std::shared_ptr<celero::ExperimentResult> r)
 	if(r->getExperiment()->getSamples() > 0)
 	{
 		// make a first pass to maybe cache instructions/data or other kinds of fist-run-only costs
-		if(testRunner(false) == false)
+		if(testRunner(false, nullptr) == false)
 		{
 			r->setFailure(true);
 			return false;
 		}
 
+		auto test = r->getExperiment()->getFactory()->Create();
+		std::shared_ptr<UDMCollector> udmCollector(new UDMCollector(test));
+		
 		for(auto i = r->getExperiment()->getSamples(); i > 0; --i)
 		{
-			if(testRunner(true) == false)
+			if(testRunner(true, udmCollector) == false)
 			{
 				r->setFailure(true);
 				return false;
 			}
 		}
-
+		r->setUserDefinedMeasurements(udmCollector);
 		r->setComplete(true);
 	}
 	else
@@ -196,18 +201,18 @@ void executor::RunBaseline(std::shared_ptr<Benchmark> bmark)
 			auto r = baselineExperiment->getResult(i);
 			assert(r != nullptr);
 
-			print::TableRowExperimentHeader(r->getExperiment());
+			Printer::get().TableRowExperimentHeader(r->getExperiment());
 
 			// Do a quick sample, if necessary, and adjust sample and iteration sizes, if necessary.
 			if(AdjustSampleAndIterationSize(r) == true)
 			{
 				// Describe the beginning of the run.
-				print::TableRowProblemSpaceHeader(r);
+				Printer::get().TableRowProblemSpaceHeader(r);
 
 				if(ExecuteProblemSpace(r))
 				{
 					// Describe the end of the run.
-					print::TableResult(r);
+					Printer::get().TableResult(r);
 				}
 			}
 			else
@@ -249,8 +254,8 @@ void executor::Run(std::shared_ptr<Experiment> e)
 	{
 		if(baseline->getResultSize() != 0 && baseline->getResult(0)->getFailure())
 		{
-			print::TableRowExperimentHeader(e.get());
-			print::TableRowFailure("Baseline failure, skip");
+			Printer::get().TableRowExperimentHeader(e.get());
+			Printer::get().TableRowFailure("Baseline failure, skip");
 
 			// Add result output failed result
 			e->addProblemSpace(0);
@@ -295,7 +300,7 @@ void executor::Run(std::shared_ptr<Experiment> e)
 	{
 		auto r = e->getResult(i);
 
-		print::TableRowExperimentHeader(r->getExperiment());
+		Printer::get().TableRowExperimentHeader(r->getExperiment());
 
 		// Do a quick sample, if necessary, and adjust sample and iteration sizes, if necessary.
 		const auto adjustSuccess = AdjustSampleAndIterationSize(r);
@@ -303,12 +308,12 @@ void executor::Run(std::shared_ptr<Experiment> e)
 		if(adjustSuccess == true)
 		{
 			// Describe the beginning of the run.
-			print::TableRowProblemSpaceHeader(r);
+			Printer::get().TableRowProblemSpaceHeader(r);
 
 			if(ExecuteProblemSpace(r))
 			{
 				// Describe the end of the run.
-				print::TableResult(r);
+				Printer::get().TableResult(r);
 			}
 		}
 		else

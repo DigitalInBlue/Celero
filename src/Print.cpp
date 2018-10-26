@@ -22,10 +22,13 @@
 #include <celero/TestVector.h>
 #include <celero/Timer.h>
 #include <celero/Utilities.h>
+#include <celero/UserDefinedMeasurement.h>
+#include <algorithm>
 #include <chrono>
 #include <iomanip>
 #include <iostream>
 #include <sstream>
+#include <unordered_map>
 
 using namespace celero;
 
@@ -193,75 +196,124 @@ std::string PrintHRule()
 	return ss.str();
 }
 
-void celero::print::Console(const std::string& x)
+namespace celero
 {
-	std::cout << "Celero: " << x << std::endl;
-}
-
-void celero::print::TableBanner()
-{
-	celero::console::SetConsoleColor(celero::console::ConsoleColor_Default);
-
-	std::cout << "|" << PrintCenter("Group") << PrintCenter("Experiment") << PrintCenter("Prob. Space") << PrintCenter("Samples")
-			  << PrintCenter("Iterations") << PrintCenter("Baseline") << PrintCenter("us/Iteration") << PrintCenter("Iterations/sec") << "\n";
-	std::cout << PrintHRule();
-}
-
-void celero::print::TableRowExperimentHeader(Experiment* x)
-{
-	celero::console::SetConsoleColor(celero::console::ConsoleColor_Default);
-	std::cout << "|" << PrintColumn(x->getBenchmark()->getName()) << PrintColumn(x->getName());
-}
-
-void celero::print::TableRowFailure(const std::string& msg)
-{
-	std::cout << PrintColumnRight("-") << PrintColumnRight("-") << PrintColumnRight("-");
-	celero::console::SetConsoleColor(celero::console::ConsoleColor_Red);
-	std::cout << msg << std::endl;
-	celero::console::SetConsoleColor(celero::console::ConsoleColor_Default);
-}
-
-void celero::print::TableRowProblemSpaceHeader(std::shared_ptr<celero::ExperimentResult> x)
-{
-	celero::console::SetConsoleColor(celero::console::ConsoleColor_Default);
-
-	if(x->getProblemSpaceValue() == static_cast<int64_t>(TestFixture::Constants::NoProblemSpaceValue))
+	void Printer::Console(const std::string& x)
 	{
-		std::cout << PrintColumnRight("Null");
-	}
-	else
-	{
-		std::cout << PrintColumn(x->getProblemSpaceValue());
+		std::cout << "Celero: " << x << std::endl;
 	}
 
-	std::cout << PrintColumn(x->getExperiment()->getSamples()) << PrintColumn(x->getProblemSpaceIterations());
-}
+	void Printer::TableBanner()
+	{
+		celero::console::SetConsoleColor(celero::console::ConsoleColor_Default);
 
-void celero::print::TableRowHeader(std::shared_ptr<celero::ExperimentResult> x)
+		std::cout << "|" << PrintCenter("Group") << PrintCenter("Experiment") << PrintCenter("Prob. Space") << PrintCenter("Samples")
+				  << PrintCenter("Iterations") << PrintCenter("Baseline") << PrintCenter("us/Iteration") << PrintCenter("Iterations/sec");
+
+		for(size_t i = PrintConstants::NumberOfColumns; i < this->columnWidths.size(); ++i)
+		{
+			std::cout << PrintCenter(this->userDefinedColumns[i - PrintConstants::NumberOfColumns], this->columnWidths[i]);
+		}
+
+		std::cout << "\n";
+		std::cout << PrintHRule();
+	}
+
+	void Printer::TableRowExperimentHeader(Experiment* x)
+	{
+		celero::console::SetConsoleColor(celero::console::ConsoleColor_Default);
+		std::cout << "|" << PrintColumn(x->getBenchmark()->getName()) << PrintColumn(x->getName());
+	}
+
+	void Printer::TableRowFailure(const std::string& msg)
+	{
+		std::cout << PrintColumnRight("-") << PrintColumnRight("-") << PrintColumnRight("-");
+		for(size_t i = PrintConstants::NumberOfColumns; i < this->columnWidths.size(); ++i)
+		{
+			std::cout << PrintColumnRight("-", this->columnWidths[i]);
+		}
+
+		celero::console::SetConsoleColor(celero::console::ConsoleColor_Red);
+		std::cout << msg << std::endl;
+		celero::console::SetConsoleColor(celero::console::ConsoleColor_Default);
+	}
+
+	void Printer::TableRowProblemSpaceHeader(std::shared_ptr<celero::ExperimentResult> x)
+	{
+		celero::console::SetConsoleColor(celero::console::ConsoleColor_Default);
+
+		if(x->getProblemSpaceValue() == static_cast<int64_t>(TestFixture::Constants::NoProblemSpaceValue))
+		{
+			std::cout << PrintColumnRight("Null");
+		}
+		else
+		{
+			std::cout << PrintColumn(x->getProblemSpaceValue());
+		}
+
+		std::cout << PrintColumn(x->getExperiment()->getSamples()) << PrintColumn(x->getProblemSpaceIterations());
+	}
+
+	void Printer::TableRowHeader(std::shared_ptr<celero::ExperimentResult> x)
+	{
+		TableRowExperimentHeader(x->getExperiment());
+		TableRowProblemSpaceHeader(x);
+	}
+
+	void Printer::TableResult(std::shared_ptr<celero::ExperimentResult> x)
+	{
+		celero::console::SetConsoleColor(celero::console::ConsoleColor_Default);
+
+		// Slower than Baseline
+		if(x->getBaselineMeasurement() > 1.0)
+		{
+			celero::console::SetConsoleColor(celero::console::ConsoleColor_Yellow);
+		}
+		else if(x->getBaselineMeasurement() < 1.0)
+		{
+			celero::console::SetConsoleColor(celero::console::ConsoleColor_Green);
+		}
+		else
+		{
+			celero::console::SetConsoleColor(celero::console::ConsoleColor_Cyan);
+		}
+
+		std::cout << PrintColumn(x->getBaselineMeasurement()) << PrintColumn(x->getUsPerCall()) << PrintColumn(x->getCallsPerSecond(), 2);
+
+		celero::console::SetConsoleColor(celero::console::ConsoleColor_Default);
+
+		std::shared_ptr<UDMCollector> udmCollector = x->getUserDefinedMeasurements();
+
+		std::unordered_map<std::string, double> udmValues;
+		for (const auto & entry : udmCollector->getAggregateValues()) {
+			udmValues[entry.first] = entry.second;
+		}
+
+		for (size_t i = 0 ; i < this->userDefinedColumns.size() ; ++i) {
+			const auto & fieldName = this->userDefinedColumns[i];
+
+			if (udmValues.find(fieldName) == udmValues.end()) {
+				std::cout << PrintCenter("---", this->columnWidths[i + PrintConstants::NumberOfColumns]);
+			} else {
+				std::cout << PrintColumn(udmValues.at(fieldName), this->columnWidths[i + PrintConstants::NumberOfColumns], 2);
+			}
+		}
+		
+		std::cout << "\n";
+	}
+
+	void Printer::initialize(std::vector<std::string> userDefinedColumnsIn)
 {
-	TableRowExperimentHeader(x->getExperiment());
-	TableRowProblemSpaceHeader(x);
+	this->userDefinedColumns = userDefinedColumnsIn;
+
+	this->columnWidths.clear();
+	this->columnWidths.resize(PrintConstants::NumberOfColumns, PrintConstants::ColumnWidth);
+
+	for(const auto& name : this->userDefinedColumns)
+	{
+		this->columnWidths.push_back(std::max(name.size() + 2, (size_t)PrintConstants::ColumnWidth));
+	}
 }
 
-void celero::print::TableResult(std::shared_ptr<celero::ExperimentResult> x)
-{
-	celero::console::SetConsoleColor(celero::console::ConsoleColor_Default);
+} // namespace celero
 
-	// Slower than Baseline
-	if(x->getBaselineMeasurement() > 1.0)
-	{
-		celero::console::SetConsoleColor(celero::console::ConsoleColor_Yellow);
-	}
-	else if(x->getBaselineMeasurement() < 1.0)
-	{
-		celero::console::SetConsoleColor(celero::console::ConsoleColor_Green);
-	}
-	else
-	{
-		celero::console::SetConsoleColor(celero::console::ConsoleColor_Cyan);
-	}
-
-	std::cout << PrintColumn(x->getBaselineMeasurement()) << PrintColumn(x->getUsPerCall()) << PrintColumn(x->getCallsPerSecond(), 2) << "\n";
-
-	celero::console::SetConsoleColor(celero::console::ConsoleColor_Default);
-}

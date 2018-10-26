@@ -31,6 +31,7 @@
 namespace celero
 {
 	class Benchmark;
+	class UserDefinedMeasurement;
 
 	///
 	/// \class TestFixture
@@ -162,6 +163,10 @@ namespace celero
 		/// \return Returns the number of microseconds the run took.
 		///
 		virtual uint64_t run(uint64_t threads, uint64_t iterations, const celero::TestFixture::ExperimentValue& experimentValue);
+
+		virtual std::vector<std::shared_ptr<UserDefinedMeasurement>> getUserDefinedMeasurements() const;
+
+		std::vector<std::string> getUserDefinedMeasurementNames() const;
 
 	protected:
 		/// Executed for each operation the benchmarking test is run.

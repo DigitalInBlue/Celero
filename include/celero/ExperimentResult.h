@@ -27,7 +27,8 @@ namespace celero
 {
 	class Experiment;
 	class Statistics;
-
+	class UDMCollector;
+	
 	///
 	/// \class ExperimentResult
 	///
@@ -129,6 +130,10 @@ namespace celero
 		///
 		bool getFailure() const;
 
+		void setUserDefinedMeasurements(std::shared_ptr<UDMCollector> collector);
+
+		std::shared_ptr<UDMCollector> getUserDefinedMeasurements() const;
+		
 	private:
 		///
 		/// Disable default constructor

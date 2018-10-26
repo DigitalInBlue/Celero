@@ -120,6 +120,7 @@ set(TARGET_H
 	include/celero/TestVector.h
 	include/celero/Timer.h
 	include/celero/Utilities.h
+	include/celero/UserDefinedMeasurement.h
 )
 
 set(TARGET_SRC
@@ -143,6 +144,7 @@ set(TARGET_SRC
 	src/ThreadTestFixture.cpp
 	src/Timer.cpp
 	src/Utilities.cpp
+	src/UserDefinedMeasurement.cpp
 )
 
 if(MSVC)

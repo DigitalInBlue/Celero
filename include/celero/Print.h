@@ -30,7 +30,7 @@ namespace celero
 	///
 	/// \author	John farrier
 	///
-	namespace print
+	class Printer
 	{
 		// void StageBanner(const std::string& x);
 		// void GreenBar(const std::string& x);
@@ -43,6 +43,9 @@ namespace celero
 		// void SummaryTest(const std::string& x);
 		// void Summary(std::shared_ptr<celero::ExperimentResult> x);
 
+	public:
+		void initialize(std::vector<std::string> userDefinedColumns);
+		
 		void Console(const std::string& x);
 		void TableBanner();
 		void TableRowExperimentHeader(Experiment* x);
@@ -50,7 +53,17 @@ namespace celero
 		void TableRowProblemSpaceHeader(std::shared_ptr<celero::ExperimentResult> x);
 		void TableRowHeader(std::shared_ptr<celero::ExperimentResult> x);
 		void TableResult(std::shared_ptr<celero::ExperimentResult> x);
-	}
+
+		static Printer & get() {
+			static Printer p;
+			return p;
+		}
+		
+	private:
+		Printer() = default;
+		std::vector<std::string> userDefinedColumns;
+		std::vector<size_t> columnWidths;
+	};
 }
 
 #endif
