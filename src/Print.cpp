@@ -170,7 +170,7 @@ std::string PrintColumnRight(const std::string& x, const size_t width = PrintCon
 	return PrintStrColumnAligned(x, width, false);
 }
 
-std::string PrintHRule()
+std::string PrintHRule(const size_t additionalColumns = 0)
 {
 	std::stringstream ss;
 	std::string column{":"};
@@ -186,7 +186,7 @@ std::string PrintHRule()
 
 	ss << "|" << firstColumn;
 
-	for(size_t i = 0; i < PrintConstants::NumberOfColumns - 1; ++i)
+	for(size_t i = 0; i < PrintConstants::NumberOfColumns + additionalColumns - 1; ++i)
 	{
 		ss << column;
 	}
@@ -216,7 +216,7 @@ namespace celero
 		}
 
 		std::cout << "\n";
-		std::cout << PrintHRule();
+		std::cout << PrintHRule(this->userDefinedColumns.size());
 	}
 
 	void Printer::TableRowExperimentHeader(Experiment* x)

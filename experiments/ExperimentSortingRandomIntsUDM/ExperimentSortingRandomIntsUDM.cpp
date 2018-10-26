@@ -16,13 +16,20 @@ CELERO_MAIN
 class CopyCountingInt
 {
 public:
-	int64_t val;
-
 	explicit CopyCountingInt(int64_t v) : val(v)
 	{
 	}
 
 	CopyCountingInt() : val(0)
+	{
+	}
+
+	CopyCountingInt(const CopyCountingInt& other) : val(other.val)
+	{
+		CopyCountingInt::copiesCounted++;
+	}
+
+	~CopyCountingInt()
 	{
 	}
 
@@ -38,15 +45,6 @@ public:
 		return *this;
 	}
 
-	CopyCountingInt(const CopyCountingInt& other) : val(other.val)
-	{
-		CopyCountingInt::copiesCounted++;
-	}
-
-	~CopyCountingInt()
-	{
-	}
-
 	static void resetCount()
 	{
 		CopyCountingInt::copiesCounted = 0;
@@ -57,11 +55,13 @@ public:
 		return CopyCountingInt::copiesCounted;
 	}
 
+	int64_t val{0};
+
 private:
 	static size_t copiesCounted;
 };
 
-size_t CopyCountingInt::copiesCounted;
+size_t CopyCountingInt::copiesCounted{0};
 
 bool operator<(const CopyCountingInt& lhs, const CopyCountingInt& rhs)
 {
@@ -96,7 +96,7 @@ public:
 	{
 		virtual std::string getName() const override
 		{
-			return "# Copies";
+			return "Copies";
 		}
 	};
 
@@ -155,8 +155,8 @@ public:
 		return {this->copyCountUDM};
 	}
 
-	std::vector<int64_t> array;
-	int64_t arraySize;
+	std::vector<CopyCountingInt> array;
+	int64_t arraySize{0};
 
 	std::shared_ptr<CopyCountUDM> copyCountUDM;
 };
