@@ -29,11 +29,13 @@
 #include <celero/Print.h>
 #include <celero/ResultTable.h>
 #include <celero/TestVector.h>
+#include <celero/UserDefinedMeasurement.h>
 #include <celero/Utilities.h>
 #include <cassert>
 #include <cmath>
 #include <fstream>
 #include <iostream>
+#include <set>
 
 using namespace celero;
 
@@ -181,10 +183,60 @@ void celero::Run(int argc, char** argv)
 		ExceptionSettings::SetCatchExceptions(args.get<bool>("catchExceptions"));
 	}
 
-	print::TableBanner();
-
 	// Has a run group been specified?
 	argument = args.get<std::string>("group");
+
+	// Collect all user-defined fields
+	std::set<std::string> userDefinedFields;
+	auto collectFromBenchmark = [&](std::shared_ptr<Benchmark> bmark) {
+		// Collect from baseline
+		auto baselineExperiment = bmark->getBaseline();
+		if(baselineExperiment != nullptr)
+		{
+			auto test = baselineExperiment->getFactory()->Create();
+			UserDefinedMeasurementCollector udmCollector(test);
+			for(const auto& fieldName : udmCollector.getFields(test))
+			{
+				userDefinedFields.insert(fieldName);
+			}
+		}
+
+		// Collect from all experiments
+		const auto experimentSize = bmark->getExperimentSize();
+
+		for(size_t i = 0; i < experimentSize; i++)
+		{
+			auto e = bmark->getExperiment(i);
+			assert(e != nullptr);
+
+			auto test = baselineExperiment->getFactory()->Create();
+			UserDefinedMeasurementCollector udmCollector(test);
+			for(const auto& fieldName : udmCollector.getFields(test))
+			{
+				userDefinedFields.insert(fieldName);
+			}
+		}
+	};
+
+	if(argument.empty() == false)
+	{
+		auto bmark = celero::TestVector::Instance()[argument];
+		collectFromBenchmark(bmark);
+	}
+	else
+	{
+		for(size_t i = 0; i < celero::TestVector::Instance().size(); i++)
+		{
+			auto bmark = celero::TestVector::Instance()[i];
+			collectFromBenchmark(bmark);
+		}
+	}
+
+	std::vector<std::string> userDefinedFieldsOrder(userDefinedFields.begin(), userDefinedFields.end());
+
+	Printer::get().initialize(userDefinedFieldsOrder);
+	Printer::get().TableBanner();
+
 	if(argument.empty() == false)
 	{
 		executor::Run(argument);

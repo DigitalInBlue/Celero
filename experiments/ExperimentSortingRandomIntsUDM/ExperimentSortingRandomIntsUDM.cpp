@@ -1,5 +1,6 @@
 #include <celero/Celero.h>
 #include <algorithm>
+#include <string>
 
 #ifndef WIN32
 #include <cmath>
@@ -11,6 +12,61 @@
 /// You can write your own, or use this macro to insert the standard one into the project.
 ///
 CELERO_MAIN
+
+class CopyCountingInt
+{
+public:
+	int64_t val;
+
+	explicit CopyCountingInt(int64_t v) : val(v)
+	{
+	}
+
+	CopyCountingInt() : val(0)
+	{
+	}
+
+	operator int64_t()
+	{
+		return val;
+	}
+
+	CopyCountingInt& operator=(const CopyCountingInt& other)
+	{
+		this->val = other.val;
+		CopyCountingInt::copiesCounted++;
+		return *this;
+	}
+
+	CopyCountingInt(const CopyCountingInt& other) : val(other.val)
+	{
+		CopyCountingInt::copiesCounted++;
+	}
+
+	~CopyCountingInt()
+	{
+	}
+
+	static void resetCount()
+	{
+		CopyCountingInt::copiesCounted = 0;
+	}
+
+	static size_t getCount()
+	{
+		return CopyCountingInt::copiesCounted;
+	}
+
+private:
+	static size_t copiesCounted;
+};
+
+size_t CopyCountingInt::copiesCounted;
+
+bool operator<(const CopyCountingInt& lhs, const CopyCountingInt& rhs)
+{
+	return lhs.val < rhs.val;
+}
 
 ///
 /// \class	SortFixture
@@ -36,8 +92,17 @@ CELERO_MAIN
 class SortFixture : public celero::TestFixture
 {
 public:
+	class CopyCountUDM : public celero::UserDefinedMeasurementTemplate<size_t>
+	{
+		virtual std::string getName() const override
+		{
+			return "# Copies";
+		}
+	};
+
 	SortFixture()
 	{
+		this->copyCountUDM.reset(new CopyCountUDM());
 	}
 
 	virtual std::vector<celero::TestFixture::ExperimentValue> getExperimentValues() const override
@@ -46,7 +111,7 @@ public:
 
 		// ExperimentValues is part of the base class and allows us to specify
 		// some values to control various test runs to end up building a nice graph.
-		for(int64_t elements = 64; elements <= int64_t(4096); elements *= 2)
+		for(int64_t elements = 64; elements <= int64_t(64); elements *= 2)
 		{
 			problemSpace.push_back(elements);
 		}
@@ -58,15 +123,17 @@ public:
 	virtual void setUp(const celero::TestFixture::ExperimentValue& experimentValue) override
 	{
 		this->arraySize = experimentValue.Value;
-		this->array.resize(this->arraySize);
 	}
 
 	// Before each iteration
 	virtual void onExperimentStart(const celero::TestFixture::ExperimentValue&) override
 	{
+		this->array.resize(this->arraySize);
+		CopyCountingInt::resetCount();
+
 		for(int i = 0; i < this->arraySize; i++)
 		{
-			this->array[i] = celero::Random();
+			this->array[i] = CopyCountingInt(celero::Random());
 		}
 	}
 
@@ -80,10 +147,18 @@ public:
 	// After each sample
 	virtual void tearDown() override
 	{
+		this->copyCountUDM->addValue(CopyCountingInt::getCount());
+	}
+
+	virtual std::vector<std::shared_ptr<celero::UserDefinedMeasurement>> getUserDefinedMeasurements() const override
+	{
+		return {this->copyCountUDM};
 	}
 
 	std::vector<int64_t> array;
 	int64_t arraySize;
+
+	std::shared_ptr<CopyCountUDM> copyCountUDM;
 };
 
 static const int SamplesCount = 2000;
@@ -132,12 +207,16 @@ BENCHMARK_F(SortRandInts, InsertionSort, SortFixture, SamplesCount, IterationsCo
 }
 
 // http://www.bfilipek.com/2014/12/top-5-beautiful-c-std-algorithms.html
-template <typename FwdIt, typename Compare = std::less<typename FwdIt::value_type>>
-void quickSort(FwdIt first, FwdIt last, Compare cmp = Compare{})
+template <class FwdIt, typename U>
+void quickSort(FwdIt first, FwdIt last, U cmp = U())
 {
 	auto const N = std::distance(first, last);
+
 	if(N <= 1)
+	{
 		return;
+	}
+
 	auto const pivot = std::next(first, N / 2);
 	std::nth_element(first, pivot, last, cmp);
 	quickSort(first, pivot, cmp);
@@ -146,10 +225,10 @@ void quickSort(FwdIt first, FwdIt last, Compare cmp = Compare{})
 
 BENCHMARK_F(SortRandInts, QuickSort, SortFixture, SamplesCount, IterationsCount)
 {
-	quickSort(std::begin(this->array), std::end(this->array));
+	quickSort(std::begin(this->array), std::end(this->array), std::less<int64_t>());
 }
 
 BENCHMARK_F(SortRandInts, stdSort, SortFixture, SamplesCount, IterationsCount)
 {
-	std::sort(std::begin(this->array), std::end(this->array), std::less<int64_t>());
+	std::sort(std::begin(this->array), std::end(this->array));
 }

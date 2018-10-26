@@ -1,5 +1,5 @@
-#ifndef H_CELERO_RESULT_H
-#define H_CELERO_RESULT_H
+#ifndef H_CELERO_EXPERIMENTRESULT_H
+#define H_CELERO_EXPERIMENTRESULT_H
 
 ///
 /// \author	John Farrier
@@ -27,6 +27,7 @@ namespace celero
 {
 	class Experiment;
 	class Statistics;
+	class UserDefinedMeasurementCollector;
 
 	///
 	/// \class ExperimentResult
@@ -128,6 +129,16 @@ namespace celero
 		/// Gets a flag indicating if failure happened during evaluation.
 		///
 		bool getFailure() const;
+
+		///
+		///
+		///
+		void setUserDefinedMeasurements(std::shared_ptr<UserDefinedMeasurementCollector> x);
+
+		///
+		///
+		///
+		std::shared_ptr<UserDefinedMeasurementCollector> getUserDefinedMeasurements() const;
 
 	private:
 		///

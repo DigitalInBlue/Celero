@@ -119,6 +119,9 @@ set(TARGET_H
 	include/celero/ThreadTestFixture.h
 	include/celero/TestVector.h
 	include/celero/Timer.h
+	include/celero/UserDefinedMeasurement.h
+	include/celero/UserDefinedMeasurementCollector.h
+	include/celero/UserDefinedMeasurementTemplate.h
 	include/celero/Utilities.h
 )
 
@@ -142,6 +145,7 @@ set(TARGET_SRC
 	src/TestFixture.cpp
 	src/ThreadTestFixture.cpp
 	src/Timer.cpp
+	src/UserDefinedMeasurementCollector.cpp
 	src/Utilities.cpp
 )
 

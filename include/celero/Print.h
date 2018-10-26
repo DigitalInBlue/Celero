@@ -26,22 +26,25 @@
 namespace celero
 {
 	///
-	/// \namespace print
+	/// \class Printer
 	///
 	/// \author	John farrier
 	///
-	namespace print
+	class Printer
 	{
-		// void StageBanner(const std::string& x);
-		// void GreenBar(const std::string& x);
-		// void Run(const std::string& x);
-		// void Status(const std::string& x);
-		// void Failure(const std::string& x);
-		// void Run(std::shared_ptr<celero::ExperimentResult> x);
-		// void Done(std::shared_ptr<celero::ExperimentResult> x);
-		// void Baseline(std::shared_ptr<celero::ExperimentResult> x);
-		// void SummaryTest(const std::string& x);
-		// void Summary(std::shared_ptr<celero::ExperimentResult> x);
+	public:
+		///
+		/// Singleton implementation.
+		static Printer& get()
+		{
+			static Printer p;
+			return p;
+		}
+
+		///
+		/// Initialize the Printer object with specific user-defined columns.
+		///
+		void initialize(std::vector<std::string> userDefinedColumns);
 
 		void Console(const std::string& x);
 		void TableBanner();
@@ -50,7 +53,13 @@ namespace celero
 		void TableRowProblemSpaceHeader(std::shared_ptr<celero::ExperimentResult> x);
 		void TableRowHeader(std::shared_ptr<celero::ExperimentResult> x);
 		void TableResult(std::shared_ptr<celero::ExperimentResult> x);
-	}
-}
+
+	private:
+		Printer() = default;
+
+		std::vector<std::string> userDefinedColumns;
+		std::vector<size_t> columnWidths;
+	};
+} // namespace celero
 
 #endif
