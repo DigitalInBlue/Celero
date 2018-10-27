@@ -160,12 +160,12 @@ namespace celero
 		size_t getResultSize();
 
 		///
-		///
+		/// Get an ExperimentResult at a given index.
 		///
 		std::shared_ptr<celero::ExperimentResult> getResult(size_t x);
 
 		///
-		///
+		/// Get the ExperimentResult for the given problem space value.
 		///
 		std::shared_ptr<celero::ExperimentResult> getResultByValue(int64_t x);
 

@@ -1,5 +1,5 @@
-#ifndef H_CELERO_RESULT_H
-#define H_CELERO_RESULT_H
+#ifndef H_CELERO_EXPERIMENTRESULT_H
+#define H_CELERO_EXPERIMENTRESULT_H
 
 ///
 /// \author	John Farrier
@@ -21,12 +21,13 @@
 
 #include <celero/Export.h>
 #include <celero/Pimpl.h>
+#include <celero/Statistics.h>
 #include <string>
 
 namespace celero
 {
 	class Experiment;
-	class Statistics;
+	class UserDefinedMeasurementCollector;
 
 	///
 	/// \class ExperimentResult
@@ -68,7 +69,7 @@ namespace celero
 		///
 		///
 		///
-		Statistics* getTimeStatistics();
+		Statistics<int64_t>* getTimeStatistics();
 
 		///
 		/// Adds a run time sample during experiment execution.
@@ -128,6 +129,16 @@ namespace celero
 		/// Gets a flag indicating if failure happened during evaluation.
 		///
 		bool getFailure() const;
+
+		///
+		///
+		///
+		void setUserDefinedMeasurements(std::shared_ptr<UserDefinedMeasurementCollector> x);
+
+		///
+		///
+		///
+		std::shared_ptr<UserDefinedMeasurementCollector> getUserDefinedMeasurements() const;
 
 	private:
 		///

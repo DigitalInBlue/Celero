@@ -24,21 +24,20 @@
 
 #include <Psapi.h>
 #elif defined(__APPLE__)
-#include <unistd.h>
-#include <sys/types.h>
 #include <sys/param.h>
 #include <sys/sysctl.h>
 #include <sys/types.h>
+#include <unistd.h>
 #include <array>
 #else
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <sys/resource.h>
+#include <sys/sysinfo.h>
 #include <sys/time.h>
 #include <sys/types.h>
 #include <unistd.h>
-#include <sys/sysinfo.h>
 #endif
 
 ///
@@ -126,7 +125,7 @@ int64_t celero::GetRAMSystemTotal()
 	memInfo.dwLength = sizeof(MEMORYSTATUSEX);
 	GlobalMemoryStatusEx(&memInfo);
 	return static_cast<int64_t>(memInfo.ullTotalPhys) + static_cast<int64_t>(memInfo.ullTotalVirtual);
-#elif defined(__unix__) || defined(__unix) || defined(unix) 
+#elif defined(__unix__) || defined(__unix) || defined(unix)
 	// Prefer sysctl() over sysconf() except sysctl() HW_REALMEM and HW_PHYSMEM
 	// return static_cast<int64_t>(sysconf(_SC_PHYS_PAGES)) * static_cast<int64_t>(sysconf(_SC_PAGE_SIZE));
 	struct sysinfo memInfo;
@@ -148,9 +147,10 @@ int64_t celero::GetRAMSystemTotal()
 		return memInfo;
 	}
 
-	return -1;	
+	return -1;
+#else
+	return -1;
 #endif
-	return -1;	
 }
 
 int64_t celero::GetRAMSystemAvailable()
@@ -185,7 +185,7 @@ int64_t celero::GetRAMSystemUsed()
 		}
 	}
 
-	return -1;	
+	return -1;
 #else
 	struct sysinfo memInfo;
 	sysinfo(&memInfo);
@@ -241,7 +241,7 @@ int64_t celero::GetRAMPhysicalUsed()
 	return celero::GetRAMPhysicalTotal() - celero::GetRAMPhysicalAvailable();
 #elif defined(__APPLE__)
 	struct rusage rusage;
-	getrusage( RUSAGE_SELF, &rusage );
+	getrusage(RUSAGE_SELF, &rusage);
 	return (size_t)rusage.ru_maxrss;
 #else
 	struct sysinfo memInfo;

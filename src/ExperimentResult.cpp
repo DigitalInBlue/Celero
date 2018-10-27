@@ -22,6 +22,7 @@
 #include <celero/PimplImpl.h>
 #include <celero/Statistics.h>
 #include <celero/Timer.h>
+#include <celero/UserDefinedMeasurementCollector.h>
 #include <celero/Utilities.h>
 #include <algorithm>
 #include <cassert>
@@ -40,8 +41,10 @@ public:
 	}
 
 	/// Track statistics related to execution time about this specific experiment.
-	Statistics statsTime;
-	Statistics statsRAM;
+	Statistics<int64_t> statsTime;
+	Statistics<int64_t> statsRAM;
+
+	std::shared_ptr<UserDefinedMeasurementCollector> udmCollector;
 
 	int64_t problemSpaceValue{0};
 	double problemSpaceValueScale{1.0};
@@ -96,7 +99,7 @@ uint64_t ExperimentResult::getProblemSpaceIterations() const
 	return this->pimpl->problemSpaceIterations;
 }
 
-Statistics* ExperimentResult::getTimeStatistics()
+Statistics<int64_t>* ExperimentResult::getTimeStatistics()
 {
 	return &this->pimpl->statsTime;
 }
@@ -190,4 +193,14 @@ void ExperimentResult::setFailure(bool x)
 bool ExperimentResult::getFailure() const
 {
 	return this->pimpl->failure;
+}
+
+void ExperimentResult::setUserDefinedMeasurements(std::shared_ptr<UserDefinedMeasurementCollector> x)
+{
+	this->pimpl->udmCollector = x;
+}
+
+std::shared_ptr<UserDefinedMeasurementCollector> ExperimentResult::getUserDefinedMeasurements() const
+{
+	return this->pimpl->udmCollector;
 }

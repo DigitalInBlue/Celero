@@ -26,11 +26,13 @@
 #include <limits>
 #include <vector>
 
+// This must be included last.
 #include <celero/ThreadLocal.h>
 
 namespace celero
 {
 	class Benchmark;
+	class UserDefinedMeasurement;
 
 	///
 	/// \class TestFixture
@@ -162,6 +164,18 @@ namespace celero
 		/// \return Returns the number of microseconds the run took.
 		///
 		virtual uint64_t run(uint64_t threads, uint64_t iterations, const celero::TestFixture::ExperimentValue& experimentValue);
+
+		///
+		/// \brief If you want to use user-defined measurements, override this method to return them
+		///
+		/// This method must return a vector of pointers, one per type of user-defined measurement that you want to measure.
+		///
+		virtual std::vector<std::shared_ptr<UserDefinedMeasurement>> getUserDefinedMeasurements() const;
+
+		///
+		/// \brief Returns the names of all user-defined measurements in this fixture.
+		///
+		std::vector<std::string> getUserDefinedMeasurementNames() const;
 
 	protected:
 		/// Executed for each operation the benchmarking test is run.

@@ -47,7 +47,7 @@ public:
 		experiments = other.pimpl->experiments;
 	}
 
-	Statistics stats;
+	Statistics<int64_t> stats;
 
 	/// Group name
 	std::string name;

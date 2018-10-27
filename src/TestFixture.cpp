@@ -18,6 +18,7 @@
 
 #include <assert.h>
 #include <celero/TestFixture.h>
+#include <celero/UserDefinedMeasurement.h>
 #include <algorithm>
 #include <iostream>
 
@@ -97,4 +98,25 @@ void TestFixture::UserBenchmark()
 uint64_t TestFixture::HardCodedMeasurement() const
 {
 	return uint64_t(0);
+}
+
+std::vector<std::shared_ptr<UserDefinedMeasurement>> TestFixture::getUserDefinedMeasurements() const
+{
+	return {};
+}
+
+std::vector<std::string> TestFixture::getUserDefinedMeasurementNames() const
+{
+	std::vector<std::string> names;
+	const auto udms = this->getUserDefinedMeasurements();
+
+	if(udms.empty() == false)
+	{
+		for(const auto udm : udms)
+		{
+			names.emplace_back(udm->getName());
+		}
+	}
+
+	return names;
 }
