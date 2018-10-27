@@ -276,6 +276,119 @@ BASELINE_FIXED_F(DemoTransform, FixedTime, DemoTransformFixture, 30, 10000, 100)
 { /* Nothing to do */ }
 ```
 
+### User-Defined Measurements (UDM)
+
+Celero, by default, measures the execution time of your experiments. If you want to measure anything else, say for example the number of page faults via [PAPI](http://icl.cs.utk.edu/projects/papi/wiki/PAPIC:Overview), *user-defined measurements* are for you.
+
+Adding user-defined measurements consists of three steps:
+
+* Define a class for your user-defined measurement.  (One per type of measurement.) This class must derive from `celero::UserDefinedMeasurement`. Celero provides a convenience class `celero::UserDefinedMeasurementTemplate<>` which will be sufficient for most uses.
+* Add (an) instance(s) of your class(es) to your test fixture. Implement `getUserDefinedMeasurements` to return these instances.
+* At the appropriate point (most likely `tearDown()`), record your measurements in your user-defined measurement instances.
+
+As a rough example, say you want to measure the number of page faults. The class for your user-defined measurement could be as simple as this:
+
+```cpp
+class PageFaultUDM : public celero::UserDefinedMeasurementTemplate<size_t> 
+{
+  virtual std::string getName() const override 
+  {
+    return "Page Faults";
+  }
+
+  // Optionally turn off some statistical reporting.
+  virtual bool reportKurtosis() const override
+  {
+    return false;
+  }
+};
+```
+
+The only thing you *need* to implement in this case is a unique name. Other virtual functions are available inside `celero::UserDefinedMeasurementTemplate` and `celero::UserDefinedMeasurement` that you can leverage as needed.  There are optional virtual functions that you can override to turn off specific statistical measurements in the output.  These are:
+
+```cpp
+	virtual bool reportSize() const;
+	virtual bool reportMean() const;
+	virtual bool reportVariance() const;
+	virtual bool reportStandardDeviation() const;
+	virtual bool reportSkewness() const;
+	virtual bool reportKurtosis() const;
+	virtual bool reportZScore() const;
+	virtual bool reportMin() const;
+	virtual bool reportMax() const;
+```
+
+(By default, all of the ```report``` functions inside ```UserDefinedMeasurementTemplate``` return ```true```.)
+
+Now, add it to your regular Celero test fixure:
+
+```cpp
+class SortFixture : public celero::TestFixture
+{
+public:
+    SortFixture()
+    {
+		this->pageFaultUDM.reset(new PageFaultUDM());
+    }
+	
+	[...]
+	
+	virtual std::vector<std::shared_ptr<celero::UserDefinedMeasurement>> getUserDefinedMeasurements() const override
+	{
+		return { this->pageFaultUDM };
+	}
+
+private:
+	std::shared_ptr<CopyCountUDM> pageFaultUDM;
+};
+```
+
+Finally, you need to record your results. For this pseud-code example, assume two functions exist: `resetPageFaultCounter()` and `getPageFaults()`.  These reset the number of page faults and return the number of page faults since last reset, respectively. Then, add these to the `setUp` and `tearDown` methods:
+
+```cpp
+class SortFixture : public celero::TestFixture
+{
+public:
+	SortFixture()
+    {
+		this->pageFaultUDM.reset(new PageFaultUDM());
+    }
+
+    [...]
+	
+	// Gather page fault statistics inside the UDM.
+	virtual void onExperimentEnd() override
+	{
+		[...]
+		this->pageFaultUDM->addValue(this->getPageFaults());
+	}
+
+	[...] 
+	
+	// Reset the page fault counter.
+	virtual void setUp(const celero::TestFixture::ExperimentValue& experimentValue) override
+	{
+	    [...]
+		this->resetPageFaultCounter();
+	}
+	
+	[...]
+
+	virtual std::vector<std::shared_ptr<celero::UserDefinedMeasurement>> getUserDefinedMeasurements() const override
+	{
+		return { this->pageFaultUDM };
+	}
+
+private:
+	std::shared_ptr<CopyCountUDM> pageFaultUDM;
+	[...]
+};
+```
+
+You will now be reporting statistics on the number of page faults that occurred during your experiments. See the `ExperimentSortingRandomIntsWithUDM` example for a complete example.
+
+A note on User Defined Measurements: This capability was introduced well after the creation of Celero.  While it is a great enhancement to the library, it was not designed-in to the library.  As such, the next major release of the library (v3.x) may change the way this is implemented and exposed to the library's users.  
+
 ### Notes
 
 - Benchmarks should always be performed on Release builds.  Never measure the performance of a Debug build and make changes based on the results.  The (optimizing) compiler is your friend with respect to code performance.
@@ -510,119 +623,6 @@ SortRandInts | stdSort | 64 | 30 | 10000 | 0.23979 | 2.5958 | 385238 | 25958 | 2
 The point here is not that std::sort is better than more elementary sorting methods, but how easily measurable results can be obtained. In making such measurements more accessible and easier to code, they can become part of the way we code just as automated testing has become.
 
 Test early and test often!
-
-### User-Defined Measurements (UDM)
-
-Celero, by default, measures the execution time of your experiments. If you want to measure anything else, say for example the number of page faults via [PAPI](http://icl.cs.utk.edu/projects/papi/wiki/PAPIC:Overview), *user-defined measurements* are for you.
-
-Adding user-defined measurements consists of three steps:
-
-* Define a class for your user-defined measurement.  (One per type of measurement.) This class must derive from `celero::UserDefinedMeasurement`. Celero provides a convenience class `celero::UserDefinedMeasurementTemplate<>` which will be sufficient for most uses.
-* Add (an) instance(s) of your class(es) to your test fixture. Implement `getUserDefinedMeasurements` to return these instances.
-* At the appropriate point (most likely `tearDown()`), record your measurements in your user-defined measurement instances.
-
-As a rough example, say you want to measure the number of page faults. The class for your user-defined measurement could be as simple as this:
-
-```cpp
-class PageFaultUDM : public celero::UserDefinedMeasurementTemplate<size_t> 
-{
-  virtual std::string getName() const override 
-  {
-    return "Page Faults";
-  }
-
-  // Optionally turn off some statistical reporting.
-  virtual bool reportKurtosis() const override
-  {
-    return false;
-  }
-};
-```
-
-The only thing you *need* to implement in this case is a unique name. Other virtual functions are available inside `celero::UserDefinedMeasurementTemplate` and `celero::UserDefinedMeasurement` that you can leverage as needed.  There are optional virtual functions that you can override to turn off specific statistical measurements in the output.  These are:
-
-```cpp
-	virtual bool reportSize() const;
-	virtual bool reportMean() const;
-	virtual bool reportVariance() const;
-	virtual bool reportStandardDeviation() const;
-	virtual bool reportSkewness() const;
-	virtual bool reportKurtosis() const;
-	virtual bool reportZScore() const;
-	virtual bool reportMin() const;
-	virtual bool reportMax() const;
-```
-
-(By default, all of the ```report``` functions inside ```UserDefinedMeasurementTemplate``` return ```true```.)
-
-Now, add it to your regular Celero test fixure:
-
-```cpp
-class SortFixture : public celero::TestFixture
-{
-public:
-    SortFixture()
-    {
-		this->pageFaultUDM.reset(new PageFaultUDM());
-    }
-	
-	[...]
-	
-	virtual std::vector<std::shared_ptr<celero::UserDefinedMeasurement>> getUserDefinedMeasurements() const override
-	{
-		return { this->pageFaultUDM };
-	}
-
-private:
-	std::shared_ptr<CopyCountUDM> pageFaultUDM;
-};
-```
-
-Finally, you need to record your results. For this pseud-code example, assume two functions exist: `resetPageFaultCounter()` and `getPageFaults()`.  These reset the number of page faults and return the number of page faults since last reset, respectively. Then, add these to the `setUp` and `tearDown` methods:
-
-```cpp
-class SortFixture : public celero::TestFixture
-{
-public:
-	SortFixture()
-    {
-		this->pageFaultUDM.reset(new PageFaultUDM());
-    }
-
-    [...]
-	
-	// Gather page fault statistics inside the UDM.
-	virtual void onExperimentEnd() override
-	{
-		[...]
-		this->pageFaultUDM->addValue(this->getPageFaults());
-	}
-
-	[...] 
-	
-	// Reset the page fault counter.
-	virtual void setUp(const celero::TestFixture::ExperimentValue& experimentValue) override
-	{
-	    [...]
-		this->resetPageFaultCounter();
-	}
-	
-	[...]
-
-	virtual std::vector<std::shared_ptr<celero::UserDefinedMeasurement>> getUserDefinedMeasurements() const override
-	{
-		return { this->pageFaultUDM };
-	}
-
-private:
-	std::shared_ptr<CopyCountUDM> pageFaultUDM;
-	[...]
-};
-```
-
-You will now be reporting statistics on the number of page faults that occurred during your experiments. See the `ExperimentSortingRandomIntsWithUDM` example for a complete example.
-
-A note on User Defined Measurements: This capability was introduced well after the creation of Celero.  While it is a great enhancement to the library, it was not designed-in to the library.  As such, the next major release of the library (v3.x) may change the way this is implemented and exposed to the library's users.  
 
 ### Notes
 
