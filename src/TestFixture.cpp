@@ -108,10 +108,14 @@ std::vector<std::shared_ptr<UserDefinedMeasurement>> TestFixture::getUserDefined
 std::vector<std::string> TestFixture::getUserDefinedMeasurementNames() const
 {
 	std::vector<std::string> names;
+	const auto udms = this->getUserDefinedMeasurements();
 
-	for(auto udm : this->getUserDefinedMeasurements())
+	if(udms.empty() == false)
 	{
-		names.emplace_back(udm->getName());
+		for(const auto udm : udms)
+		{
+			names.emplace_back(udm->getName());
+		}
 	}
 
 	return names;

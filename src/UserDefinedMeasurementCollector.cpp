@@ -19,38 +19,55 @@
 #include <assert.h>
 #include <celero/TestFixture.h>
 #include <celero/UserDefinedMeasurementCollector.h>
-//#include <algorithm>
-//#include <cmath>
-//#include <iostream>
-//#include <numeric>
 
 using namespace celero;
 
 UserDefinedMeasurementCollector::UserDefinedMeasurementCollector(std::shared_ptr<TestFixture> fixture)
 {
-	for(auto name : fixture->getUserDefinedMeasurementNames())
+	const auto udm = fixture->getUserDefinedMeasurementNames();
+
+	if(udm.empty() == false)
 	{
-		this->collected[name] = std::vector<std::shared_ptr<UserDefinedMeasurement>>();
+		for(auto name : fixture->getUserDefinedMeasurementNames())
+		{
+			this->collected[name] = nullptr;
+		}
 	}
 }
 
 void UserDefinedMeasurementCollector::collect(std::shared_ptr<TestFixture> fixture)
 {
-	for(auto udm : fixture->getUserDefinedMeasurements())
+	const auto udms = fixture->getUserDefinedMeasurements();
+
+	if(udms.empty() == false)
 	{
-		this->collected[udm->getName()].push_back(udm);
+		for(auto udm : udms)
+		{
+			if(this->collected[udm->getName()] == nullptr)
+			{
+				this->collected[udm->getName()] = udm;
+			}
+			else
+			{
+				this->collected[udm->getName()]->merge(&*udm);
+			}
+		}
 	}
 }
 
 std::vector<std::string> UserDefinedMeasurementCollector::getFields(std::shared_ptr<TestFixture> fixture) const
 {
 	std::vector<std::string> fields;
+	const auto udms = fixture->getUserDefinedMeasurements();
 
-	for(auto udm : fixture->getUserDefinedMeasurements())
+	if(udms.empty() == false)
 	{
-		for(const auto& aggDesc : udm->getAggregationInfo())
+		for(auto udm : udms)
 		{
-			fields.emplace_back(std::string(udm->getName()) + std::string(" ") + std::string(aggDesc.first));
+			for(const auto& aggDesc : udm->getAggregationInfo())
+			{
+				fields.emplace_back(std::string(udm->getName()) + std::string(" ") + std::string(aggDesc.first));
+			}
 		}
 	}
 
@@ -63,18 +80,13 @@ std::vector<std::pair<std::string, double>> UserDefinedMeasurementCollector::get
 
 	for(const auto& collectedEntry : this->collected)
 	{
-		std::string name = collectedEntry.first;
-		std::vector<std::shared_ptr<UserDefinedMeasurement>> collectedUDMs = collectedEntry.second;
+		const auto name = collectedEntry.first;
+		const auto collectedUDMs = collectedEntry.second;
 
-		if(collectedUDMs.empty())
+		for(const auto& aggDesc : collectedUDMs->getAggregationInfo())
 		{
-			continue;
-		}
-
-		for(const auto& aggDesc : collectedUDMs.at(0)->getAggregationInfo())
-		{
-			std::string fieldName = std::string(name) + std::string(" ") + std::string(aggDesc.first);
-			aggregates.emplace_back(fieldName, (aggDesc.second)(collectedUDMs));
+			const auto fieldName = name + std::string(" ") + aggDesc.first;
+			aggregates.emplace_back(fieldName, (aggDesc.second)());
 		}
 	}
 

@@ -76,7 +76,7 @@ struct ArchiveEntry
 		{
 		}
 
-		Stat& operator=(const celero::Statistics& s)
+		Stat& operator=(const celero::Statistics<int64_t>& s)
 		{
 			this->Size = s.getSize();
 			this->Mean = s.getMean();

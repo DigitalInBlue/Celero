@@ -21,12 +21,12 @@
 
 #include <celero/Export.h>
 #include <celero/Pimpl.h>
+#include <celero/Statistics.h>
 #include <string>
 
 namespace celero
 {
 	class Experiment;
-	class Statistics;
 	class UserDefinedMeasurementCollector;
 
 	///
@@ -69,7 +69,7 @@ namespace celero
 		///
 		///
 		///
-		Statistics* getTimeStatistics();
+		Statistics<int64_t>* getTimeStatistics();
 
 		///
 		/// Adds a run time sample during experiment execution.

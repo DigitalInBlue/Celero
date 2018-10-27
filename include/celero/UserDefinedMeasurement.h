@@ -31,17 +31,12 @@ namespace celero
 	class UserDefinedMeasurement;
 
 	///
-	/// \brief Signature for a function that the user must supply for every aggregation computed on a user-defined measurement
-	///
-	using UDMAggregationFunction = std::function<double(const std::vector<std::shared_ptr<UserDefinedMeasurement>> &)>;
-
-	///
 	/// \brief Describes, which aggregations should be computed on a user-defined measurement.
 	///
 	/// The string names the aggregation, the UDMAggregateFunction is the function that will be called on the collected vector of user-defined
 	/// measurements.
 	///
-	using UDMAggregationTable = std::vector<std::pair<std::string, UDMAggregationFunction>>;
+	using UDMAggregationTable = std::vector<std::pair<std::string, std::function<double(void)>>>;
 
 	///
 	/// \class UserDefinedMeasurement
@@ -62,6 +57,14 @@ namespace celero
 		/// \brief Must be implemented by the user. Must return the name of this user-defined measurement.
 		///
 		virtual std::string getName() const = 0;
+
+		///
+		/// \brief Combine the results of two user defined measurements.
+		///
+		/// As TestFixture classes are created and destroyed, this provides a mechanisim to preserve data.  Internally, this function is used so that
+		/// each unique set of (group, experiment, problem space) has its own combined set of user defined measurements.
+		///
+		virtual void merge(const UserDefinedMeasurement* const x) = 0;
 
 	protected:
 		// Class may never be directly instantiated

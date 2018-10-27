@@ -30,7 +30,7 @@ CELERO_MAIN
 /// tests performed as their experiment scaled.
 ///
 /// \code
-/// celeroDemo outfile.csv
+/// celeroExperimentSortingRandomInts --outputTable quicksort.csv
 /// \endcode
 ///
 class SortFixture : public celero::TestFixture
@@ -133,20 +133,24 @@ BENCHMARK_F(SortRandInts, InsertionSort, SortFixture, SamplesCount, IterationsCo
 
 // http://www.bfilipek.com/2014/12/top-5-beautiful-c-std-algorithms.html
 template <typename FwdIt, typename Compare = std::less<typename FwdIt::value_type>>
-void quickSort(FwdIt first, FwdIt last, Compare cmp = Compare{})
+void QuickSort(FwdIt first, FwdIt last, Compare cmp = Compare{})
 {
 	auto const N = std::distance(first, last);
+
 	if(N <= 1)
+	{
 		return;
+	}
+
 	auto const pivot = std::next(first, N / 2);
 	std::nth_element(first, pivot, last, cmp);
-	quickSort(first, pivot, cmp);
-	quickSort(pivot, last, cmp);
+	QuickSort(first, pivot, cmp);
+	QuickSort(pivot, last, cmp);
 }
 
 BENCHMARK_F(SortRandInts, QuickSort, SortFixture, SamplesCount, IterationsCount)
 {
-	quickSort(std::begin(this->array), std::end(this->array));
+	QuickSort(std::begin(this->array), std::end(this->array));
 }
 
 BENCHMARK_F(SortRandInts, stdSort, SortFixture, SamplesCount, IterationsCount)

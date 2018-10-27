@@ -41,8 +41,8 @@ public:
 	}
 
 	/// Track statistics related to execution time about this specific experiment.
-	Statistics statsTime;
-	Statistics statsRAM;
+	Statistics<int64_t> statsTime;
+	Statistics<int64_t> statsRAM;
 
 	std::shared_ptr<UserDefinedMeasurementCollector> udmCollector;
 
@@ -99,7 +99,7 @@ uint64_t ExperimentResult::getProblemSpaceIterations() const
 	return this->pimpl->problemSpaceIterations;
 }
 
-Statistics* ExperimentResult::getTimeStatistics()
+Statistics<int64_t>* ExperimentResult::getTimeStatistics()
 {
 	return &this->pimpl->statsTime;
 }

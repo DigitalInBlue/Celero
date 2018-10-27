@@ -140,7 +140,6 @@ set(TARGET_SRC
 	src/Experiment.cpp
 	src/ExperimentResult.cpp
 	src/ResultTable.cpp
-	src/Statistics.cpp
 	src/TestVector.cpp
 	src/TestFixture.cpp
 	src/ThreadTestFixture.cpp

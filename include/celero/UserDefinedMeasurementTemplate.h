@@ -2,7 +2,7 @@
 #define H_CELERO_USERDEFINEDMEASUREMENTTEMPLATE_H
 
 ///
-/// \author	Lukas Barth
+/// \author	Lukas Barth, John Farrier
 ///
 /// \copyright Copyright 2015, 2016, 2017, 2018 John Farrier
 ///
@@ -19,6 +19,7 @@
 /// limitations under the License.
 ///
 
+#include <celero/Statistics.h>
 #include <celero/UserDefinedMeasurement.h>
 #include <numeric>
 #include <type_traits>
@@ -30,7 +31,7 @@ namespace celero
 	///
 	/// Base class that the user must derive user-defined measurements from.
 	///
-	/// \author	Lukas Barth
+	/// \author	Lukas Barth, John Farrier
 	///
 	template <typename T>
 	class UserDefinedMeasurementTemplate : public UserDefinedMeasurement
@@ -38,33 +39,66 @@ namespace celero
 		static_assert(std::is_arithmetic<T>::value, "UserDefinedMeasurementTemplate requres an arithmetic type.");
 
 	public:
+		///
+		/// Default constructor
+		///
 		UserDefinedMeasurementTemplate() = default;
+
+		///
+		/// Default destructor
+		///
+		virtual ~UserDefinedMeasurementTemplate() = default;
 
 		///
 		/// \brief Must be implemented by the user. Must return a specification which aggregations the user wants to be computed.
 		///
-		virtual UDMAggregationTable getAggregationInfo() const
+		virtual UDMAggregationTable getAggregationInfo() const override
 		{
 			UDMAggregationTable table;
 
-			if(this->reportAverage())
+			if(this->reportSize() == true)
 			{
-				table.push_back({"Avg", UDMAggregationFunction(&UserDefinedMeasurementTemplate<T>::getAverage)});
+				table.push_back({"# Samp", [this]() { return static_cast<double>(this->getStatistics().getSize()); }});
 			}
 
-			if(this->reportMin())
+			if(this->reportMean() == true)
 			{
-				table.push_back({"Min", UDMAggregationFunction(&UserDefinedMeasurementTemplate<T>::getMin)});
+				table.push_back({"Mean", [this]() { return this->getStatistics().getMean(); }});
 			}
 
-			if(this->reportMax())
+			if(this->reportVariance() == true)
 			{
-				table.push_back({"Max", UDMAggregationFunction(&UserDefinedMeasurementTemplate<T>::getMax)});
+				table.push_back({"Var", [this]() { return this->getStatistics().getVariance(); }});
 			}
 
-			if(this->reportMedian())
+			if(this->reportStandardDeviation() == true)
 			{
-				table.push_back({"Median", UDMAggregationFunction(&UserDefinedMeasurementTemplate<T>::getMedian)});
+				table.push_back({"StdDev", [this]() { return this->getStatistics().getStandardDeviation(); }});
+			}
+
+			if(this->reportSkewness() == true)
+			{
+				table.push_back({"Skew", [this]() { return this->getStatistics().getSkewness(); }});
+			}
+
+			if(this->reportKurtosis() == true)
+			{
+				table.push_back({"Kurtosis", [this]() { return this->getStatistics().getKurtosis(); }});
+			}
+
+			if(this->reportZScore() == true)
+			{
+				table.push_back({"ZScore", [this]() { return this->getStatistics().getZScore(); }});
+			}
+
+			if(this->reportMin() == true)
+			{
+				table.push_back({"Min", [this]() { return static_cast<double>(this->getStatistics().getMin()); }});
+			}
+
+			if(this->reportMax() == true)
+			{
+				table.push_back({"Max", [this]() { return static_cast<double>(this->getStatistics().getMax()); }});
 			}
 
 			return table;
@@ -75,128 +109,72 @@ namespace celero
 		///
 		void addValue(T x)
 		{
-			this->values.push_back(x);
+			this->stats.addSample(x);
+		}
+
+		///
+		/// Preserve measurements within a group/experiment/problem space set.
+		///
+		virtual void merge(const UserDefinedMeasurement* const x) override
+		{
+			const auto toMerge = dynamic_cast<const UserDefinedMeasurementTemplate<T>* const>(x);
+			this->stats += toMerge->stats;
 		}
 
 	protected:
-		///
-		/// \brief Override this to return false if you don't want the average to be reported
-		///
-		virtual bool reportAverage() const
+		virtual bool reportSize() const
 		{
 			return true;
 		}
 
-		///
-		/// \brief Override this to return false if you don't want the minimum to be reported
-		///
+		virtual bool reportMean() const
+		{
+			return true;
+		}
+
+		virtual bool reportVariance() const
+		{
+			return true;
+		}
+
+		virtual bool reportStandardDeviation() const
+		{
+			return true;
+		}
+
+		virtual bool reportSkewness() const
+		{
+			return true;
+		}
+
+		virtual bool reportKurtosis() const
+		{
+			return true;
+		}
+
+		virtual bool reportZScore() const
+		{
+			return true;
+		}
+
 		virtual bool reportMin() const
 		{
 			return true;
 		}
 
-		///
-		/// \brief Override this to return false if you don't want the maximum to be reported
-		///
 		virtual bool reportMax() const
 		{
 			return true;
 		}
 
-		///
-		/// \brief Override this to return false if you don't want the median to be reported
-		///
-		virtual bool reportMedian() const
+		const Statistics<T>& getStatistics() const
 		{
-			return true;
+			return this->stats;
 		}
 
 	private:
-		static double getAverage(const std::vector<std::shared_ptr<UserDefinedMeasurement>>& x)
-		{
-			auto avg = 0.0;
-			size_t count = 0;
-
-			for(auto udm : x)
-			{
-				const auto ddm = dynamic_cast<UserDefinedMeasurementTemplate<T>*>(udm.get());
-				avg += std::accumulate(ddm->values.begin(), ddm->values.end(), 0.0);
-				count += ddm->values.size();
-			}
-
-			return avg / count;
-		}
-
-		static double getMin(const std::vector<std::shared_ptr<UserDefinedMeasurement>>& x)
-		{
-			auto min = std::nan("");
-
-			for(auto udm : x)
-			{
-				const auto ddm = dynamic_cast<UserDefinedMeasurementTemplate<T>*>(udm.get());
-
-				if(ddm->values.empty())
-				{
-					continue;
-				}
-
-				min = std::fmin(min, *std::min_element(ddm->values.begin(), ddm->values.end()));
-			}
-
-			return min;
-		}
-
-		static double getMax(const std::vector<std::shared_ptr<UserDefinedMeasurement>>& x)
-		{
-			auto max = std::nan("");
-
-			for(auto udm : x)
-			{
-				const auto ddm = dynamic_cast<UserDefinedMeasurementTemplate<T>*>(udm.get());
-
-				if(ddm->values.empty())
-				{
-					continue;
-				}
-
-				max = std::fmax(max, *std::max_element(ddm->values.begin(), ddm->values.end()));
-			}
-
-			return max;
-		}
-
-		static double getMedian(const std::vector<std::shared_ptr<UserDefinedMeasurement>>& x)
-		{
-			std::vector<double> allElements;
-
-			for(auto udm : x)
-			{
-				const auto ddm = dynamic_cast<UserDefinedMeasurementTemplate<T>*>(udm.get());
-				for(auto value : ddm->values)
-				{
-					allElements.push_back(static_cast<double>(value));
-				}
-			}
-
-			if(allElements.empty())
-			{
-				return std::nan("");
-			}
-
-			std::nth_element(allElements.begin(), allElements.begin() + (allElements.size() / 2), allElements.end());
-
-			if(allElements.size() % 2 == 1)
-			{
-				return *(allElements.begin() + (allElements.size() / 2 + 1));
-			}
-			else
-			{
-				const auto left_of_median = *std::max_element(allElements.begin(), allElements.begin() + (allElements.size() / 2) - 1);
-				return (*(allElements.begin() + (allElements.size() / 2 + 1)) + left_of_median) / 2;
-			}
-		}
-
-		std::vector<T> values;
+		/// Continuously gathers statistics without having to retain data history.
+		Statistics<T> stats;
 	};
 
 } // namespace celero

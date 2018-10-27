@@ -39,7 +39,7 @@ namespace celero
 		std::vector<std::pair<std::string, double>> getAggregateValues() const;
 
 	private:
-		std::unordered_map<std::string, std::vector<std::shared_ptr<celero::UserDefinedMeasurement>>> collected;
+		std::unordered_map<std::string, std::shared_ptr<celero::UserDefinedMeasurement>> collected;
 	};
 } // namespace celero
 

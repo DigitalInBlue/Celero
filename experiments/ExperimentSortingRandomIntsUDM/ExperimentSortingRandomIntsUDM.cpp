@@ -1,5 +1,6 @@
 #include <celero/Celero.h>
 #include <algorithm>
+#include <iostream>
 #include <string>
 
 #ifndef WIN32
@@ -13,6 +14,9 @@
 ///
 CELERO_MAIN
 
+///
+/// Keep track of how many times an integer is copied during sorting.
+///
 class CopyCountingInt
 {
 public:
@@ -86,7 +90,7 @@ bool operator<(const CopyCountingInt& lhs, const CopyCountingInt& rhs)
 /// tests performed as their experiment scaled.
 ///
 /// \code
-/// celeroDemo outfile.csv
+/// celeroExperimentSortingRandomIntsUDM --outputTable udm.csv
 /// \endcode
 ///
 class SortFixture : public celero::TestFixture
@@ -98,11 +102,31 @@ public:
 		{
 			return "Copies";
 		}
+
+		// Turn off some of the output reporting.
+		virtual bool reportStandardDeviation() const override
+		{
+			return false;
+		}
+
+		virtual bool reportSkewness() const override
+		{
+			return false;
+		}
+
+		virtual bool reportKurtosis() const override
+		{
+			return false;
+		}
+
+		virtual bool reportZScore() const override
+		{
+			return false;
+		}
 	};
 
 	SortFixture()
 	{
-		this->copyCountUDM.reset(new CopyCountUDM());
 	}
 
 	virtual std::vector<celero::TestFixture::ExperimentValue> getExperimentValues() const override
@@ -111,7 +135,7 @@ public:
 
 		// ExperimentValues is part of the base class and allows us to specify
 		// some values to control various test runs to end up building a nice graph.
-		for(int64_t elements = 64; elements <= int64_t(64); elements *= 2)
+		for(int64_t elements = 64; elements <= int64_t(2048); elements *= 2)
 		{
 			problemSpace.push_back(elements);
 		}
@@ -137,17 +161,17 @@ public:
 		}
 	}
 
-	// After each iteration
+	virtual void tearDown() override
+	{
+	}
+
 	virtual void onExperimentEnd() override
 	{
 		/// After each iteration, clear the vector of random integers.
 		this->array.clear();
-	}
 
-	// After each sample
-	virtual void tearDown() override
-	{
 		this->copyCountUDM->addValue(CopyCountingInt::getCount());
+		CopyCountingInt::resetCount();
 	}
 
 	virtual std::vector<std::shared_ptr<celero::UserDefinedMeasurement>> getUserDefinedMeasurements() const override
@@ -158,11 +182,11 @@ public:
 	std::vector<CopyCountingInt> array;
 	int64_t arraySize{0};
 
-	std::shared_ptr<CopyCountUDM> copyCountUDM;
+	std::shared_ptr<CopyCountUDM> copyCountUDM{new CopyCountUDM};
 };
 
 static const int SamplesCount = 2000;
-static const int IterationsCount = 2;
+static const int IterationsCount = 4;
 
 // For a baseline, I'll choose Bubble Sort.
 BASELINE_F(SortRandInts, BubbleSort, SortFixture, SamplesCount, IterationsCount)
@@ -208,7 +232,7 @@ BENCHMARK_F(SortRandInts, InsertionSort, SortFixture, SamplesCount, IterationsCo
 
 // http://www.bfilipek.com/2014/12/top-5-beautiful-c-std-algorithms.html
 template <class FwdIt, typename U>
-void quickSort(FwdIt first, FwdIt last, U cmp = U())
+void QuickSort(FwdIt first, FwdIt last, U cmp = U())
 {
 	auto const N = std::distance(first, last);
 
@@ -219,13 +243,13 @@ void quickSort(FwdIt first, FwdIt last, U cmp = U())
 
 	auto const pivot = std::next(first, N / 2);
 	std::nth_element(first, pivot, last, cmp);
-	quickSort(first, pivot, cmp);
-	quickSort(pivot, last, cmp);
+	QuickSort(first, pivot, cmp);
+	QuickSort(pivot, last, cmp);
 }
 
 BENCHMARK_F(SortRandInts, QuickSort, SortFixture, SamplesCount, IterationsCount)
 {
-	quickSort(std::begin(this->array), std::end(this->array), std::less<int64_t>());
+	QuickSort(std::begin(this->array), std::end(this->array), std::less<int64_t>());
 }
 
 BENCHMARK_F(SortRandInts, stdSort, SortFixture, SamplesCount, IterationsCount)
