@@ -26,7 +26,7 @@ endif()
 set(CELERO_HINTS ${CELERO_PREFIX} $ENV{CELERO_PREFIX})
 find_path(CELERO_ROOT
   NAMES include/celero/Celero.h
-	PATHS "${CELERO_HINTS}"
+	HINTS "${CELERO_HINTS}"
 )
 
 find_library(CELERO_LIBRARIES
@@ -48,4 +48,5 @@ find_package_handle_standard_args(CELERO DEFAULT_MSG
 mark_as_advanced(
     CELERO_LIBRARIES
     CELERO_INCLUDE_DIRS
+    CELERO_ROOT
 )
