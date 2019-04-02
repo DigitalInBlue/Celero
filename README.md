@@ -13,11 +13,6 @@ Branch                 | Status
 ```origin/master: ```  | [![Build Status (Master)](https://travis-ci.org/DigitalInBlue/Celero.svg?branch=master)](https://travis-ci.org/DigitalInBlue/Celero)
 ```origin/develop: ``` | [![Build Status (Develop)](https://travis-ci.org/DigitalInBlue/Celero.svg?branch=develop)](https://travis-ci.org/DigitalInBlue/Celero)
 
-<a href="https://scan.coverity.com/projects/celero">
-  <img alt="Coverity Scan Build Status"
-       src="https://scan.coverity.com/projects/910/badge.svg"/>
-</a>
-
 ### Overview
 
 Developing consistent and meaningful benchmark results for code is a complex task. Measurement tools exist (Intel® VTune™ Amplifier, SmartBear AQTime, Valgrind, etc.) external to applications, but they are sometimes expensive for small teams or cumbersome to utilize. This project, Celero, aims to be a small library which can be added to a C++ project and perform benchmarks on code in a way which is easy to reproduce, share, and compare among individual runs, developers, or projects. Celero uses a framework similar to that of GoogleTest to make its API easier to use and integrate into a project. Make automated benchmarking as much a part of your development process as automated testing.
@@ -434,7 +429,7 @@ public:
         {
             // ExperimentValues is part of the base class and allows us to specify
             // some values to control various test runs to end up building a nice graph.
-            problemSpace.push_back({int64_t(pow(2, i+1)});
+            problemSpace.push_back({int64_t(pow(2, i+1))});
         }
 
         return problemSpace;
