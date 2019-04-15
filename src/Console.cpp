@@ -24,7 +24,6 @@ using namespace celero;
 #include <Windows.h>
 #include <stdio.h>
 #else
-#include <curses.h>
 #include <iostream>
 #endif
 
