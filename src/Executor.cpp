@@ -1,7 +1,7 @@
 ///
 /// \author	John Farrier
 ///
-/// \copyright Copyright 2015, 2016, 2017, 2018 John Farrier
+/// \copyright Copyright 2015, 2016, 2017, 2018. 2019 John Farrier
 ///
 /// Licensed under the Apache License, Version 2.0 (the "License");
 /// you may not use this file except in compliance with the License.
@@ -40,8 +40,8 @@ bool AdjustSampleAndIterationSize(std::shared_ptr<celero::ExperimentResult> r)
 	if(r->getExperiment()->getSamples() == 0)
 	{
 		// The smallest test should take at least 10x as long as our timer's resolution.
-		// I chose "10x" arbitrarily.
-		const auto minTestTime = static_cast<int64_t>(celero::timer::CachePerformanceFrequency(true) * 1e6) * 10;
+		// I chose "2x" arbitrarily.
+		const auto minTestTime = static_cast<int64_t>(celero::timer::CachePerformanceFrequency(true) * 1e6) * 2;
 
 		// Compute a good number to use for iterations and set the sample size to 30.
 		auto test = r->getExperiment()->getFactory()->Create();
@@ -68,7 +68,7 @@ bool AdjustSampleAndIterationSize(std::shared_ptr<celero::ExperimentResult> r)
 		const auto iterations = static_cast<uint64_t>(std::max(static_cast<double>(testIterations), 1000000.0 / testTime));
 		auto experiment = r->getExperiment();
 
-		experiment->setIterations(iterations);
+		experiment->setIterations(std::max(iterations, uint64_t(30)));
 		experiment->setSamples(30);
 
 		r->setProblemSpaceValue(r->getProblemSpaceValue(), r->getProblemSpaceValueScale(), iterations);

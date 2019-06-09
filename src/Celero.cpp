@@ -1,7 +1,7 @@
 ///
 /// \author	John Farrier
 ///
-/// \copyright Copyright 2015, 2016, 2017, 2018 John Farrier
+/// \copyright Copyright 2015, 2016, 2017, 2018. 2019 John Farrier
 ///
 /// Licensed under the Apache License, Version 2.0 (the "License");
 /// you may not use this file except in compliance with the License.
@@ -237,6 +237,8 @@ void celero::Run(int argc, char** argv)
 	Printer::get().initialize(userDefinedFieldsOrder);
 	Printer::get().TableBanner();
 
+	const auto startTime = celero::timer::GetSystemTime();
+
 	if(argument.empty() == false)
 	{
 		executor::Run(argument);
@@ -246,11 +248,32 @@ void celero::Run(int argc, char** argv)
 		executor::RunAll();
 	}
 
+	const auto totalTime = celero::timer::ConvertSystemTime(celero::timer::GetSystemTime() - startTime);
+
 	if(mustCloseFile == true)
 	{
 		celero::ResultTable::Instance().closeFile();
 	}
 
 	// Final output.
-	std::cout << "Complete." << std::endl;
+	auto hours = std::to_string(static_cast<int>(totalTime) / 3600);
+	auto minutes = std::to_string((static_cast<int>(totalTime) % 3600) / 60);
+	auto seconds = std::to_string(fmod(totalTime, 60.0));
+
+	if(hours.length() < 2)
+	{
+		hours = std::string("0") + hours;
+	}
+
+	if(minutes.length() < 2)
+	{
+		minutes = std::string("0") + minutes;
+	}
+
+	if(fmod(totalTime, 60.0) < 10.0)
+	{
+		seconds = std::string("0") + seconds;
+	}
+
+	std::cout << "Completed in " << hours << ":" << minutes << ":" << seconds << std::endl;
 }

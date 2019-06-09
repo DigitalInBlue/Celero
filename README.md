@@ -214,20 +214,48 @@ Running Celero's simple example experiment (`celeroDemoSimple.exe`) benchmark ga
 
 ```
 Celero
-Timer resolution: 0.069841 us
------------------------------------------------------------------------------------------------------------------------------------------------
-     Group      |   Experiment    |   Prob. Space   |     Samples     |   Iterations    |    Baseline     |  us/Iteration   | Iterations/sec  |
------------------------------------------------------------------------------------------------------------------------------------------------
-DemoSimple      | Baseline        |               0 |              10 |         1000000 |         1.00000 |         0.28789 |      3473512.73 |
-DemoSimple      | Complex1        |               0 |               1 |          710000 |         1.11028 |         0.31964 |      3128497.53 |
-DemoSimple      | Complex2        |               0 |              30 |          710000 |         1.10749 |         0.31884 |      3136388.74 |
-DemoSimple      | Complex3        |               0 |              60 |          710000 |         1.10678 |         0.31863 |      3138398.97 |
-Complete.
+Timer resolution: 0.277056 us
+|     Group      |   Experiment    |   Prob. Space   |     Samples     |   Iterations    |    Baseline     |  us/Iteration   | Iterations/sec  |
+|:--------------:|:---------------:|:---------------:|:---------------:|:---------------:|:---------------:|:---------------:|:---------------:|
+|DemoSimple      | Baseline        |            Null |              30 |         1000000 |         1.00000 |         0.09320 |     10729498.61 |
+|DemoSimple      | Complex1        |            Null |               1 |          710000 |         0.99833 |         0.09305 |     10747479.64 |
+|DemoSimple      | Complex2        |            Null |              30 |          710000 |         0.97898 |         0.09124 |     10959834.52 |
+|DemoSimple      | Complex3        |            Null |              60 |          710000 |         0.98547 |         0.09185 |     10887733.66 |
+Completed in 00:00:10.315012
 ```
 
-The first test that executes will be the group's baseline.  Celero took 10 samples of 1000000 iterations of the code in our test.  (Each set of 1000000 iterations was measured, and this was done 10 times and the smallest time was taken.)  The "Baseline" value for the baseline measurement itself will always be 1.0.
+The first test that executes will be the group's baseline.  Celero took 30 samples of 1000000 iterations of the code in our test.  (Each set of 1000000 iterations was measured, and this was done 10 times and the smallest time was taken.)  The "Baseline" value for the baseline measurement itself will always be 1.0.
 
 After the baseline is complete, each individual test is ran.  Each test is executed and measured in the same way, however, there is an additional metric reported: Baseline.  This compares the time it takes to compute the benchmark to the baseline.  The data here shows that `CeleroBenchTest.Complex1` takes 1.007949 times longer to execute than the baseline.
+
+### Automatically computing the number of Iterations and Samples
+
+If you do want Celero to figure out a reasonable number of iterations to run, you can set the iteration value to ```0``` for your experiment.  You can also set the number of samples to ```0``` to have it compute a statistically valid number of samples.  (Note that the current implementation uses ```30``` as the default number of samples, but does compute a reasonable number of iterations.) 
+
+Update the previous "DemoSimple" code's ```Complex1``` case to use this feature as follows:
+
+```cpp
+/// Run a test consisting of 0 samples of 0 iterations per measurement.
+/// Since the sample size is equal to 0, celero will compute a number to use for both samples and iterations.
+BENCHMARK(DemoSimple, Complex1, 0, 0)
+{
+	celero::DoNotOptimizeAway(static_cast<float>(sin(fmod(UniformDistribution(RandomDevice), 3.14159265))));
+}
+```
+
+Now, when this executes, you will see a different number automatically computed for the number of iterations and the sample size has been increased.
+
+```
+Celero
+Timer resolution: 0.277056 us
+|     Group      |   Experiment    |   Prob. Space   |     Samples     |   Iterations    |    Baseline     |  us/Iteration   | Iterations/sec  |
+|:--------------:|:---------------:|:---------------:|:---------------:|:---------------:|:---------------:|:---------------:|:---------------:|
+|DemoSimple      | Baseline        |            Null |              30 |         1000000 |         1.00000 |         0.09177 |     10897044.72 |
+|DemoSimple      | Complex1        |            Null |              30 |         8388608 |         1.01211 |         0.09288 |     10766703.67 |
+|DemoSimple      | Complex2        |            Null |              30 |          710000 |         0.99559 |         0.09136 |     10945304.31 |
+|DemoSimple      | Complex3        |            Null |              60 |          710000 |         0.99671 |         0.09147 |     10933000.72 |
+Completed in 00:00:37.583872
+```
 
 #### Statistically Sound Results
 
@@ -384,6 +412,16 @@ You will now be reporting statistics on the number of page faults that occurred 
 
 A note on User Defined Measurements: This capability was introduced well after the creation of Celero.  While it is a great enhancement to the library, it was not designed-in to the library.  As such, the next major release of the library (v3.x) may change the way this is implemented and exposed to the library's users.  
 
+### Frequency Scaling
+
+CPU Frequency Scaling should be disabled if possible when executing benchmarks.  While there is code in Celero to attempt to do this, it may not have sufficient privileges to be effective.  On Linux systems, this can be accomplished as follows:
+
+```bash
+sudo cpupower frequency-set --governor performance
+./celeroBenchmarkExecutable
+sudo cpupower frequency-set --governor powersave
+```
+
 ### Notes
 
 - Benchmarks should always be performed on Release builds.  Never measure the performance of a Debug build and make changes based on the results.  The (optimizing) compiler is your friend with respect to code performance.
@@ -462,7 +500,7 @@ public:
 };
 ```
 
-Before the test fixture is utilized by a benchmark, Celero will create an instanciation of the class and call its "getExperimentValues()" function.  The test fixture can then build a vector of TestFixture::ExperimentValue values.  For each value added to this array, benchmarks will be executed following calls to the "setUp" virtual function.  A new test fixture is created for each measurement.
+Before the test fixture is utilized by a benchmark, Celero will create an instantiation of the class and call its "getExperimentValues()" function.  The test fixture can then build a vector of TestFixture::ExperimentValue values.  For each value added to this array, benchmarks will be executed following calls to the "setUp" virtual function.  A new test fixture is created for each measurement.
 
 The `SetUp()` virtual function is called before each benchmark test is executed. When using a problem space values vector, the function will be given a value that was previously pushed into the array within the constructor. The function's code can then decide what to do with it. Here, we are using the value to indicate how many elements should be in the array that we intend to sort. For each of the array elements, we simply add a pseudo-random integer.
 

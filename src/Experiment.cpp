@@ -1,7 +1,7 @@
 ///
 /// \author	John Farrier
 ///
-/// \copyright Copyright 2015, 2016, 2017, 2018 John Farrier
+/// \copyright Copyright 2015, 2016, 2017, 2018. 2019 John Farrier
 ///
 /// Licensed under the Apache License, Version 2.0 (the "License");
 /// you may not use this file except in compliance with the License.
@@ -90,24 +90,24 @@ public:
 	std::string name;
 
 	/// The number of microseconds per test (which makes up one baseline unit).
-	double baselineUnit;
+	double baselineUnit{0};
 
 	/// Used to pass/fail benchmarks when outputting JUnit.
-	double baselineTarget;
+	double baselineTarget{0};
 
 	/// Test samples to complete.
-	uint64_t samples;
+	uint64_t samples{0};
 
 	/// Iterations per test run.  (Size of each sample.)
-	uint64_t iterations;
+	uint64_t iterations{0};
 
 	/// Threads per test run.
-	uint64_t threads;
+	uint64_t threads{0};
 
 	/// The best run time for this test
-	uint64_t totalRunTime;
+	uint64_t totalRunTime{0};
 
-	bool isBaselineCase;
+	bool isBaselineCase{false};
 };
 
 Experiment::Experiment() : pimpl()
