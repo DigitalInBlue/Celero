@@ -1,7 +1,7 @@
 ///
 /// \author	John Farrier
 ///
-/// \copyright Copyright 2015, 2016, 2017, 2018 John Farrier
+/// \copyright Copyright 2015, 2016, 2017, 2018. 2019 John Farrier
 ///
 /// Licensed under the Apache License, Version 2.0 (the "License");
 /// you may not use this file except in compliance with the License.
@@ -87,7 +87,7 @@ std::string PrintColumn(const double x, const size_t decDigits = PrintConstants:
 
 	// set # places after decimal
 	ss.precision(decDigits);
-	ss << x << " | ";
+	ss << x;
 
 	return ss.str();
 }
@@ -265,23 +265,35 @@ namespace celero
 	{
 		celero::console::SetConsoleColor(celero::console::ConsoleColor_Default);
 
+		celero::console::ConsoleColor temp_color;
 		// Slower than Baseline
 		if(x->getBaselineMeasurement() > 1.0)
 		{
-			celero::console::SetConsoleColor(celero::console::ConsoleColor_Yellow);
+			temp_color = celero::console::ConsoleColor_Yellow;
 		}
 		else if(x->getBaselineMeasurement() < 1.0)
 		{
-			celero::console::SetConsoleColor(celero::console::ConsoleColor_Green);
+			temp_color = celero::console::ConsoleColor_Green;
 		}
 		else
 		{
-			celero::console::SetConsoleColor(celero::console::ConsoleColor_Cyan);
+			temp_color = celero::console::ConsoleColor_Cyan;
 		}
 
-		std::cout << PrintColumn(x->getBaselineMeasurement()) << PrintColumn(x->getUsPerCall()) << PrintColumn(x->getCallsPerSecond(), 2);
+		celero::console::SetConsoleColor(temp_color);
+		std::cout << PrintColumn(x->getBaselineMeasurement());
+		celero::console::SetConsoleColor(celero::console::ConsoleColor_Default);	
+		std::cout << " | ";
 
+		celero::console::SetConsoleColor(temp_color);
+		std::cout << PrintColumn(x->getUsPerCall());
 		celero::console::SetConsoleColor(celero::console::ConsoleColor_Default);
+		std::cout << " | ";
+
+		celero::console::SetConsoleColor(temp_color);
+		std::cout << PrintColumn(x->getCallsPerSecond(), 2);
+		celero::console::SetConsoleColor(celero::console::ConsoleColor_Default);
+		std::cout << " | ";
 
 		std::unordered_map<std::string, double> udmValues;
 
