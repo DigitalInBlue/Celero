@@ -6,12 +6,32 @@ Copyright 2017-2019 John Farrier
 
 Apache 2.0 License
 
+#### Community Support
+
+A Special Thanks to the following corporations for their support:
+- [Hellebore Consulting Group](http://www.hellebore.com)
+- [Araxis](https://www.araxis.com/)
+- [Axosoft](https://www.gitkraken.com/)
+- [Microsoft](https://www.microsoft.com)
+- [Travis.CI](https://travis-ci.org)
+
 #### Builds and Testing
 
 Branch                 | Status
 ---------------------- | --------------------------------------------------------------------------------------------------------------------------------------
 ```origin/master: ```  | [![Build Status (Master)](https://travis-ci.org/DigitalInBlue/Celero.svg?branch=master)](https://travis-ci.org/DigitalInBlue/Celero)
 ```origin/develop: ``` | [![Build Status (Develop)](https://travis-ci.org/DigitalInBlue/Celero.svg?branch=develop)](https://travis-ci.org/DigitalInBlue/Celero)
+
+Celero has been successfully built on the following platforms during development.  See [Travis.CI](https://travis-ci.org/DigitalInBlue/Celero) for more details.
+- GCC v6.0.0
+- GCC v7.0.0
+- GCC v8.0.0
+- LLVM v3.9.0
+- LLVM v5.0.1
+- LLVM v7.0.0
+- Visual Studio 2017
+- Visual Studio 2019
+- XCode v10.1
 
 ### Overview
 
