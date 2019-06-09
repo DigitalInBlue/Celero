@@ -22,6 +22,7 @@ addons:
     packages:
       - g++-6
       - g++-7
+      - g++-8
 
     sources: &sources
       - ubuntu-toolchain-r-test
@@ -30,6 +31,7 @@ cache:
   directories:
     - ${TRAVIS_BUILD_DIR}/deps/llvm-3.9.0
     - ${TRAVIS_BUILD_DIR}/deps/llvm-5.0.1
+    - ${TRAVIS_BUILD_DIR}/deps/llvm-7.0.0
 
 matrix:
   exclude:
@@ -43,14 +45,19 @@ matrix:
     # speed up Travis builds.
     ##########################################################################
 
-    # Clang 3.8
+    # Clang 3.9
     - os: linux
       env: LLVM_VERSION=3.9.0
       compiler: clang
 
-    # Clang 3.9
+    # Clang 5.0.1
     - os: linux
       env: LLVM_VERSION=5.0.1
+      compiler: clang
+
+    # Clang 7.0.0
+    - os: linux
+      env: LLVM_VERSION=7.0.0
       compiler: clang
 
     # GCC 6
@@ -63,6 +70,11 @@ matrix:
       env: COMPILER=g++-7
       compiler: gcc
 
+    # GCC 8
+    - os: linux
+      env: COMPILER=g++-8
+      compiler: gcc
+
     ##########################################################################
     # Build with variations in the configuration
     ##########################################################################
@@ -70,6 +82,9 @@ matrix:
     - os: linux
       env: LLVM_VERSION=default CMAKE_OPTIONS="-DCMAKE_BUILD_TYPE=DEBUG"
       compiler: clang
+
+    - os: osx
+      osx_image: xcode10.1
 
 install:
   ############################################################################
