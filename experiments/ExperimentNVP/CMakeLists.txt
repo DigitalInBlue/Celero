@@ -1,7 +1,7 @@
 #
 # Standard Celero Experiment CMake File
 #
-# Copyright 2015, 2016, 2017, 2018 John Farrier 
+# Copyright 2019 John Farrier 
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -23,20 +23,38 @@
 CMAKE_MINIMUM_REQUIRED(VERSION 2.8)
 
 #
-# Visual Stidio Only
-#
-if(${CMAKE_CXX_COMPILER_ID} STREQUAL MSVC)
-
-#
 # Set the experiment's name here.  Start it with a capital letter use camel case naming.
 #
-SET(PROJECT_NAME CompressBools)
+SET(PROJECT_NAME NVP)
 
 # Broiler Plate: Set up a CMake option.
 option(CELEROExperiment_${PROJECT_NAME} "Set to ON to build ${PROJECT_NAME}." ON)
     
 # Broiler Plate: Test the CMake option.
 if(CELEROExperiment_${PROJECT_NAME})
+    include(ExternalProject)
+
+	EXTERNALPROJECT_ADD(
+		rapidjson
+		GIT_REPOSITORY https://github.com/Tencent/rapidjson.git
+        GIT_TAG "master"
+		SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/rapidjson"
+		CONFIGURE_COMMAND ""
+		BUILD_COMMAND ""
+		INSTALL_COMMAND ""
+	)
+	set(RAPIDJSON_INCLUDE "${CMAKE_CURRENT_SOURCE_DIR}/rapidjson/include")
+
+    EXTERNALPROJECT_ADD(
+        pugixml
+        GIT_REPOSITORY https://github.com/zeux/pugixml.git
+        SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/pugixml"
+        CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=<INSTALL_DIR> -DBUILD_SHARED_AND_STATIC_LIBS=1
+    )
+    set(PUGIXML_INCLUDE "${CMAKE_CURRENT_SOURCE_DIR}/pugixml/src")
+
+	find_package(Boost REQUIRED)
+
     #
     # Add Header Files
     #
@@ -47,7 +65,8 @@ if(CELEROExperiment_${PROJECT_NAME})
     # Add Sources
     #
     set(TARGET_SRC
-        ExperimentCompressBools.cpp
+        ExperimentNVP.cpp
+		${PUGIXML_INCLUDE}/pugixml.cpp
     )
 
     # Broiler Plate: Assign the src and headers to the executable.
@@ -57,8 +76,8 @@ if(CELEROExperiment_${PROJECT_NAME})
     )
     
     # Broiler Plate: Celero Project Dependencies
-    add_dependencies(${PROJECT_NAME} celero)
-    target_link_libraries(${PROJECT_NAME} celero)
+    add_dependencies(${PROJECT_NAME} celero rapidjson)
+	target_link_libraries(${PROJECT_NAME} celero)
     
     if(MSVC) 
 		# Broiler Plate: VS2012 doesn't support true variadic templates
@@ -68,14 +87,12 @@ if(CELEROExperiment_${PROJECT_NAME})
 		target_compile_options(${PROJECT_NAME} PRIVATE /wd4251)
 		target_compile_options(${PROJECT_NAME} PRIVATE /nologo)
 	endif()
-    
+
+    target_compile_options(${PROJECT_NAME} PRIVATE -DJSON_INPUT_FILE="${CMAKE_CURRENT_SOURCE_DIR}/input.json")
+	target_compile_options(${PROJECT_NAME} PRIVATE -DXML_INPUT_FILE="${CMAKE_CURRENT_SOURCE_DIR}/input.xml")
+	    
     # Broiler Plate: Add Celer's include directories.
-    include_directories(${HEADER_PATH})
-    
-    # Broiler Plate: Show here how to automate running after a build (comment in if desired)
-    # if(CELERO_RUN_EXAMPLE_ON_BUILD)
-    #	add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD COMMAND $<TARGET_FILE:${PROJECT_NAME}>)
-    # endif()
+    include_directories(${HEADER_PATH} ${RAPIDJSON_INCLUDE} ${PUGIXML_INCLUDE} ${Boost_INCLUDE_DIRS})
     
     # Broiler Plate: Set up folders for an IDE.
     if(CELERO_ENABLE_FOLDERS)
@@ -83,5 +100,3 @@ if(CELEROExperiment_${PROJECT_NAME})
     endif()
     
 endif(CELEROExperiment_${PROJECT_NAME})
-
-endif()

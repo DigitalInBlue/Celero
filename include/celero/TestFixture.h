@@ -148,6 +148,26 @@ namespace celero
 		virtual void setUp(const celero::TestFixture::ExperimentValue& x);
 
 		///
+		/// Internal to Celero
+		/// 
+		void setExperimentTime(uint64_t x);
+
+		///
+		/// Valid inside tearDown().
+		///
+		uint64_t getExperimentTime() const;
+
+		///
+		/// Internal to Celero
+		///
+		void setExperimentIterations(uint64_t x);
+
+		///
+		/// Valid inside tearDown().
+		///
+		uint64_t getExperimentIterations() const;
+
+		///
 		/// Called after test completion to destroy the fixture.
 		///
 		/// This code is NOT included in the benchmark timing.
@@ -186,6 +206,10 @@ namespace celero
 		/// Only used for baseline cases.  Used to define a hard-coded execution time vs. actually making a measurement.
 		///
 		virtual uint64_t HardCodedMeasurement() const;
+
+	private:
+		uint64_t experimentIterations{0};
+		uint64_t experimentTime{0};
 	};
 } // namespace celero
 

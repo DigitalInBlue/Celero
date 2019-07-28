@@ -23,9 +23,9 @@
 CMAKE_MINIMUM_REQUIRED(VERSION 2.8)
 
 #
-# Set the experiment's name here.  Start it with "celero" and use camel case naming.
+# Set the experiment's name here.  Start it with a capital letter use camel case naming.
 #
-SET(PROJECT_NAME celeroExperimentSortingRandomInts)
+SET(PROJECT_NAME SortingRandomInts)
 
 # Broiler Plate: Set up a CMake option.
 option(CELEROExperiment_${PROJECT_NAME} "Set to ON to build ${PROJECT_NAME}." ON)

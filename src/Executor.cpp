@@ -37,7 +37,7 @@ using namespace celero;
 ///
 bool AdjustSampleAndIterationSize(std::shared_ptr<celero::ExperimentResult> r)
 {
-	if(r->getExperiment()->getSamples() == 0)
+	if((r->getExperiment()->getSamples() == 0) || (r->getExperiment()->getIterations() == 0))
 	{
 		// The smallest test should take at least 10x as long as our timer's resolution.
 		// I chose "2x" arbitrarily.
@@ -68,11 +68,19 @@ bool AdjustSampleAndIterationSize(std::shared_ptr<celero::ExperimentResult> r)
 		const auto iterations = static_cast<uint64_t>(std::max(static_cast<double>(testIterations), 1000000.0 / testTime));
 		auto experiment = r->getExperiment();
 
-		experiment->setIterations(std::max(iterations, uint64_t(30)));
-		experiment->setSamples(30);
+		if(experiment->getIterations() == 0)
+		{
+			experiment->setIterations(std::max(iterations, uint64_t(30)));
+		}
+
+		if(experiment->getSamples() == 0)
+		{
+			experiment->setSamples(30);
+		}
 
 		r->setProblemSpaceValue(r->getProblemSpaceValue(), r->getProblemSpaceValueScale(), iterations);
 	}
+
 	return true;
 }
 
