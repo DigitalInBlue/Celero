@@ -44,6 +44,26 @@ void TestFixture::setUp(const celero::TestFixture::ExperimentValue&)
 {
 }
 
+void TestFixture::setExperimentIterations(uint64_t x)
+{
+	this->experimentIterations = x;
+}
+
+uint64_t TestFixture::getExperimentIterations() const
+{
+	return this->experimentIterations;
+}
+
+void TestFixture::setExperimentTime(uint64_t x)
+{
+	this->experimentTime = x;
+}
+
+uint64_t TestFixture::getExperimentTime() const
+{
+	return this->experimentTime;
+}
+
 void TestFixture::tearDown()
 {
 }
@@ -58,6 +78,7 @@ uint64_t TestFixture::run(const uint64_t, const uint64_t iterations, const celer
 
 		// Set up the testing fixture.
 		this->setUp(experimentValue);
+		this->setExperimentIterations(iterations);
 
 		// Run the test body for each iterations.
 		auto iterationCounter = iterations;
@@ -80,6 +101,8 @@ uint64_t TestFixture::run(const uint64_t, const uint64_t iterations, const celer
 
 		// See how long it took.
 		totalTime += celero::timer::GetSystemTime() - startTime;
+
+		this->setExperimentTime(totalTime);
 
 		// Tear down the testing fixture.
 		this->tearDown();

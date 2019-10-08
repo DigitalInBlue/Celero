@@ -23,15 +23,15 @@
 CMAKE_MINIMUM_REQUIRED(VERSION 2.8)
 
 #
-# Set the experiment's name here.  Start it with "celero" and use camel case naming.
+# Set the experiment's name here.  Start it with a capital letter use camel case naming.
 #
-SET(PROJECT_NAME celeroDemoMultithread)
+SET(PROJECT_NAME Multithread)
 
 # Broiler Plate: Set up a CMake option.
-option(CELEROExperiment_${PROJECT_NAME} "Set to ON to build ${PROJECT_NAME}." ON)
+option(CELERODemo_${PROJECT_NAME} "Set to ON to build ${PROJECT_NAME}." ON)
 
 # Broiler Plate: Test the CMake option.
-if(CELEROExperiment_${PROJECT_NAME})
+if(CELERODemo_${PROJECT_NAME})
     #
     # Add Header Files
     #
@@ -78,4 +78,4 @@ if(CELEROExperiment_${PROJECT_NAME})
         set_property(TARGET ${PROJECT_NAME} PROPERTY FOLDER "Celero/Experiments")
     endif()
 
-endif(CELEROExperiment_${PROJECT_NAME})
+endif()
