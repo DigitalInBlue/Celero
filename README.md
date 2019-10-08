@@ -33,7 +33,12 @@ Celero has been successfully built on the following platforms during development
 - Visual Studio 2019
 - XCode v10.1
 
-[View on OpenHub](https://www.openhub.net/p/CeleroBenchmark)
+#### Quality Control
+
+Tooling | Status |
+--------|--------|
+```Codacy``` | [![Codacy Badge](https://api.codacy.com/project/badge/Grade/2008db9f4fc4413d878474441f7a1511)](https://www.codacy.com/manual/john.farrier/Celero?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=DigitalInBlue/Celero&amp;utm_campaign=Badge_Grade) |
+```Statistics``` | [View on OpenHub](https://www.openhub.net/p/CeleroBenchmark) |
 
 ### Overview
 
