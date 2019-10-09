@@ -35,24 +35,24 @@ namespace celero
 		///
 		/// \author	John farrier
 		///
-		enum ConsoleColor
+		enum class ConsoleColor
 		{
-			ConsoleColor_Default,
-			ConsoleColor_Red,
-			ConsoleColor_Red_Bold,
-			ConsoleColor_Green,
-			ConsoleColor_Green_Bold,
-			ConsoleColor_Blue,
-			ConsoleColor_Blue_Bold,
-			ConsoleColor_Cyan,
-			ConsoleColor_Cyan_Bold,
-			ConsoleColor_Yellow,
-			ConsoleColor_Yellow_Bold,
-			ConsoleColor_White,
-			ConsoleColor_White_Bold,
-			ConsoleColor_WhiteOnRed,
-			ConsoleColor_WhiteOnRed_Bold,
-			ConsoleColor_Purple_Bold
+			Default,
+			Red,
+			Red_Bold,
+			Green,
+			Green_Bold,
+			Blue,
+			Blue_Bold,
+			Cyan,
+			Cyan_Bold,
+			Yellow,
+			Yellow_Bold,
+			White,
+			White_Bold,
+			WhiteOnRed,
+			WhiteOnRed_Bold,
+			Purple_Bold
 		};
 
 		///

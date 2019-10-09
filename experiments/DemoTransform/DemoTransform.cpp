@@ -15,6 +15,8 @@
 ///
 CELERO_MAIN
 
+constexpr int Multiple = 2112;
+
 ///
 /// \class	DemoTransformFixture
 ///	\autho	John Farrier
@@ -39,10 +41,6 @@ CELERO_MAIN
 class DemoTransformFixture : public celero::TestFixture
 {
 public:
-	enum Constants
-	{
-		Multiple = 2112
-	};
 
 	DemoTransformFixture()
 	{
@@ -91,7 +89,7 @@ public:
 
 	std::vector<int> arrayIn;
 	std::vector<int> arrayOut;
-	int arraySize;
+	int arraySize{0};
 };
 
 // For a baseline, I'll chose Bubble Sort.
@@ -99,7 +97,7 @@ BASELINE_F(DemoTransform, ForLoop, DemoTransformFixture, 30, 10000)
 {
 	for(int i = 0; i < this->arraySize; i++)
 	{
-		this->arrayOut[i] = this->arrayIn[i] * DemoTransformFixture::Multiple;
+		this->arrayOut[i] = this->arrayIn[i] * Multiple;
 	}
 }
 
@@ -108,33 +106,32 @@ BASELINE_F(DemoTransform, ForLoop, DemoTransformFixture, 30, 10000)
 
 BENCHMARK_F(DemoTransform, StdTransform, DemoTransformFixture, 30, 10000)
 {
-	static int iterationCount = 0;
 	std::transform(this->arrayIn.begin(), this->arrayIn.end(), this->arrayOut.begin(),
-				   std::bind1st(std::multiplies<int>(), DemoTransformFixture::Multiple));
+				   std::bind1st(std::multiplies<int>(), Multiple));
 }
 
 BENCHMARK_F(DemoTransform, StdTransformLambda, DemoTransformFixture, 30, 10000)
 {
 	std::transform(this->arrayIn.begin(), this->arrayIn.end(), this->arrayOut.begin(),
-				   [](int in) -> int { return in * DemoTransformFixture::Multiple; });
+				   [](int in) -> int { return in * Multiple; });
 }
 
 BENCHMARK_F(DemoTransform, SelfForLoop, DemoTransformFixture, 30, 10000)
 {
 	for(int i = 0; i < this->arraySize; i++)
 	{
-		this->arrayIn[i] *= DemoTransformFixture::Multiple;
+		this->arrayIn[i] *= Multiple;
 	}
 }
 
 BENCHMARK_F(DemoTransform, SelfStdTransform, DemoTransformFixture, 30, 10000)
 {
 	std::transform(this->arrayIn.begin(), this->arrayIn.end(), this->arrayIn.begin(),
-				   std::bind1st(std::multiplies<int>(), DemoTransformFixture::Multiple));
+				   std::bind1st(std::multiplies<int>(), Multiple));
 }
 
 BENCHMARK_F(DemoTransform, SelfStdTransformLambda, DemoTransformFixture, 30, 10000)
 {
 	std::transform(this->arrayIn.begin(), this->arrayIn.end(), this->arrayIn.begin(),
-				   [](int in) -> int { return in * DemoTransformFixture::Multiple; });
+				   [](int in) -> int { return in * Multiple; });
 }

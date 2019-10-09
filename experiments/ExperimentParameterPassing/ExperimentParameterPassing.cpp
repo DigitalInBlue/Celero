@@ -20,10 +20,6 @@ CELERO_MAIN
 
 struct Foo
 {
-	Foo() : nonPodType()
-	{
-	}
-
 	void setNonPODByValue(std::string x)
 	{
 		this->nonPodType = x;
@@ -110,7 +106,7 @@ struct Foo
 	}
 
 	std::string nonPodType;
-	uint64_t podType;
+	uint64_t podType{0};
 };
 
 static const int SamplesCount = 2000;
