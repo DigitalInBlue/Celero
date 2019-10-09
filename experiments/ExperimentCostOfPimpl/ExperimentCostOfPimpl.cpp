@@ -57,7 +57,7 @@ public:
 
 	RawPointer(const RawPointer&) = delete;
 
-	RawPointer(const RawPointer&& other)
+	RawPointer(RawPointer&& other)
 	{
 		this->pimpl = other.pimpl;
 		other.pimpl = nullptr;
