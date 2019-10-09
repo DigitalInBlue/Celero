@@ -33,9 +33,16 @@ Celero has been successfully built on the following platforms during development
 - Visual Studio 2019
 - XCode v10.1
 
+#### Quality Control
+
+Tooling | Status |
+--------|--------|
+```Codacy``` | [![Codacy Badge](https://api.codacy.com/project/badge/Grade/2008db9f4fc4413d878474441f7a1511)](https://www.codacy.com/manual/john.farrier/Celero?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=DigitalInBlue/Celero&amp;utm_campaign=Badge_Grade) |
+```Statistics``` | [View on OpenHub](https://www.openhub.net/p/CeleroBenchmark) |
+
 ### Overview
 
-Developing consistent and meaningful benchmark results for code is a complex task. Measurement tools exist (Intel® VTune™ Amplifier, SmartBear AQTime, Valgrind, etc.) external to applications, but they are sometimes expensive for small teams or cumbersome to utilize. This project, Celero, aims to be a small library which can be added to a C++ project and perform benchmarks on code in a way which is easy to reproduce, share, and compare among individual runs, developers, or projects. Celero uses a framework similar to that of GoogleTest to make its API easier to use and integrate into a project. Make automated benchmarking as much a part of your development process as automated testing.
+Developing consistent and meaningful benchmark results for code is a complicated task. Measurement tools exist (Intel® VTune™ Amplifier, SmartBear AQTime, Valgrind, etc.) external to applications, but they are sometimes expensive for small teams or cumbersome to utilize. This project, Celero, aims to be a small library which can be added to a C++ project and perform benchmarks on code in a way which is easy to reproduce, share, and compare among individual runs, developers, or projects. Celero uses a framework similar to that of GoogleTest to make its API more natural to use and integrate into a project. Make automated benchmarking as much a part of your development process as automated testing.
 
 Celero uses CMake to provide cross-platform builds. It does require a modern compiler (Visual C++ 2012+, GCC 4.7+, Clang 2.9+) due to its use of C++11.
 
@@ -75,17 +82,17 @@ The goal, generally, of writing benchmarks is to measure the performance of a pi
 
 By measuring code performance, you eliminate errors in your assumptions about what the "right" solution is for performance.  Only through measurement can you confirm that using a lookup table, for example, is faster than computing a value.  Such lore (which is often repeated) can lead to bad design decisions and, ultimately, slower code.
 
-The goal in writing good benchmarking code is to eliminate all of the noise and overhead, and measure just the code under test.  Sources of noise in the measurements include clock resolution noise, operating system background operations, test setup/teardown, framework overhead, and other unrelated system activity. 
+The goal of writing correct benchmarking code is to eliminate all of the noise and overhead, and measure just the code under test.  Sources of noise in the measurements include clock resolution noise, operating system background operations, test setup/teardown, framework overhead, and other unrelated system activity. 
 
-At a theoretical level we want to measure "t", the time to execute the code under test.  In reality, we measure "t" plus all of this measurement noise.
+At a theoretical level, we want to measure "t," the time to execute the code under test.  In reality, we measure "t" plus all of this measurement noise.
 
-These extraneous contributors to our measurement of "t" fluctuate over time.  Therefore, we want to try to isolate "t'.  The way this is accomplished is by making many measurements, but only keeping the smallest total.  The smallest total is necessarily the one with the smallest noise contribution and closest to the actual time "t".
+These extraneous contributors to our measurement of "t" fluctuate over time.  Therefore, we want to try to isolate "t'.  The way this is accomplished is by making many measurements, but only keeping the smallest total.  The smallest total is necessarily the one with the smallest noise contribution and closest to the actual time "t."
 
-Once this measurement is obtained, it has little meaning in isolation.  It is important to create a baseline test by which to compare.  A baseline should generally be a "classic" or "pure" solution to the problem on which you are measuring a solution.   Once you have a baseline, you have a meaningful time to compare your algorithm against.  Simply saying that your fancy sorting algorithm (fSort) sorted a million elements in 10 milliseconds is not sufficient by itself.  However, compare that to a classic sorting algorithm baseline such as quick sort (qSort) and then you can say that fSort is 50% faster than qSort on a million elements.  That is a meaningful and powerful measurement.
+Once this measurement is obtained, it has little meaning in isolation.  It is essential to create a baseline test by which to compare.  A baseline should generally be a "classic" or "pure" solution to the problem on which you measure a solution.   Once you have a baseline, you have a meaningful time to compare your algorithm against. Merely saying that your fancy sorting algorithm (fSort) sorted a million elements in 10 milliseconds is not sufficient by itself.  However, compare that to a classic sorting algorithm baseline such as quicksort (qSort) and then you can say that fSort is 50% faster than qSort on a million elements.  That is a meaningful and powerful measurement.
 
 ### Implementation
 
-Celero heavily utilizes C++11 features that are available in both Visual C++ 2012 and GCC 4.7.  This greatly aided in making the code clean and portable.  To make adopting the code easier, all definitions needed by a user are defined in a celero namespace within a single include file: `Celero.h`
+Celero heavily utilizes C++11 features that are available in both Visual C++ 2012 and GCC 4.7.  C++11 greatly aided in making the code clean and portable.  To make adopting the code more manageable, all definitions needed by a user are defined in a celero namespace within a single include file: `Celero.h`.
 
 `Celero.h` has within it the macro definitions that turn each of the user benchmark cases into its own unique class with the associated test fixture (if any) and then registers the test case within a Factory.  The macros automatically associate baseline test cases with their associated test benchmarks so that, at run time, benchmark-relative numbers can be computed.  This association is maintained by TestVector.
 
@@ -93,9 +100,9 @@ The `TestVector` utilizes the PImpl idiom to help hide implementation and keep t
 
 Celero reports its outputs to the command line.  Since colors are nice (and perhaps contribute to the human factors/readability of the results), something beyond `std::cout` was called for.  `Console.h` defines a simple color function, `SetConsoleColor`, which is utilized by the functions in the `celero::print` namespace to nicely format the program's output.
 
-Measuring benchmark execution time takes place in the `TestFixture` base class, from which all benchmarks written are ultimately derived.  First, the test fixture setup code is executed.  Then, the start time for the test is retrieved and stored in microseconds using an unsigned long.  This is done to reduce floating point error.  Next, the specified number of operations (iterations) are executed.  When complete, the end time is retrieved, the test fixture is torn down, and the measured time for the execution is returned and the results are saved. 
+Measuring benchmark execution time takes place in the `TestFixture` base class, from which all benchmarks are written are ultimately derived.  First, the test fixture setup code is executed.  Then, the start time for the test is retrieved and stored in microseconds using an unsigned long.  This is done to reduce floating point error.  Next, the specified number of operations (iterations) is executed.  When complete, the end time is retrieved, the test fixture is torn down, and the measured time for the execution is returned, and the results are saved. 
 
-This cycle is repeated for however many samples were specified.  If no samples were specified (zero), then the test is repeated until it as ran for at least one second or at least 30 samples have been taken.  While writing this specific part of the code, there was a definite "if-else" relationship.  However, the bulk of the code was repeated within the "if" and "else" sections.  An old fashioned function could have been used here, but it was very natural to utilize std::function to define a lambda that could be called and keep all of the code clean.  (C++11 is a fantastic thing.)  Finally, the results are printed to the screen.
+This cycle is repeated for however-many samples were specified.  If no samples were specified (zero), then the test is repeated until it as ran for at least one second or at least 30 samples have been taken.  While writing this specific part of the code, there was a definite "if-else" relationship.  However, the bulk of the code was repeated within the "if" and "else" sections.  An old fashioned function could have been used here, but it was very natural to utilize std::function to define a lambda that could be called and keep all of the code clean.  (C++11 is a fantastic thing.)  Finally, the results are printed to the screen.
 
 ### General Program Flow
 To summarize, this pseudo-code illustrates how the tests are executed internally:
@@ -103,39 +110,39 @@ To summarize, this pseudo-code illustrates how the tests are executed internally
 ```cpp
 for(Each Experiment)
 {
-	for(Each Sample)
-	{
-		// Call the virtual function
-		// and DO NOT include its time in the measurement.
-		experiment->setUp();
+    for(Each Sample)
+    {
+        // Call the virtual function
+        // and DO NOT include its time in the measurement.
+        experiment->setUp();
 
-		// Start the Timer
-		timer->start();
+        // Start the Timer
+        timer->start();
 
-		// Run all iterations
-		for(Each Iteration)
-		{
-			// Call the virtual function
-			// and include its time in the measurement.
-			experiment->onExperimentStart(x);
+        // Run all iterations
+        for(Each Iteration)
+        {
+            // Call the virtual function
+            // and include its time in the measurement.
+            experiment->onExperimentStart(x);
 
-			// Run the code under test
-			experiment->run(threads, iterations, experimentValue);
-		
-			// Call the virtual function
-			// and include its time in the measurement.
-			experiment->onExperimentEnd();
-		}
+            // Run the code under test
+            experiment->run(threads, iterations, experimentValue);
+        
+            // Call the virtual function
+            // and include its time in the measurement.
+            experiment->onExperimentEnd();
+        }
 
-		// Stop the Timer
-		timer->stop();
+        // Stop the Timer
+        timer->stop();
 
-		// Record data...
+        // Record data...
 
-		// Call the virtual teardown function
-		// and DO NOT include its time in the measurement.
-		experiment->tearDown();
-	}
+        // Call the virtual teardown function
+        // and DO NOT include its time in the measurement.
+        experiment->tearDown();
+    }
 }
 
 ```
@@ -191,7 +198,7 @@ BENCHMARK(DemoSimple, Complex1, 1, 710000)
 ///
 /// Run a test consisting of 30 samples of 710000 operations per measurement.
 /// There are not enough samples here to get a reasonable measurement
-/// It should get a Basline number lower than the previous test.
+/// It should get a Baseline number lower than the previous test.
 ///
 BENCHMARK(DemoSimple, Complex2, 30, 710000)
 {
@@ -201,7 +208,7 @@ BENCHMARK(DemoSimple, Complex2, 30, 710000)
 ///
 /// Run a test consisting of 60 samples of 710000 operations per measurement.
 /// There are not enough samples here to get a reasonable measurement
-/// It should get a Basline number lower than the previous test.
+/// It should get a Baseline number lower than the previous test.
 ///
 BENCHMARK(DemoSimple, Complex3, 60, 710000)
 {
@@ -218,15 +225,15 @@ BASELINE(GroupName, BaselineName, Samples, Operations)
 - `GroupName` - The name of the benchmark group.  This is used to batch together runs and results with their corresponding baseline measurement.
 - `BaselineName` - The name of this baseline for reporting purposes. 
 - `Samples` - The total number of times you want to execute the given number of operations on the test code.
-- `Operations` - The total number of times you want to execute the test code per sample.
+- `Operations` - The total number of times you want to run the test code per sample.
 
-Samples and operations here are used to measure very fast code.  If you know the code in your benchmark would take some time less than 100 milliseconds, for example, your operations number would say to execute the code "operations" number of times before taking a measurement.  Samples defines how many measurements to make. 
+Samples and operations here are used to measure very fast code.  If you know the code in your benchmark will take some time less than 100 milliseconds, for example, your operations number would say to execute the code "operations" number of times before taking a measurement.  Samples define how many measurements to make. 
 
 Celero helps with this by allowing you to specify zero samples.  Zero samples will tell Celero to make some statistically significant number of samples based on how long it takes to complete your specified number of operations.  These numbers will be reported at run time.
 
 The `celero::DoNotOptimizeAway` template is provided to ensure that the optimizing compiler does not eliminate your function or code.  Since this feature is used in all of the sample benchmarks and their baseline, it's time overhead is canceled out in the comparisons.
 
-After the baseline is defined, various benchmarks are then defined.  They syntax for the `BENCHMARK` macro is identical to that of the macro.
+After the baseline is defined, various benchmarks are then defined.  The syntax for the `BENCHMARK` macro is identical to that of the macro.
 
 ### Results
 
@@ -244,13 +251,13 @@ Timer resolution: 0.277056 us
 Completed in 00:00:10.315012
 ```
 
-The first test that executes will be the group's baseline.  Celero took 30 samples of 1000000 iterations of the code in our test.  (Each set of 1000000 iterations was measured, and this was done 10 times and the smallest time was taken.)  The "Baseline" value for the baseline measurement itself will always be 1.0.
+The first test that executes will be the group's baseline.  Celero took 30 samples of 1000000 iterations of the code in our test.  (Each set of 1000000 iterations was measured, and this was done ten times and the shortest time was taken.)  The "Baseline" value for the baseline measurement itself will always be 1.0.
 
-After the baseline is complete, each individual test is ran.  Each test is executed and measured in the same way, however, there is an additional metric reported: Baseline.  This compares the time it takes to compute the benchmark to the baseline.  The data here shows that `CeleroBenchTest.Complex1` takes 1.007949 times longer to execute than the baseline.
+After the baseline is complete, each individual test runs.  Each test is executed and measured in the same way. However, there is an additional metric reported: Baseline.  This compares the time it takes to compute the benchmark to the baseline.  The data here shows that `CeleroBenchTest.Complex1` takes 1.007949 times longer to execute than the baseline.
 
 ### Automatically computing the number of Iterations and Samples
 
-If you do want Celero to figure out a reasonable number of iterations to run, you can set the iteration value to ```0``` for your experiment.  You can also set the number of samples to ```0``` to have it compute a statistically valid number of samples.  (Note that the current implementation uses ```30``` as the default number of samples, but does compute a reasonable number of iterations.) 
+If you do want Celero to figure out a reasonable number of iterations to run, you can set the iteration value to ```0``` for your experiment.  You can also set the number of samples to ```0``` to have it compute a statistically valid number of samples.  (Note that the current implementation uses ```30``` as the default number of samples, but does calculate a reasonable number of iterations.) 
 
 Update the previous "DemoSimple" code's ```Complex1``` case to use this feature as follows:
 
@@ -259,11 +266,11 @@ Update the previous "DemoSimple" code's ```Complex1``` case to use this feature 
 /// Since the sample size is equal to 0, celero will compute a number to use for both samples and iterations.
 BENCHMARK(DemoSimple, Complex1, 0, 0)
 {
-	celero::DoNotOptimizeAway(static_cast<float>(sin(fmod(UniformDistribution(RandomDevice), 3.14159265))));
+    celero::DoNotOptimizeAway(static_cast<float>(sin(fmod(UniformDistribution(RandomDevice), 3.14159265))));
 }
 ```
 
-Now, when this executes, you will see a different number automatically computed for the number of iterations and the sample size has been increased.
+Now, when this executes, you will see a different number automatically computed for the number of iterations, and the sample size has been increased.
 
 ```
 Celero
@@ -279,16 +286,16 @@ Completed in 00:00:37.583872
 
 #### Statistically Sound Results
 
-In order to use Celero for real science, there are three primary factors to consider when reviewing results.  Firstly, you MUST check the generated assembly for your test.  There are different paths to viewing the assembly for different compilers, but essentially this must be done to ensure that you did not optimize out critical code.  You must also verify, via assembly, that you are comparing apples to apples.  
+To use Celero for real science, there are three primary factors to consider when reviewing results.  Firstly, you MUST check the generated assembly for your test.  There are different paths to viewing the assembly for various compilers, but essentially this must be done to ensure that you did not optimize-out critical code.  You must also verify, via assembly, that you are comparing apples to apples.  
 
-Once that is sorted out, you should run just the "Baseline" case several times.  The "us/Iteration" and "Iterations/sec" should not fluctuate by any significant degree between runs.  If they do, then ensure that your number of iterations is sufficiently large as to overcome the timer resolution on your machine.  Once the number of iterations is high enough, ensure that you are performing a statistically significant number of samples.  Lore has it that 30 samples is good, but use your own science to figure out the best number for your situation.
+Once that is sorted out, you should run just the "Baseline" case several times.  The "us/Iteration" and "Iterations/sec" should not fluctuate by any significant degree between runs.  If they do, then ensure that your number of iterations is sufficiently large as to overcome the timer resolution on your machine.  Once the number of iterations is high enough, ensure that you are performing a statistically significant number of samples.  Lore has it that 30 samples are good, but use your own science to figure out the best number for your situation.
 
 Finally, you need to ensure that the number of iterations and samples is producing stable output for your experiment cases.  These numbers may be the same as your now-stable baseline case.
 
-One factor that can impact the number of samples and iterations required is the amount of work that your experiment is doing.  For cases where you are utilizing Celero's "problem space" functionality to scale up the algorithms, you can corresponding scale down the number of iterations.  Doing so can reduce the total run time of the larger experiments by doing less iterations, buy while still maintaining a statistically meaningful measurement.  (It saves you time.)
+One factor that can impact the number of samples and iterations required is the amount of work that your experiment is doing.  For cases where you are utilizing Celero's "problem space" functionality to scale up the algorithms, you can correspondingly scale down the number of iterations.  Doing so can reduce the total run time of the more extensive experiments by doing fewer iterations, buy while still maintaining a statistically meaningful measurement.  (It saves you time.)
 
 ### Threaded Benchmarks
-Celero can automatically run threaded benchmarks.  `BASELINE_T` and `BENCHMARK_T` can be used to launch the given code on its own thread using a user-defined number of concurrent executions.  `celeroDemoMultithread` illustrates using this feature.  When defining these macros, the use the following format:
+Celero can automatically run threaded benchmarks.  `BASELINE_T` and `BENCHMARK_T` can be used to launch the given code on its own thread using a user-defined number of concurrent executions.  `celeroDemoMultithread` illustrates using this feature.  When defining these macros, they use the following format:
 
 ```cpp
 BASELINE_T(groupName, baselineName, fixtureName, samples, iterations, threads);
@@ -299,7 +306,7 @@ BENCHMARK_TEST_T(groupName, benchmarkName, fixtureName, samples, iterations, thr
 ```
 
 ### Fixed Measurement Benchmarks
-While Celero normally measures the baseline time and then executes benchmark cases for comparison, you can also specify a fixed measurement time.  This is useful for measuring performance against a real-time requirement.  To use, utilize the ```_FIXED_``` version of the `BASELINE` and `BENCHMARK` macros.
+While Celero typically measures the baseline time and then executes benchmark cases for comparison, you can also specify a fixed measurement time.  This is useful for measuring performance against a real-time requirement.  To use, utilize the ```_FIXED_``` version of the `BASELINE` and `BENCHMARK` macros.
 
 ```cpp
 // No threads or test fixtures.
@@ -350,15 +357,15 @@ class PageFaultUDM : public celero::UserDefinedMeasurementTemplate<size_t>
 The only thing you *need* to implement in this case is a unique name. Other virtual functions are available inside `celero::UserDefinedMeasurementTemplate` and `celero::UserDefinedMeasurement` that you can leverage as needed.  There are optional virtual functions that you can override to turn off specific statistical measurements in the output.  These are:
 
 ```cpp
-	virtual bool reportSize() const;
-	virtual bool reportMean() const;
-	virtual bool reportVariance() const;
-	virtual bool reportStandardDeviation() const;
-	virtual bool reportSkewness() const;
-	virtual bool reportKurtosis() const;
-	virtual bool reportZScore() const;
-	virtual bool reportMin() const;
-	virtual bool reportMax() const;
+    virtual bool reportSize() const;
+    virtual bool reportMean() const;
+    virtual bool reportVariance() const;
+    virtual bool reportStandardDeviation() const;
+    virtual bool reportSkewness() const;
+    virtual bool reportKurtosis() const;
+    virtual bool reportZScore() const;
+    virtual bool reportMin() const;
+    virtual bool reportMax() const;
 ```
 
 (By default, all of the ```report``` functions inside ```UserDefinedMeasurementTemplate``` return ```true```.)
@@ -371,18 +378,18 @@ class SortFixture : public celero::TestFixture
 public:
     SortFixture()
     {
-		this->pageFaultUDM.reset(new PageFaultUDM());
+        this->pageFaultUDM.reset(new PageFaultUDM());
     }
-	
-	[...]
-	
-	virtual std::vector<std::shared_ptr<celero::UserDefinedMeasurement>> getUserDefinedMeasurements() const override
-	{
-		return { this->pageFaultUDM };
-	}
+    
+    [...]
+    
+    virtual std::vector<std::shared_ptr<celero::UserDefinedMeasurement>> getUserDefinedMeasurements() const override
+    {
+        return { this->pageFaultUDM };
+    }
 
 private:
-	std::shared_ptr<CopyCountUDM> pageFaultUDM;
+    std::shared_ptr<CopyCountUDM> pageFaultUDM;
 };
 ```
 
@@ -392,45 +399,45 @@ Finally, you need to record your results. For this pseud-code example, assume tw
 class SortFixture : public celero::TestFixture
 {
 public:
-	SortFixture()
+    SortFixture()
     {
-		this->pageFaultUDM.reset(new PageFaultUDM());
+        this->pageFaultUDM.reset(new PageFaultUDM());
     }
 
     [...]
-	
-	// Gather page fault statistics inside the UDM.
-	virtual void onExperimentEnd() override
-	{
-		[...]
-		this->pageFaultUDM->addValue(this->getPageFaults());
-	}
+    
+    // Gather page fault statistics inside the UDM.
+    virtual void onExperimentEnd() override
+    {
+        [...]
+        this->pageFaultUDM->addValue(this->getPageFaults());
+    }
 
-	[...] 
-	
-	// Reset the page fault counter.
-	virtual void setUp(const celero::TestFixture::ExperimentValue& experimentValue) override
-	{
-	    [...]
-		this->resetPageFaultCounter();
-	}
-	
-	[...]
+    [...] 
+    
+    // Reset the page fault counter.
+    virtual void setUp(const celero::TestFixture::ExperimentValue& experimentValue) override
+    {
+        [...]
+        this->resetPageFaultCounter();
+    }
+    
+    [...]
 
-	virtual std::vector<std::shared_ptr<celero::UserDefinedMeasurement>> getUserDefinedMeasurements() const override
-	{
-		return { this->pageFaultUDM };
-	}
+    virtual std::vector<std::shared_ptr<celero::UserDefinedMeasurement>> getUserDefinedMeasurements() const override
+    {
+        return { this->pageFaultUDM };
+    }
 
 private:
-	std::shared_ptr<CopyCountUDM> pageFaultUDM;
-	[...]
+    std::shared_ptr<CopyCountUDM> pageFaultUDM;
+    [...]
 };
 ```
 
 You will now be reporting statistics on the number of page faults that occurred during your experiments. See the `ExperimentSortingRandomIntsWithUDM` example for a complete example.
 
-A note on User Defined Measurements: This capability was introduced well after the creation of Celero.  While it is a great enhancement to the library, it was not designed-in to the library.  As such, the next major release of the library (v3.x) may change the way this is implemented and exposed to the library's users.  
+A note on User-Defined Measurements: This capability was introduced well after the creation of Celero.  While it is a great enhancement to the library, it was not designed-in to the library.  As such, the next major release of the library (v3.x) may change the way this is implemented and exposed to the library's users.  
 
 ### Frequency Scaling
 
@@ -444,7 +451,7 @@ sudo cpupower frequency-set --governor powersave
 
 ### Notes
 
-- Benchmarks should always be performed on Release builds.  Never measure the performance of a Debug build and make changes based on the results.  The (optimizing) compiler is your friend with respect to code performance.
+- Benchmarks should always be performed on Release builds.  Never measure the performance of a Debug build and make changes based on the results.  The (optimizing) compiler is your friend concerning code performance.
 - Accuracy is tied very closely to the total number of samples and the sample sizes.  As a general rule, you should aim to execute your baseline code for about as long as your longest benchmark test.  Further, it is helpful if all of the benchmark tests take about the same order of magnitude of execution time.  (Don't compare a baseline that executed in 0.1 seconds with benchmarks that take 60 seconds and an hour, respectively.)
 - Celero has Doxygen documentation of its API.
 - Celero supports test fixtures for each baseline group.
@@ -453,19 +460,19 @@ sudo cpupower frequency-set --governor powersave
 
 ### Background
 
-It has been noted many times that writing an algorithm to solve small problems is relatively easy. "Brute force" methods tend to function just as well as more graceful approaches. However, as the size of data increases, truly effective algorithms scale their performance to match.
+It has been noted many times that writing an algorithm to solve small problems is relatively easy. "Brute force" methods tend to function just as well as more agile approaches. However, as the size of data increases, beneficial algorithms scale their performance to match.
 
-Theoretically, the best we can hope for with an algorithm is that is scales lineally (Order N, O(N) complexity) with respect to the problem size. That is to say that if the problem set doubles, the time it takes for the algorithm to execute doubles. While this seems obvious, it is often an elusive goal.
+Theoretically, the best we can hope for with an algorithm is that is scales linearly (Order N, O(N) complexity) with respect to the problem size. That is to say that if the problem set doubles, the time it takes for the algorithm to execute doubles. While this seems obvious, it is often an elusive goal.
 
-Even well performing algorithms eventually run into problems with available memory or CPU cache. When making decisions within our software about algorithms and improvements to existing code, only through measurement and experimentation can we know our complex algorithms perform acceptably.
+Even well-performing algorithms eventually run into problems with available memory or CPU cache. When making decisions within our software about algorithms and improvements to existing code, only through measurement and experimentation, can we know our complex algorithms perform acceptably.
 
 ### Using the Code
 
-While Celero offers simple benchmarking of code and algorithms, it also offers a more complex method or directly producing performance graphs of how the benchmarks change with respect to some independent variable, referred to here as the Problem Set.
+While Celero offers simple benchmarking of code and algorithms, it also provides a more sophisticated method or directly producing performance graphs of how the benchmarks change with respect to some independent variable, referred to here as the Problem Set.
 
 Within Celero, a test fixture can push integers into a `ProblemSetValues` vector which allows for the fixture's own SetUp function to scale a problem set for the benchmarks to run against. For each value pushed into the `ProblemSetValues` vector, a complete set of benchmarks is executed. These measured values are then stored and can be written out to a CSV file for easy plotting of results.
 
-To demonstrate, we will study the performance of three common sorting algorithms: BubbleSort, SelectionSort, and std::sort. (The source code to this demo is distributed with Celero, available on [GitHub](https://github.com/DigitalInBlue/Celero).)  First, we will write a test fixture for Celero.
+To demonstrate, we will study the performance of three common sorting algorithms: BubbleSort, SelectionSort, and `std::sort`. (The source code to this demo is distributed with Celero, available on [GitHub](https://github.com/DigitalInBlue/Celero).)  First, we will write a test fixture for Celero.
 
 ```cpp
 class SortFixture : public celero::TestFixture
@@ -479,7 +486,7 @@ public:
     {
         std::vector<celero::TestFixture::ExperimentValue> problemSpace;
 
-        // We will run some total number of sets of tests all together. 
+        // We will run some total number of sets of tests together. 
         // Each one growing by a power of 2.
         const int totalNumberOfTests = 6;
 
@@ -520,7 +527,7 @@ public:
 };
 ```
 
-Before the test fixture is utilized by a benchmark, Celero will create an instantiation of the class and call its "getExperimentValues()" function.  The test fixture can then build a vector of TestFixture::ExperimentValue values.  For each value added to this array, benchmarks will be executed following calls to the "setUp" virtual function.  A new test fixture is created for each measurement.
+Before the test fixture is utilized by a benchmark, Celero will create an instantiation of the class and call its `getExperimentValues()` function.  The test fixture can then build a vector of `TestFixture::ExperimentValue` values.  For each value added to this array, benchmarks will be executed following calls to the `setUp` virtual function.  A new test fixture is created for each measurement.
 
 The `SetUp()` virtual function is called before each benchmark test is executed. When using a problem space values vector, the function will be given a value that was previously pushed into the array within the constructor. The function's code can then decide what to do with it. Here, we are using the value to indicate how many elements should be in the array that we intend to sort. For each of the array elements, we simply add a pseudo-random integer.
 
@@ -532,18 +539,18 @@ BASELINE_F(SortRandInts, BubbleSort, SortFixture, 30, 10000)
 {
     this->randomize();
 
-	for(int x = 0; x < this->arraySize; x++)
-	{
-		for(int y = 0; y < this->arraySize - 1; y++)
-		{
-			if(this->array[y] > this->array[y+1])
-			{
-				std::swap(this->array[y], this->array[y+1]);
-			}
-		}
-	}
+    for(int x = 0; x < this->arraySize; x++)
+    {
+        for(int y = 0; y < this->arraySize - 1; y++)
+        {
+            if(this->array[y] > this->array[y+1])
+            {
+                std::swap(this->array[y], this->array[y+1]);
+            }
+        }
+    }
 
-	this->clear();
+    this->clear();
 }
 ```
 
@@ -556,26 +563,26 @@ BENCHMARK_F(SortRandInts, SelectionSort, SortFixture, 30, 10000)
 {
     this->randomize();
 
-	for(int x = 0; x < this->arraySize; x++)
-	{
-		auto minIdx = x;
+    for(int x = 0; x < this->arraySize; x++)
+    {
+        auto minIdx = x;
 
-		for(int y = x; y < this->arraySize; y++)
-		{
-			if(this->array[minIdx] > this->array[y])
-			{
-				minIdx = y;
-			}
-		}
+        for(int y = x; y < this->arraySize; y++)
+        {
+            if(this->array[minIdx] > this->array[y])
+            {
+                minIdx = y;
+            }
+        }
 
-		std::swap(this->array[x], this->array[minIdx]);
-	}
+        std::swap(this->array[x], this->array[minIdx]);
+    }
 
-	this->clear();
+    this->clear();
 }
 ```
 
-Finally, for good measure, we will simply use the Standard Library's sorting algorithm: `Introsort`. We only need write a single line of code, but here it is for completeness.
+Finally, for good measure, we will simply use the Standard Library's sorting algorithm: `Introsort`. We only need to write a single line of code, but here it is for completeness.
 
 ```cpp
 BENCHMARK_F(SortRandInts, stdSort, SortFixture, 30, 10000)
@@ -588,7 +595,7 @@ BENCHMARK_F(SortRandInts, stdSort, SortFixture, 30, 10000)
 
 ### Results
 
-This test was ran on a 4.00 GHz AMD with four cores, eight logical processors, and 32 GB of memory. (Hardware aside, the relative performance of these algorithms should be the same on any modern hardware.) 
+This test was run on a 4.00 GHz AMD with four cores, eight logical processors, and 32 GB of memory. (Hardware aside, the relative performance of these algorithms should be the same on any modern hardware.) 
 
 Celero outputs timing and benchmark references for each test automatically. However, to write to an output file for easy plotting, simply specify an output file on the command line.
 
@@ -596,7 +603,7 @@ Celero outputs timing and benchmark references for each test automatically. Howe
 celeroExperimentSortingRandomInts.exe -t results.csv
 ```
 
-While not particularly surprising std::sort is by far the best option with any meaningful problem set size. The results are summarized in the following table output written directly by Celero:
+While not particularly surprising `std::sort` is by far the best option with any meaningful problem set size. The results are summarized in the following table output written directly by Celero:
 
 ```
 Celero
@@ -673,52 +680,52 @@ SortRandInts | stdSort | 16 | 30 | 10000 | 0.459544 | 0.5015 | 1.99402e+06 | 501
 SortRandInts | stdSort | 32 | 30 | 10000 | 0.335734 | 1.086 | 920810 | 10860 | 13398 | 24592 | 8.85889e+06 | 2976.39 | 2.1597 | 4.93241 | 0.852722
 SortRandInts | stdSort | 64 | 30 | 10000 | 0.23979 | 2.5958 | 385238 | 25958 | 27384.8 | 35800 | 4.88819e+06 | 2210.92 | 2.24632 | 5.15422 | 0.645326
 
-The point here is not that std::sort is better than more elementary sorting methods, but how easily measurable results can be obtained. In making such measurements more accessible and easier to code, they can become part of the way we code just as automated testing has become.
+The point here is not that `std::sort` is better than more elementary sorting methods, but how easily measurable results can be obtained. In making such measurements more accessible and easier to code, they can become part of the way we code just as automated testing has become.
 
 Test early and test often!
 
 ### Notes
 
-- Because I like explicitness as much as the next programmer, I want to note that the actual sorting algorithm used by `std::sort` is not defined in the standard, but references cite Introsort as a likely contender for how an STL implementation would approach std::sort. http://en.wikipedia.org/wiki/Introsort.
-- When choosing a sorting algorithm, start with std::sort and see if you can make improvements from there.
+- Because I like explicitness as much as the next programmer, I want to note that the actual sorting algorithm used by `std::sort` is not defined in the standard, but references cite Introsort as a likely contender for how an STL implementation would approach `std::sort`. http://en.wikipedia.org/wiki/Introsort.
+- When choosing a sorting algorithm, start with `std::sort` and see if you can make improvements from there.
 - Don't just trust your experience, measure your code!
 
 ## FAQ
 
 ### Q: I asked for `N` iterations, but Celero ran `N+1` iterations.
-The internal code will do one un-measured "warm up" pass.  This helps account for caching which may otherwise influence measurements.
+The internal code will do one un-measured "warm-up" pass.  This helps account for caching which may otherwise influence measurements.
 
 ### Q: As my problem space increases in size, my runs take longer and longer.  How do I account for the increased complexity?
-When defining a problem space, you set up a `celero::TestFixture::ExperimentValue`.  If the `Iterations` member in the class is greater than zero, that number will be used to control the number of iterations for the corresponding `celero::TestFixture::ExperimentValue`.
+When defining a problem space, you set up a `celero::TestFixture::ExperimentValue`.  If the `Iterations` member in the class is greater than zero, that number will be used to control the amount of iterations for the corresponding `celero::TestFixture::ExperimentValue`.
 
 ```cpp
 class MyFixture : public celero::TestFixture
 {
 public:
-	virtual std::vector<std::pair<int64_t, uint64_t>> getExperimentValues() const override
-	{
-		std::vector<std::pair<int64_t, uint64_t>> problemSpaceValues;
+    virtual std::vector<std::pair<int64_t, uint64_t>> getExperimentValues() const override
+    {
+        std::vector<std::pair<int64_t, uint64_t>> problemSpaceValues;
 
-		// We will run some total number of sets of tests all together.
-		// Each one growing by a power of 2.
-		const int totalNumberOfTests = 12;
+        // We will run some total number of sets of tests together.
+        // Each one growing by a power of 2.
+        const int totalNumberOfTests = 12;
 
-		for(int i = 0; i < totalNumberOfTests; i++)
-		{
-			// ExperimentValues is part of the base class and allows us to specify
-			// some values to control various test runs to end up building a nice graph.
-			// We make the number of iterations decrease as the size of our problem space increases
-			// to demonstrate how to adjust the number of iterations per sample based on the
-			// problem space size.
-			problemSpaceValues.push_back(std::make_pair(int64_t(pow(2, i + 1)), uint64_t(pow(2, totalNumberOfTests - i))));
-		}
+        for(int i = 0; i < totalNumberOfTests; i++)
+        {
+            // ExperimentValues is part of the base class and allows us to specify
+            // some values to control various test runs to end up building a nice graph.
+            // We make the number of iterations decrease as the size of our problem space increases
+            // to demonstrate how to adjust the number of iterations per sample based on the
+            // problem space size.
+            problemSpaceValues.push_back(std::make_pair(int64_t(pow(2, i + 1)), uint64_t(pow(2, totalNumberOfTests - i))));
+        }
 
-		return problemSpaceValues;
-	}
+        return problemSpaceValues;
+    }
 ```
 
 ## Example and Demo Code
 
-Example and demonstration code is provided under Celero's "experiments" folder.  There are two types of projects.  The first are "Demo" projects.  These are useful for illustrating techniques and ideas, but may not be interesting from a computer-science perspective.  Experiments, on the other hand, have been added which demonstrate real-world questions.  
+Example and demonstration code are provided under Celero's "experiments" folder.  There are two types of projects.  The first is "Demo" projects.  These are useful for illustrating techniques and ideas, but may not be interesting from a computer-science perspective.  Experiments, on the other hand, have been added which demonstrate real-world questions.  
 
-The addition of real use cases of Celero are encouraged to be submitted to Celero's development branch for inclusion in the Demo and Experiment library.
+The addition of real use cases of Celero is encouraged to be submitted to Celero's development branch for inclusion in the Demo and Experiment library.
