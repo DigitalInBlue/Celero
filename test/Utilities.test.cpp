@@ -21,5 +21,5 @@
 
 TEST(utilities, UsPerSec)
 {
-	EXPECT_EQ(1000000, celero::UsPerSec);
+	EXPECT_EQ(static_cast<decltype(celero::UsPerSec)>(1000000), celero::UsPerSec);
 }

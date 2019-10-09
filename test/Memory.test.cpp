@@ -21,8 +21,6 @@
 #include <chrono>
 #include <iomanip>
 
-constexpr double Gigabyte{1073741824.0};
-
 void PrintTop()
 {
 	std::cout << celero::GetRAMVirtualUsedByCurrentProcess() << " " << celero::GetRAMPhysicalUsedByCurrentProcess() << " "
