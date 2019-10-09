@@ -17,11 +17,28 @@
 #
 #
 
+include(ExternalProject)
+
+# Add gtest
+# http://stackoverflow.com/questions/9689183/cmake-googletest
+ExternalProject_Add(
+    googletest
+    SOURCE_DIR ${CMAKE_SOURCE_DIR}/googletest
+    GIT_SUBMODULES ${CMAKE_SOURCE_DIR}/googletest
+    INSTALL_COMMAND ""
+    LOG_CONFIGURE ON
+    LOG_BUILD ON
+    )
+
+# Specify include dir
+ExternalProject_Get_Property(googletest source_dir)
+set(GTEST_INCLUDE_DIR ${source_dir}/include)
+
 project(celero-test)
 
 add_executable(${PROJECT_NAME})	
 
-find_package(GTest REQUIRED)
+add_dependencies(${PROJECT_NAME} googletest)
 
 target_sources(${PROJECT_NAME} PRIVATE
 	Benchmark.test.cpp
@@ -44,8 +61,8 @@ CeleroSetDefaultCompilerOptions()
 
 target_link_libraries(${PROJECT_NAME} 
 	${SYSLIBS} 
-	GTest::GTest
-	GTest::Main
+	optimized gtest debug gtestd
+	optimized gtest_main debug gtest_maind
 	celero
 )
 
