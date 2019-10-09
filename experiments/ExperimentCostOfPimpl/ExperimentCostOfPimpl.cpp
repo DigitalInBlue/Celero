@@ -55,6 +55,14 @@ public:
 	{
 	}
 
+	RawPointer(const RawPointer&) = delete;
+
+	RawPointer(const RawPointer&& other)
+	{
+		this->pimpl = other.pimpl;
+		other.pimpl = nullptr;
+	}
+
 	~RawPointer()
 	{
 		delete pimpl;

@@ -31,7 +31,7 @@ public:
 	{
 	}
 
-	Impl(const std::string& x) : stats(), name(x), baseline(), experiments()
+	explicit Impl(const std::string& x) : stats(), name(x), baseline(), experiments()
 	{
 	}
 

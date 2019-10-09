@@ -10,11 +10,11 @@ Apache 2.0 License
 
 A Special Thanks to the following corporations for their support:
 
-- [Hellebore Consulting Group](http://www.hellebore.com)
-- [Araxis](https://www.araxis.com/)
-- [Axosoft](https://www.gitkraken.com/)
-- [Microsoft](https://www.microsoft.com)
-- [Travis.CI](https://travis-ci.org)
+-   [Hellebore Consulting Group](http://www.hellebore.com)
+-   [Araxis](https://www.araxis.com/)
+-   [Axosoft](https://www.gitkraken.com/)
+-   [Microsoft](https://www.microsoft.com)
+-   [Travis.CI](https://travis-ci.org)
 
 #### Builds and Testing
 
@@ -25,15 +25,15 @@ A Special Thanks to the following corporations for their support:
 
 Celero has been successfully built on the following platforms during development.  See [Travis.CI](https://travis-ci.org/DigitalInBlue/Celero) for more details.
 
-- GCC v6.0.0
-- GCC v7.0.0
-- GCC v8.0.0
-- LLVM v3.9.0
-- LLVM v5.0.1
-- LLVM v7.0.0
-- Visual Studio 2017
-- Visual Studio 2019
-- XCode v10.1
+-   GCC v6.0.0
+-   GCC v7.0.0
+-   GCC v8.0.0
+-   LLVM v3.9.0
+-   LLVM v5.0.1
+-   LLVM v7.0.0
+-   Visual Studio 2017
+-   Visual Studio 2019
+-   XCode v10.1
 
 #### Quality Control
 
@@ -52,17 +52,17 @@ Once Celero is added to your project. You can create dedicated benchmark project
 
 ### Key Features
 
-- Supports Windows, Linux, and OSX using C++11.
-- The timing utilities can be used directly in production code (independent of benchmarks).
-- Console table output is formatted as Markdown to easily copy/paste into documents.
-- Archive results to track performance over time.
-- Integrates into CI/CT/CD environments with JUnit-formatted output.
-- User-defined Experiment Values can scale test results, sample sizes, and user-defined properties for each run.
-- User-defined Measurements allow for measuring anything in addition to timing.
-- Supports Test Fixtures.
-- Supports fixed-time benchmark baselines.
-- Capture a rich set of timing statistics to a file.
-- Easily installed using CMake, Conan, or VCPkg.
+-   Supports Windows, Linux, and OSX using C++11.
+-   The timing utilities can be used directly in production code (independent of benchmarks).
+-   Console table output is formatted as Markdown to easily copy/paste into documents.
+-   Archive results to track performance over time.
+-   Integrates into CI/CT/CD environments with JUnit-formatted output.
+-   User-defined Experiment Values can scale test results, sample sizes, and user-defined properties for each run.
+-   User-defined Measurements allow for measuring anything in addition to timing.
+-   Supports Test Fixtures.
+-   Supports fixed-time benchmark baselines.
+-   Capture a rich set of timing statistics to a file.
+-   Easily installed using CMake, Conan, or VCPkg.
 
 ### Command Line
 
@@ -70,11 +70,11 @@ Once Celero is added to your project. You can create dedicated benchmark project
 <celeroOutputExecutable> [-g groupNameToRun] [-t resultsTable.csv] [-j junitOutputFile.xml] [-a resultArchive.csv] [-d numberOfIterationsPerDistribution] [-h]
 ```
 
-- `-g` Use this option to run only one benchmark group out of all benchmarks contained within a test executable.
-- `-t` Writes all results to a CSV file.  Very useful when using problem sets to graph performance.
-- `-j` Writes JUnit formatted XML output. To utilize JUnit output, benchmarks must use the `_TEST` version of the macros and specify an expected baseline multiple.  When the test exceeds this multiple, the JUnit output will indicate a failure.
-- `-a` Builds or updates an archive of historical results, tracking current, best, and worst results for each benchmark.
-- `-d` (Experimental) builds a plot of four different sample sizes to investigate the distribution of sample results.
+-   `-g` Use this option to run only one benchmark group out of all benchmarks contained within a test executable.
+-   `-t` Writes all results to a CSV file.  Very useful when using problem sets to graph performance.
+-   `-j` Writes JUnit formatted XML output. To utilize JUnit output, benchmarks must use the `_TEST` version of the macros and specify an expected baseline multiple.  When the test exceeds this multiple, the JUnit output will indicate a failure.
+-   `-a` Builds or updates an archive of historical results, tracking current, best, and worst results for each benchmark.
+-   `-d` (Experimental) builds a plot of four different sample sizes to investigate the distribution of sample results.
 
 ## Celero Basics
 
@@ -225,10 +225,10 @@ The first thing we do in this code is to define a `BASELINE` test case.  This te
 BASELINE(GroupName, BaselineName, Samples, Operations)
 ```
 
-- `GroupName` - The name of the benchmark group.  This is used to batch together runs and results with their corresponding baseline measurement.
-- `BaselineName` - The name of this baseline for reporting purposes.
-- `Samples` - The total number of times you want to execute the given number of operations on the test code.
-- `Operations` - The total number of times you want to run the test code per sample.
+-   `GroupName` - The name of the benchmark group.  This is used to batch together runs and results with their corresponding baseline measurement.
+-   `BaselineName` - The name of this baseline for reporting purposes.
+-   `Samples` - The total number of times you want to execute the given number of operations on the test code.
+-   `Operations` - The total number of times you want to run the test code per sample.
 
 Samples and operations here are used to measure very fast code.  If you know the code in your benchmark will take some time less than 100 milliseconds, for example, your operations number would say to execute the code "operations" number of times before taking a measurement.  Samples define how many measurements to make.
 
@@ -456,10 +456,10 @@ sudo cpupower frequency-set --governor powersave
 
 ### Notes
 
-- Benchmarks should always be performed on Release builds.  Never measure the performance of a Debug build and make changes based on the results.  The (optimizing) compiler is your friend concerning code performance.
-- Accuracy is tied very closely to the total number of samples and the sample sizes.  As a general rule, you should aim to execute your baseline code for about as long as your longest benchmark test.  Further, it is helpful if all of the benchmark tests take about the same order of magnitude of execution time.  (Don't compare a baseline that executed in 0.1 seconds with benchmarks that take 60 seconds and an hour, respectively.)
-- Celero has Doxygen documentation of its API.
-- Celero supports test fixtures for each baseline group.
+-   Benchmarks should always be performed on Release builds.  Never measure the performance of a Debug build and make changes based on the results.  The (optimizing) compiler is your friend concerning code performance.
+-   Accuracy is tied very closely to the total number of samples and the sample sizes.  As a general rule, you should aim to execute your baseline code for about as long as your longest benchmark test.  Further, it is helpful if all of the benchmark tests take about the same order of magnitude of execution time.  (Don't compare a baseline that executed in 0.1 seconds with benchmarks that take 60 seconds and an hour, respectively.)
+-   Celero has Doxygen documentation of its API.
+-   Celero supports test fixtures for each baseline group.
 
 ## Celero Charts
 
@@ -691,9 +691,9 @@ Test early and test often!
 
 ### Notes
 
-- Because I like explicitness as much as the next programmer, I want to note that the actual sorting algorithm used by `std::sort` is not defined in the standard, but references cite Introsort as a likely contender for how an STL implementation would approach `std::sort`. [Wikipedia](http://en.wikipedia.org/wiki/Introsort).
-- When choosing a sorting algorithm, start with `std::sort` and see if you can make improvements from there.
-- Don't just trust your experience, measure your code!
+-   Because I like explicitness as much as the next programmer, I want to note that the actual sorting algorithm used by `std::sort` is not defined in the standard, but references cite Introsort as a likely contender for how an STL implementation would approach `std::sort`. [Wikipedia](http://en.wikipedia.org/wiki/Introsort).
+-   When choosing a sorting algorithm, start with `std::sort` and see if you can make improvements from there.
+-   Don't just trust your experience, measure your code!
 
 ## FAQ
 

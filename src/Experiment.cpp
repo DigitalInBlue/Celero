@@ -61,7 +61,7 @@ public:
 	{
 	}
 
-	Impl(std::weak_ptr<Benchmark> bm) :
+	explicit Impl(std::weak_ptr<Benchmark> bm) :
 		results(),
 		benchmark(bm),
 		factory(),
