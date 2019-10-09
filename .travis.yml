@@ -47,32 +47,32 @@ matrix:
 
     # Clang 3.9
     - os: linux
-      env: LLVM_VERSION=3.9.0
+      env: LLVM_VERSION=3.9.0 CMAKE_OPTIONS="-DCELERO_ENABLE_TESTS=1"
       compiler: clang
 
     # Clang 5.0.1
     - os: linux
-      env: LLVM_VERSION=5.0.1
+      env: LLVM_VERSION=5.0.1 CMAKE_OPTIONS="-DCELERO_ENABLE_TESTS=1"
       compiler: clang
 
     # Clang 7.0.0
     - os: linux
-      env: LLVM_VERSION=7.0.0
+      env: LLVM_VERSION=7.0.0 CMAKE_OPTIONS="-DCELERO_ENABLE_TESTS=1"
       compiler: clang
 
     # GCC 6
     - os: linux
-      env: COMPILER=g++-6
+      env: COMPILER=g++-6 CMAKE_OPTIONS="-DCELERO_ENABLE_TESTS=1"
       compiler: gcc
 
     # GCC 7
     - os: linux
-      env: COMPILER=g++-7
+      env: COMPILER=g++-7 CMAKE_OPTIONS="-DCELERO_ENABLE_TESTS=1"
       compiler: gcc
 
     # GCC 8
     - os: linux
-      env: COMPILER=g++-8
+      env: COMPILER=g++-8 CMAKE_OPTIONS="-DCELERO_ENABLE_TESTS=1"
       compiler: gcc
 
     ##########################################################################
@@ -80,11 +80,17 @@ matrix:
     ##########################################################################
     # With debug mode
     - os: linux
-      env: LLVM_VERSION=default CMAKE_OPTIONS="-DCMAKE_BUILD_TYPE=DEBUG"
+      env: LLVM_VERSION=default CMAKE_OPTIONS="-DCELERO_ENABLE_TESTS=1 -DCMAKE_BUILD_TYPE=DEBUG"
       compiler: clang
 
     - os: osx
       osx_image: xcode10.1
+
+    - os: osx
+      osx_image: xcode10.3
+
+    - os: osx
+      osx_image: xcode11
 
 install:
   ############################################################################
@@ -156,3 +162,11 @@ script:
   - cd ${TRAVIS_BUILD_DIR}
   - cd build
   - make
+
+after_success:
+  - ls -alt ${TRAVIS_BUILD_DIR}/deps/
+  - ls
+  - cd bin
+  - ls
+  - ./celero-test
+
