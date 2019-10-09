@@ -1,7 +1,7 @@
 #
 # Top level makefile for Celero
 #
-# Copyright 2015, 2016, 2017, 2018 John Farrier
+# Copyright 2015, 2016, 2017, 2018, 2019 John Farrier
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -23,6 +23,54 @@
 
 CMAKE_MINIMUM_REQUIRED(VERSION 3.0.2)
 
+macro(CeleroSetDefaultCompilerOptions)
+	if(${CMAKE_CXX_COMPILER_ID} STREQUAL MSVC)
+		target_compile_options(${PROJECT_NAME} PRIVATE /D_VARIADIC_MAX=10 )
+		target_compile_options(${PROJECT_NAME} PRIVATE /D_CRT_SECURE_NO_WARNINGS)
+		target_compile_options(${PROJECT_NAME} PRIVATE /wd4251)
+		target_compile_options(${PROJECT_NAME} PRIVATE /MP)
+		target_compile_options(${PROJECT_NAME} PRIVATE /D_SCL_SECURE_NO_WARNINGS)
+		target_compile_options(${PROJECT_NAME} PRIVATE /permissive-)
+		target_compile_options(${PROJECT_NAME} PRIVATE /std:c++14)
+
+        if(CELERO_TREAT_WARNINGS_AS_ERRORS)
+            target_compile_options(${PROJECT_NAME} PRIVATE /WX)
+		endif()
+
+	elseif(${CMAKE_CXX_COMPILER_ID} STREQUAL GNU)
+		target_compile_options(${PROJECT_NAME} PRIVATE -Wall)
+		target_compile_options(${PROJECT_NAME} PRIVATE -fPIC)
+		target_compile_options(${PROJECT_NAME} PRIVATE -std=c++14)
+
+	elseif(${CMAKE_CXX_COMPILER_ID} STREQUAL Clang)
+		if(${CMAKE_SYSTEM_NAME} STREQUAL Windows)
+			target_compile_options(${PROJECT_NAME} PRIVATE -Xclang -std=c++14)
+			target_compile_options(${PROJECT_NAME} PRIVATE -Wno-c++98-compat)
+			target_compile_options(${PROJECT_NAME} PRIVATE -Wno-c++98-compat-pedantic)
+			target_compile_options(${PROJECT_NAME} PRIVATE -Wno-reserved-id-macro)
+			if(CELERO_TREAT_WARNINGS_AS_ERRORS)
+				target_compile_options(${PROJECT_NAME} PRIVATE -Werror)
+			endif()
+		else()
+			target_compile_options(${PROJECT_NAME} PRIVATE -Wall)
+			target_compile_options(${PROJECT_NAME} PRIVATE -fPIC)
+			target_compile_options(${PROJECT_NAME} PRIVATE -std=c++14)
+			if(CELERO_TREAT_WARNINGS_AS_ERRORS)
+				target_compile_options(${PROJECT_NAME} PRIVATE -Werror)
+			endif()
+		endif()
+
+	elseif(${CMAKE_CXX_COMPILER_ID} STREQUAL AppleClang)
+		target_compile_options(${PROJECT_NAME} PRIVATE -Wall)
+		target_compile_options(${PROJECT_NAME} PRIVATE -fPIC)
+		target_compile_options(${PROJECT_NAME} PRIVATE -std=c++14)
+
+		if(CELERO_TREAT_WARNINGS_AS_ERRORS)
+			target_compile_options(${PROJECT_NAME} PRIVATE -Werror)
+		endif()
+	endif()
+endmacro()
+
 # Project Name
 PROJECT(CeleroProject)
 
@@ -35,10 +83,10 @@ include(CheckIncludeFile)
 #
 
 option(CELERO_COMPILE_DYNAMIC_LIBRARIES "Set to ON to build Celero for dynamic linking.  Use OFF for static." ON)
-option(CELERO_RUN_EXAMPLE_ON_BUILD "Set to ON to automatically run the example after a successful build." OFF)
 option(CELERO_ENABLE_EXPERIMENTS "Set to ON to automatically build all examples." OFF)
 option(CELERO_ENABLE_FOLDERS "Enable to put Celero in its own solution folder under Visual Studio" ON)
 option(CELERO_ENABLE_TESTS "Enable building and running unit tests." OFF)
+option(CELERO_TREAT_WARNINGS_AS_ERRORS "Treat compile warnings as errors." ON)
 
 if(CELERO_COMPILE_DYNAMIC_LIBRARIES)
 	SET(CELERO_USER_DEFINED_SHARED_OR_STATIC "SHARED")
@@ -61,19 +109,8 @@ set(CMAKE_MINSIZEREL_POSTFIX     ""  CACHE STRING "add a postfix, usually empty 
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 
-#message("CMAKE_CXX_COMPILER: ${CMAKE_CXX_COMPILER}")
-
 # ---------------------------------------------------------------------------
 # ---------------------------------------------------------------------------
-
-#
-# Install Locations
-#
-
-#
-# include path to be used by all projects
-#
-
 
 set(PROJECT_NAME celero)
 
@@ -83,11 +120,9 @@ else()
 	add_definitions(-DCELERO_STATIC)
 endif()
 
-#
-# Define header and sources
-#
+add_library(${PROJECT_NAME} ${CELERO_USER_DEFINED_SHARED_OR_STATIC})
 
-set(TARGET_H
+target_sources(${PROJECT_NAME} PRIVATE
 	include/celero/Archive.h
 	include/celero/Benchmark.h
 	include/celero/Callbacks.h
@@ -119,9 +154,6 @@ set(TARGET_H
 	include/celero/UserDefinedMeasurementCollector.h
 	include/celero/UserDefinedMeasurementTemplate.h
 	include/celero/Utilities.h
-)
-
-set(TARGET_SRC
 	src/Archive.cpp
 	src/Benchmark.cpp
 	src/Callbacks.cpp
@@ -155,44 +187,7 @@ else()
 		)
 endif()
 
-add_library(${PROJECT_NAME} ${CELERO_USER_DEFINED_SHARED_OR_STATIC} ${TARGET_SRC} ${TARGET_H})
-
-#
-# Compiler Settings
-#
-
-if(MSVC)
-	target_compile_options(${PROJECT_NAME} PRIVATE /W4)
-	target_compile_options(${PROJECT_NAME} PRIVATE /D_CRT_SECURE_NO_WARNINGS)
-	target_compile_options(${PROJECT_NAME} PRIVATE /wd4251)
-	target_compile_options(${PROJECT_NAME} PRIVATE /nologo)
-endif()
-
-if(BORLAND)
-  set(CMAKE_CXX_FLAGS "" CACHE STRING "Compiler Flags for All Builds" FORCE)
-  set(CMAKE_CXX_FLAGS_DEBUG "" CACHE STRING "Compiler Flags for Debug Builds" FORCE)
-  set(CMAKE_CXX_FLAGS_RELEASE  "" CACHE STRING "Compiler Flags for Release Builds" FORCE)
-endif()
-
-#message (STATUS "SYSTEM: ${CMAKE_SYSTEM_NAME}")
-if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
-	target_compile_options(${PROJECT_NAME} PRIVATE -stdlib=libc++)
-	set(CMAKE_COMPILER_IS_GNUCXX 1)
-endif()
-
-if(UNIX)
-	if(CMAKE_COMPILER_IS_GNUCXX)
-	  target_compile_options(${PROJECT_NAME} PRIVATE -std=c++11 -std=gnu++11 -Wall -O3)
-	  target_compile_options(${PROJECT_NAME} PRIVATE $<$<CONFIG:Debug>:-O0 -pedantic -g>)
-	else()
-	  target_compile_options(${PROJECT_NAME} PRIVATE -std=c++11 -std=gnu++11 -Wall -O3 -fPIC)
-	  target_compile_options(${PROJECT_NAME} PRIVATE $<$<CONFIG:Debug>:-O0 -pedantic -g>)
-	endif()
-endif()
-
-#
-# Linker Settings
-#
+CeleroSetDefaultCompilerOptions()
 
 target_link_libraries(${PROJECT_NAME} ${SYSLIBS})
 
@@ -211,89 +206,25 @@ install(TARGETS ${PROJECT_NAME}
   LIBRARY DESTINATION ${CMAKE_INSTALL_PREFIX}/lib
   ARCHIVE DESTINATION ${CMAKE_INSTALL_PREFIX}/lib/static
 )
+
 install(DIRECTORY include DESTINATION ${CMAKE_INSTALL_PREFIX})
 
 # export to be used from install location
 install(EXPORT ${PROJECT_NAME}-target
   DESTINATION ${CMAKE_INSTALL_PREFIX}/share
 )
+
 # export to be used from build directory
 export(EXPORT ${PROJECT_NAME}-target
   FILE ${PROJECT_NAME}-target.cmake
 )
 
-# ---------------------------------------------------------------------------
-# Google Test Application
-# ---------------------------------------------------------------------------
-
-if(CELERO_ENABLE_TESTS)
-	set(gtest_repository "https://github.com/google/googletest.git" CACHE STRING "")
-	configure_file(CMakeLists.txt.in googletest-download/CMakeLists.txt)
-	execute_process(COMMAND ${CMAKE_COMMAND} -G "${CMAKE_GENERATOR}" .
-		RESULT_VARIABLE result
-		WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/googletest-download )
-	if(result)
-		message(FATAL_ERROR "CMake step for googletest failed: ${result}")
-	endif()
-	
-	execute_process(COMMAND ${CMAKE_COMMAND} --build .
-		RESULT_VARIABLE result
-		WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/googletest-download )
-	
-	if(result)
-		message(FATAL_ERROR "Build step for googletest failed: ${result}")
-	endif()
-
-	# Prevent overriding the parent project's compiler/linker
-	# settings on Windows
-	set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
-
-	# Add googletest directly to our build. This defines
-	# the gtest and gtest_main targets.
-	add_subdirectory(${CMAKE_CURRENT_BINARY_DIR}/googletest-src
-	                 ${CMAKE_CURRENT_BINARY_DIR}/googletest-build
-	                 EXCLUDE_FROM_ALL)
-
-	# The gtest/gtest_main targets carry header search path
-	# dependencies automatically when using CMake 2.8.11 or
-	# later. Otherwise we have to add them here ourselves.
-	if (CMAKE_VERSION VERSION_LESS 2.8.11)
-		include_directories("${gtest_SOURCE_DIR}/include")
-	endif()
-
-	set(PROJECT_NAME CeleroTest)
-
-	add_executable(${PROJECT_NAME}
-		test/celero/Benchmark.test.cpp
-		test/celero/Memory.test.cpp
-		test/celero/Utilities.test.cpp
-		)
-	
-	target_link_libraries(${PROJECT_NAME} gtest gtest_main celero)
-
-	add_test(NAME ${PROJECT_NAME} COMMAND ${PROJECT_NAME})
-
-	# VS2012 doesn't support true variadic templates
-	if(MSVC)
-		add_definitions( /D _VARIADIC_MAX=10 )
-	endif()
-
-	if(CELERO_ENABLE_AUTO_RUN_TESTS)
-		add_test(${PROJECT_NAME} ${PROJECT_NAME})
-		add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD COMMAND $<TARGET_FILE:${PROJECT_NAME}>)
-	endif()
-
-	if(CELERO_ENABLE_FOLDERS)
-		set_property(TARGET ${PROJECT_NAME} PROPERTY FOLDER "Celero/Test")
-	endif()
-endif()
-
-# ---------------------------------------------------------------------------
-# Optional
-# ---------------------------------------------------------------------------
-
 if(CELERO_ENABLE_FOLDERS)
-	set_property(TARGET celero PROPERTY FOLDER "Celero")
+	set_property(TARGET celero PROPERTY FOLDER "celero")
 endif()
 
 add_subdirectory(experiments)
+
+if(CELERO_ENABLE_TESTS)
+	add_subdirectory(test)
+endif()	

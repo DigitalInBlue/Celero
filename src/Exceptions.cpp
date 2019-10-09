@@ -115,7 +115,7 @@ namespace celero
 		return EXCEPTION_CONTINUE_SEARCH;
 	}
 
-	const char* const ExceptionCodeToStr(DWORD exceptionCode)
+	const char* ExceptionCodeToStr(DWORD exceptionCode)
 	{
 		switch(exceptionCode)
 		{

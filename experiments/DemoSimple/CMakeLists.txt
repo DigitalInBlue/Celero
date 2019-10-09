@@ -1,7 +1,7 @@
 #
 # Standard Celero Experiment CMake File
 #
-# Copyright 2015, 2016, 2017, 2018 John Farrier 
+# Copyright 2015, 2016, 2017, 2018, 2019 John Farrier 
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -16,66 +16,37 @@
 # limitations under the License.
 #
 
-#
-# CMake Configuration
-#
-
-CMAKE_MINIMUM_REQUIRED(VERSION 2.8)
+SET(PROJECT_NAME CeleroDemo-Simple)
 
 #
-# Set the experiment's name here.  Start it with a capital letter use camel case naming.
+# Add Header Files
 #
-SET(PROJECT_NAME Simple)
+set(TARGET_H
+)
 
-# Broiler Plate: Set up a CMake option.
-option(CELERODemo_${PROJECT_NAME} "Set to ON to build ${PROJECT_NAME}." ON)
-    
-# Broiler Plate: Test the CMake option.
-if(CELERODemo_${PROJECT_NAME})
-    #
-    # Add Header Files
-    #
-    set(TARGET_H
-    )
+#
+# Add Sources
+#
+set(TARGET_SRC
+    DemoSimple.cpp
+)
 
-    #
-    # Add Sources
-    #
-    set(TARGET_SRC
-        DemoSimple.cpp
-    )
-
-    # Broiler Plate: Assign the src and headers to the executable.
-    add_executable(${PROJECT_NAME} 
-        ${TARGET_SRC}
-        ${TARGET_H}
-    )
+# Broiler Plate: Assign the src and headers to the executable.
+add_executable(${PROJECT_NAME} 
+    ${TARGET_SRC}
+    ${TARGET_H}
+)
     
-    # Broiler Plate: Celero Project Dependencies
-    add_dependencies(${PROJECT_NAME} celero)
-    target_link_libraries(${PROJECT_NAME} celero)
+# Broiler Plate: Celero Project Dependencies
+add_dependencies(${PROJECT_NAME} celero)
+target_link_libraries(${PROJECT_NAME} celero)
     
-    # Broiler Plate: VS2012 doesn't support true variadic templates
-    if(MSVC) 
-		# Broiler Plate: VS2012 doesn't support true variadic templates
-		target_compile_definitions(${PROJECT_NAME} PRIVATE /D_VARIADIC_MAX=10 )
-		target_compile_options(${PROJECT_NAME} PRIVATE /W4)
-		target_compile_options(${PROJECT_NAME} PRIVATE /D_CRT_SECURE_NO_WARNINGS)
-		target_compile_options(${PROJECT_NAME} PRIVATE /wd4251)
-		target_compile_options(${PROJECT_NAME} PRIVATE /nologo)
-	endif()
+CeleroSetDefaultCompilerOptions()
+       
+# Broiler Plate: Add Celer's include directories.
+include_directories(${HEADER_PATH})
     
-    # Broiler Plate: Add Celer's include directories.
-    include_directories(${HEADER_PATH})
-    
-    # Broiler Plate: Show here how to automate running after a build (comment in if desired)
-    # if(CELERO_RUN_EXAMPLE_ON_BUILD)
-    #	add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD COMMAND $<TARGET_FILE:${PROJECT_NAME}>)
-    # endif()
-    
-    # Broiler Plate: Set up folders for an IDE.
-    if(CELERO_ENABLE_FOLDERS)
-        set_property(TARGET ${PROJECT_NAME} PROPERTY FOLDER "Celero/Experiments")
-    endif()
-    
+# Broiler Plate: Set up folders for an IDE.
+if(CELERO_ENABLE_FOLDERS)
+    set_property(TARGET ${PROJECT_NAME} PROPERTY FOLDER "celero/demo")
 endif()
