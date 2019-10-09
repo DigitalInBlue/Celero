@@ -4,7 +4,11 @@
 # Originally pulled from https://gist.githubusercontent.com/Kimundi/10d299e905941e82bee4969acc7b64a8/raw/a354ad14ba0da0f05d4ce07e06d92b8ed18fa8f5/c++%2520example%2520travis.yml
 
 language: c++
+
 sudo: false
+
+git:
+    submodules: true
 
 # Do not build branches of the form "pr/*". By prefixing pull requests coming
 # from branches inside the repository with pr/, this avoids building both the
@@ -32,6 +36,7 @@ cache:
     - ${TRAVIS_BUILD_DIR}/deps/llvm-3.9.0
     - ${TRAVIS_BUILD_DIR}/deps/llvm-5.0.1
     - ${TRAVIS_BUILD_DIR}/deps/llvm-7.0.0
+    - ${TRAVIS_BUILD_DIR}/deps/llvm-8.0.0
 
 matrix:
   exclude:
@@ -56,6 +61,11 @@ matrix:
       compiler: clang
 
     # Clang 7.0.0
+    - os: linux
+      env: LLVM_VERSION=7.0.0 CMAKE_OPTIONS="-DCELERO_ENABLE_TESTS=1"
+      compiler: clang
+
+    # Clang 8.0.0
     - os: linux
       env: LLVM_VERSION=7.0.0 CMAKE_OPTIONS="-DCELERO_ENABLE_TESTS=1"
       compiler: clang
@@ -153,7 +163,6 @@ before_script:
   ############################################################################
   - cd ${TRAVIS_BUILD_DIR}
   - (mkdir build && cd build && cmake .. ${CMAKE_OPTIONS})
-
 
 script:
   ############################################################################
