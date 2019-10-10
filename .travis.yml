@@ -87,8 +87,8 @@ matrix:
 
      # GCC 8
     - os: linux
-      name: Complete
-      env: COMPILER=g++-8 CMAKE_OPTIONS="-DCELERO_ENABLE_TESTS=1 -DCELERO_ENABLE_EXPERIMENTS"
+      name: Complete Build
+      env: COMPILER=g++-8 CMAKE_OPTIONS="-DCELERO_ENABLE_TESTS=1 -DCELERO_ENABLE_EXPERIMENTS=1"
       compiler: gcc
 
     ##########################################################################
@@ -96,6 +96,7 @@ matrix:
     ##########################################################################
     # With debug mode
     - os: linux
+      name: Debug Build
       env: LLVM_VERSION=default CMAKE_OPTIONS="-DCELERO_ENABLE_TESTS=1 -DCMAKE_BUILD_TYPE=DEBUG"
       compiler: clang
 
@@ -183,9 +184,5 @@ script:
   - make
 
 after_success:
-  - ls -alt ${TRAVIS_BUILD_DIR}/deps/
-  - ls
-  - cd bin
   - ls
   - ./celero-test
-

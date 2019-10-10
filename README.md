@@ -31,9 +31,12 @@ Celero has been successfully built on the following platforms during development
 -   LLVM v3.9.0
 -   LLVM v5.0.1
 -   LLVM v7.0.0
+-   LLVM v8.0.0
 -   Visual Studio 2017
 -   Visual Studio 2019
 -   XCode v10.1
+-   XCode v10.3
+-   XCode v11.0
 
 #### Quality Control
 
