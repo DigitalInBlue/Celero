@@ -85,6 +85,12 @@ matrix:
       env: COMPILER=g++-8 CMAKE_OPTIONS="-DCELERO_ENABLE_TESTS=1"
       compiler: gcc
 
+     # GCC 8
+    - os: linux
+      name: Complete
+      env: COMPILER=g++-8 CMAKE_OPTIONS="-DCELERO_ENABLE_TESTS=1 -DCELERO_ENABLE_EXPERIMENTS"
+      compiler: gcc
+
     ##########################################################################
     # Build with variations in the configuration
     ##########################################################################
