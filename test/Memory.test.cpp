@@ -172,14 +172,14 @@ TEST(memory, ForceAllocateVirtual)
 	EXPECT_GT(ramAvailablePhysical, 0);
 
 	const auto ramAvailableVirtual = celero::GetRAMVirtualAvailable();
-	EXPECT_GT(ramAvailableVirtual, 0);
+	EXPECT_GE(ramAvailableVirtual, 0);
 
 	const auto allocAmmountPhysical = ramAvailablePhysical;
 	const auto allocAmmountVirtual = static_cast<decltype(allocAmmountPhysical)>(static_cast<double>(ramAvailableVirtual) * 0.01);
 	const auto allocAmmount = allocAmmountPhysical + allocAmmountVirtual;
 
-	EXPECT_GT(ramAvailableTotal, allocAmmount);
-	EXPECT_GT(allocAmmount, ramAvailablePhysical);
+	EXPECT_GE(ramAvailableTotal, allocAmmount);
+	EXPECT_GE(allocAmmount, ramAvailablePhysical);
 
 	if(std::chrono::system_clock::now() == std::chrono::time_point<std::chrono::system_clock>())
 	{
