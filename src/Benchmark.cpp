@@ -104,8 +104,12 @@ void Benchmark::addExperiment(std::shared_ptr<Experiment> x)
 
 std::shared_ptr<Experiment> Benchmark::getExperiment(size_t x)
 {
-	// This is unsafe, but not user code.  I'll accept the risk.
-	return this->pimpl->experiments[x];
+	if(x < this->pimpl->experiments.size())
+	{
+		return this->pimpl->experiments[x];
+	}
+
+	return nullptr;
 }
 
 std::shared_ptr<Experiment> Benchmark::getExperiment(const std::string& x)

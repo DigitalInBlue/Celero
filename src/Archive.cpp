@@ -35,24 +35,24 @@ using namespace celero;
 ///
 struct ArchiveEntry
 {
-	ArchiveEntry() :
-		GroupName(),
-		RunName(),
-		ExperimentValue(0),
-		ExperimentValueScale(0),
-		FirstRanDate(0),
-		TotalSamplesCollected(0),
-		AverageBaseline(0),
-		MinBaseline(0),
-		MinBaseline_TimeSinceEpoch(0),
-		MinStats(),
-		MaxBaseline(0),
-		MaxBaseline_TimeSinceEpoch(0),
-		MaxStats(),
-		CurrentBaseline(0),
-		CurrentBaseline_TimeSinceEpoch(0),
-		CurrentStats(),
-		Failure(false)
+	ArchiveEntry()
+		: GroupName(),
+		  RunName(),
+		  ExperimentValue(0),
+		  ExperimentValueScale(0),
+		  FirstRanDate(0),
+		  TotalSamplesCollected(0),
+		  AverageBaseline(0),
+		  MinBaseline(0),
+		  MinBaseline_TimeSinceEpoch(0),
+		  MinStats(),
+		  MaxBaseline(0),
+		  MaxBaseline_TimeSinceEpoch(0),
+		  MaxStats(),
+		  CurrentBaseline(0),
+		  CurrentBaseline_TimeSinceEpoch(0),
+		  CurrentStats(),
+		  Failure(false)
 	{
 	}
 
@@ -280,13 +280,20 @@ Archive& Archive::Instance()
 
 void Archive::setFileName(const std::string& x)
 {
-	assert(x.empty() == false);
-	this->pimpl->fileName = x;
-	this->pimpl->readExistingResults();
+	if(x.empty() == false)
+	{
+		this->pimpl->fileName = x;
+		this->pimpl->readExistingResults();
+	}
 }
 
 void Archive::add(std::shared_ptr<celero::ExperimentResult> x)
 {
+	if(x == nullptr)
+	{
+		return;
+	}
+
 	const auto found = std::find_if(std::begin(this->pimpl->results), std::end(this->pimpl->results), [x](const ArchiveEntry& r) -> bool {
 		return (r.GroupName == x->getExperiment()->getBenchmark()->getName()) && (r.RunName == x->getExperiment()->getName())
 			   && (r.ExperimentValue == x->getProblemSpaceValue());
@@ -334,28 +341,33 @@ void Archive::add(std::shared_ptr<celero::ExperimentResult> x)
 	{
 		ArchiveEntry r;
 
-		r.GroupName = x->getExperiment()->getBenchmark()->getName();
-		r.RunName = x->getExperiment()->getName();
-		r.Failure = x->getFailure();
-		r.FirstRanDate = this->pimpl->now();
-		r.AverageBaseline = x->getBaselineMeasurement();
-		r.ExperimentValue = x->getProblemSpaceValue();
-		r.ExperimentValueScale = x->getProblemSpaceValueScale();
-		r.TotalSamplesCollected = x->getFailure() ? 0 : 1;
+		const auto experiment = x->getExperiment();
 
-		r.CurrentBaseline = x->getBaselineMeasurement();
-		r.CurrentBaseline_TimeSinceEpoch = r.FirstRanDate;
-		r.CurrentStats = *x->getTimeStatistics();
+		if(experiment != nullptr)
+		{
+			r.GroupName = experiment->getBenchmark()->getName();
+			r.RunName = experiment->getName();
+			r.Failure = x->getFailure();
+			r.FirstRanDate = this->pimpl->now();
+			r.AverageBaseline = x->getBaselineMeasurement();
+			r.ExperimentValue = x->getProblemSpaceValue();
+			r.ExperimentValueScale = x->getProblemSpaceValueScale();
+			r.TotalSamplesCollected = x->getFailure() ? 0 : 1;
 
-		r.MaxBaseline = x->getBaselineMeasurement();
-		r.MaxBaseline_TimeSinceEpoch = r.FirstRanDate;
-		r.MaxStats = *x->getTimeStatistics();
+			r.CurrentBaseline = x->getBaselineMeasurement();
+			r.CurrentBaseline_TimeSinceEpoch = r.FirstRanDate;
+			r.CurrentStats = *x->getTimeStatistics();
 
-		r.MinBaseline = x->getBaselineMeasurement();
-		r.MinBaseline_TimeSinceEpoch = r.FirstRanDate;
-		r.MinStats = *x->getTimeStatistics();
+			r.MaxBaseline = x->getBaselineMeasurement();
+			r.MaxBaseline_TimeSinceEpoch = r.FirstRanDate;
+			r.MaxStats = *x->getTimeStatistics();
 
-		this->pimpl->results.push_back(r);
+			r.MinBaseline = x->getBaselineMeasurement();
+			r.MinBaseline_TimeSinceEpoch = r.FirstRanDate;
+			r.MinStats = *x->getTimeStatistics();
+
+			this->pimpl->results.push_back(r);
+		}
 	}
 
 	this->save();

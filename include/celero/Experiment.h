@@ -39,12 +39,13 @@ namespace celero
 		///
 		///
 		///
-		explicit Experiment(std::weak_ptr<Benchmark> benchmark);
+		explicit Experiment(std::weak_ptr<celero::Benchmark> benchmark);
 
 		///
 		///
 		///
-		explicit Experiment(std::weak_ptr<Benchmark> benchmark, const std::string& name, uint64_t samples, uint64_t iterations, uint64_t threads,
+		explicit Experiment(std::weak_ptr<celero::Benchmark> benchmark, const std::string& name, uint64_t samples, uint64_t iterations,
+							uint64_t threads,
 							double baselineTarget);
 
 		///
@@ -55,7 +56,7 @@ namespace celero
 		///
 		/// Gets a pointer to the owning Benchmark object.
 		///
-		std::shared_ptr<Benchmark> getBenchmark();
+		std::shared_ptr<celero::Benchmark> getBenchmark();
 
 		///
 		///
@@ -140,12 +141,12 @@ namespace celero
 		///
 		/// Sets the factory used to create this experiment's test fixtures.
 		///
-		void setFactory(std::shared_ptr<Factory> x);
+		void setFactory(std::shared_ptr<celero::Factory> x);
 
 		///
 		/// Gets the factory used to create this experiment's test fixtures.
 		///
-		std::shared_ptr<Factory> getFactory() const;
+		std::shared_ptr<celero::Factory> getFactory() const;
 
 		///
 		/// \param x	Can be interpreted in any way be the test fixture (i.e. index into an array, etc.)
@@ -178,7 +179,7 @@ namespace celero
 		///
 		/// Hide the copy constructor
 		///
-		explicit Experiment(const Experiment&);
+		explicit Experiment(const celero::Experiment&);
 
 		///
 		///

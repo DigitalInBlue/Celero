@@ -27,7 +27,7 @@ void PrintTop()
 			  << celero::GetRAMSystemUsedByCurrentProcess() << "\n";
 }
 
-TEST(memory, Report)
+TEST(Memory, Report)
 {
 	EXPECT_NE(int64_t(0), celero::GetRAMSystemTotal());
 	EXPECT_NE(int64_t(0), celero::GetRAMSystemAvailable());
@@ -39,7 +39,7 @@ TEST(memory, Report)
 	EXPECT_NE(int64_t(0), celero::GetRAMPhysicalUsedByCurrentProcess());
 }
 
-TEST(memory, AllocSystem)
+TEST(Memory, AllocSystem)
 {
 	const auto startTotal = celero::GetRAMSystemTotal();
 	EXPECT_GT(celero::GetRAMSystemTotal(), int64_t(1024));
@@ -78,7 +78,7 @@ TEST(memory, AllocSystem)
 	}
 }
 
-TEST(memory, AllocPhysical)
+TEST(Memory, AllocPhysical)
 {
 	const auto startTotal = celero::GetRAMPhysicalTotal();
 	EXPECT_GT(celero::GetRAMSystemTotal(), int64_t(1024));
@@ -115,7 +115,7 @@ TEST(memory, AllocPhysical)
 	}
 }
 
-TEST(memory, AllocAll)
+TEST(Memory, AllocAll)
 {
 	const auto startCurrentProcess = celero::GetRAMSystemUsedByCurrentProcess() + celero::GetRAMVirtualUsedByCurrentProcess();
 
@@ -133,7 +133,7 @@ TEST(memory, AllocAll)
 	}
 }
 
-TEST(memory, AllocPeak)
+TEST(Memory, AllocPeak)
 {
 	const auto startPeak = celero::GetRAMPhysicalUsedByCurrentProcessPeak();
 	const auto startCurrentProcess = celero::GetRAMSystemUsedByCurrentProcess() + celero::GetRAMVirtualUsedByCurrentProcess();
@@ -157,7 +157,7 @@ TEST(memory, AllocPeak)
 	EXPECT_LE(startPeak, celero::GetRAMPhysicalUsedByCurrentProcessPeak());
 }
 
-TEST(memory, ForceAllocateVirtual)
+TEST(Memory, ForceAllocateVirtual)
 {
 	const auto ramAvailableTotal = celero::GetRAMSystemAvailable();
 	EXPECT_GT(ramAvailableTotal, 0);
