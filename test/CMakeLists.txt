@@ -27,6 +27,7 @@ target_sources(${PROJECT_NAME} PRIVATE
 	Archive.test.cpp
 	Benchmark.test.cpp
 	Memory.test.cpp
+	TestFixture.test.cpp
 	TestVector.test.cpp
 	Timer.test.cpp
 	UserDefinedMeasurementCollector.test.cpp

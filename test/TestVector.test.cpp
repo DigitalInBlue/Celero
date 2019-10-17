@@ -21,6 +21,49 @@
 TEST(TestVector, push_back)
 {
 	auto& vector = celero::TestVector::Instance();
+	EXPECT_NO_THROW(vector.clear());
 	EXPECT_NO_THROW(vector.push_back(std::make_shared<celero::Benchmark>()));
 	EXPECT_EQ(vector.size(), size_t{1});
+}
+
+TEST(TestVector, operator_index)
+{
+	auto& vector = celero::TestVector::Instance();
+	EXPECT_NO_THROW(vector.clear());
+
+	auto benchmark = std::make_shared<celero::Benchmark>();
+	EXPECT_NO_THROW(vector.push_back(benchmark));
+	EXPECT_TRUE(vector[0] == benchmark);
+
+	benchmark = std::make_shared<celero::Benchmark>();
+	EXPECT_NO_THROW(vector.push_back(benchmark));
+	EXPECT_TRUE(vector[1] == benchmark);
+
+	benchmark = std::make_shared<celero::Benchmark>();
+	EXPECT_NO_THROW(vector.push_back(benchmark));
+	EXPECT_TRUE(vector[2] == benchmark);
+
+	EXPECT_EQ(vector.size(), size_t{3});
+}
+
+TEST(TestVector, operator_name)
+{
+	auto& vector = celero::TestVector::Instance();
+	EXPECT_NO_THROW(vector.clear());
+
+	auto benchmark = std::make_shared<celero::Benchmark>("0");
+	EXPECT_NO_THROW(vector.push_back(benchmark));
+	EXPECT_TRUE(vector["0"] == benchmark);
+
+	benchmark = std::make_shared<celero::Benchmark>("1");
+	EXPECT_NO_THROW(vector.push_back(benchmark));
+	EXPECT_TRUE(vector["1"] == benchmark);
+
+	benchmark = std::make_shared<celero::Benchmark>("2");
+	EXPECT_NO_THROW(vector.push_back(benchmark));
+	EXPECT_TRUE(vector["2"] == benchmark);
+
+	EXPECT_TRUE(vector["badname"] == nullptr);
+
+	EXPECT_EQ(vector.size(), size_t{3});
 }
