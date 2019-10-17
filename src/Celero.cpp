@@ -43,52 +43,62 @@ std::shared_ptr<celero::Benchmark> celero::RegisterTest(const char* groupName, c
 														const uint64_t iterations, const uint64_t threads,
 														std::shared_ptr<celero::Factory> experimentFactory, const double target)
 {
-	auto bm = celero::TestVector::Instance()[groupName];
-
-	if(bm == nullptr)
+	if(groupName != nullptr && benchmarkName != nullptr)
 	{
-		bm = std::make_shared<Benchmark>(groupName);
-		celero::TestVector::Instance().push_back(bm);
+		auto bm = celero::TestVector::Instance()[groupName];
+
+		if(bm == nullptr)
+		{
+			bm = std::make_shared<Benchmark>(groupName);
+			celero::TestVector::Instance().push_back(bm);
+		}
+
+		auto p = std::make_shared<Experiment>(bm);
+		p->setIsBaselineCase(false);
+		p->setName(benchmarkName);
+		p->setSamples(samples);
+		p->setIterations(iterations);
+		p->setThreads(threads);
+		p->setFactory(experimentFactory);
+		p->setBaselineTarget(target);
+
+		bm->addExperiment(p);
+
+		return bm;
 	}
 
-	auto p = std::make_shared<Experiment>(bm);
-	p->setIsBaselineCase(false);
-	p->setName(benchmarkName);
-	p->setSamples(samples);
-	p->setIterations(iterations);
-	p->setThreads(threads);
-	p->setFactory(experimentFactory);
-	p->setBaselineTarget(target);
-
-	bm->addExperiment(p);
-
-	return bm;
+	return nullptr;
 }
 
 std::shared_ptr<celero::Benchmark> celero::RegisterBaseline(const char* groupName, const char* benchmarkName, const uint64_t samples,
 															const uint64_t iterations, const uint64_t threads,
 															std::shared_ptr<celero::Factory> experimentFactory)
 {
-	auto bm = celero::TestVector::Instance()[groupName];
-
-	if(bm == nullptr)
+	if(groupName != nullptr && benchmarkName != nullptr)
 	{
-		bm = std::make_shared<Benchmark>(groupName);
-		celero::TestVector::Instance().push_back(bm);
+		auto bm = celero::TestVector::Instance()[groupName];
+
+		if(bm == nullptr)
+		{
+			bm = std::make_shared<Benchmark>(groupName);
+			celero::TestVector::Instance().push_back(bm);
+		}
+
+		auto p = std::make_shared<Experiment>(bm);
+		p->setIsBaselineCase(true);
+		p->setName(benchmarkName);
+		p->setSamples(samples);
+		p->setIterations(iterations);
+		p->setThreads(threads);
+		p->setFactory(experimentFactory);
+		p->setBaselineTarget(1.0);
+
+		bm->setBaseline(p);
+
+		return bm;
 	}
 
-	auto p = std::make_shared<Experiment>(bm);
-	p->setIsBaselineCase(true);
-	p->setName(benchmarkName);
-	p->setSamples(samples);
-	p->setIterations(iterations);
-	p->setThreads(threads);
-	p->setFactory(experimentFactory);
-	p->setBaselineTarget(1.0);
-
-	bm->setBaseline(p);
-
-	return bm;
+	return nullptr;
 }
 
 void celero::Run(int argc, char** argv)

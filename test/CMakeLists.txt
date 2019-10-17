@@ -26,6 +26,8 @@ add_dependencies(${PROJECT_NAME} gtest gtest_main)
 target_sources(${PROJECT_NAME} PRIVATE
 	Archive.test.cpp
 	Benchmark.test.cpp
+	Callbacks.test.cpp
+	Celero.test.cpp
 	Memory.test.cpp
 	Utilities.test.cpp
 )
