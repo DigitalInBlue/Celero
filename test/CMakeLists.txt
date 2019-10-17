@@ -19,7 +19,7 @@
 
 project(celero-test)
 
-add_executable(${PROJECT_NAME})	
+add_executable(${PROJECT_NAME})
 
 add_dependencies(${PROJECT_NAME} gtest gtest_main)
 
@@ -29,6 +29,10 @@ target_sources(${PROJECT_NAME} PRIVATE
 	Callbacks.test.cpp
 	Celero.test.cpp
 	Memory.test.cpp
+	TestFixture.test.cpp
+	TestVector.test.cpp
+	Timer.test.cpp
+	UserDefinedMeasurementCollector.test.cpp
 	Utilities.test.cpp
 )
 
@@ -45,8 +49,8 @@ endif()
 
 CeleroSetDefaultCompilerOptions()
 
-target_link_libraries(${PROJECT_NAME} 
-	${SYSLIBS} 
+target_link_libraries(${PROJECT_NAME}
+	${SYSLIBS}
 	gtest
 	gtest_main
 	celero
@@ -59,7 +63,7 @@ target_include_directories(${PROJECT_NAME} PUBLIC
   ${CMAKE_SOURCE_DIR}/include
   ${GTEST_INCLUDE_DIR}
 )
-	
+
 if(CELERO_ENABLE_AUTO_RUN_TESTS)
 	add_test(${PROJECT_NAME} ${PROJECT_NAME})
 	add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD COMMAND $<TARGET_FILE:${PROJECT_NAME}>)

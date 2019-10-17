@@ -31,13 +31,16 @@ namespace celero
 	///
 	/// \author	John Farrier
 	///
-	class TestVector
+	class CELERO_EXPORT TestVector
 	{
 	public:
+		~TestVector();
+
 		static TestVector& Instance();
 
 		void push_back(std::shared_ptr<Benchmark> x);
 
+		void clear();
 		size_t size() const;
 
 		std::shared_ptr<Benchmark> operator[](size_t x);

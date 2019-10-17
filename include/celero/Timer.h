@@ -40,7 +40,7 @@ namespace celero
 		///
 		///	\return	The time, in ticks.
 		///
-		uint64_t GetSystemTime();
+		CELERO_EXPORT uint64_t GetSystemTime();
 
 		///
 		///	\brief	Converts the gathered system time into seconds.
@@ -63,7 +63,7 @@ namespace celero
 		///
 		/// \return  The number of microseconds of precision that we have.
 		///
-		double CachePerformanceFrequency(bool quiet);
+		CELERO_EXPORT double CachePerformanceFrequency(bool quiet);
 	} // namespace timer
 } // namespace celero
 

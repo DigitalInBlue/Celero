@@ -20,6 +20,7 @@
 ///
 
 #include <celero/UserDefinedMeasurement.h>
+#include <celero/TestFixture.h>
 #include <unordered_map>
 
 namespace celero
@@ -29,7 +30,7 @@ namespace celero
 	///
 	/// \author	Lukas Barth
 	///
-	class UserDefinedMeasurementCollector
+	class CELERO_EXPORT UserDefinedMeasurementCollector
 	{
 	public:
 		UserDefinedMeasurementCollector(std::shared_ptr<TestFixture> fixture);

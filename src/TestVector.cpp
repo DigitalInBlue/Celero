@@ -28,10 +28,14 @@ using namespace celero;
 ///
 /// \class Impl
 ///
-class celero::TestVector::Impl
+class TestVector::Impl
 {
 public:
 	Impl() : testVectorMutex(), testVector()
+	{
+	}
+
+	~Impl()
 	{
 	}
 
@@ -40,6 +44,10 @@ public:
 };
 
 TestVector::TestVector() : pimpl()
+{
+}
+
+TestVector::~TestVector()
 {
 }
 
@@ -53,6 +61,11 @@ void TestVector::push_back(std::shared_ptr<Benchmark> x)
 {
 	std::lock_guard<std::mutex> mutexLock(this->pimpl->testVectorMutex);
 	this->pimpl->testVector.push_back(x);
+}
+
+void TestVector::clear()
+{
+	this->pimpl->testVector.clear();
 }
 
 size_t TestVector::size() const

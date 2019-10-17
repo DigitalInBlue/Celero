@@ -16,11 +16,11 @@
 /// limitations under the License.
 ///
 
+#include <celero/Benchmark.h>
 #include <celero/Experiment.h>
 #include <celero/Factory.h>
 #include <celero/PimplImpl.h>
 #include <celero/TestFixture.h>
-#include <celero/TestVector.h>
 #include <celero/Utilities.h>
 
 #include <algorithm>
