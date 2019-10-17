@@ -29,7 +29,6 @@ target_sources(${PROJECT_NAME} PRIVATE
 	Callbacks.test.cpp
 	Celero.test.cpp
 	Memory.test.cpp
-	TestFixture.test.cpp
 	TestVector.test.cpp
 	Timer.test.cpp
 	UserDefinedMeasurementCollector.test.cpp
