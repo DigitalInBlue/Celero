@@ -31,7 +31,7 @@ namespace celero
 	///
 	/// \author	John Farrier
 	///
-	class TestVector
+	class CELERO_EXPORT TestVector
 	{
 	public:
 		static TestVector& Instance();

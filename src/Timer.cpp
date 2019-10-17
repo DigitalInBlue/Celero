@@ -32,7 +32,15 @@ uint64_t celero::timer::GetSystemTime()
 #ifdef WIN32
 	LARGE_INTEGER timeStorage;
 	QueryPerformanceCounter(&timeStorage);
-	return static_cast<uint64_t>(timeStorage.QuadPart * 1000000) / static_cast<uint64_t>(QPCFrequency.QuadPart);
+
+	uint64_t time{0};
+
+	if(QPCFrequency.QuadPart > 0)
+	{
+		time = static_cast<uint64_t>(timeStorage.QuadPart * 1000000) / static_cast<uint64_t>(QPCFrequency.QuadPart);
+	}
+
+	return time;
 #else
 	auto timePoint = std::chrono::high_resolution_clock::now();
 	return std::chrono::duration_cast<std::chrono::microseconds>(timePoint.time_since_epoch()).count();
