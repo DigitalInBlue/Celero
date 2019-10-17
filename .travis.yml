@@ -91,23 +91,24 @@ matrix:
       env: COMPILER=g++-8 CMAKE_OPTIONS="-DCELERO_ENABLE_TESTS=1 -DCELERO_ENABLE_EXPERIMENTS=1"
       compiler: gcc
 
+    ##########################################################################
+    # Build with variations in the configuration
+    ##########################################################################
     # With debug mode
     - os: linux
       name: Debug Build
       env: LLVM_VERSION=default CMAKE_OPTIONS="-DCELERO_ENABLE_TESTS=1 -DCMAKE_BUILD_TYPE=DEBUG"
       compiler: clang
 
-    - os: osx
-      osx_image: xcode10.1
+    # Temporarily broken within Travis.CI for CMake's update
+    # - os: osx
+    #  osx_image: xcode10.1
 
     - os: osx
       osx_image: xcode10.3
 
     - os: osx
       osx_image: xcode11
-
-    #- os: windows
-    #  language: cpp
 
 before_install:
   - git submodule update --init --recursive
@@ -133,8 +134,8 @@ install:
       CMAKE_URL="https://cmake.org/files/v3.15/cmake-3.15.4-Linux-x86_64.tar.gz"
       mkdir cmake && travis_retry wget --no-check-certificate --quiet -O - ${CMAKE_URL} | tar --strip-components=1 -xz -C cmake
       export PATH=${DEPS_DIR}/cmake/bin:${PATH}
-    else if [[ "${TRAVIS_OS_NAME}" == "osx" ]]; then
-#      brew upgrade cmake || brew install cmake
+    else
+      brew upgrade cmake || brew install cmake
     fi
   - cmake --version
 
