@@ -31,6 +31,8 @@ target_sources(${PROJECT_NAME} PRIVATE
 	Distribution.test.cpp
 	Executor.test.cpp
 	Memory.test.cpp
+	Statistics.test.cpp
+	TestFixture.test.cpp
 	TestVector.test.cpp
 	Timer.test.cpp
 	UserDefinedMeasurementCollector.test.cpp
