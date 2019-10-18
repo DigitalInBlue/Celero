@@ -179,6 +179,11 @@ void executor::RunAllExperiments()
 
 void executor::RunBaseline(std::shared_ptr<Benchmark> bmark)
 {
+	if(bmark == nullptr)
+	{
+		return;
+	}
+
 	auto baselineExperiment = bmark->getBaseline();
 
 	if(baselineExperiment != nullptr)
@@ -246,6 +251,11 @@ void executor::RunBaseline(std::shared_ptr<Benchmark> bmark)
 
 void executor::RunExperiments(std::shared_ptr<Benchmark> bmark)
 {
+	if(bmark == nullptr)
+	{
+		return;
+	}
+
 	const auto experimentSize = bmark->getExperimentSize();
 
 	for(size_t i = 0; i < experimentSize; i++)
@@ -259,6 +269,11 @@ void executor::RunExperiments(std::shared_ptr<Benchmark> bmark)
 
 void executor::Run(std::shared_ptr<Experiment> e)
 {
+	if(e == nullptr)
+	{
+		return;
+	}
+
 	auto bmark = e->getBenchmark();
 	auto baseline = bmark->getBaseline();
 
@@ -284,8 +299,24 @@ void executor::Run(std::shared_ptr<Experiment> e)
 
 	// Populate the problem space with a fake test fixture instantiation.
 	{
-		const auto testValues = e->getFactory()->Create()->getExperimentValues();
-		const auto valueResultScale = e->getFactory()->Create()->getExperimentValueResultScale();
+		auto factory = e->getFactory();
+
+		if(factory == nullptr)
+		{
+			return;
+		}
+
+		auto factoryCreate = factory->Create();
+
+		if(factoryCreate == nullptr)
+		{
+			return;
+		}
+
+		const auto testValues = factoryCreate->getExperimentValues();
+
+		factoryCreate = factory->Create();
+		const auto valueResultScale = factoryCreate->getExperimentValueResultScale();
 
 		for(auto i : testValues)
 		{

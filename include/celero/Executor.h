@@ -31,51 +31,51 @@ namespace celero
 		///
 		/// Run all baselines and experiments registered within the final application.
 		///
-		void RunAll();
+		CELERO_EXPORT void RunAll();
 
 		///
 		/// Run all baselines (but not experiments) registered within the final application.
 		///
-		void RunAllBaselines();
+		CELERO_EXPORT void RunAllBaselines();
 
 		///
 		/// Run a specific benchmark's baseline.
 		///
-		void RunBaseline(std::shared_ptr<Benchmark> x);
+		CELERO_EXPORT void RunBaseline(std::shared_ptr<Benchmark> x);
 
 		///
 		/// Run all experiments registered within the final application.
 		///
-		void RunAllExperiments();
+		CELERO_EXPORT void RunAllExperiments();
 
 		///
 		/// Run all experiments within a specific benchmark.
 		///
-		void RunExperiments(std::shared_ptr<Benchmark> x);
+		CELERO_EXPORT void RunExperiments(std::shared_ptr<Benchmark> x);
 
 		///
 		/// Run a specific benchmark.
 		///
-		void Run(std::shared_ptr<Benchmark> x);
+		CELERO_EXPORT void Run(std::shared_ptr<Benchmark> x);
 
 		///
 		/// Run a specific experiment.
 		///
 		/// If the baseline is not complete for the given experiment, it will be executed first.
 		///
-		void Run(std::shared_ptr<Experiment> x);
+		CELERO_EXPORT void Run(std::shared_ptr<Experiment> x);
 
 		///
 		/// Run a specific benchmark with the specified name.
 		///
-		void Run(const std::string& group);
+		CELERO_EXPORT void Run(const std::string& group);
 
 		///
 		/// Run a specific benchmark with the specified name and one specific experiment within it.
 		///
 		/// If the baseline is not complete for the given experiment, it will be executed first.
 		///
-		void Run(const std::string& group, const std::string& experiment);
+		CELERO_EXPORT void Run(const std::string& group, const std::string& experiment);
 	}
 }
 

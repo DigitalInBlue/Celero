@@ -28,6 +28,8 @@ target_sources(${PROJECT_NAME} PRIVATE
 	Benchmark.test.cpp
 	Callbacks.test.cpp
 	Celero.test.cpp
+	Distribution.test.cpp
+	Executor.test.cpp
 	Memory.test.cpp
 	TestVector.test.cpp
 	Timer.test.cpp
