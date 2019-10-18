@@ -59,9 +59,9 @@ namespace celero
 	///
 	/// \returns a pointer to a Benchmark instance representing the given test.
 	///
-	CELERO_EXPORT std::shared_ptr<Benchmark> RegisterTest(const char* groupName, const char* benchmarkName, const uint64_t samples,
+	CELERO_EXPORT std::shared_ptr<celero::Benchmark> RegisterTest(const char* groupName, const char* benchmarkName, const uint64_t samples,
 														  const uint64_t iterations, const uint64_t threads,
-														  std::shared_ptr<Factory> experimentFactory, const double target = -1);
+														  std::shared_ptr<celero::Factory> experimentFactory, const double target = -1);
 
 	///
 	/// \brief	Adds a new test baseline to the list of test baseliness to be executed.

@@ -173,7 +173,7 @@ pip-log.txt
 *.jpg
 *.png
 *.xcf
-[Bb]uild
+[Bb]uild/
 
 #############
 ## CMake
@@ -182,6 +182,7 @@ CMakeCache.txt
 CMakeFiles/
 Makefile
 cmake_install.cmake
+.vs/
 
 #############
 # PRODUCTS

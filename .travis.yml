@@ -1,10 +1,14 @@
-# Copyright Louis Dionne 2013-2017
-# Distributed under the Boost Software License, Version 1.0.
-# (See accompanying file LICENSE.md or copy at http://boost.org/LICENSE_1_0.txt)
 # Originally pulled from https://gist.githubusercontent.com/Kimundi/10d299e905941e82bee4969acc7b64a8/raw/a354ad14ba0da0f05d4ce07e06d92b8ed18fa8f5/c++%2520example%2520travis.yml
 
+# Reference Sites
+# https://riptutorial.com/cmake/example/4723/configure-travis-ci-with-newest-cmake
+
 language: c++
+
 sudo: false
+
+git:
+    submodules: true
 
 # Do not build branches of the form "pr/*". By prefixing pull requests coming
 # from branches inside the repository with pr/, this avoids building both the
@@ -32,6 +36,7 @@ cache:
     - ${TRAVIS_BUILD_DIR}/deps/llvm-3.9.0
     - ${TRAVIS_BUILD_DIR}/deps/llvm-5.0.1
     - ${TRAVIS_BUILD_DIR}/deps/llvm-7.0.0
+    - ${TRAVIS_BUILD_DIR}/deps/llvm-8.0.0
 
 matrix:
   exclude:
@@ -47,32 +52,43 @@ matrix:
 
     # Clang 3.9
     - os: linux
-      env: LLVM_VERSION=3.9.0
+      env: LLVM_VERSION=3.9.0 CMAKE_OPTIONS="-DCELERO_ENABLE_TESTS=1"
       compiler: clang
 
     # Clang 5.0.1
     - os: linux
-      env: LLVM_VERSION=5.0.1
+      env: LLVM_VERSION=5.0.1 CMAKE_OPTIONS="-DCELERO_ENABLE_TESTS=1"
       compiler: clang
 
     # Clang 7.0.0
     - os: linux
-      env: LLVM_VERSION=7.0.0
+      env: LLVM_VERSION=7.0.0 CMAKE_OPTIONS="-DCELERO_ENABLE_TESTS=1"
+      compiler: clang
+
+    # Clang 8.0.0
+    - os: linux
+      env: LLVM_VERSION=7.0.0 CMAKE_OPTIONS="-DCELERO_ENABLE_TESTS=1"
       compiler: clang
 
     # GCC 6
     - os: linux
-      env: COMPILER=g++-6
+      env: COMPILER=g++-6 CMAKE_OPTIONS="-DCELERO_ENABLE_TESTS=1"
       compiler: gcc
 
     # GCC 7
     - os: linux
-      env: COMPILER=g++-7
+      env: COMPILER=g++-7 CMAKE_OPTIONS="-DCELERO_ENABLE_TESTS=1"
       compiler: gcc
 
     # GCC 8
     - os: linux
-      env: COMPILER=g++-8
+      env: COMPILER=g++-8 CMAKE_OPTIONS="-DCELERO_ENABLE_TESTS=1"
+      compiler: gcc
+
+     # GCC 8
+    - os: linux
+      name: Complete Build
+      env: COMPILER=g++-8 CMAKE_OPTIONS="-DCELERO_ENABLE_TESTS=1 -DCELERO_ENABLE_EXPERIMENTS=1"
       compiler: gcc
 
     ##########################################################################
@@ -80,11 +96,22 @@ matrix:
     ##########################################################################
     # With debug mode
     - os: linux
-      env: LLVM_VERSION=default CMAKE_OPTIONS="-DCMAKE_BUILD_TYPE=DEBUG"
+      name: Debug Build
+      env: LLVM_VERSION=default CMAKE_OPTIONS="-DCELERO_ENABLE_TESTS=1 -DCMAKE_BUILD_TYPE=DEBUG"
       compiler: clang
 
+    # Temporarily broken within Travis.CI for CMake's update
+    # - os: osx
+    #  osx_image: xcode10.1
+
     - os: osx
-      osx_image: xcode10.1
+      osx_image: xcode10.3
+
+    - os: osx
+      osx_image: xcode11
+
+before_install:
+  - git submodule update --init --recursive
 
 install:
   ############################################################################
@@ -104,7 +131,7 @@ install:
   ############################################################################
   - |
     if [[ "${TRAVIS_OS_NAME}" == "linux" ]]; then
-      CMAKE_URL="https://cmake.org/files/v3.10/cmake-3.10.2-Linux-x86_64.tar.gz"
+      CMAKE_URL="https://cmake.org/files/v3.15/cmake-3.15.4-Linux-x86_64.tar.gz"
       mkdir cmake && travis_retry wget --no-check-certificate --quiet -O - ${CMAKE_URL} | tar --strip-components=1 -xz -C cmake
       export PATH=${DEPS_DIR}/cmake/bin:${PATH}
     else
@@ -145,9 +172,9 @@ before_script:
   ############################################################################
   # Go back to the root of the project and setup the build directory
   ############################################################################
+  - ls -alt ${TRAVIS_BUILD_DIR}/deps/
   - cd ${TRAVIS_BUILD_DIR}
   - (mkdir build && cd build && cmake .. ${CMAKE_OPTIONS})
-
 
 script:
   ############################################################################
@@ -156,3 +183,7 @@ script:
   - cd ${TRAVIS_BUILD_DIR}
   - cd build
   - make
+
+after_success:
+  - ls
+  - ./celero-test

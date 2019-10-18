@@ -61,10 +61,15 @@ void celero::RunDistribution(uint64_t intArgument)
 	std::vector<double> series3Normalized(intArgument);
 	std::vector<double> series4Normalized(intArgument);
 
-	auto series1 = celero::BuildDistribution(intArgument, uint64_t(64));
-	auto series2 = celero::BuildDistribution(intArgument, uint64_t(256));
-	auto series3 = celero::BuildDistribution(intArgument, uint64_t(1024));
-	auto series4 = celero::BuildDistribution(intArgument, uint64_t(4096));
+	const auto series1 = celero::BuildDistribution(intArgument, uint64_t(64));
+	const auto series2 = celero::BuildDistribution(intArgument, uint64_t(256));
+	const auto series3 = celero::BuildDistribution(intArgument, uint64_t(1024));
+	const auto series4 = celero::BuildDistribution(intArgument, uint64_t(4096));
+
+	if(series1.empty() == true || series2.empty() == true || series3.empty() == true || series4.empty() == true)
+	{
+		return;
+	}
 
 	std::array<std::map<double, uint64_t>, 4> histograms;
 

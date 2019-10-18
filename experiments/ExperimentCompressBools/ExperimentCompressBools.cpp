@@ -8,6 +8,7 @@
 
 #include <emmintrin.h>
 #include <omp.h>
+#include <array>
 #include <bitset>
 #include <iostream>
 #include <random>
@@ -292,15 +293,8 @@ struct bool8
 	{
 	}
 
-	bool8(bool v0, bool v1, bool v2, bool v3, bool v4, bool v5, bool v6, bool v7) :
-		val0(v0),
-		val1(v1),
-		val2(v2),
-		val3(v3),
-		val4(v4),
-		val5(v5),
-		val6(v6),
-		val7(v7)
+	bool8(bool v0, bool v1, bool v2, bool v3, bool v4, bool v5, bool v6, bool v7)
+		: val0(v0), val1(v1), val2(v2), val3(v3), val4(v4), val5(v5), val6(v6), val7(v7)
 	{
 	}
 
@@ -362,8 +356,8 @@ public:
 		return (*(outputValues.get() + bytePos)).val7;
 	}
 
-	unsigned int numBytes;
-	unsigned int numFullBytes;
+	unsigned int numBytes{0};
+	unsigned int numFullBytes{0};
 	std::unique_ptr<bool8[]> outputValues;
 };
 
@@ -502,15 +496,14 @@ public:
 		}
 	}
 
-	unsigned int numBytes;
-	unsigned int numFullBytes;
+	unsigned int numBytes{0};
+	unsigned int numFullBytes{0};
 	uint8_t* alignedOutputValues{nullptr};
 	std::unique_ptr<int8_t[]> signedInputValues;
 };
 
 BENCHMARK_F(CompressBoolsTest, SimdVersion, SimdVersionFixture, SamplesCount, IterationsCount)
 {
-	uint16_t Bits[16] = {0};
 	const size_t lenDiv16y16 = (arrayLength / 16) * 16; // full packs of 16 values...
 
 	const __m128i sse127 = _mm_set1_epi8(127);
@@ -535,7 +528,8 @@ BENCHMARK_F(CompressBoolsTest, SimdVersion, SimdVersionFixture, SamplesCount, It
 	if(arrayLength & 15)
 	{
 		auto RestW = arrayLength & 15;
-		memset(Bits, 0, 16 * sizeof(uint16_t));
+
+		std::array<uint16_t, 16> Bits;
 
 		for(size_t i = 0; i < RestW; ++i)
 		{

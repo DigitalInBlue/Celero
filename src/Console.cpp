@@ -200,52 +200,52 @@ void celero::console::SetConsoleColor(const celero::console::ConsoleColor x)
 {
 	switch(x)
 	{
-		case ConsoleColor_Red:
+		case console::ConsoleColor::Red:
 			Red();
 			break;
-		case ConsoleColor_Red_Bold:
+		case console::ConsoleColor::Red_Bold:
 			RedBold();
 			break;
-		case ConsoleColor_Green:
+		case console::ConsoleColor::Green:
 			Green();
 			break;
-		case ConsoleColor_Green_Bold:
+		case console::ConsoleColor::Green_Bold:
 			GreenBold();
 			break;
-		case ConsoleColor_Blue:
+		case console::ConsoleColor::Blue:
 			Blue();
 			break;
-		case ConsoleColor_Blue_Bold:
+		case console::ConsoleColor::Blue_Bold:
 			BlueBold();
 			break;
-		case ConsoleColor_Cyan:
+		case console::ConsoleColor::Cyan:
 			Cyan();
 			break;
-		case ConsoleColor_Cyan_Bold:
+		case console::ConsoleColor::Cyan_Bold:
 			CyanBold();
 			break;
-		case ConsoleColor_Yellow:
+		case console::ConsoleColor::Yellow:
 			Yellow();
 			break;
-		case ConsoleColor_Yellow_Bold:
+		case console::ConsoleColor::Yellow_Bold:
 			YellowBold();
 			break;
-		case ConsoleColor_White:
+		case console::ConsoleColor::White:
 			White();
 			break;
-		case ConsoleColor_White_Bold:
+		case console::ConsoleColor::White_Bold:
 			WhiteBold();
 			break;
-		case ConsoleColor_WhiteOnRed:
+		case console::ConsoleColor::WhiteOnRed:
 			WhiteOnRed();
 			break;
-		case ConsoleColor_WhiteOnRed_Bold:
+		case console::ConsoleColor::WhiteOnRed_Bold:
 			WhiteOnRedBold();
 			break;
-		case ConsoleColor_Purple_Bold:
+		case console::ConsoleColor::Purple_Bold:
 			PurpleBold();
 			break;
-		case ConsoleColor_Default:
+		case console::ConsoleColor::Default:
 		default:
 			Default();
 			break;

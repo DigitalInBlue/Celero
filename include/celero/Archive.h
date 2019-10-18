@@ -69,9 +69,7 @@ namespace celero
 		/// Non-copyable.
 		/// Visual studio 2012 does not support "delete" here.
 		///
-		Archive(Archive&)
-		{
-		}
+		Archive(Archive&) = delete;
 
 		///
 		/// Default Destructor

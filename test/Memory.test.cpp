@@ -21,15 +21,13 @@
 #include <chrono>
 #include <iomanip>
 
-constexpr double Gigabyte{1073741824.0};
-
 void PrintTop()
 {
 	std::cout << celero::GetRAMVirtualUsedByCurrentProcess() << " " << celero::GetRAMPhysicalUsedByCurrentProcess() << " "
 			  << celero::GetRAMSystemUsedByCurrentProcess() << "\n";
 }
 
-TEST(memory, Report)
+TEST(Memory, Report)
 {
 	EXPECT_NE(int64_t(0), celero::GetRAMSystemTotal());
 	EXPECT_NE(int64_t(0), celero::GetRAMSystemAvailable());
@@ -41,7 +39,7 @@ TEST(memory, Report)
 	EXPECT_NE(int64_t(0), celero::GetRAMPhysicalUsedByCurrentProcess());
 }
 
-TEST(memory, AllocSystem)
+TEST(Memory, AllocSystem)
 {
 	const auto startTotal = celero::GetRAMSystemTotal();
 	EXPECT_GT(celero::GetRAMSystemTotal(), int64_t(1024));
@@ -80,7 +78,7 @@ TEST(memory, AllocSystem)
 	}
 }
 
-TEST(memory, AllocPhysical)
+TEST(Memory, AllocPhysical)
 {
 	const auto startTotal = celero::GetRAMPhysicalTotal();
 	EXPECT_GT(celero::GetRAMSystemTotal(), int64_t(1024));
@@ -117,7 +115,7 @@ TEST(memory, AllocPhysical)
 	}
 }
 
-TEST(memory, AllocAll)
+TEST(Memory, AllocAll)
 {
 	const auto startCurrentProcess = celero::GetRAMSystemUsedByCurrentProcess() + celero::GetRAMVirtualUsedByCurrentProcess();
 
@@ -135,7 +133,7 @@ TEST(memory, AllocAll)
 	}
 }
 
-TEST(memory, AllocPeak)
+TEST(Memory, AllocPeak)
 {
 	const auto startPeak = celero::GetRAMPhysicalUsedByCurrentProcessPeak();
 	const auto startCurrentProcess = celero::GetRAMSystemUsedByCurrentProcess() + celero::GetRAMVirtualUsedByCurrentProcess();
@@ -159,7 +157,7 @@ TEST(memory, AllocPeak)
 	EXPECT_LE(startPeak, celero::GetRAMPhysicalUsedByCurrentProcessPeak());
 }
 
-TEST(memory, ForceAllocateVirtual)
+TEST(Memory, ForceAllocateVirtual)
 {
 	const auto ramAvailableTotal = celero::GetRAMSystemAvailable();
 	EXPECT_GT(ramAvailableTotal, 0);
@@ -174,14 +172,14 @@ TEST(memory, ForceAllocateVirtual)
 	EXPECT_GT(ramAvailablePhysical, 0);
 
 	const auto ramAvailableVirtual = celero::GetRAMVirtualAvailable();
-	EXPECT_GT(ramAvailableVirtual, 0);
+	EXPECT_GE(ramAvailableVirtual, 0);
 
 	const auto allocAmmountPhysical = ramAvailablePhysical;
 	const auto allocAmmountVirtual = static_cast<decltype(allocAmmountPhysical)>(static_cast<double>(ramAvailableVirtual) * 0.01);
 	const auto allocAmmount = allocAmmountPhysical + allocAmmountVirtual;
 
-	EXPECT_GT(ramAvailableTotal, allocAmmount);
-	EXPECT_GT(allocAmmount, ramAvailablePhysical);
+	EXPECT_GE(ramAvailableTotal, allocAmmount);
+	EXPECT_GE(allocAmmount, ramAvailablePhysical);
 
 	if(std::chrono::system_clock::now() == std::chrono::time_point<std::chrono::system_clock>())
 	{

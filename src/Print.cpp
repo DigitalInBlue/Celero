@@ -44,7 +44,7 @@ enum PrintConstants : size_t
 /// http://stackoverflow.com/questions/14765155/how-can-i-easily-format-my-data-table-in-c
 /// Center-aligns string within a field of width w. Pads with blank spaces to enforce alignment.
 ///
-std::string PrintCenter(const std::string s, const size_t w = PrintConstants::ColumnWidth)
+std::string PrintCenter(const std::string& s, const size_t w = PrintConstants::ColumnWidth)
 {
 	std::stringstream ss;
 	std::stringstream spaces;
@@ -205,7 +205,7 @@ namespace celero
 
 	void Printer::TableBanner()
 	{
-		celero::console::SetConsoleColor(celero::console::ConsoleColor_Default);
+		celero::console::SetConsoleColor(celero::console::ConsoleColor::Default);
 
 		std::cout << "|" << PrintCenter("Group") << PrintCenter("Experiment") << PrintCenter("Prob. Space") << PrintCenter("Samples")
 				  << PrintCenter("Iterations") << PrintCenter("Baseline") << PrintCenter("us/Iteration") << PrintCenter("Iterations/sec");
@@ -221,7 +221,7 @@ namespace celero
 
 	void Printer::TableRowExperimentHeader(Experiment* x)
 	{
-		celero::console::SetConsoleColor(celero::console::ConsoleColor_Default);
+		celero::console::SetConsoleColor(celero::console::ConsoleColor::Default);
 		std::cout << "|" << PrintColumn(x->getBenchmark()->getName()) << PrintColumn(x->getName());
 	}
 
@@ -234,14 +234,14 @@ namespace celero
 			std::cout << PrintColumnRight("-", this->columnWidths[i]);
 		}
 
-		celero::console::SetConsoleColor(celero::console::ConsoleColor_Red);
+		celero::console::SetConsoleColor(celero::console::ConsoleColor::Red);
 		std::cout << msg << std::endl;
-		celero::console::SetConsoleColor(celero::console::ConsoleColor_Default);
+		celero::console::SetConsoleColor(celero::console::ConsoleColor::Default);
 	}
 
 	void Printer::TableRowProblemSpaceHeader(std::shared_ptr<celero::ExperimentResult> x)
 	{
-		celero::console::SetConsoleColor(celero::console::ConsoleColor_Default);
+		celero::console::SetConsoleColor(celero::console::ConsoleColor::Default);
 
 		if(x->getProblemSpaceValue() == static_cast<int64_t>(TestFixture::Constants::NoProblemSpaceValue))
 		{
@@ -263,36 +263,37 @@ namespace celero
 
 	void Printer::TableResult(std::shared_ptr<celero::ExperimentResult> x)
 	{
-		celero::console::SetConsoleColor(celero::console::ConsoleColor_Default);
+		celero::console::SetConsoleColor(celero::console::ConsoleColor::Default);
 
 		celero::console::ConsoleColor temp_color;
+
 		// Slower than Baseline
 		if(x->getBaselineMeasurement() > 1.0)
 		{
-			temp_color = celero::console::ConsoleColor_Yellow;
+			temp_color = celero::console::ConsoleColor::Yellow;
 		}
 		else if(x->getBaselineMeasurement() < 1.0)
 		{
-			temp_color = celero::console::ConsoleColor_Green;
+			temp_color = celero::console::ConsoleColor::Green;
 		}
 		else
 		{
-			temp_color = celero::console::ConsoleColor_Cyan;
+			temp_color = celero::console::ConsoleColor::Cyan;
 		}
 
 		celero::console::SetConsoleColor(temp_color);
 		std::cout << PrintColumn(x->getBaselineMeasurement());
-		celero::console::SetConsoleColor(celero::console::ConsoleColor_Default);	
+		celero::console::SetConsoleColor(celero::console::ConsoleColor::Default);	
 		std::cout << " | ";
 
 		celero::console::SetConsoleColor(temp_color);
 		std::cout << PrintColumn(x->getUsPerCall());
-		celero::console::SetConsoleColor(celero::console::ConsoleColor_Default);
+		celero::console::SetConsoleColor(celero::console::ConsoleColor::Default);
 		std::cout << " | ";
 
 		celero::console::SetConsoleColor(temp_color);
 		std::cout << PrintColumn(x->getCallsPerSecond(), 2);
-		celero::console::SetConsoleColor(celero::console::ConsoleColor_Default);
+		celero::console::SetConsoleColor(celero::console::ConsoleColor::Default);
 		std::cout << " | ";
 
 		std::unordered_map<std::string, double> udmValues;

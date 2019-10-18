@@ -53,10 +53,10 @@
 
 using namespace celero;
 
-constexpr int64_t Kilobytes2Bytes{1024};
-
 #ifdef WIN32
 #else
+constexpr int64_t Kilobytes2Bytes{1024};
+
 namespace celero
 {
 	namespace impl

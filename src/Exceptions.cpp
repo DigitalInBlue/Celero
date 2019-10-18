@@ -115,7 +115,7 @@ namespace celero
 		return EXCEPTION_CONTINUE_SEARCH;
 	}
 
-	const char* const ExceptionCodeToStr(DWORD exceptionCode)
+	const char* ExceptionCodeToStr(DWORD exceptionCode)
 	{
 		switch(exceptionCode)
 		{
@@ -205,9 +205,9 @@ namespace celero
 		__except(HandleSEH(GetExceptionCode()))
 		{
 			const auto exceptionCode = GetExceptionCode();
-			celero::console::SetConsoleColor(celero::console::ConsoleColor_Red);
+			celero::console::SetConsoleColor(celero::console::ConsoleColor::Red);
 			std::cout << "SEH exception " << ExceptionCodeToStr(exceptionCode) << std::endl;
-			celero::console::SetConsoleColor(celero::console::ConsoleColor_Default);
+			celero::console::SetConsoleColor(celero::console::ConsoleColor::Default);
 			return std::make_pair(false, 0);
 		}
 #else  // CELERO_HAS_SEH
@@ -227,15 +227,15 @@ namespace celero
 			}
 			catch(const std::exception& e)
 			{
-				celero::console::SetConsoleColor(celero::console::ConsoleColor_Red);
+				celero::console::SetConsoleColor(celero::console::ConsoleColor::Red);
 				std::cout << "C++ exception \"" << e.what() << "\"" << std::endl;
-				celero::console::SetConsoleColor(celero::console::ConsoleColor_Default);
+				celero::console::SetConsoleColor(celero::console::ConsoleColor::Default);
 			}
 			catch(...)
 			{
-				celero::console::SetConsoleColor(celero::console::ConsoleColor_Red);
+				celero::console::SetConsoleColor(celero::console::ConsoleColor::Red);
 				std::cout << "Unknown C++ exception" << std::endl;
-				celero::console::SetConsoleColor(celero::console::ConsoleColor_Default);
+				celero::console::SetConsoleColor(celero::console::ConsoleColor::Default);
 			}
 
 			return std::make_pair(false, 0);

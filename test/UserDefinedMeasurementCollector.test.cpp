@@ -1,5 +1,5 @@
 ///
-/// \author	John Farrier
+/// \author	Aaron Shelley
 ///
 /// \copyright Copyright 2015, 2016, 2017 John Farrier
 ///
@@ -16,21 +16,27 @@
 /// limitations under the License.
 ///
 
-#include <celero/Benchmark.h>
+#include <celero/UserDefinedMeasurementCollector.h>
 #include <gtest/gtest.h>
 
-TEST(benchmark, Setters)
+TEST(UserDefinedMeasurementCollector, getFields)
 {
-	/*
-	celero::Benchmark original;
-	original.setBaselineUnit(123.456);
-	original.setIsBaselineCase(true);
-	original.setExperimentSize(123456);
-	original.setRunTime(123456);
+	auto fixture = std::make_shared<celero::TestFixture>();
+	ASSERT_TRUE(fixture != nullptr);
 
-	EXPECT_DOUBLE_EQ(123.456, original.getBaselineUnit());
-	EXPECT_EQ(true, original.getIsBaselineCase());
-	EXPECT_EQ(123456, original.getExperimentSize());
-	EXPECT_EQ(123456, original.getRunTime());
-	*/
+	celero::UserDefinedMeasurementCollector collector(fixture);
+
+	const auto fields = collector.getFields(fixture);
+	EXPECT_TRUE(fields.empty());
+}
+
+TEST(UserDefinedMeasurementCollector, getAggregateValues)
+{
+	auto fixture = std::make_shared<celero::TestFixture>();
+	ASSERT_TRUE(fixture != nullptr);
+
+	celero::UserDefinedMeasurementCollector collector(fixture);
+
+	const auto values = collector.getAggregateValues();
+	EXPECT_TRUE(values.empty());
 }

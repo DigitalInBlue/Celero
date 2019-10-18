@@ -44,12 +44,12 @@ namespace celero
 		///
 		/// \param name Name of the test group.
 		///
-		Benchmark(const std::string& name);
+		explicit Benchmark(const std::string& name);
 
 		///
 		///
 		///
-		Benchmark(const Benchmark& other);
+		explicit Benchmark(const Benchmark& other);
 
 		///
 		/// \brief	Default destructor.

@@ -149,7 +149,7 @@ namespace cmdline
 			return "string";
 		}
 
-	} // detail
+	} // namespace detail
 
 	//-----
 
@@ -353,9 +353,6 @@ namespace cmdline
 	class parser
 	{
 	public:
-		parser()
-		{
-		}
 		~parser()
 		{
 			for(std::map<std::string, option_base *>::iterator p = options.begin(); p != options.end(); p++)
@@ -488,6 +485,7 @@ namespace cmdline
 				errors.push_back("argument number must be longer than 0");
 				return false;
 			}
+
 			if(prog_name == "")
 				prog_name = argv[0];
 
@@ -496,6 +494,7 @@ namespace cmdline
 			{
 				if(p->first.length() == 0)
 					continue;
+
 				char initial = p->second->short_name();
 				if(initial)
 				{
@@ -552,6 +551,7 @@ namespace cmdline
 				{
 					if(!argv[i][1])
 						continue;
+
 					char last = argv[i][1];
 					for(int j = 2; argv[i][j]; j++)
 					{
@@ -561,11 +561,13 @@ namespace cmdline
 							errors.push_back(std::string("undefined short option: -") + argv[i][j - 1]);
 							continue;
 						}
+
 						if(lookup[argv[i][j - 1]] == "")
 						{
 							errors.push_back(std::string("ambiguous short option: -") + argv[i][j - 1]);
 							continue;
 						}
+
 						set_option(lookup[argv[i][j - 1]]);
 					}
 
@@ -574,6 +576,7 @@ namespace cmdline
 						errors.push_back(std::string("undefined short option: -") + last);
 						continue;
 					}
+
 					if(lookup[last] == "")
 					{
 						errors.push_back(std::string("ambiguous short option: -") + last);
@@ -597,8 +600,12 @@ namespace cmdline
 			}
 
 			for(std::map<std::string, option_base *>::iterator p = options.begin(); p != options.end(); p++)
+			{
 				if(!p->second->valid())
+				{
 					errors.push_back("need option: --" + std::string(p->first));
+				}
+			}
 
 			return errors.size() == 0;
 		}
@@ -932,4 +939,4 @@ namespace cmdline
 		std::vector<std::string> errors;
 	};
 
-} // cmdline
+} // namespace cmdline

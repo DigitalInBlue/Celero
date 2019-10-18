@@ -1,10 +1,11 @@
 <!-- You can erase any parts of this template not applicable to your Issue. -->
+# Issue Template
 
-### Bug Report:
+## Bug Report
 
 Please replace this line with a brief summary of your issue.
 
-### Feature Request:
+## Feature Request
 
 **Please note by far the quickest way to get a new feature is to file a Pull Request.**
 
