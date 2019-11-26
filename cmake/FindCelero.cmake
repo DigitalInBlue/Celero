@@ -19,7 +19,7 @@
 #  CELERO_LIBRARIES          The Celero library
 #  CELERO_INCLUDE_DIRS       The location of Celero headers
 
-if(NOT CELRO_PREFIX)
+if(NOT CELERO_PREFIX)
 	set(CELERO_PREFIX $ENV{CELERO_PREFIX})
 endif()
 
