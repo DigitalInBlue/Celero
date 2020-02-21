@@ -19,7 +19,7 @@
 #include <celero/Memory.h>
 #include <sstream>
 
-#ifdef WIN32
+#ifdef _WIN32
 #include <Windows.h>
 
 #include <Psapi.h>
@@ -53,7 +53,7 @@
 
 using namespace celero;
 
-#ifdef WIN32
+#ifdef _WIN32
 #else
 constexpr int64_t Kilobytes2Bytes{1024};
 
@@ -120,7 +120,7 @@ celero::RAMReport celero::RAMReport::operator-(const RAMReport& x)
 
 int64_t celero::GetRAMSystemTotal()
 {
-#ifdef WIN32
+#ifdef _WIN32
 	MEMORYSTATUSEX memInfo;
 	memInfo.dwLength = sizeof(MEMORYSTATUSEX);
 	GlobalMemoryStatusEx(&memInfo);
@@ -155,7 +155,7 @@ int64_t celero::GetRAMSystemTotal()
 
 int64_t celero::GetRAMSystemAvailable()
 {
-#ifdef WIN32
+#ifdef _WIN32
 	MEMORYSTATUSEX memInfo;
 	memInfo.dwLength = sizeof(MEMORYSTATUSEX);
 	GlobalMemoryStatusEx(&memInfo);
@@ -167,7 +167,7 @@ int64_t celero::GetRAMSystemAvailable()
 
 int64_t celero::GetRAMSystemUsed()
 {
-#ifdef WIN32
+#ifdef _WIN32
 	return celero::GetRAMSystemTotal() - celero::GetRAMSystemAvailable();
 #elif defined(__APPLE__)
 	int mib[2];
@@ -198,7 +198,7 @@ int64_t celero::GetRAMSystemUsed()
 
 int64_t celero::GetRAMSystemUsedByCurrentProcess()
 {
-#ifdef WIN32
+#ifdef _WIN32
 	PROCESS_MEMORY_COUNTERS_EX pmc;
 	GetProcessMemoryInfo(GetCurrentProcess(), reinterpret_cast<PPROCESS_MEMORY_COUNTERS>(&pmc), sizeof(pmc));
 	return static_cast<int64_t>(pmc.WorkingSetSize);
@@ -209,7 +209,7 @@ int64_t celero::GetRAMSystemUsedByCurrentProcess()
 
 int64_t celero::GetRAMPhysicalTotal()
 {
-#ifdef WIN32
+#ifdef _WIN32
 	MEMORYSTATUSEX memInfo;
 	memInfo.dwLength = sizeof(MEMORYSTATUSEX);
 	GlobalMemoryStatusEx(&memInfo);
@@ -225,7 +225,7 @@ int64_t celero::GetRAMPhysicalTotal()
 
 int64_t celero::GetRAMPhysicalAvailable()
 {
-#ifdef WIN32
+#ifdef _WIN32
 	MEMORYSTATUSEX memInfo;
 	memInfo.dwLength = sizeof(MEMORYSTATUSEX);
 	GlobalMemoryStatusEx(&memInfo);
@@ -237,7 +237,7 @@ int64_t celero::GetRAMPhysicalAvailable()
 
 int64_t celero::GetRAMPhysicalUsed()
 {
-#ifdef WIN32
+#ifdef _WIN32
 	return celero::GetRAMPhysicalTotal() - celero::GetRAMPhysicalAvailable();
 #elif defined(__APPLE__)
 	struct rusage rusage;
@@ -252,7 +252,7 @@ int64_t celero::GetRAMPhysicalUsed()
 
 int64_t celero::GetRAMPhysicalUsedByCurrentProcess()
 {
-#ifdef WIN32
+#ifdef _WIN32
 	PROCESS_MEMORY_COUNTERS_EX pmc;
 	GetProcessMemoryInfo(GetCurrentProcess(), reinterpret_cast<PPROCESS_MEMORY_COUNTERS>(&pmc), sizeof(pmc));
 	return static_cast<int64_t>(pmc.WorkingSetSize);
@@ -306,7 +306,7 @@ int64_t celero::GetRAMPhysicalUsedByCurrentProcessPeak()
 
 int64_t celero::GetRAMVirtualTotal()
 {
-#ifdef WIN32
+#ifdef _WIN32
 	MEMORYSTATUSEX memInfo;
 	memInfo.dwLength = sizeof(MEMORYSTATUSEX);
 	GlobalMemoryStatusEx(&memInfo);
@@ -322,7 +322,7 @@ int64_t celero::GetRAMVirtualTotal()
 
 int64_t celero::GetRAMVirtualAvailable()
 {
-#ifdef WIN32
+#ifdef _WIN32
 	MEMORYSTATUSEX memInfo;
 	memInfo.dwLength = sizeof(MEMORYSTATUSEX);
 	GlobalMemoryStatusEx(&memInfo);
@@ -334,7 +334,7 @@ int64_t celero::GetRAMVirtualAvailable()
 
 int64_t celero::GetRAMVirtualUsed()
 {
-#ifdef WIN32
+#ifdef _WIN32
 	return celero::GetRAMVirtualTotal() - celero::GetRAMVirtualAvailable();
 #elif defined(__APPLE__)
 	return -1;
@@ -348,7 +348,7 @@ int64_t celero::GetRAMVirtualUsed()
 
 int64_t celero::GetRAMVirtualUsedByCurrentProcess()
 {
-#ifdef WIN32
+#ifdef _WIN32
 	PROCESS_MEMORY_COUNTERS_EX pmc;
 	GetProcessMemoryInfo(GetCurrentProcess(), reinterpret_cast<PPROCESS_MEMORY_COUNTERS>(&pmc), sizeof(pmc));
 	return pmc.PrivateUsage;

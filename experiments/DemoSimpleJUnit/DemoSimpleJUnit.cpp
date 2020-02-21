@@ -1,6 +1,6 @@
 #include <celero/Celero.h>
 
-#ifndef WIN32
+#ifndef _WIN32
 #include <cmath>
 #include <cstdlib>
 #endif

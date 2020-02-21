@@ -20,7 +20,7 @@
 #include <celero/Timer.h>
 #include <iostream>
 
-#ifdef WIN32
+#ifdef _WIN32
 #include <Windows.h>
 LARGE_INTEGER QPCFrequency;
 #else
@@ -29,7 +29,7 @@ LARGE_INTEGER QPCFrequency;
 
 uint64_t celero::timer::GetSystemTime()
 {
-#ifdef WIN32
+#ifdef _WIN32
 	LARGE_INTEGER timeStorage;
 	QueryPerformanceCounter(&timeStorage);
 	if(QPCFrequency.QuadPart != 0)
@@ -46,7 +46,7 @@ uint64_t celero::timer::GetSystemTime()
 
 double celero::timer::CachePerformanceFrequency(bool quiet)
 {
-#ifdef WIN32
+#ifdef _WIN32
 	QueryPerformanceFrequency(&QPCFrequency);
 	if(QPCFrequency.QuadPart == 0)
 	{
