@@ -166,7 +166,7 @@ Here is an example of a simple Celero Benchmark. (Note: This is a complete, runn
 
 #include <random>
 
-#ifndef WIN32
+#ifndef _WIN32
 #include <cmath>
 #include <cstdlib>
 #endif

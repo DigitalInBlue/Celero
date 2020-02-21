@@ -21,9 +21,9 @@
 #include <celero/Console.h>
 #include <celero/TestFixture.h>
 
-#ifdef WIN32
+#ifdef _WIN32
 #include <Windows.h>
-#endif // WIN32
+#endif // _WIN32
 
 #include <iomanip>
 #include <iostream>
