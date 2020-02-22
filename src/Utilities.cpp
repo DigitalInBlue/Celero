@@ -19,7 +19,7 @@
 #include <celero/Print.h>
 #include <celero/Utilities.h>
 
-#ifdef WIN32
+#ifdef _WIN32
 #include <Windows.h>
 
 #include <PowrProf.h>

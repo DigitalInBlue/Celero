@@ -31,7 +31,7 @@
 /// It is highly encouraged to only run this code compiled in a "Release" mode to use all available optimizations.
 ///
 
-#ifdef WIN32
+#ifdef _WIN32
 #include <process.h>
 #endif
 

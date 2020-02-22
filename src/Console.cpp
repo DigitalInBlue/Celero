@@ -20,14 +20,14 @@
 
 using namespace celero;
 
-#ifdef WIN32
+#ifdef _WIN32
 #include <Windows.h>
 #include <stdio.h>
 #else
 #include <iostream>
 #endif
 
-#ifdef WIN32
+#ifdef _WIN32
 auto WinColor() -> decltype(GetStdHandle(STD_OUTPUT_HANDLE))
 {
 	auto h = GetStdHandle(STD_OUTPUT_HANDLE);
@@ -39,7 +39,7 @@ auto WinColor() -> decltype(GetStdHandle(STD_OUTPUT_HANDLE))
 
 void Red()
 {
-#ifdef WIN32
+#ifdef _WIN32
 	auto h = WinColor();
 	SetConsoleTextAttribute(h, FOREGROUND_RED);
 #else
@@ -49,7 +49,7 @@ void Red()
 
 void RedBold()
 {
-#ifdef WIN32
+#ifdef _WIN32
 	auto h = WinColor();
 	SetConsoleTextAttribute(h, FOREGROUND_RED | FOREGROUND_INTENSITY);
 #else
@@ -59,7 +59,7 @@ void RedBold()
 
 void Green()
 {
-#ifdef WIN32
+#ifdef _WIN32
 	auto h = WinColor();
 	SetConsoleTextAttribute(h, FOREGROUND_GREEN);
 #else
@@ -69,7 +69,7 @@ void Green()
 
 void GreenBold()
 {
-#ifdef WIN32
+#ifdef _WIN32
 	auto h = WinColor();
 	SetConsoleTextAttribute(h, FOREGROUND_GREEN | FOREGROUND_INTENSITY);
 #else
@@ -79,7 +79,7 @@ void GreenBold()
 
 void Blue()
 {
-#ifdef WIN32
+#ifdef _WIN32
 	auto h = WinColor();
 	SetConsoleTextAttribute(h, FOREGROUND_BLUE);
 #else
@@ -89,7 +89,7 @@ void Blue()
 
 void BlueBold()
 {
-#ifdef WIN32
+#ifdef _WIN32
 	auto h = WinColor();
 	SetConsoleTextAttribute(h, FOREGROUND_BLUE | FOREGROUND_INTENSITY);
 #else
@@ -99,7 +99,7 @@ void BlueBold()
 
 void Cyan()
 {
-#ifdef WIN32
+#ifdef _WIN32
 	auto h = WinColor();
 	SetConsoleTextAttribute(h, FOREGROUND_BLUE | FOREGROUND_GREEN);
 #else
@@ -109,7 +109,7 @@ void Cyan()
 
 void CyanBold()
 {
-#ifdef WIN32
+#ifdef _WIN32
 	auto h = WinColor();
 	SetConsoleTextAttribute(h, FOREGROUND_BLUE | FOREGROUND_GREEN | FOREGROUND_INTENSITY);
 #else
@@ -119,7 +119,7 @@ void CyanBold()
 
 void Yellow()
 {
-#ifdef WIN32
+#ifdef _WIN32
 	auto h = WinColor();
 	SetConsoleTextAttribute(h, FOREGROUND_RED | FOREGROUND_GREEN);
 #else
@@ -129,7 +129,7 @@ void Yellow()
 
 void YellowBold()
 {
-#ifdef WIN32
+#ifdef _WIN32
 	auto h = WinColor();
 	SetConsoleTextAttribute(h, FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_INTENSITY);
 #else
@@ -139,7 +139,7 @@ void YellowBold()
 
 void White()
 {
-#ifdef WIN32
+#ifdef _WIN32
 	auto h = WinColor();
 	SetConsoleTextAttribute(h, FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE);
 #else
@@ -149,7 +149,7 @@ void White()
 
 void WhiteBold()
 {
-#ifdef WIN32
+#ifdef _WIN32
 	auto h = WinColor();
 	SetConsoleTextAttribute(h, FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE | FOREGROUND_INTENSITY);
 #else
@@ -159,7 +159,7 @@ void WhiteBold()
 
 void WhiteOnRed()
 {
-#ifdef WIN32
+#ifdef _WIN32
 	auto h = WinColor();
 	SetConsoleTextAttribute(h, BACKGROUND_RED | FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE);
 #else
@@ -169,7 +169,7 @@ void WhiteOnRed()
 
 void WhiteOnRedBold()
 {
-#ifdef WIN32
+#ifdef _WIN32
 	auto h = WinColor();
 	SetConsoleTextAttribute(h, BACKGROUND_RED | FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE | FOREGROUND_INTENSITY);
 #else
@@ -179,7 +179,7 @@ void WhiteOnRedBold()
 
 void PurpleBold()
 {
-#ifdef WIN32
+#ifdef _WIN32
 	auto h = WinColor();
 	SetConsoleTextAttribute(h, FOREGROUND_RED | FOREGROUND_BLUE | FOREGROUND_INTENSITY);
 #else
@@ -189,7 +189,7 @@ void PurpleBold()
 
 void Default()
 {
-#ifdef WIN32
+#ifdef _WIN32
 	White();
 #else
 	std::cout << "\033[0m";
