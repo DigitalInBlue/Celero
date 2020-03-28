@@ -29,6 +29,7 @@
 #include <sys/types.h>
 #include <unistd.h>
 #include <array>
+#include <cstring>
 #else
 #include <stdio.h>
 #include <stdlib.h>
