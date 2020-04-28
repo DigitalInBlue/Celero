@@ -101,8 +101,8 @@ BASELINE_F(DemoTransform, ForLoop, DemoTransformFixture, 30, 10000)
 	}
 }
 
-// BASELINE_FIXED_F(DemoTransform, FixedTime, DemoTransformFixture, 30, 10000, 100)
-// { }
+BASELINE_FIXED_F(DemoTransform, FixedTime, DemoTransformFixture, 1, 100)
+{ }
 
 BENCHMARK_F(DemoTransform, StdTransform, DemoTransformFixture, 30, 10000)
 {

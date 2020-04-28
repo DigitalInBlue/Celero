@@ -306,7 +306,7 @@ Celero can automatically run threaded benchmarks.  `BASELINE_T` and `BENCHMARK_T
 
 ```cpp
 BASELINE_T(groupName, baselineName, fixtureName, samples, iterations, threads);
-BASELINE_FIXED_T(groupName, baselineName, fixtureName, samples, iterations, threads, useconds);
+BASELINE_FIXED_T(groupName, baselineName, fixtureName, iterations, threads, useconds);
 
 BENCHMARK_T(groupName, benchmarkName, fixtureName, samples, iterations, threads);
 BENCHMARK_TEST_T(groupName, benchmarkName, fixtureName, samples, iterations, threads, target);
@@ -318,21 +318,23 @@ While Celero typically measures the baseline time and then executes benchmark ca
 
 ```cpp
 // No threads or test fixtures.
-BASELINE_FIXED(groupName, baselineName, samples, iterations, useconds);
+BASELINE_FIXED(groupName, baselineName, iterations, useconds);
 
 // For using test fixtures:
-BASELINE_FIXED_F(groupName, baselineName, fixtureName, samples, iterations, useconds);
+BASELINE_FIXED_F(groupName, baselineName, fixtureName, iterations, useconds);
 
 // For using threads and test fixtures.
-BASELINE_FIXED_T(groupName, baselineName, fixtureName, samples, iterations, threads, useconds);
+BASELINE_FIXED_T(groupName, baselineName, fixtureName, iterations, threads, useconds);
 ```
 
 Example:
 
 ```cpp
-BASELINE_FIXED_F(DemoTransform, FixedTime, DemoTransformFixture, 30, 10000, 100)
+BASELINE_FIXED_F(DemoTransform, FixedTime, DemoTransformFixture, 1, 100)
 { /* Nothing to do */ }
 ```
+
+It is important that if your measurements use a test fixture, that your baseline (even if fixed) should use a test fixture as well.  Features such as User-Defined Measurements (UDMs) look to the baseline class to detect if other features are present.  If the baseline does not use a test fixuture, Celero will not know that other classes do use a test fixture that offers a UDM.
 
 ### User-Defined Measurements (UDM)
 

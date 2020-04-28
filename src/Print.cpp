@@ -315,6 +315,8 @@ namespace celero
 			else
 			{
 				std::cout << PrintColumn(udmValues.at(fieldName), 2, this->columnWidths[i + PrintConstants::NumberOfColumns]);
+				celero::console::SetConsoleColor(celero::console::ConsoleColor::Default);
+				std::cout << " | ";
 			}
 		}
 

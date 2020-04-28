@@ -305,11 +305,11 @@ namespace celero
 ///
 /// Using the BASELINE_ macro, this effectivly fills in a class's UserBenchmark() function.
 ///
-#define BASELINE_FIXED(groupName, baselineName, samples, iterations, useconds)                                                                       \
-	BASELINE_IMPL(groupName, baselineName, ::celero::TestFixture, samples, iterations, 1, useconds)
-#define BASELINE_FIXED_F(groupName, baselineName, fixtureName, samples, iterations, useconds)                                                        \
-	BASELINE_IMPL(groupName, baselineName, fixtureName, samples, iterations, 1, useconds)
-#define BASELINE_FIXED_T(groupName, baselineName, fixtureName, samples, iterations, threads, useconds)                                               \
-	BASELINE_IMPL(groupName, baselineName, fixtureName, samples, iterations, threads, useconds)
+#define BASELINE_FIXED(groupName, baselineName, iterations, useconds)                                                                       \
+	BASELINE_IMPL(groupName, baselineName, ::celero::TestFixture, 1, iterations, 1, useconds)
+#define BASELINE_FIXED_F(groupName, baselineName, fixtureName, iterations, useconds)                                                        \
+	BASELINE_IMPL(groupName, baselineName, fixtureName, 1, iterations, 1, useconds)
+#define BASELINE_FIXED_T(groupName, baselineName, fixtureName, iterations, threads, useconds)                                               \
+	BASELINE_IMPL(groupName, baselineName, fixtureName, 1, iterations, threads, useconds)
 
 #endif
