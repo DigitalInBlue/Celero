@@ -135,7 +135,7 @@ std::vector<std::string> TestFixture::getUserDefinedMeasurementNames() const
 
 	if(udms.empty() == false)
 	{
-		for(const auto udm : udms)
+		for(const auto& udm : udms)
 		{
 			names.emplace_back(udm->getName());
 		}
