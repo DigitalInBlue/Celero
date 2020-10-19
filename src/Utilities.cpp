@@ -20,9 +20,9 @@
 #include <celero/Utilities.h>
 
 #ifdef WIN32
-#include <Windows.h>
+#include <windows.h>
 
-#include <PowrProf.h>
+#include <powrprof.h>
 #endif
 
 #ifdef max

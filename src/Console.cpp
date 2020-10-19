@@ -21,7 +21,7 @@
 using namespace celero;
 
 #ifdef WIN32
-#include <Windows.h>
+#include <windows.h>
 #include <stdio.h>
 #else
 #include <iostream>
