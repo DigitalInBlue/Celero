@@ -24,6 +24,9 @@
 CMAKE_MINIMUM_REQUIRED(VERSION 3.0.2)
 
 macro(CeleroSetDefaultCompilerOptions)
+	set_target_properties(${PROJECT_NAME} PROPERTIES
+		POSITION_INDEPENDENT_CODE "${CELERO_COMPILE_PIC}"
+	)
 	if(${CMAKE_CXX_COMPILER_ID} STREQUAL MSVC)
 		target_compile_options(${PROJECT_NAME} PRIVATE /D_VARIADIC_MAX=10 )
 		target_compile_options(${PROJECT_NAME} PRIVATE /D_CRT_SECURE_NO_WARNINGS)
@@ -39,7 +42,6 @@ macro(CeleroSetDefaultCompilerOptions)
 
 	elseif(${CMAKE_CXX_COMPILER_ID} STREQUAL GNU)
 		target_compile_options(${PROJECT_NAME} PRIVATE -Wall)
-		target_compile_options(${PROJECT_NAME} PRIVATE -fPIC)
 		target_compile_options(${PROJECT_NAME} PRIVATE -std=c++14)
 
 	elseif(${CMAKE_CXX_COMPILER_ID} STREQUAL Clang)
@@ -53,7 +55,6 @@ macro(CeleroSetDefaultCompilerOptions)
 			endif()
 		else()
 			target_compile_options(${PROJECT_NAME} PRIVATE -Wall)
-			target_compile_options(${PROJECT_NAME} PRIVATE -fPIC)
 			target_compile_options(${PROJECT_NAME} PRIVATE -std=c++14)
 			if(CELERO_TREAT_WARNINGS_AS_ERRORS)
 				target_compile_options(${PROJECT_NAME} PRIVATE -Werror)
@@ -62,7 +63,6 @@ macro(CeleroSetDefaultCompilerOptions)
 
 	elseif(${CMAKE_CXX_COMPILER_ID} STREQUAL AppleClang)
 		target_compile_options(${PROJECT_NAME} PRIVATE -Wall)
-		target_compile_options(${PROJECT_NAME} PRIVATE -fPIC)
 		target_compile_options(${PROJECT_NAME} PRIVATE -std=c++14)
 
 		if(CELERO_TREAT_WARNINGS_AS_ERRORS)
@@ -83,6 +83,7 @@ include(CheckIncludeFile)
 #
 
 option(CELERO_COMPILE_DYNAMIC_LIBRARIES "Set to ON to build Celero for dynamic linking.  Use OFF for static." ON)
+option(CELERO_COMPILE_PIC "Set to ON to build Celero as a position-independent library." ON)
 option(CELERO_ENABLE_EXPERIMENTS "Set to ON to automatically build all examples." OFF)
 option(CELERO_ENABLE_FOLDERS "Enable to put Celero in its own solution folder under Visual Studio" ON)
 option(CELERO_ENABLE_TESTS "Enable building and running unit tests." OFF)
