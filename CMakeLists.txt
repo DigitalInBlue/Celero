@@ -38,6 +38,8 @@ macro(CeleroSetDefaultCompilerOptions)
         if(CELERO_TREAT_WARNINGS_AS_ERRORS)
             target_compile_options(${PROJECT_NAME} PRIVATE /WX)
 		endif()
+		set_target_properties(${PROJECT_NAME} PROPERTIES
+			ARCHIVE_OUTPUT_NAME "${PROJECT_NAME}.dll")
 
 	elseif(${CMAKE_CXX_COMPILER_ID} STREQUAL GNU)
 		target_compile_options(${PROJECT_NAME} PRIVATE -Wall)
@@ -174,9 +176,9 @@ target_sources(${PROJECT_NAME} PRIVATE
 	src/Utilities.cpp
 )
 
-if(MSVC)
+if(WIN32)
 	set(SYSLIBS
-		PowrProf.lib
+		powrprof psapi
 		)
 else()
 	#pthread is required for std::thread to work.
@@ -202,7 +204,7 @@ install(TARGETS ${PROJECT_NAME}
   EXPORT ${PROJECT_NAME}-target
   RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}/bin
   LIBRARY DESTINATION ${CMAKE_INSTALL_PREFIX}/lib
-  ARCHIVE DESTINATION ${CMAKE_INSTALL_PREFIX}/lib/static
+  ARCHIVE DESTINATION ${CMAKE_INSTALL_PREFIX}/lib
 )
 
 install(DIRECTORY include DESTINATION ${CMAKE_INSTALL_PREFIX})
