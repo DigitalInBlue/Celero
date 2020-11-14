@@ -21,7 +21,7 @@
 #include <iostream>
 
 #ifdef WIN32
-#include <Windows.h>
+#include <windows.h>
 LARGE_INTEGER QPCFrequency;
 #else
 #include <chrono>

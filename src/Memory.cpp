@@ -19,10 +19,10 @@
 #include <celero/Memory.h>
 #include <sstream>
 
-#ifdef WIN32
-#include <Windows.h>
+#ifdef _WIN32
+#include <windows.h>
 
-#include <Psapi.h>
+#include <psapi.h>
 #elif defined(__APPLE__)
 #include <sys/param.h>
 #include <sys/sysctl.h>
