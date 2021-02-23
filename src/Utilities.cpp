@@ -19,10 +19,10 @@
 #include <celero/Print.h>
 #include <celero/Utilities.h>
 
-#ifdef _WIN32
-#include <Windows.h>
+#ifdef WIN32
+#include <windows.h>
 
-#include <PowrProf.h>
+#include <powrprof.h>
 #endif
 
 #ifdef max

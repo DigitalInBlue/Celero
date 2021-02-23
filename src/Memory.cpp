@@ -20,9 +20,9 @@
 #include <sstream>
 
 #ifdef _WIN32
-#include <Windows.h>
+#include <windows.h>
 
-#include <Psapi.h>
+#include <psapi.h>
 #elif defined(__APPLE__)
 #include <sys/param.h>
 #include <sys/sysctl.h>

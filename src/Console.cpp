@@ -20,8 +20,8 @@
 
 using namespace celero;
 
-#ifdef _WIN32
-#include <Windows.h>
+#ifdef WIN32
+#include <windows.h>
 #include <stdio.h>
 #else
 #include <iostream>

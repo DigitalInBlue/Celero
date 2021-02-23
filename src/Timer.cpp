@@ -20,8 +20,8 @@
 #include <celero/Timer.h>
 #include <iostream>
 
-#ifdef _WIN32
-#include <Windows.h>
+#ifdef WIN32
+#include <windows.h>
 LARGE_INTEGER QPCFrequency;
 #else
 #include <chrono>

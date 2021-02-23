@@ -25,11 +25,11 @@
 #else
 #ifdef _WIN32
 #if defined CELERO_EXPORTS
-#define CELERO_EXPORT _declspec(dllexport)
-#define CELERO_EXPORT_C extern "C" _declspec(dllexport)
+#define CELERO_EXPORT __declspec(dllexport)
+#define CELERO_EXPORT_C extern "C" __declspec(dllexport)
 #else
-#define CELERO_EXPORT _declspec(dllimport)
-#define CELERO_EXPORT_C extern "C" _declspec(dllimport)
+#define CELERO_EXPORT __declspec(dllimport)
+#define CELERO_EXPORT_C extern "C" __declspec(dllimport)
 #endif
 #else
 #define CELERO_EXPORT
