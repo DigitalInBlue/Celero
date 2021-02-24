@@ -465,7 +465,7 @@ sudo cpupower frequency-set --governor powersave
 
 -   Benchmarks should always be performed on Release builds.  Never measure the performance of a Debug build and make changes based on the results.  The (optimizing) compiler is your friend concerning code performance.
 -   Accuracy is tied very closely to the total number of samples and the sample sizes.  As a general rule, you should aim to execute your baseline code for about as long as your longest benchmark test.  Further, it is helpful if all of the benchmark tests take about the same order of magnitude of execution time.  (Don't compare a baseline that executed in 0.1 seconds with benchmarks that take 60 seconds and an hour, respectively.)
--   Celero has Doxygen documentation of its API.
+-   Celero has Doxygen-style documentation of its API.  (The Doxyfile is provided.  The user must generate the documentation.)
 -   Celero supports test fixtures for each baseline group.
 
 ## Celero Charts
