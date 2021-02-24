@@ -4,7 +4,7 @@
 ///
 /// \author	Lukas Barth
 ///
-/// \copyright Copyright 2015, 2016, 2017, 2018. 2019 John Farrier
+/// \copyright Copyright 2015-2021 John Farrier
 ///
 /// Licensed under the Apache License, Version 2.0 (the "License");
 /// you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@
 ///
 
 #include <celero/Export.h>
+
 #include <functional>
 #include <memory>
 #include <string>
@@ -48,6 +49,11 @@ namespace celero
 	class CELERO_EXPORT UserDefinedMeasurement
 	{
 	public:
+		///
+		/// Expose the default destructor, but make it virtual to support inheritance.
+		///
+		virtual ~UserDefinedMeasurement() = default;
+
 		///
 		/// \brief Must be implemented by the user. Must return a specification which aggregations the user wants to be computed.
 		///

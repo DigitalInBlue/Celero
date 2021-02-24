@@ -4,7 +4,7 @@
 ///
 /// \author	John Farrier
 ///
-/// \copyright Copyright 2015, 2016, 2017, 2018. 2019 John Farrier
+/// \copyright Copyright 2015-2021 John Farrier
 ///
 /// Licensed under the Apache License, Version 2.0 (the "License");
 /// you may not use this file except in compliance with the License.
@@ -22,6 +22,7 @@
 #include <celero/Benchmark.h>
 #include <celero/Export.h>
 #include <celero/Pimpl.h>
+
 #include <functional>
 
 namespace celero
@@ -35,6 +36,9 @@ namespace celero
 	{
 	public:
 		~TestVector();
+
+		TestVector(const TestVector&) = delete;
+		TestVector& operator=(TestVector const& other) = delete;
 
 		static TestVector& Instance();
 
@@ -62,6 +66,6 @@ namespace celero
 		///
 		Pimpl<Impl> pimpl;
 	};
-}
+} // namespace celero
 
 #endif

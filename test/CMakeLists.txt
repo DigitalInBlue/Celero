@@ -21,7 +21,7 @@ project(celero-test)
 
 add_executable(${PROJECT_NAME})
 
-add_dependencies(${PROJECT_NAME} gtest gtest_main)
+find_package(GTest CONFIG REQUIRED)
 
 target_sources(${PROJECT_NAME} PRIVATE
 	Archive.test.cpp
@@ -54,8 +54,8 @@ CeleroSetDefaultCompilerOptions()
 
 target_link_libraries(${PROJECT_NAME}
 	${SYSLIBS}
-	gtest
-	gtest_main
+	GTest::gtest
+    GTest::gtest_main
 	celero
 )
 

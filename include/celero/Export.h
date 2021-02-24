@@ -4,7 +4,7 @@
 ///
 /// \author	John Farrier
 ///
-/// \copyright Copyright 2015, 2016, 2017, 2018. 2019 John Farrier
+/// \copyright Copyright 2015-2021 John Farrier
 ///
 /// Licensed under the Apache License, Version 2.0 (the "License");
 /// you may not use this file except in compliance with the License.
@@ -23,7 +23,7 @@
 #define CELERO_EXPORT
 #define CELERO_EXPORT_C
 #else
-#ifdef WIN32
+#ifdef _WIN32
 #if defined CELERO_EXPORTS
 #define CELERO_EXPORT __declspec(dllexport)
 #define CELERO_EXPORT_C extern "C" __declspec(dllexport)

@@ -38,7 +38,7 @@
 #include <typeinfo>
 #include <vector>
 
-#ifndef WIN32
+#ifndef _WIN32
 #include <cxxabi.h>
 #endif
 
@@ -115,7 +115,7 @@ namespace cmdline
 			return lexical_cast_t<Target, Source, detail::is_same<Target, Source>::value>::cast(arg);
 		}
 
-#ifdef WIN32
+#ifdef _WIN32
 		static inline std::string demangle(const std::string &)
 		{
 			return std::string();

@@ -1,7 +1,7 @@
 ///
 /// \author	John Farrier
 ///
-/// \copyright Copyright 2015, 2016, 2017, 2018. 2019 John Farrier
+/// \copyright Copyright 2015-2021 John Farrier
 ///
 /// Licensed under the Apache License, Version 2.0 (the "License");
 /// you may not use this file except in compliance with the License.
@@ -29,7 +29,7 @@ LARGE_INTEGER QPCFrequency;
 
 uint64_t celero::timer::GetSystemTime()
 {
-#ifdef WIN32
+#ifdef _WIN32
 	LARGE_INTEGER timeStorage;
 	QueryPerformanceCounter(&timeStorage);
 	if(QPCFrequency.QuadPart != 0)
@@ -46,7 +46,7 @@ uint64_t celero::timer::GetSystemTime()
 
 double celero::timer::CachePerformanceFrequency(bool quiet)
 {
-#ifdef WIN32
+#ifdef _WIN32
 	QueryPerformanceFrequency(&QPCFrequency);
 	if(QPCFrequency.QuadPart == 0)
 	{

@@ -4,7 +4,7 @@
 ///
 /// \author	John Farrier
 ///
-/// \copyright Copyright 2015, 2016, 2017, 2018. 2019 John Farrier
+/// \copyright Copyright 2015-2021 John Farrier
 ///
 /// Licensed under the Apache License, Version 2.0 (the "License");
 /// you may not use this file except in compliance with the License.
@@ -21,6 +21,7 @@
 
 #include <celero/Export.h>
 #include <celero/Timer.h>
+
 #include <cstddef>
 #include <cstdint>
 #include <limits>
@@ -149,7 +150,7 @@ namespace celero
 
 		///
 		/// Internal to Celero
-		/// 
+		///
 		void setExperimentTime(uint64_t x);
 
 		///

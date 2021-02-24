@@ -1,7 +1,7 @@
 ///
 /// \author	John Farrier
 ///
-/// \copyright Copyright 2015, 2016, 2017, 2018. 2019 John Farrier
+/// \copyright Copyright 2015-2021 John Farrier
 ///
 /// Licensed under the Apache License, Version 2.0 (the "License");
 /// you may not use this file except in compliance with the License.
@@ -23,6 +23,7 @@
 #include <celero/Timer.h>
 #include <celero/UserDefinedMeasurementCollector.h>
 #include <celero/Utilities.h>
+
 #include <algorithm>
 #include <chrono>
 #include <iomanip>
@@ -283,7 +284,7 @@ namespace celero
 
 		celero::console::SetConsoleColor(temp_color);
 		std::cout << PrintColumn(x->getBaselineMeasurement());
-		celero::console::SetConsoleColor(celero::console::ConsoleColor::Default);	
+		celero::console::SetConsoleColor(celero::console::ConsoleColor::Default);
 		std::cout << " | ";
 
 		celero::console::SetConsoleColor(temp_color);
@@ -315,6 +316,8 @@ namespace celero
 			else
 			{
 				std::cout << PrintColumn(udmValues.at(fieldName), 2, this->columnWidths[i + PrintConstants::NumberOfColumns]);
+				celero::console::SetConsoleColor(celero::console::ConsoleColor::Default);
+				std::cout << " | ";
 			}
 		}
 

@@ -2,7 +2,7 @@
 
 ### C++ Benchmarking Library
 
-Copyright 2017-2019 John Farrier 
+Copyright 2017-2021 John Farrier 
 
 Apache 2.0 License
 
@@ -37,6 +37,8 @@ Celero has been successfully built on the following platforms during development
 -   XCode v10.1
 -   XCode v10.3
 -   XCode v11.0
+
+As of v2.7, Celero requres the developer to provide GoogleTest in order to build unit tests.  We suggest using a package manager such as VCPKG or Conan to provide the latest version of the library.
 
 #### Quality Control
 
@@ -166,7 +168,7 @@ Here is an example of a simple Celero Benchmark. (Note: This is a complete, runn
 
 #include <random>
 
-#ifndef WIN32
+#ifndef _WIN32
 #include <cmath>
 #include <cstdlib>
 #endif
@@ -306,7 +308,7 @@ Celero can automatically run threaded benchmarks.  `BASELINE_T` and `BENCHMARK_T
 
 ```cpp
 BASELINE_T(groupName, baselineName, fixtureName, samples, iterations, threads);
-BASELINE_FIXED_T(groupName, baselineName, fixtureName, samples, iterations, threads, useconds);
+BASELINE_FIXED_T(groupName, baselineName, fixtureName, iterations, threads, useconds);
 
 BENCHMARK_T(groupName, benchmarkName, fixtureName, samples, iterations, threads);
 BENCHMARK_TEST_T(groupName, benchmarkName, fixtureName, samples, iterations, threads, target);
@@ -318,21 +320,23 @@ While Celero typically measures the baseline time and then executes benchmark ca
 
 ```cpp
 // No threads or test fixtures.
-BASELINE_FIXED(groupName, baselineName, samples, iterations, useconds);
+BASELINE_FIXED(groupName, baselineName, iterations, useconds);
 
 // For using test fixtures:
-BASELINE_FIXED_F(groupName, baselineName, fixtureName, samples, iterations, useconds);
+BASELINE_FIXED_F(groupName, baselineName, fixtureName, iterations, useconds);
 
 // For using threads and test fixtures.
-BASELINE_FIXED_T(groupName, baselineName, fixtureName, samples, iterations, threads, useconds);
+BASELINE_FIXED_T(groupName, baselineName, fixtureName, iterations, threads, useconds);
 ```
 
 Example:
 
 ```cpp
-BASELINE_FIXED_F(DemoTransform, FixedTime, DemoTransformFixture, 30, 10000, 100)
+BASELINE_FIXED_F(DemoTransform, FixedTime, DemoTransformFixture, 1, 100)
 { /* Nothing to do */ }
 ```
+
+It is important that if your measurements use a test fixture, that your baseline (even if fixed) should use a test fixture as well.  Features such as User-Defined Measurements (UDMs) look to the baseline class to detect if other features are present.  If the baseline does not use a test fixuture, Celero will not know that other classes do use a test fixture that offers a UDM.
 
 ### User-Defined Measurements (UDM)
 
@@ -461,7 +465,7 @@ sudo cpupower frequency-set --governor powersave
 
 -   Benchmarks should always be performed on Release builds.  Never measure the performance of a Debug build and make changes based on the results.  The (optimizing) compiler is your friend concerning code performance.
 -   Accuracy is tied very closely to the total number of samples and the sample sizes.  As a general rule, you should aim to execute your baseline code for about as long as your longest benchmark test.  Further, it is helpful if all of the benchmark tests take about the same order of magnitude of execution time.  (Don't compare a baseline that executed in 0.1 seconds with benchmarks that take 60 seconds and an hour, respectively.)
--   Celero has Doxygen documentation of its API.
+-   Celero has Doxygen-style documentation of its API.  (The Doxyfile is provided.  The user must generate the documentation.)
 -   Celero supports test fixtures for each baseline group.
 
 ## Celero Charts

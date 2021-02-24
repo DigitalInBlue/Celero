@@ -4,7 +4,7 @@
 ///
 /// \author	John Farrier
 ///
-/// \copyright Copyright 2015, 2016, 2017, 2018. 2019 John Farrier
+/// \copyright Copyright 2015-2021 John Farrier
 ///
 /// Licensed under the Apache License, Version 2.0 (the "License");
 /// you may not use this file except in compliance with the License.
@@ -21,6 +21,7 @@
 
 #include <celero/Experiment.h>
 #include <celero/Pimpl.h>
+
 #include <string>
 
 namespace celero
@@ -71,6 +72,9 @@ namespace celero
 		/// Default Destructor
 		///
 		~ResultTable();
+
+		ResultTable(const ResultTable&) = delete;
+		ResultTable& operator=(ResultTable const& other) = delete;
 
 		///
 		/// \brief	Pimpl Idiom

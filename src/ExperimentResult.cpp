@@ -1,7 +1,7 @@
 ///
 /// \author	John Farrier
 ///
-/// \copyright Copyright 2015, 2016, 2017, 2018. 2019 John Farrier
+/// \copyright Copyright 2015-2021 John Farrier
 ///
 /// Licensed under the Apache License, Version 2.0 (the "License");
 /// you may not use this file except in compliance with the License.
@@ -24,6 +24,7 @@
 #include <celero/Timer.h>
 #include <celero/UserDefinedMeasurementCollector.h>
 #include <celero/Utilities.h>
+
 #include <algorithm>
 #include <cassert>
 
@@ -64,11 +65,11 @@ ExperimentResult::ExperimentResult()
 {
 }
 
-ExperimentResult::ExperimentResult(Experiment* x) : pimpl(x)
+ExperimentResult::~ExperimentResult()
 {
 }
 
-ExperimentResult::~ExperimentResult()
+ExperimentResult::ExperimentResult(Experiment* x) : pimpl(x)
 {
 }
 
@@ -106,12 +107,12 @@ Statistics<int64_t>* ExperimentResult::getTimeStatistics()
 
 void ExperimentResult::addRunTimeSample(const uint64_t runTime)
 {
-	this->pimpl->statsTime.addSample(runTime);
+	this->pimpl->statsTime.addSample(static_cast<int64_t>(runTime));
 }
 
 uint64_t ExperimentResult::getRunTime() const
 {
-	return this->pimpl->statsTime.getMin();
+	return static_cast<uint64_t>(this->pimpl->statsTime.getMin());
 }
 
 double ExperimentResult::getUsPerCall() const

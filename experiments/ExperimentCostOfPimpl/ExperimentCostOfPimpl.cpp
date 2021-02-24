@@ -26,7 +26,11 @@ public:
 		return this->value;
 	}
 
-private:
+	void setValue(int x)
+	{
+		this->value = x;
+	}
+
 	int value;
 };
 
@@ -73,6 +77,11 @@ public:
 		return this->pimpl->value;
 	}
 
+	void setValue(int x)
+	{
+		this->pimpl->value = x;
+	}
+
 private:
 	GenericImpl* pimpl;
 };
@@ -84,13 +93,18 @@ private:
 class UniquePointer
 {
 public:
-	UniquePointer() : pimpl(new GenericImpl)
+	UniquePointer() : pimpl(std::make_unique<GenericImpl>())
 	{
 	}
 
 	int getValue() const
 	{
 		return this->pimpl->value;
+	}
+
+	void setValue(int x)
+	{
+		this->pimpl->value = x;
 	}
 
 private:
@@ -106,29 +120,31 @@ private:
 class SutterPointer
 {
 public:
-	int getValue() const;
+	int getValue() const
+	{
+		return this->pimpl->value;
+	}
+
+	void setValue(int x)
+	{
+		this->pimpl->value = x;
+	}
 
 private:
-	class Impl;
-	celero::Pimpl<Impl> pimpl;
+	class Impl
+	{
+	public:
+		Impl() : value(0)
+		{
+		}
+
+		int value;
+	};
+
+	celero::Pimpl<SutterPointer::Impl> pimpl;
 };
 
 #include <celero/PimplImpl.h>
-
-class SutterPointer::Impl
-{
-public:
-	Impl() : value(0)
-	{
-	}
-
-	int value;
-};
-
-int SutterPointer::getValue() const
-{
-	return this->pimpl->value;
-}
 
 //
 // A basic test fixture for our tests to share.
@@ -144,27 +160,49 @@ public:
 };
 
 static const int SamplesCount = 10000;
-static const int IterationsCount = 10000;
+static const int IterationsCount = 100000;
 
 // The number of iterations is very large because the operation is very quick.  We want to
 // look at a large enough chunk of time to reduce the reliance on the resolution of the
 // clock.  Then, do 30 samples of this large number of runs and keep the quickest.
-BASELINE_F(CostOfPimpl, Baseline, DemoFixture, SamplesCount, IterationsCount)
+BASELINE_F(CostOfPimplGet, Baseline, DemoFixture, SamplesCount, IterationsCount)
 {
 	celero::DoNotOptimizeAway(noPtr.getValue());
 }
 
-BENCHMARK_F(CostOfPimpl, RawPtr, DemoFixture, SamplesCount, IterationsCount)
+BENCHMARK_F(CostOfPimplGet, RawPtr, DemoFixture, SamplesCount, IterationsCount)
 {
 	celero::DoNotOptimizeAway(rawPtr.getValue());
 }
 
-BENCHMARK_F(CostOfPimpl, UniquePtr, DemoFixture, SamplesCount, IterationsCount)
+BENCHMARK_F(CostOfPimplGet, UniquePtr, DemoFixture, SamplesCount, IterationsCount)
 {
 	celero::DoNotOptimizeAway(uniquePtr.getValue());
 }
 
-BENCHMARK_F(CostOfPimpl, SutterPtr, DemoFixture, SamplesCount, IterationsCount)
+BENCHMARK_F(CostOfPimplGet, SutterPtr, DemoFixture, SamplesCount, IterationsCount)
 {
 	celero::DoNotOptimizeAway(sutterPtr.getValue());
+}
+
+// Set
+
+BASELINE_F(CostOfPimplSet, Baseline, DemoFixture, SamplesCount, IterationsCount)
+{
+	noPtr.setValue(5);
+}
+
+BENCHMARK_F(CostOfPimplSet, RawPtr, DemoFixture, SamplesCount, IterationsCount)
+{
+	rawPtr.setValue(6);
+}
+
+BENCHMARK_F(CostOfPimplSet, UniquePtr, DemoFixture, SamplesCount, IterationsCount)
+{
+	uniquePtr.setValue(7);
+}
+
+BENCHMARK_F(CostOfPimplSet, SutterPtr, DemoFixture, SamplesCount, IterationsCount)
+{
+	sutterPtr.setValue(8);
 }

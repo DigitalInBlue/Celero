@@ -6,7 +6,7 @@
 ///
 /// \author	John Farrier
 ///
-/// \copyright Copyright 2015, 2016, 2017, 2018. 2019 John Farrier
+/// \copyright Copyright 2015-2021 John Farrier
 ///
 /// Licensed under the Apache License, Version 2.0 (the "License");
 /// you may not use this file except in compliance with the License.
@@ -31,7 +31,7 @@
 /// It is highly encouraged to only run this code compiled in a "Release" mode to use all available optimizations.
 ///
 
-#ifdef WIN32
+#ifdef _WIN32
 #include <process.h>
 #endif
 
@@ -305,11 +305,11 @@ namespace celero
 ///
 /// Using the BASELINE_ macro, this effectivly fills in a class's UserBenchmark() function.
 ///
-#define BASELINE_FIXED(groupName, baselineName, samples, iterations, useconds)                                                                       \
-	BASELINE_IMPL(groupName, baselineName, ::celero::TestFixture, samples, iterations, 1, useconds)
-#define BASELINE_FIXED_F(groupName, baselineName, fixtureName, samples, iterations, useconds)                                                        \
-	BASELINE_IMPL(groupName, baselineName, fixtureName, samples, iterations, 1, useconds)
-#define BASELINE_FIXED_T(groupName, baselineName, fixtureName, samples, iterations, threads, useconds)                                               \
-	BASELINE_IMPL(groupName, baselineName, fixtureName, samples, iterations, threads, useconds)
+#define BASELINE_FIXED(groupName, baselineName, iterations, useconds)                                                                       \
+	BASELINE_IMPL(groupName, baselineName, ::celero::TestFixture, 1, iterations, 1, useconds)
+#define BASELINE_FIXED_F(groupName, baselineName, fixtureName, iterations, useconds)                                                        \
+	BASELINE_IMPL(groupName, baselineName, fixtureName, 1, iterations, 1, useconds)
+#define BASELINE_FIXED_T(groupName, baselineName, fixtureName, iterations, threads, useconds)                                               \
+	BASELINE_IMPL(groupName, baselineName, fixtureName, 1, iterations, threads, useconds)
 
 #endif

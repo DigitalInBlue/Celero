@@ -4,7 +4,7 @@
 ///
 /// \author	John Farrier
 ///
-/// \copyright Copyright 2015, 2016, 2017, 2018. 2019 John Farrier
+/// \copyright Copyright 2015-2021 John Farrier
 ///
 /// Licensed under the Apache License, Version 2.0 (the "License");
 /// you may not use this file except in compliance with the License.
@@ -22,6 +22,7 @@
 #include <celero/ExperimentResult.h>
 #include <celero/Factory.h>
 #include <celero/Statistics.h>
+
 #include <string>
 
 namespace celero
@@ -45,13 +46,15 @@ namespace celero
 		///
 		///
 		explicit Experiment(std::weak_ptr<celero::Benchmark> benchmark, const std::string& name, uint64_t samples, uint64_t iterations,
-							uint64_t threads,
-							double baselineTarget);
+							uint64_t threads, double baselineTarget);
 
 		///
 		/// \brief	Default destructor.
 		///
 		~Experiment();
+
+		Experiment(const Experiment&) = delete;
+		Experiment& operator=(Experiment const& other) = delete;
 
 		///
 		/// Gets a pointer to the owning Benchmark object.
@@ -175,11 +178,6 @@ namespace celero
 		/// Hide the default constructor
 		///
 		Experiment();
-
-		///
-		/// Hide the copy constructor
-		///
-		explicit Experiment(const celero::Experiment&);
 
 		///
 		///
