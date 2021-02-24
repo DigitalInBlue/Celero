@@ -52,43 +52,43 @@ matrix:
 
     # Clang 3.9
     - os: linux
-      env: LLVM_VERSION=3.9.0 CMAKE_OPTIONS="-DCELERO_ENABLE_TESTS=1"
+      env: LLVM_VERSION=3.9.0 CMAKE_OPTIONS=""
       compiler: clang
 
     # Clang 5.0.1
     - os: linux
-      env: LLVM_VERSION=5.0.1 CMAKE_OPTIONS="-DCELERO_ENABLE_TESTS=1"
+      env: LLVM_VERSION=5.0.1 CMAKE_OPTIONS=""
       compiler: clang
 
     # Clang 7.0.0
     - os: linux
-      env: LLVM_VERSION=7.0.0 CMAKE_OPTIONS="-DCELERO_ENABLE_TESTS=1"
+      env: LLVM_VERSION=7.0.0 CMAKE_OPTIONS=""
       compiler: clang
 
     # Clang 8.0.0
     - os: linux
-      env: LLVM_VERSION=7.0.0 CMAKE_OPTIONS="-DCELERO_ENABLE_TESTS=1"
+      env: LLVM_VERSION=7.0.0 CMAKE_OPTIONS=""
       compiler: clang
 
     # GCC 6
     - os: linux
-      env: COMPILER=g++-6 CMAKE_OPTIONS="-DCELERO_ENABLE_TESTS=1"
+      env: COMPILER=g++-6 CMAKE_OPTIONS=""
       compiler: gcc
 
     # GCC 7
     - os: linux
-      env: COMPILER=g++-7 CMAKE_OPTIONS="-DCELERO_ENABLE_TESTS=1"
+      env: COMPILER=g++-7 CMAKE_OPTIONS=""
       compiler: gcc
 
     # GCC 8
     - os: linux
-      env: COMPILER=g++-8 CMAKE_OPTIONS="-DCELERO_ENABLE_TESTS=1"
+      env: COMPILER=g++-8 CMAKE_OPTIONS=""
       compiler: gcc
 
      # GCC 8
     - os: linux
       name: Complete Build
-      env: COMPILER=g++-8 CMAKE_OPTIONS="-DCELERO_ENABLE_TESTS=1 -DCELERO_ENABLE_EXPERIMENTS=1"
+      env: COMPILER=g++-8 CMAKE_OPTIONS="-DCELERO_ENABLE_EXPERIMENTS=1"
       compiler: gcc
 
     ##########################################################################
@@ -97,7 +97,7 @@ matrix:
     # With debug mode
     - os: linux
       name: Debug Build
-      env: LLVM_VERSION=default CMAKE_OPTIONS="-DCELERO_ENABLE_TESTS=1 -DCMAKE_BUILD_TYPE=DEBUG"
+      env: LLVM_VERSION=default CMAKE_OPTIONS="-DCMAKE_BUILD_TYPE=DEBUG"
       compiler: clang
 
     # Temporarily broken within Travis.CI for CMake's update
