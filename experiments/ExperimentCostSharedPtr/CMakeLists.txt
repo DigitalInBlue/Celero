@@ -17,12 +17,6 @@
 #
 
 #
-# CMake Configuration
-#
-
-CMAKE_MINIMUM_REQUIRED(VERSION 2.8)
-
-#
 # Set the experiment's name here.  Start it with a capital letter use camel case naming.
 #
 SET(PROJECT_NAME CeleroExperiment-CostOfSharedPtr)

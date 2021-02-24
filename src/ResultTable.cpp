@@ -16,11 +16,11 @@
 /// limitations under the License.
 ///
 
+#include <assert.h>
 #include <celero/Benchmark.h>
 #include <celero/PimplImpl.h>
 #include <celero/ResultTable.h>
-
-#include <assert.h>
+#include <celero/UserDefinedMeasurementCollector.h>
 
 #include <fstream>
 #include <iostream>
@@ -34,7 +34,7 @@ using namespace celero;
 class celero::ResultTable::Impl
 {
 public:
-	Impl() : precision(5)
+	Impl()
 	{
 	}
 
@@ -60,15 +60,7 @@ public:
 
 		this->ofs.open(x);
 
-		// Print the header for the table.
-		if(this->ofs.is_open() == true)
-		{
-			this->ofs << "Group,Experiment,Problem "
-						 "Space,Samples,Iterations,Failure,Baseline,";
-			this->ofs << "us/Iteration,Iterations/sec,Min (us),Mean (us),Max "
-						 "(us),Variance,Standard Deviation,Skewness,Kurtosis,Z Score"
-					  << std::endl;
-		}
+		this->hasWrittenHeader = false;
 	}
 
 	std::string format(double x)
@@ -81,7 +73,8 @@ public:
 	}
 
 	std::ofstream ofs;
-	const size_t precision;
+	const size_t precision{5};
+	bool hasWrittenHeader{false};
 };
 
 ResultTable::ResultTable() : pimpl()
@@ -113,13 +106,49 @@ void ResultTable::add(std::shared_ptr<celero::ExperimentResult> x)
 {
 	if(this->pimpl->ofs.is_open() == true)
 	{
+		if(this->pimpl->hasWrittenHeader == false)
+		{
+			// Print the header for the table.
+			this->pimpl->ofs << "Group,Experiment,Problem "
+								"Space,Samples,Iterations,Failure,Baseline,";
+
+			this->pimpl->ofs << "us/Iteration,Iterations/sec,Min (us),Mean (us),Max "
+								"(us),Variance,Standard Deviation,Skewness,Kurtosis,Z Score,";
+
+			// User Defined Metrics
+			const auto udmCollector = x->getUserDefinedMeasurements();
+			for(const auto& entry : udmCollector->getAggregateValues())
+			{
+				this->pimpl->ofs << entry.first << ",";
+			}
+
+			// Purposefully flushing the buffer here.
+			this->pimpl->ofs << std::endl;
+
+			this->pimpl->hasWrittenHeader = true;
+		}
+
+		// Description
 		this->pimpl->ofs << x->getExperiment()->getBenchmark()->getName() << "," << x->getExperiment()->getName() << "," << x->getProblemSpaceValue()
 						 << "," << x->getExperiment()->getSamples() << "," << x->getProblemSpaceIterations() << "," << x->getFailure() << ",";
 
-		this->pimpl->ofs << x->getBaselineMeasurement() << "," << x->getUsPerCall() << "," << x->getCallsPerSecond() << ","
-						 << x->getTimeStatistics()->getMin() << "," << x->getTimeStatistics()->getMean() << "," << x->getTimeStatistics()->getMax()
+		// Measurements
+		this->pimpl->ofs << x->getBaselineMeasurement() << "," << x->getUsPerCall() << "," << x->getCallsPerSecond() << ",";
+
+		// Statistics
+		this->pimpl->ofs << x->getTimeStatistics()->getMin() << "," << x->getTimeStatistics()->getMean() << "," << x->getTimeStatistics()->getMax()
 						 << "," << x->getTimeStatistics()->getVariance() << "," << x->getTimeStatistics()->getStandardDeviation() << ","
 						 << x->getTimeStatistics()->getSkewness() << "," << x->getTimeStatistics()->getKurtosis() << ","
-						 << x->getTimeStatistics()->getZScore() << std::endl;
+						 << x->getTimeStatistics()->getZScore() << ",";
+
+		// User Defined Metrics
+		const auto udmCollector = x->getUserDefinedMeasurements();
+		for(const auto& entry : udmCollector->getAggregateValues())
+		{
+			this->pimpl->ofs << entry.second << ",";
+		}
+
+		// Purposefully flushing the buffer here.
+		this->pimpl->ofs << std::endl;
 	}
 }

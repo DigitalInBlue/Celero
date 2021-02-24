@@ -2,7 +2,7 @@
 
 ### C++ Benchmarking Library
 
-Copyright 2017-2019 John Farrier 
+Copyright 2017-2021 John Farrier 
 
 Apache 2.0 License
 
@@ -37,6 +37,8 @@ Celero has been successfully built on the following platforms during development
 -   XCode v10.1
 -   XCode v10.3
 -   XCode v11.0
+
+As of v2.7, Celero requres the developer to provide GoogleTest in order to build unit tests.  We suggest using a package manager such as VCPKG or Conan to provide the latest version of the library.
 
 #### Quality Control
 
