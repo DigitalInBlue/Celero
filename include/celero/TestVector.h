@@ -22,6 +22,7 @@
 #include <celero/Benchmark.h>
 #include <celero/Export.h>
 #include <celero/Pimpl.h>
+
 #include <functional>
 
 namespace celero
@@ -35,6 +36,9 @@ namespace celero
 	{
 	public:
 		~TestVector();
+
+		TestVector(const TestVector&) = delete;
+		TestVector& operator=(TestVector const& other) = delete;
 
 		static TestVector& Instance();
 
@@ -62,6 +66,6 @@ namespace celero
 		///
 		Pimpl<Impl> pimpl;
 	};
-}
+} // namespace celero
 
 #endif

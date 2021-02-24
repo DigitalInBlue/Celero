@@ -22,6 +22,7 @@
 #include <celero/Export.h>
 #include <celero/Pimpl.h>
 #include <celero/Statistics.h>
+
 #include <string>
 
 namespace celero
@@ -34,12 +35,12 @@ namespace celero
 	///
 	/// \author	John Farrier
 	///
-	class CELERO_EXPORT ExperimentResult
+	class CELERO_EXPORT ExperimentResult final
 	{
 	public:
 		explicit ExperimentResult(Experiment* x);
 
-		~ExperimentResult();
+		~ExperimentResult() = default;
 
 		///
 		/// Gets a pointer to the owning experiment.

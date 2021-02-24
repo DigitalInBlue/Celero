@@ -21,6 +21,7 @@
 
 #include <celero/Experiment.h>
 #include <celero/Pimpl.h>
+
 #include <string>
 
 namespace celero
@@ -71,6 +72,9 @@ namespace celero
 		/// Default Destructor
 		///
 		~ResultTable();
+
+		ResultTable(const ResultTable&) = delete;
+		ResultTable& operator=(ResultTable const& other) = delete;
 
 		///
 		/// \brief	Pimpl Idiom

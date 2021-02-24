@@ -21,6 +21,7 @@
 
 #include <celero/Export.h>
 #include <celero/Timer.h>
+
 #include <cstddef>
 #include <cstdint>
 #include <limits>
@@ -149,7 +150,7 @@ namespace celero
 
 		///
 		/// Internal to Celero
-		/// 
+		///
 		void setExperimentTime(uint64_t x);
 
 		///

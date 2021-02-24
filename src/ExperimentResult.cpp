@@ -24,6 +24,7 @@
 #include <celero/Timer.h>
 #include <celero/UserDefinedMeasurementCollector.h>
 #include <celero/Utilities.h>
+
 #include <algorithm>
 #include <cassert>
 
@@ -68,10 +69,6 @@ ExperimentResult::ExperimentResult(Experiment* x) : pimpl(x)
 {
 }
 
-ExperimentResult::~ExperimentResult()
-{
-}
-
 Experiment* ExperimentResult::getExperiment() const
 {
 	return this->pimpl->parent;
@@ -106,12 +103,12 @@ Statistics<int64_t>* ExperimentResult::getTimeStatistics()
 
 void ExperimentResult::addRunTimeSample(const uint64_t runTime)
 {
-	this->pimpl->statsTime.addSample(runTime);
+	this->pimpl->statsTime.addSample(static_cast<int64_t>(runTime));
 }
 
 uint64_t ExperimentResult::getRunTime() const
 {
-	return this->pimpl->statsTime.getMin();
+	return static_cast<uint64_t>(this->pimpl->statsTime.getMin());
 }
 
 double ExperimentResult::getUsPerCall() const

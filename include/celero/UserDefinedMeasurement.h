@@ -20,6 +20,7 @@
 ///
 
 #include <celero/Export.h>
+
 #include <functional>
 #include <memory>
 #include <string>
@@ -48,6 +49,11 @@ namespace celero
 	class CELERO_EXPORT UserDefinedMeasurement
 	{
 	public:
+		///
+		/// Expose the default destructor, but make it virtual to support inheritance.
+		///
+		virtual ~UserDefinedMeasurement() = default;
+
 		///
 		/// \brief Must be implemented by the user. Must return a specification which aggregations the user wants to be computed.
 		///

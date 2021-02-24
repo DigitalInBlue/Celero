@@ -20,6 +20,7 @@
 ///
 
 #include <celero/Export.h>
+
 #include <memory>
 
 namespace celero
@@ -38,6 +39,9 @@ namespace celero
 	{
 	public:
 		Pimpl();
+		Pimpl(const Pimpl&) = delete;
+		Pimpl& operator=(Pimpl const& other) = delete;
+
 		// template<typename ...Args> Pimpl( Args&& ... );
 		template <typename Arg1>
 		Pimpl(Arg1&&);

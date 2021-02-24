@@ -51,14 +51,8 @@ namespace celero
 		///
 		///
 		///
-		Statistics(const Statistics& other) :
-			sampleSize(other.sampleSize),
-			M1(other.M1),
-			M2(other.M2),
-			M3(other.M3),
-			M4(other.M4),
-			min(other.min),
-			max(other.max)
+		Statistics(const Statistics& other)
+			: sampleSize(other.sampleSize), M1(other.M1), M2(other.M2), M3(other.M3), M4(other.M4), min(other.min), max(other.max)
 		{
 		}
 
@@ -149,7 +143,7 @@ namespace celero
 			this->sampleSize++;
 
 			const auto delta = x - this->M1;
-			const auto delta_n = delta / this->sampleSize;
+			const auto delta_n = delta / static_cast<decltype(delta)>(this->sampleSize);
 			const auto delta_n2 = delta_n * delta_n;
 			const auto term1 = delta * delta_n * n1;
 

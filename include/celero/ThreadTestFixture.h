@@ -44,6 +44,9 @@ namespace celero
 		///
 		virtual ~ThreadTestFixture();
 
+		ThreadTestFixture(const ThreadTestFixture&) = delete;
+		ThreadTestFixture& operator=(ThreadTestFixture const& other) = delete;
+
 		///
 		/// Start threads before benchmark execution.
 		///

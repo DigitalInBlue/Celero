@@ -55,7 +55,7 @@ namespace celero
 		///
 		constexpr double ConvertSystemTime(const uint64_t x)
 		{
-			return x * celero::UsToSec;
+			return static_cast<double>(x) * celero::UsToSec;
 		}
 
 		///
