@@ -1,11 +1,11 @@
 #include <celero/Celero.h>
 #include <celero/Utilities.h>
 
-#include "osg_ref_ptr.h"
-
 #include <array>
 #include <chrono>
 #include <thread>
+
+#include "osg_ref_ptr.h"
 
 ///
 /// This is the main(int argc, char** argv) for the entire celero program.

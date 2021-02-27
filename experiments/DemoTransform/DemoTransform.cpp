@@ -41,12 +41,11 @@ constexpr int Multiple = 2112;
 class DemoTransformFixture : public celero::TestFixture
 {
 public:
-
 	DemoTransformFixture()
 	{
 	}
 
-	virtual std::vector<celero::TestFixture::ExperimentValue> getExperimentValues() const override
+	std::vector<celero::TestFixture::ExperimentValue> getExperimentValues() const override
 	{
 		std::vector<celero::TestFixture::ExperimentValue> problemSpaceValues;
 
@@ -68,7 +67,7 @@ public:
 	}
 
 	/// Before each run, build a vector of random integers.
-	virtual void setUp(const celero::TestFixture::ExperimentValue& experimentValue) override
+	void setUp(const celero::TestFixture::ExperimentValue& experimentValue) override
 	{
 		this->arraySize = static_cast<int>(experimentValue.Value);
 
@@ -81,7 +80,7 @@ public:
 	}
 
 	/// After each run, clear the vector of random integers.
-	virtual void tearDown() override
+	void tearDown() override
 	{
 		this->arrayIn.clear();
 		this->arrayOut.clear();
@@ -102,18 +101,17 @@ BASELINE_F(DemoTransform, ForLoop, DemoTransformFixture, 30, 10000)
 }
 
 BASELINE_FIXED_F(DemoTransform, FixedTime, DemoTransformFixture, 1, 100)
-{ }
+{
+}
 
 BENCHMARK_F(DemoTransform, StdTransform, DemoTransformFixture, 30, 10000)
 {
-	std::transform(this->arrayIn.begin(), this->arrayIn.end(), this->arrayOut.begin(),
-				   std::bind1st(std::multiplies<int>(), Multiple));
+	std::transform(this->arrayIn.begin(), this->arrayIn.end(), this->arrayOut.begin(), std::bind1st(std::multiplies<int>(), Multiple));
 }
 
 BENCHMARK_F(DemoTransform, StdTransformLambda, DemoTransformFixture, 30, 10000)
 {
-	std::transform(this->arrayIn.begin(), this->arrayIn.end(), this->arrayOut.begin(),
-				   [](int in) -> int { return in * Multiple; });
+	std::transform(this->arrayIn.begin(), this->arrayIn.end(), this->arrayOut.begin(), [](int in) -> int { return in * Multiple; });
 }
 
 BENCHMARK_F(DemoTransform, SelfForLoop, DemoTransformFixture, 30, 10000)
@@ -126,12 +124,10 @@ BENCHMARK_F(DemoTransform, SelfForLoop, DemoTransformFixture, 30, 10000)
 
 BENCHMARK_F(DemoTransform, SelfStdTransform, DemoTransformFixture, 30, 10000)
 {
-	std::transform(this->arrayIn.begin(), this->arrayIn.end(), this->arrayIn.begin(),
-				   std::bind1st(std::multiplies<int>(), Multiple));
+	std::transform(this->arrayIn.begin(), this->arrayIn.end(), this->arrayIn.begin(), std::bind1st(std::multiplies<int>(), Multiple));
 }
 
 BENCHMARK_F(DemoTransform, SelfStdTransformLambda, DemoTransformFixture, 30, 10000)
 {
-	std::transform(this->arrayIn.begin(), this->arrayIn.end(), this->arrayIn.begin(),
-				   [](int in) -> int { return in * Multiple; });
+	std::transform(this->arrayIn.begin(), this->arrayIn.end(), this->arrayIn.begin(), [](int in) -> int { return in * Multiple; });
 }

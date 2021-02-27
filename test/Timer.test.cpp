@@ -22,7 +22,7 @@
 TEST(Timer, GetSystemTime)
 {
 	const auto time = celero::timer::GetSystemTime();
-	EXPECT_EQ(time, 0);
+	EXPECT_NE(time, 0);
 }
 
 TEST(Timer, CachePerformanceFrequency)

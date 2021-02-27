@@ -60,8 +60,8 @@ namespace celero
 	/// \returns a pointer to a Benchmark instance representing the given test.
 	///
 	CELERO_EXPORT std::shared_ptr<celero::Benchmark> RegisterTest(const char* groupName, const char* benchmarkName, const uint64_t samples,
-														  const uint64_t iterations, const uint64_t threads,
-														  std::shared_ptr<celero::Factory> experimentFactory, const double target = -1);
+																  const uint64_t iterations, const uint64_t threads,
+																  std::shared_ptr<celero::Factory> experimentFactory, const double target = -1);
 
 	///
 	/// \brief	Adds a new test baseline to the list of test baseliness to be executed.
@@ -103,11 +103,11 @@ namespace celero
 ///
 ///	\brief	A macro to build the most basic main() required to run the benchmark tests.
 ///
-#define CELERO_MAIN                                                                                                                                  \
-	int main(int argc, char** argv)                                                                                                                  \
-	{                                                                                                                                                \
-		celero::Run(argc, argv);                                                                                                                     \
-		return 0;                                                                                                                                    \
+#define CELERO_MAIN                 \
+	int main(int argc, char** argv) \
+	{                               \
+		celero::Run(argc, argv);    \
+		return 0;                   \
 	}
 
 ///
@@ -122,25 +122,25 @@ namespace celero
 ///
 ///	A macro to create a class of a unique name which can be used to register and execute a benchmark test.
 ///
-#define BENCHMARK_IMPL(groupName, benchmarkName, fixtureName, samples, iterations, threads)                                                          \
-	class BENCHMARK_CLASS_NAME(groupName, benchmarkName) : public fixtureName                                                                        \
-	{                                                                                                                                                \
-	public:                                                                                                                                          \
-		BENCHMARK_CLASS_NAME(groupName, benchmarkName)() : fixtureName()                                                                             \
-		{                                                                                                                                            \
-		}                                                                                                                                            \
-                                                                                                                                                     \
-	protected:                                                                                                                                       \
-		virtual void UserBenchmark() override;                                                                                                       \
-                                                                                                                                                     \
-	private:                                                                                                                                         \
-		static const std::shared_ptr<::celero::Benchmark> info;                                                                                      \
-	};                                                                                                                                               \
-                                                                                                                                                     \
-	const std::shared_ptr<::celero::Benchmark> BENCHMARK_CLASS_NAME(groupName, benchmarkName)::info =                                                \
-		::celero::RegisterTest(#groupName, #benchmarkName, samples, iterations, threads,                                                             \
-							   std::make_shared<::celero::GenericFactory<BENCHMARK_CLASS_NAME(groupName, benchmarkName)>>());                        \
-                                                                                                                                                     \
+#define BENCHMARK_IMPL(groupName, benchmarkName, fixtureName, samples, iterations, threads)                                   \
+	class BENCHMARK_CLASS_NAME(groupName, benchmarkName) : public fixtureName                                                 \
+	{                                                                                                                         \
+	public:                                                                                                                   \
+		BENCHMARK_CLASS_NAME(groupName, benchmarkName)() : fixtureName()                                                      \
+		{                                                                                                                     \
+		}                                                                                                                     \
+                                                                                                                              \
+	protected:                                                                                                                \
+		void UserBenchmark() override;                                                                                        \
+                                                                                                                              \
+	private:                                                                                                                  \
+		static const std::shared_ptr<::celero::Benchmark> info;                                                               \
+	};                                                                                                                        \
+                                                                                                                              \
+	const std::shared_ptr<::celero::Benchmark> BENCHMARK_CLASS_NAME(groupName, benchmarkName)::info =                         \
+		::celero::RegisterTest(#groupName, #benchmarkName, samples, iterations, threads,                                      \
+							   std::make_shared<::celero::GenericFactory<BENCHMARK_CLASS_NAME(groupName, benchmarkName)>>()); \
+                                                                                                                              \
 	void BENCHMARK_CLASS_NAME(groupName, benchmarkName)::UserBenchmark()
 
 ///
@@ -148,25 +148,25 @@ namespace celero
 ///
 ///	A macro to create a class of a unique name which can be used to register and execute a benchmark test.
 ///
-#define BENCHMARK_TEST_IMPL(groupName, benchmarkName, fixtureName, samples, iterations, threads, target)                                             \
-	class BENCHMARK_CLASS_NAME(groupName, benchmarkName) : public fixtureName                                                                        \
-	{                                                                                                                                                \
-	public:                                                                                                                                          \
-		BENCHMARK_CLASS_NAME(groupName, benchmarkName)() : fixtureName()                                                                             \
-		{                                                                                                                                            \
-		}                                                                                                                                            \
-                                                                                                                                                     \
-	protected:                                                                                                                                       \
-		virtual void UserBenchmark() override;                                                                                                       \
-                                                                                                                                                     \
-	private:                                                                                                                                         \
-		static const std::shared_ptr<::celero::Benchmark> info;                                                                                      \
-	};                                                                                                                                               \
-                                                                                                                                                     \
-	const std::shared_ptr<::celero::Benchmark> BENCHMARK_CLASS_NAME(groupName, benchmarkName)::info =                                                \
-		::celero::RegisterTest(#groupName, #benchmarkName, samples, iterations, threads,                                                             \
-							   std::make_shared<::celero::GenericFactory<BENCHMARK_CLASS_NAME(groupName, benchmarkName)>>(), target);                \
-                                                                                                                                                     \
+#define BENCHMARK_TEST_IMPL(groupName, benchmarkName, fixtureName, samples, iterations, threads, target)                              \
+	class BENCHMARK_CLASS_NAME(groupName, benchmarkName) : public fixtureName                                                         \
+	{                                                                                                                                 \
+	public:                                                                                                                           \
+		BENCHMARK_CLASS_NAME(groupName, benchmarkName)() : fixtureName()                                                              \
+		{                                                                                                                             \
+		}                                                                                                                             \
+                                                                                                                                      \
+	protected:                                                                                                                        \
+		void UserBenchmark() override;                                                                                                \
+                                                                                                                                      \
+	private:                                                                                                                          \
+		static const std::shared_ptr<::celero::Benchmark> info;                                                                       \
+	};                                                                                                                                \
+                                                                                                                                      \
+	const std::shared_ptr<::celero::Benchmark> BENCHMARK_CLASS_NAME(groupName, benchmarkName)::info =                                 \
+		::celero::RegisterTest(#groupName, #benchmarkName, samples, iterations, threads,                                              \
+							   std::make_shared<::celero::GenericFactory<BENCHMARK_CLASS_NAME(groupName, benchmarkName)>>(), target); \
+                                                                                                                                      \
 	void BENCHMARK_CLASS_NAME(groupName, benchmarkName)::UserBenchmark()
 
 ///
@@ -176,7 +176,7 @@ namespace celero
 ///
 /// Using the BENCHMARK_ macro, this effectivly fills in a class's UserBenchmark() function.
 ///
-#define BENCHMARK_F(groupName, benchmarkName, fixtureName, samples, iterations)                                                                      \
+#define BENCHMARK_F(groupName, benchmarkName, fixtureName, samples, iterations) \
 	BENCHMARK_IMPL(groupName, benchmarkName, fixtureName, samples, iterations, 1)
 
 ///
@@ -186,7 +186,7 @@ namespace celero
 ///
 /// Using the BENCHMARK_ macro, this effectivly fills in a class's UserBenchmark() function.
 ///
-#define BENCHMARK_T(groupName, benchmarkName, fixtureName, samples, iterations, threads)                                                             \
+#define BENCHMARK_T(groupName, benchmarkName, fixtureName, samples, iterations, threads) \
 	BENCHMARK_IMPL(groupName, benchmarkName, fixtureName, samples, iterations, threads)
 
 ///
@@ -196,7 +196,7 @@ namespace celero
 ///
 /// Using the BENCHMARK_ macro, this effectivly fills in a class's UserBenchmark() function.
 ///
-#define BENCHMARK_TEST_F(groupName, benchmarkName, fixtureName, samples, iterations, target)                                                         \
+#define BENCHMARK_TEST_F(groupName, benchmarkName, fixtureName, samples, iterations, target) \
 	BENCHMARK_TEST_IMPL(groupName, benchmarkName, fixtureName, samples, iterations, 1, target)
 
 ///
@@ -206,7 +206,7 @@ namespace celero
 ///
 /// Using the BENCHMARK_ macro, this effectivly fills in a class's UserBenchmark() function.
 ///
-#define BENCHMARK_TEST_T(groupName, benchmarkName, fixtureName, samples, iterations, threads, target)                                                \
+#define BENCHMARK_TEST_T(groupName, benchmarkName, fixtureName, samples, iterations, threads, target) \
 	BENCHMARK_TEST_IMPL(groupName, benchmarkName, fixtureName, samples, iterations, threads, target)
 
 ///
@@ -216,7 +216,7 @@ namespace celero
 ///
 /// Using the BENCHMARK_ macro, this effectivly fills in a class's UserBenchmark() function.
 ///
-#define BENCHMARK(groupName, benchmarkName, samples, iterations)                                                                                     \
+#define BENCHMARK(groupName, benchmarkName, samples, iterations) \
 	BENCHMARK_IMPL(groupName, benchmarkName, ::celero::TestFixture, samples, iterations, 1)
 
 ///
@@ -226,7 +226,7 @@ namespace celero
 ///
 /// Using the BENCHMARK_ macro, this effectivly fills in a class's UserBenchmark() function.
 ///
-#define BENCHMARK_TEST(groupName, benchmarkName, samples, iterations, target)                                                                        \
+#define BENCHMARK_TEST(groupName, benchmarkName, samples, iterations, target) \
 	BENCHMARK_TEST_IMPL(groupName, benchmarkName, ::celero::TestFixture, samples, iterations, 1, target)
 
 ///
@@ -241,29 +241,29 @@ namespace celero
 ///
 ///	A macro to create a class of a unique name which can be used to register and execute a baseline benchmark test.
 ///
-#define BASELINE_IMPL(groupName, baselineName, fixtureName, samples, iterations, threads, useconds)                                                  \
-	class BASELINE_CLASS_NAME(groupName, baselineName) : public fixtureName                                                                          \
-	{                                                                                                                                                \
-	public:                                                                                                                                          \
-		BASELINE_CLASS_NAME(groupName, baselineName)() : fixtureName()                                                                               \
-		{                                                                                                                                            \
-		}                                                                                                                                            \
-                                                                                                                                                     \
-	protected:                                                                                                                                       \
-		virtual void UserBenchmark() override;                                                                                                       \
-		virtual uint64_t HardCodedMeasurement() const override                                                                                       \
-		{                                                                                                                                            \
-			return uint64_t(useconds);                                                                                                               \
-		}                                                                                                                                            \
-                                                                                                                                                     \
-	private:                                                                                                                                         \
-		static const std::shared_ptr<::celero::Benchmark> info;                                                                                      \
-	};                                                                                                                                               \
-                                                                                                                                                     \
-	const std::shared_ptr<::celero::Benchmark> BASELINE_CLASS_NAME(groupName, baselineName)::info =                                                  \
-		::celero::RegisterBaseline(#groupName, #baselineName, samples, iterations, threads,                                                          \
-								   std::make_shared<::celero::GenericFactory<BASELINE_CLASS_NAME(groupName, baselineName)>>());                      \
-                                                                                                                                                     \
+#define BASELINE_IMPL(groupName, baselineName, fixtureName, samples, iterations, threads, useconds)                             \
+	class BASELINE_CLASS_NAME(groupName, baselineName) : public fixtureName                                                     \
+	{                                                                                                                           \
+	public:                                                                                                                     \
+		BASELINE_CLASS_NAME(groupName, baselineName)() : fixtureName()                                                          \
+		{                                                                                                                       \
+		}                                                                                                                       \
+                                                                                                                                \
+	protected:                                                                                                                  \
+		void UserBenchmark() override;                                                                                          \
+		uint64_t HardCodedMeasurement() const override                                                                          \
+		{                                                                                                                       \
+			return uint64_t(useconds);                                                                                          \
+		}                                                                                                                       \
+                                                                                                                                \
+	private:                                                                                                                    \
+		static const std::shared_ptr<::celero::Benchmark> info;                                                                 \
+	};                                                                                                                          \
+                                                                                                                                \
+	const std::shared_ptr<::celero::Benchmark> BASELINE_CLASS_NAME(groupName, baselineName)::info =                             \
+		::celero::RegisterBaseline(#groupName, #baselineName, samples, iterations, threads,                                     \
+								   std::make_shared<::celero::GenericFactory<BASELINE_CLASS_NAME(groupName, baselineName)>>()); \
+                                                                                                                                \
 	void BASELINE_CLASS_NAME(groupName, baselineName)::UserBenchmark()
 
 ///
@@ -273,7 +273,7 @@ namespace celero
 ///
 /// Using the BASELINE_ macro, this effectivly fills in a class's UserBenchmark() function.
 ///
-#define BASELINE_F(groupName, baselineName, fixtureName, samples, iterations)                                                                        \
+#define BASELINE_F(groupName, baselineName, fixtureName, samples, iterations) \
 	BASELINE_IMPL(groupName, baselineName, fixtureName, samples, iterations, 1, 0)
 
 ///
@@ -283,7 +283,7 @@ namespace celero
 ///
 /// Using the BASELINE_ macro, this effectivly fills in a class's UserBenchmark() function.
 ///
-#define BASELINE_T(groupName, baselineName, fixtureName, samples, iterations, threads)                                                               \
+#define BASELINE_T(groupName, baselineName, fixtureName, samples, iterations, threads) \
 	BASELINE_IMPL(groupName, baselineName, fixtureName, samples, iterations, threads, 0)
 
 ///
@@ -293,7 +293,7 @@ namespace celero
 ///
 /// Using the BASELINE_ macro, this effectivly fills in a class's UserBenchmark() function.
 ///
-#define BASELINE(groupName, baselineName, samples, iterations)                                                                                       \
+#define BASELINE(groupName, baselineName, samples, iterations) \
 	BASELINE_IMPL(groupName, baselineName, ::celero::TestFixture, samples, iterations, 1, 0)
 
 ///
@@ -305,11 +305,11 @@ namespace celero
 ///
 /// Using the BASELINE_ macro, this effectivly fills in a class's UserBenchmark() function.
 ///
-#define BASELINE_FIXED(groupName, baselineName, iterations, useconds)                                                                       \
+#define BASELINE_FIXED(groupName, baselineName, iterations, useconds) \
 	BASELINE_IMPL(groupName, baselineName, ::celero::TestFixture, 1, iterations, 1, useconds)
-#define BASELINE_FIXED_F(groupName, baselineName, fixtureName, iterations, useconds)                                                        \
+#define BASELINE_FIXED_F(groupName, baselineName, fixtureName, iterations, useconds) \
 	BASELINE_IMPL(groupName, baselineName, fixtureName, 1, iterations, 1, useconds)
-#define BASELINE_FIXED_T(groupName, baselineName, fixtureName, iterations, threads, useconds)                                               \
+#define BASELINE_FIXED_T(groupName, baselineName, fixtureName, iterations, threads, useconds) \
 	BASELINE_IMPL(groupName, baselineName, fixtureName, 1, iterations, threads, useconds)
 
 #endif

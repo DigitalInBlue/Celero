@@ -144,7 +144,7 @@ bool ExecuteProblemSpace(std::shared_ptr<celero::ExperimentResult> r)
 	}
 	else
 	{
-		std::cerr << "Celero: Test \"" << r->getExperiment()->getBenchmark()->getName() << "::" << r->getExperiment()->getName()
+		std::cerr << "ERROR: Celero Test \"" << r->getExperiment()->getBenchmark()->getName() << "::" << r->getExperiment()->getName()
 				  << "\" must have at least 1 sample." << std::endl;
 		return false;
 	}
@@ -178,11 +178,11 @@ void executor::RunAllExperiments()
 	}
 }
 
-void executor::RunBaseline(std::shared_ptr<Benchmark> bmark)
+bool executor::RunBaseline(std::shared_ptr<Benchmark> bmark)
 {
 	if(bmark == nullptr)
 	{
-		return;
+		return false;
 	}
 
 	auto baselineExperiment = bmark->getBaseline();
@@ -245,9 +245,11 @@ void executor::RunBaseline(std::shared_ptr<Benchmark> bmark)
 	}
 	else
 	{
-		std::cerr << "No Baseline case defined for \"" + bmark->getName() + "\".  Exiting.";
-		std::exit(EXIT_FAILURE);
+		std::cerr << "ERROR: No Baseline case defined for \"" + bmark->getName() + "\".\n";
+		return false;
 	}
+
+	return true;
 }
 
 void executor::RunExperiments(std::shared_ptr<Benchmark> bmark)
@@ -373,8 +375,10 @@ void executor::Run(std::shared_ptr<Experiment> e)
 
 void executor::Run(std::shared_ptr<Benchmark> bmark)
 {
-	executor::RunBaseline(bmark);
-	executor::RunExperiments(bmark);
+	if(executor::RunBaseline(bmark) == true)
+	{
+		executor::RunExperiments(bmark);
+	}
 }
 
 void executor::Run(const std::string& benchmarkName)

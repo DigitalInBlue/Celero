@@ -1,4 +1,5 @@
 #include <celero/Celero.h>
+
 #include <algorithm>
 #include <iostream>
 #include <string>
@@ -98,28 +99,28 @@ class SortFixture : public celero::TestFixture
 public:
 	class CopyCountUDM : public celero::UserDefinedMeasurementTemplate<size_t>
 	{
-		virtual std::string getName() const override
+		std::string getName() const override
 		{
 			return "Copies";
 		}
 
 		// Turn off some of the output reporting.
-		virtual bool reportStandardDeviation() const override
+		bool reportStandardDeviation() const override
 		{
 			return false;
 		}
 
-		virtual bool reportSkewness() const override
+		bool reportSkewness() const override
 		{
 			return false;
 		}
 
-		virtual bool reportKurtosis() const override
+		bool reportKurtosis() const override
 		{
 			return false;
 		}
 
-		virtual bool reportZScore() const override
+		bool reportZScore() const override
 		{
 			return false;
 		}
@@ -129,7 +130,7 @@ public:
 	{
 	}
 
-	virtual std::vector<celero::TestFixture::ExperimentValue> getExperimentValues() const override
+	std::vector<celero::TestFixture::ExperimentValue> getExperimentValues() const override
 	{
 		std::vector<celero::TestFixture::ExperimentValue> problemSpace;
 
@@ -144,13 +145,13 @@ public:
 	}
 
 	/// Before each sample, build a vector of random integers.
-	virtual void setUp(const celero::TestFixture::ExperimentValue& experimentValue) override
+	void setUp(const celero::TestFixture::ExperimentValue& experimentValue) override
 	{
 		this->arraySize = experimentValue.Value;
 	}
 
 	// Before each iteration
-	virtual void onExperimentStart(const celero::TestFixture::ExperimentValue&) override
+	void onExperimentStart(const celero::TestFixture::ExperimentValue&) override
 	{
 		this->array.resize(this->arraySize);
 		CopyCountingInt::resetCount();
@@ -161,11 +162,11 @@ public:
 		}
 	}
 
-	virtual void tearDown() override
+	void tearDown() override
 	{
 	}
 
-	virtual void onExperimentEnd() override
+	void onExperimentEnd() override
 	{
 		/// After each iteration, clear the vector of random integers.
 		this->array.clear();
@@ -174,7 +175,7 @@ public:
 		CopyCountingInt::resetCount();
 	}
 
-	virtual std::vector<std::shared_ptr<celero::UserDefinedMeasurement>> getUserDefinedMeasurements() const override
+	std::vector<std::shared_ptr<celero::UserDefinedMeasurement>> getUserDefinedMeasurements() const override
 	{
 		return {this->copyCountUDM};
 	}

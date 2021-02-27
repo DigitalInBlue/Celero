@@ -1,6 +1,7 @@
 // Original code at: https://github.com/fenbf/benchmarkLibsTest
 
 #include <celero/Celero.h>
+
 #include "Particles.h"
 
 CELERO_MAIN;
@@ -8,7 +9,7 @@ CELERO_MAIN;
 class ParticlesFixture : public celero::TestFixture
 {
 public:
-	virtual std::vector<celero::TestFixture::ExperimentValue> getExperimentValues() const override
+	std::vector<celero::TestFixture::ExperimentValue> getExperimentValues() const override
 	{
 		std::vector<celero::TestFixture::ExperimentValue> problemSpace;
 		const auto totalNumberOfTests = 10;
@@ -28,7 +29,7 @@ class ParticlesObjVectorFixture : public ParticlesFixture
 {
 public:
 	/// Before each run, build a vector of random integers.
-	virtual void setUp(const celero::TestFixture::ExperimentValue& x) override
+	void setUp(const celero::TestFixture::ExperimentValue& x) override
 	{
 		this->particles = std::vector<Particle>(x.Value);
 
@@ -39,7 +40,7 @@ public:
 	}
 
 	/// After each run, clear the vector
-	virtual void tearDown() override
+	void tearDown() override
 	{
 		this->particles.clear();
 	}
@@ -72,7 +73,7 @@ public:
 	}
 
 	/// Before each run, build a vector of random integers.
-	virtual void setUp(const celero::TestFixture::ExperimentValue& experimentValue) override
+	void setUp(const celero::TestFixture::ExperimentValue& experimentValue) override
 	{
 		this->particles = std::vector<std::shared_ptr<Particle>>(experimentValue.Value);
 
@@ -102,7 +103,7 @@ public:
 	}
 
 	/// After each run, clear the vector
-	virtual void tearDown() override
+	void tearDown() override
 	{
 		this->particles.clear();
 	}

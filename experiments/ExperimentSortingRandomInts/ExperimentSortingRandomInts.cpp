@@ -1,4 +1,5 @@
 #include <celero/Celero.h>
+
 #include <algorithm>
 
 #ifndef _WIN32
@@ -40,7 +41,7 @@ public:
 	{
 	}
 
-	virtual std::vector<celero::TestFixture::ExperimentValue> getExperimentValues() const override
+	std::vector<celero::TestFixture::ExperimentValue> getExperimentValues() const override
 	{
 		std::vector<celero::TestFixture::ExperimentValue> problemSpace;
 
@@ -55,14 +56,14 @@ public:
 	}
 
 	/// Before each sample, build a vector of random integers.
-	virtual void setUp(const celero::TestFixture::ExperimentValue& experimentValue) override
+	void setUp(const celero::TestFixture::ExperimentValue& experimentValue) override
 	{
 		this->arraySize = experimentValue.Value;
 		this->array.resize(this->arraySize);
 	}
 
 	// Before each iteration
-	virtual void onExperimentStart(const celero::TestFixture::ExperimentValue&) override
+	void onExperimentStart(const celero::TestFixture::ExperimentValue&) override
 	{
 		for(int i = 0; i < this->arraySize; i++)
 		{
@@ -71,14 +72,14 @@ public:
 	}
 
 	// After each iteration
-	virtual void onExperimentEnd() override
+	void onExperimentEnd() override
 	{
 		/// After each iteration, clear the vector of random integers.
 		this->array.clear();
 	}
 
 	// After each sample
-	virtual void tearDown() override
+	void tearDown() override
 	{
 	}
 

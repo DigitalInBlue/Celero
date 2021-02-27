@@ -1,13 +1,9 @@
 // Original code at: https://github.com/fenbf/benchmarkLibsTest
 
-#pragma warning(push)
-#pragma warning(disable : 4251) // warning C4251: celero::Result::pimpl': class 'celero::Pimpl<celero::Result::Impl>' needs to have dll-interface to
-								// be used by clients of class 'celero::Result'
 #include <celero\Celero.h>
-#pragma warning(pop)
-
 #include <emmintrin.h>
 #include <omp.h>
+
 #include <array>
 #include <bitset>
 #include <iostream>
@@ -53,7 +49,7 @@ public:
 class CompressBoolsFixture : public celero::TestFixture
 {
 public:
-	virtual std::vector<celero::TestFixture::ExperimentValue> getExperimentValues() const override
+	std::vector<celero::TestFixture::ExperimentValue> getExperimentValues() const override
 	{
 		std::vector<celero::TestFixture::ExperimentValue> problemSpace;
 
@@ -75,7 +71,7 @@ public:
 	}
 
 	/// Before each run, build a vector of random integers.
-	virtual void setUp(const celero::TestFixture::ExperimentValue& experimentValue) override
+	void setUp(const celero::TestFixture::ExperimentValue& experimentValue) override
 	{
 		this->arrayLength = static_cast<size_t>(experimentValue.Value);
 		this->inputValues.reset(new int[arrayLength]);
@@ -108,13 +104,13 @@ public:
 class NoPackingFixture : public CompressBoolsFixture
 {
 public:
-	virtual void setUp(const celero::TestFixture::ExperimentValue& x) override
+	void setUp(const celero::TestFixture::ExperimentValue& x) override
 	{
 		CompressBoolsFixture::setUp(x);
 		this->outputValues.reset(new bool[static_cast<unsigned int>(arrayLength)]);
 	}
 
-	virtual void tearDown() override
+	void tearDown() override
 	{
 		for(size_t i = 0; i < arrayLength; ++i)
 		{
@@ -136,7 +132,7 @@ BASELINE_F(CompressBoolsTest, NoPackingVersion, NoPackingFixture, SamplesCount, 
 class StdBitsetFixture : public CompressBoolsFixture
 {
 public:
-	virtual void tearDown() override
+	void tearDown() override
 	{
 		for(size_t i = 0; i < this->arrayLength; ++i)
 		{
@@ -160,13 +156,13 @@ BENCHMARK_F(CompressBoolsTest, StdBitset, StdBitsetFixture, SamplesCount, Iterat
 class StdVectorFixture : public CompressBoolsFixture
 {
 public:
-	virtual void setUp(const celero::TestFixture::ExperimentValue& experimentValue) override
+	void setUp(const celero::TestFixture::ExperimentValue& experimentValue) override
 	{
 		CompressBoolsFixture::setUp(experimentValue);
 		this->outputVector.resize(static_cast<unsigned int>(experimentValue.Value));
 	}
 
-	virtual void tearDown() override
+	void tearDown() override
 	{
 		for(size_t i = 0; i < arrayLength; ++i)
 		{
@@ -192,7 +188,7 @@ public:
 	{
 	}
 
-	virtual void setUp(const celero::TestFixture::ExperimentValue& experimentValue) override
+	void setUp(const celero::TestFixture::ExperimentValue& experimentValue) override
 	{
 		CompressBoolsFixture::setUp(experimentValue);
 
@@ -202,7 +198,7 @@ public:
 		this->outputValues.reset(new uint8_t[this->numBytes]);
 	}
 
-	virtual void tearDown() override
+	void tearDown() override
 	{
 		for(size_t i = 0; i < this->arrayLength; ++i)
 		{
@@ -311,7 +307,7 @@ struct bool8
 class PackedStructFixture : public CompressBoolsFixture
 {
 public:
-	virtual void setUp(const celero::TestFixture::ExperimentValue& experimentValue) override
+	void setUp(const celero::TestFixture::ExperimentValue& experimentValue) override
 	{
 		CompressBoolsFixture::setUp(experimentValue);
 
@@ -320,7 +316,7 @@ public:
 		this->outputValues.reset(new bool8[numBytes]);
 	}
 
-	virtual void tearDown() override
+	void tearDown() override
 	{
 		for(size_t i = 0; i < arrayLength; ++i)
 		{
@@ -467,7 +463,7 @@ BENCHMARK_F(CompressBoolsTest, WithOpenMP, ManualVersionFixture, SamplesCount, I
 class SimdVersionFixture : public CompressBoolsFixture
 {
 public:
-	virtual void setUp(const celero::TestFixture::ExperimentValue& experimentValue) override
+	void setUp(const celero::TestFixture::ExperimentValue& experimentValue) override
 	{
 		CompressBoolsFixture::setUp(experimentValue);
 
@@ -482,7 +478,7 @@ public:
 		}
 	}
 
-	virtual void tearDown() override
+	void tearDown() override
 	{
 		for(size_t i = 0; i < this->arrayLength; ++i)
 		{

@@ -22,22 +22,16 @@
 SET(PROJECT_NAME CeleroExperiment-CostOfSharedPtr)
     
     #
-    # Add Header Files
-    #
-    set(TARGET_H
-    )
-
-    #
     # Add Sources
     #
     set(TARGET_SRC
         ExperimentCostOfSharedPtr.cpp
+        osg_ref_ptr.h
     )
 
     # Broiler Plate: Assign the src and headers to the executable.
     add_executable(${PROJECT_NAME} 
         ${TARGET_SRC}
-        ${TARGET_H}
     )
     
     # Broiler Plate: Celero Project Dependencies
