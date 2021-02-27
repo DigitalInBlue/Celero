@@ -19,9 +19,9 @@
 #include <celero/Print.h>
 #include <celero/Utilities.h>
 
-#ifdef WIN32
+#ifdef _WIN32
 #include <windows.h>
-
+//
 #include <powrprof.h>
 #endif
 

@@ -18,9 +18,10 @@
 
 #include <celero/Print.h>
 #include <celero/Timer.h>
+
 #include <iostream>
 
-#ifdef WIN32
+#ifdef _WIN32
 #include <windows.h>
 LARGE_INTEGER QPCFrequency;
 #else
