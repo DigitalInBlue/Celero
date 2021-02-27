@@ -21,6 +21,7 @@
 #include <celero/Benchmark.h>
 #include <celero/FileReader.h>
 #include <celero/PimplImpl.h>
+
 #include <algorithm>
 #include <chrono>
 #include <fstream>
@@ -396,7 +397,7 @@ void Archive::save()
 		}
 		else
 		{
-			std::cerr << "Celero: Could not open result output file: \"" << this->pimpl->fileName << "\"" << std::endl;
+			std::cerr << "ERROR: Celero could not open result output file: \"" << this->pimpl->fileName << "\"." << std::endl;
 		}
 	}
 }

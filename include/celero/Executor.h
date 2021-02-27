@@ -41,7 +41,7 @@ namespace celero
 		///
 		/// Run a specific benchmark's baseline.
 		///
-		CELERO_EXPORT void RunBaseline(std::shared_ptr<Benchmark> x);
+		CELERO_EXPORT bool RunBaseline(std::shared_ptr<Benchmark> x);
 
 		///
 		/// Run all experiments registered within the final application.

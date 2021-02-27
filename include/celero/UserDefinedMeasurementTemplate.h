@@ -21,6 +21,7 @@
 
 #include <celero/Statistics.h>
 #include <celero/UserDefinedMeasurement.h>
+
 #include <numeric>
 #include <type_traits>
 
@@ -52,7 +53,7 @@ namespace celero
 		///
 		/// \brief Must be implemented by the user. Must return a specification which aggregations the user wants to be computed.
 		///
-		virtual UDMAggregationTable getAggregationInfo() const override
+		UDMAggregationTable getAggregationInfo() const override
 		{
 			UDMAggregationTable table;
 
@@ -115,7 +116,7 @@ namespace celero
 		///
 		/// Preserve measurements within a group/experiment/problem space set.
 		///
-		virtual void merge(const UserDefinedMeasurement* const x) override
+		void merge(const UserDefinedMeasurement* const x) override
 		{
 			const auto toMerge = dynamic_cast<const UserDefinedMeasurementTemplate<T>* const>(x);
 			this->stats += toMerge->stats;

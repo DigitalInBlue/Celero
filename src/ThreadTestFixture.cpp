@@ -66,7 +66,7 @@ void ThreadTestFixture::startThreads(uint64_t threads, uint64_t iterations)
 		}
 		catch(std::system_error& e)
 		{
-			std::cerr << "Exception. Error Code: " << e.code() << ", " << e.what() << std::endl;
+			std::cerr << "ERROR: Exception. Error Code: " << e.code() << ", " << e.what() << std::endl;
 		}
 	}
 }
@@ -85,7 +85,7 @@ void ThreadTestFixture::stopThreads()
 			}
 			catch(std::system_error& e)
 			{
-				std::cerr << "Exception. Error Code: " << e.code() << ", " << e.what() << std::endl;
+				std::cerr << "ERROR: Exception. Error Code: " << e.code() << ", " << e.what() << std::endl;
 			}
 		}
 	};
