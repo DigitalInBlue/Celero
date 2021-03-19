@@ -42,7 +42,7 @@ macro(CeleroSetDefaultCompilerOptions)
             target_compile_options(${PROJECT_NAME} PRIVATE /WX)
 		endif()
 		set_target_properties(${PROJECT_NAME} PROPERTIES
-			ARCHIVE_OUTPUT_NAME "${PROJECT_NAME}.dll")
+			ARCHIVE_OUTPUT_NAME "${PROJECT_NAME}$<$<CONFIG:Debug>:d>$<$<BOOL:${CELERO_COMPILE_DYNAMIC_LIBRARIES}>:.dll>")
 
 	elseif(${CMAKE_CXX_COMPILER_ID} STREQUAL GNU)
 		target_compile_options(${PROJECT_NAME} PRIVATE -Wall)
