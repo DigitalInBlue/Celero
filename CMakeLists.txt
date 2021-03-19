@@ -89,8 +89,10 @@ option(CELERO_TREAT_WARNINGS_AS_ERRORS "Treat compile warnings as errors." ON)
 
 if(CELERO_COMPILE_DYNAMIC_LIBRARIES)
 	SET(CELERO_USER_DEFINED_SHARED_OR_STATIC "SHARED")
+	message(STATUS "Celero: Shared lib build")
 else()
 	SET(CELERO_USER_DEFINED_SHARED_OR_STATIC "STATIC")
+	message(STATUS "Celero: Static lib build")
 endif()
 
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
