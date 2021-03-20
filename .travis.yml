@@ -27,6 +27,8 @@ addons:
       - g++-6
       - g++-7
       - g++-8
+      - g++-9
+      - g++-10
 
     sources: &sources
       - ubuntu-toolchain-r-test
@@ -37,6 +39,11 @@ cache:
     - ${TRAVIS_BUILD_DIR}/deps/llvm-5.0.1
     - ${TRAVIS_BUILD_DIR}/deps/llvm-7.0.0
     - ${TRAVIS_BUILD_DIR}/deps/llvm-8.0.0
+    - ${TRAVIS_BUILD_DIR}/deps/llvm-9.0.0
+    - ${TRAVIS_BUILD_DIR}/deps/llvm-10.0.0
+    - ${TRAVIS_BUILD_DIR}/deps/llvm-11.0.0
+    - ${TRAVIS_BUILD_DIR}/deps/llvm-12.0.0
+    - ${TRAVIS_BUILD_DIR}/deps/llvm-13.0.0
 
 matrix:
   exclude:
@@ -67,7 +74,32 @@ matrix:
 
     # Clang 8.0.0
     - os: linux
-      env: LLVM_VERSION=7.0.0 CMAKE_OPTIONS=""
+      env: LLVM_VERSION=8.0.0 CMAKE_OPTIONS=""
+      compiler: clang
+
+    # Clang 9.0.0
+    - os: linux
+      env: LLVM_VERSION=9.0.0 CMAKE_OPTIONS=""
+      compiler: clang
+
+    # Clang 10.0.0
+    - os: linux
+      env: LLVM_VERSION=10.0.0 CMAKE_OPTIONS=""
+      compiler: clang
+
+    # Clang 11.0.0
+    - os: linux
+      env: LLVM_VERSION=11.0.0 CMAKE_OPTIONS=""
+      compiler: clang
+
+    # Clang 12.0.0
+    - os: linux
+      env: LLVM_VERSION=12.0.0 CMAKE_OPTIONS=""
+      compiler: clang
+
+    # Clang 13.0.0
+    - os: linux
+      env: LLVM_VERSION=13.0.0 CMAKE_OPTIONS=""
       compiler: clang
 
     # GCC 6
@@ -85,10 +117,20 @@ matrix:
       env: COMPILER=g++-8 CMAKE_OPTIONS=""
       compiler: gcc
 
-     # GCC 8
+    # GCC 9
+    - os: linux
+      env: COMPILER=g++-9 CMAKE_OPTIONS=""
+      compiler: gcc
+
+    # GCC 10
+    - os: linux
+      env: COMPILER=g++-10 CMAKE_OPTIONS=""
+      compiler: gcc
+
+     # GCC 10
     - os: linux
       name: Complete Build
-      env: COMPILER=g++-8 CMAKE_OPTIONS="-DCELERO_ENABLE_EXPERIMENTS=1"
+      env: COMPILER=g++-10 CMAKE_OPTIONS="-DCELERO_ENABLE_EXPERIMENTS=1"
       compiler: gcc
 
     ##########################################################################
@@ -109,6 +151,9 @@ matrix:
 
     - os: osx
       osx_image: xcode11
+
+    - os: osx
+      osx_image: xcode12
 
 before_install:
   - git submodule update --init --recursive
