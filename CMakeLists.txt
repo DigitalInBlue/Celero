@@ -34,12 +34,15 @@ macro(CeleroSetDefaultCompilerOptions)
 		target_compile_options(${PROJECT_NAME} PRIVATE /MP)
 		target_compile_options(${PROJECT_NAME} PRIVATE /D_SCL_SECURE_NO_WARNINGS)
 		target_compile_options(${PROJECT_NAME} PRIVATE /permissive-)
+		if (NOT CELERO_COMPILE_DYNAMIC_LIBRARIES)
+			target_compile_options(${PROJECT_NAME} PRIVATE /MT$<$<CONFIG:Debug>:d>)
+		endif()
 
         if(CELERO_TREAT_WARNINGS_AS_ERRORS)
             target_compile_options(${PROJECT_NAME} PRIVATE /WX)
 		endif()
 		set_target_properties(${PROJECT_NAME} PROPERTIES
-			ARCHIVE_OUTPUT_NAME "${PROJECT_NAME}.dll")
+			ARCHIVE_OUTPUT_NAME "${PROJECT_NAME}$<$<CONFIG:Debug>:d>$<$<BOOL:${CELERO_COMPILE_DYNAMIC_LIBRARIES}>:.dll>")
 
 	elseif(${CMAKE_CXX_COMPILER_ID} STREQUAL GNU)
 		target_compile_options(${PROJECT_NAME} PRIVATE -Wall)
@@ -89,8 +92,10 @@ option(CELERO_TREAT_WARNINGS_AS_ERRORS "Treat compile warnings as errors." ON)
 
 if(CELERO_COMPILE_DYNAMIC_LIBRARIES)
 	SET(CELERO_USER_DEFINED_SHARED_OR_STATIC "SHARED")
+	message(STATUS "Celero: Shared lib build")
 else()
 	SET(CELERO_USER_DEFINED_SHARED_OR_STATIC "STATIC")
+	message(STATUS "Celero: Static lib build")
 endif()
 
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
