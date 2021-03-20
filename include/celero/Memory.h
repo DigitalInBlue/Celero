@@ -20,6 +20,7 @@
 ///
 
 #include <celero/Export.h>
+
 #include <cstdint>
 #include <string>
 
@@ -30,8 +31,9 @@ namespace celero
 	///
 	/// Contans all Memory measurements (in bytes)
 	///
-	struct RAMReport
+	class CELERO_EXPORT RAMReport
 	{
+	public:
 		int64_t RamSystemTotal{0};
 		int64_t RamSystemAvailable{0};
 		int64_t RamSystemUsed{0};

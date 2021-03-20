@@ -37,7 +37,7 @@ enum PrintConstants : size_t
 {
 	ColumnSeperatorWidth = 3,
 	DoubleDecimals = 5,
-	NumberOfColumns = 8,
+	NumberOfColumns = 9,
 	ColumnWidth = 15
 };
 
@@ -67,6 +67,7 @@ std::string PrintCenter(const std::string& s, const size_t w = PrintConstants::C
 		ss << " ";
 	}
 
+	celero::console::SetConsoleColor(celero::console::ConsoleColor::Default);
 	ss << " | ";
 	return ss.str();
 }
@@ -90,6 +91,8 @@ std::string PrintColumn(const double x, const size_t decDigits = PrintConstants:
 	ss.precision(decDigits);
 	ss << x;
 
+	celero::console::SetConsoleColor(celero::console::ConsoleColor::Default);
+	ss << " | ";
 	return ss.str();
 }
 
@@ -107,8 +110,10 @@ std::string PrintColumn(const int64_t x, const size_t width = PrintConstants::Co
 
 	// set  width around displayed #
 	ss.width(width);
+	ss << x;
 
-	ss << x << " | ";
+	celero::console::SetConsoleColor(celero::console::ConsoleColor::Default);
+	ss << " | ";
 	return ss.str();
 }
 
@@ -126,8 +131,10 @@ std::string PrintColumn(const uint64_t x, const size_t width = PrintConstants::C
 
 	// set  width around displayed #
 	ss.width(width);
+	ss << x;
 
-	ss << x << " | ";
+	celero::console::SetConsoleColor(celero::console::ConsoleColor::Default);
+	ss << " | ";
 	return ss.str();
 }
 
@@ -151,13 +158,15 @@ std::string PrintStrColumnAligned(const std::string& x, const size_t width = Pri
 		// Truncate
 		std::string xTrunc = x;
 		xTrunc = xTrunc.substr(0, width);
-		ss << xTrunc << " | ";
+		ss << xTrunc;
 	}
 	else
 	{
-		ss << x << " | ";
+		ss << x;
 	}
 
+	celero::console::SetConsoleColor(celero::console::ConsoleColor::Default);
+	ss << " | ";
 	return ss.str();
 }
 
@@ -173,6 +182,8 @@ std::string PrintColumnRight(const std::string& x, const size_t width = PrintCon
 
 std::string PrintHRule(const size_t additionalColumns = 0)
 {
+	celero::console::SetConsoleColor(celero::console::ConsoleColor::Default);
+
 	std::stringstream ss;
 	std::string column{":"};
 
@@ -209,7 +220,8 @@ namespace celero
 		celero::console::SetConsoleColor(celero::console::ConsoleColor::Default);
 
 		std::cout << "|" << PrintCenter("Group") << PrintCenter("Experiment") << PrintCenter("Prob. Space") << PrintCenter("Samples")
-				  << PrintCenter("Iterations") << PrintCenter("Baseline") << PrintCenter("us/Iteration") << PrintCenter("Iterations/sec");
+				  << PrintCenter("Iterations") << PrintCenter("Baseline") << PrintCenter("us/Iteration") << PrintCenter("Iterations/sec")
+				  << PrintCenter("RAM (bytes)");
 
 		for(size_t i = PrintConstants::NumberOfColumns; i < this->columnWidths.size(); ++i)
 		{
@@ -285,17 +297,18 @@ namespace celero
 		celero::console::SetConsoleColor(temp_color);
 		std::cout << PrintColumn(x->getBaselineMeasurement());
 		celero::console::SetConsoleColor(celero::console::ConsoleColor::Default);
-		std::cout << " | ";
 
 		celero::console::SetConsoleColor(temp_color);
 		std::cout << PrintColumn(x->getUsPerCall());
 		celero::console::SetConsoleColor(celero::console::ConsoleColor::Default);
-		std::cout << " | ";
 
 		celero::console::SetConsoleColor(temp_color);
 		std::cout << PrintColumn(x->getCallsPerSecond(), 2);
 		celero::console::SetConsoleColor(celero::console::ConsoleColor::Default);
-		std::cout << " | ";
+
+		celero::console::SetConsoleColor(temp_color);
+		std::cout << PrintColumn(x->getRAM());
+		celero::console::SetConsoleColor(celero::console::ConsoleColor::Default);
 
 		std::unordered_map<std::string, double> udmValues;
 
@@ -316,8 +329,6 @@ namespace celero
 			else
 			{
 				std::cout << PrintColumn(udmValues.at(fieldName), 2, this->columnWidths[i + PrintConstants::NumberOfColumns]);
-				celero::console::SetConsoleColor(celero::console::ConsoleColor::Default);
-				std::cout << " | ";
 			}
 		}
 

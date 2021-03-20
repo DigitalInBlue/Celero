@@ -70,7 +70,12 @@ namespace celero
 		///
 		///
 		///
-		Statistics<int64_t>* getTimeStatistics();
+		const Statistics<int64_t>& getTimeStatistics() const;
+
+		///
+		///
+		///
+		const Statistics<int64_t>& getRAMStatistics() const;
 
 		///
 		/// Adds a run time sample during experiment execution.
@@ -78,9 +83,19 @@ namespace celero
 		void addRunTimeSample(const uint64_t x);
 
 		///
+		/// Adds a memory sample during experiment execution.
+		///
+		void addMemorySample(const int64_t x);
+
+		///
 		/// Returns the best run time sample observed.
 		///
 		uint64_t getRunTime() const;
+
+		///
+		/// Returns the best RAM usage sample observed.
+		///
+		int64_t getRAM() const;
 
 		///
 		/// \brief	Get the number of computed microseconds per iteration (i.e. a single call to the code under test.)
