@@ -100,19 +100,34 @@ uint64_t ExperimentResult::getProblemSpaceIterations() const
 	return this->pimpl->problemSpaceIterations;
 }
 
-Statistics<int64_t>* ExperimentResult::getTimeStatistics()
+const Statistics<int64_t>& ExperimentResult::getTimeStatistics() const
 {
-	return &this->pimpl->statsTime;
+	return this->pimpl->statsTime;
 }
 
-void ExperimentResult::addRunTimeSample(const uint64_t runTime)
+const Statistics<int64_t>& ExperimentResult::getRAMStatistics() const
 {
-	this->pimpl->statsTime.addSample(static_cast<int64_t>(runTime));
+	return this->pimpl->statsRAM;
+}
+
+void ExperimentResult::addRunTimeSample(const uint64_t x)
+{
+	this->pimpl->statsTime.addSample(static_cast<int64_t>(x));
+}
+
+void ExperimentResult::addMemorySample(const int64_t x)
+{
+	this->pimpl->statsRAM.addSample(static_cast<int64_t>(x));
 }
 
 uint64_t ExperimentResult::getRunTime() const
 {
 	return static_cast<uint64_t>(this->pimpl->statsTime.getMin());
+}
+
+int64_t ExperimentResult::getRAM() const
+{
+	return static_cast<uint64_t>(this->pimpl->statsRAM.getMin());
 }
 
 double ExperimentResult::getUsPerCall() const

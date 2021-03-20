@@ -309,7 +309,7 @@ void Archive::add(std::shared_ptr<celero::ExperimentResult> x)
 
 		found->CurrentBaseline = x->getBaselineMeasurement();
 		found->CurrentBaseline_TimeSinceEpoch = this->pimpl->now();
-		found->CurrentStats = *x->getTimeStatistics();
+		found->CurrentStats = x->getTimeStatistics();
 
 		if(found->Failure || found->CurrentBaseline <= found->MinBaseline)
 		{
@@ -357,15 +357,15 @@ void Archive::add(std::shared_ptr<celero::ExperimentResult> x)
 
 			r.CurrentBaseline = x->getBaselineMeasurement();
 			r.CurrentBaseline_TimeSinceEpoch = r.FirstRanDate;
-			r.CurrentStats = *x->getTimeStatistics();
+			r.CurrentStats = x->getTimeStatistics();
 
 			r.MaxBaseline = x->getBaselineMeasurement();
 			r.MaxBaseline_TimeSinceEpoch = r.FirstRanDate;
-			r.MaxStats = *x->getTimeStatistics();
+			r.MaxStats = x->getTimeStatistics();
 
 			r.MinBaseline = x->getBaselineMeasurement();
 			r.MinBaseline_TimeSinceEpoch = r.FirstRanDate;
-			r.MinStats = *x->getTimeStatistics();
+			r.MinStats = x->getTimeStatistics();
 
 			this->pimpl->results.push_back(r);
 		}

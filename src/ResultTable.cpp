@@ -109,11 +109,12 @@ void ResultTable::add(std::shared_ptr<celero::ExperimentResult> x)
 		if(this->pimpl->hasWrittenHeader == false)
 		{
 			// Print the header for the table.
-			this->pimpl->ofs << "Group,Experiment,Problem "
-								"Space,Samples,Iterations,Failure,Baseline,";
+			this->pimpl->ofs << "Group,Experiment,Problem Space,Samples,Iterations,Failure,";
 
-			this->pimpl->ofs << "us/Iteration,Iterations/sec,Min (us),Mean (us),Max "
-								"(us),Variance,Standard Deviation,Skewness,Kurtosis,Z Score,";
+			this->pimpl->ofs << "Baseline,us/Iteration,Iterations/sec,";
+
+			this->pimpl->ofs << "T Min (us),T Mean (us),T Max (us),T Variance,T Standard Deviation,T Skewness,T Kurtosis,T Z Score,";
+			this->pimpl->ofs << "R Min (us),R Mean (us),R Max (us),R Variance,R Standard Deviation,R Skewness,R Kurtosis,R Z Score,";
 
 			// User Defined Metrics
 			const auto udmCollector = x->getUserDefinedMeasurements();
@@ -136,10 +137,16 @@ void ResultTable::add(std::shared_ptr<celero::ExperimentResult> x)
 		this->pimpl->ofs << x->getBaselineMeasurement() << "," << x->getUsPerCall() << "," << x->getCallsPerSecond() << ",";
 
 		// Statistics
-		this->pimpl->ofs << x->getTimeStatistics()->getMin() << "," << x->getTimeStatistics()->getMean() << "," << x->getTimeStatistics()->getMax()
-						 << "," << x->getTimeStatistics()->getVariance() << "," << x->getTimeStatistics()->getStandardDeviation() << ","
-						 << x->getTimeStatistics()->getSkewness() << "," << x->getTimeStatistics()->getKurtosis() << ","
-						 << x->getTimeStatistics()->getZScore() << ",";
+		this->pimpl->ofs << x->getTimeStatistics().getMin() << "," << x->getTimeStatistics().getMean() << "," << x->getTimeStatistics().getMax()
+						 << "," << x->getTimeStatistics().getVariance() << "," << x->getTimeStatistics().getStandardDeviation() << ","
+						 << x->getTimeStatistics().getSkewness() << "," << x->getTimeStatistics().getKurtosis() << ","
+						 << x->getTimeStatistics().getZScore() << ",";
+
+		// Statistics
+		this->pimpl->ofs << x->getRAMStatistics().getMin() << "," << x->getRAMStatistics().getMean() << "," << x->getRAMStatistics().getMax() << ","
+						 << x->getRAMStatistics().getVariance() << "," << x->getRAMStatistics().getStandardDeviation() << ","
+						 << x->getRAMStatistics().getSkewness() << "," << x->getRAMStatistics().getKurtosis() << ","
+						 << x->getRAMStatistics().getZScore() << ",";
 
 		// User Defined Metrics
 		const auto udmCollector = x->getUserDefinedMeasurements();

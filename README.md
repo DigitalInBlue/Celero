@@ -59,6 +59,7 @@ Once Celero is added to your project. You can create dedicated benchmark project
 
 -   Supports Windows, Linux, and OSX using C++11.
 -   The timing utilities can be used directly in production code (independent of benchmarks).
+-   Automatically tracks RAM usage during the experiments
 -   Console table output is formatted as Markdown to easily copy/paste into documents.
 -   Archive results to track performance over time.
 -   Integrates into CI/CT/CD environments with JUnit-formatted output.
@@ -91,9 +92,9 @@ By measuring code performance, you eliminate errors in your assumptions about wh
 
 The goal of writing correct benchmarking code is to eliminate all of the noise and overhead, and measure just the code under test.  Sources of noise in the measurements include clock resolution noise, operating system background operations, test setup/teardown, framework overhead, and other unrelated system activity.
 
-At a theoretical level, we want to measure "t," the time to execute the code under test.  In reality, we measure "t" plus all of this measurement noise.
+At a theoretical level, we want to measure `t`, the time to execute the code under test.  In reality, we measure `t` plus all of this measurement noise.
 
-These extraneous contributors to our measurement of "t" fluctuate over time.  Therefore, we want to try to isolate "t'.  The way this is accomplished is by making many measurements, but only keeping the smallest total.  The smallest total is necessarily the one with the smallest noise contribution and closest to the actual time "t."
+These extraneous contributors to our measurement of `t` fluctuate over time.  Therefore, we want to try to isolate `t`.  The way this is accomplished is by making many measurements, but only keeping the smallest total.  The smallest total is necessarily the one with the smallest noise contribution and closest to the actual time `t`.
 
 Once this measurement is obtained, it has little meaning in isolation.  It is essential to create a baseline test by which to compare.  A baseline should generally be a "classic" or "pure" solution to the problem on which you measure a solution.   Once you have a baseline, you have a meaningful time to compare your algorithm against. Merely saying that your fancy sorting algorithm (fSort) sorted a million elements in 10 milliseconds is not sufficient by itself.  However, compare that to a classic sorting algorithm baseline such as quicksort (qSort) and then you can say that fSort is 50% faster than qSort on a million elements.  That is a meaningful and powerful measurement.
 
@@ -109,7 +110,7 @@ Celero reports its outputs to the command line.  Since colors are nice (and perh
 
 Measuring benchmark execution time takes place in the `TestFixture` base class, from which all benchmarks are written are ultimately derived.  First, the test fixture setup code is executed.  Then, the start time for the test is retrieved and stored in microseconds using an unsigned long.  This is done to reduce floating point error.  Next, the specified number of operations (iterations) is executed.  When complete, the end time is retrieved, the test fixture is torn down, and the measured time for the execution is returned, and the results are saved.
 
-This cycle is repeated for however-many samples were specified.  If no samples were specified (zero), then the test is repeated until it as ran for at least one second or at least 30 samples have been taken.  While writing this specific part of the code, there was a definite "if-else" relationship.  However, the bulk of the code was repeated within the "if" and "else" sections.  An old fashioned function could have been used here, but it was very natural to utilize std::function to define a lambda that could be called and keep all of the code clean.  (C++11 is a fantastic thing.)  Finally, the results are printed to the screen.
+This cycle is repeated for however-many samples were specified.  If no samples were specified (zero), then the test is repeated until it as ran for at least one second or at least 30 samples have been taken.  While writing this specific part of the code, there was a definite "if-else" relationship.  However, the bulk of the code was repeated within the `if` and `else` sections.  An old fashioned function could have been used here, but it was very natural to utilize std::function to define a lambda that could be called and keep all of the code clean.  (C++11 is a fantastic thing.)  Finally, the results are printed to the screen.
 
 ### General Program Flow
 
@@ -250,12 +251,12 @@ Running Celero's simple example experiment (`celeroDemoSimple.exe`) benchmark ga
 ```
 Celero
 Timer resolution: 0.277056 us
-|     Group      |   Experiment    |   Prob. Space   |     Samples     |   Iterations    |    Baseline     |  us/Iteration   | Iterations/sec  |
-|:--------------:|:---------------:|:---------------:|:---------------:|:---------------:|:---------------:|:---------------:|:---------------:|
-|DemoSimple      | Baseline        |            Null |              30 |         1000000 |         1.00000 |         0.09320 |     10729498.61 |
-|DemoSimple      | Complex1        |            Null |               1 |          710000 |         0.99833 |         0.09305 |     10747479.64 |
-|DemoSimple      | Complex2        |            Null |              30 |          710000 |         0.97898 |         0.09124 |     10959834.52 |
-|DemoSimple      | Complex3        |            Null |              60 |          710000 |         0.98547 |         0.09185 |     10887733.66 |
+|     Group      |   Experiment    |   Prob. Space   |     Samples     |   Iterations    |    Baseline     |  us/Iteration   | Iterations/sec  |   RAM (bytes)   |
+|:--------------:|:---------------:|:---------------:|:---------------:|:---------------:|:---------------:|:---------------:|:---------------:|:---------------:|
+|DemoSimple      | Baseline        |            Null |              30 |         1000000 |         1.00000 |         0.09320 |     10729498.61 |          892928 |
+|DemoSimple      | Complex1        |            Null |               1 |          710000 |         0.99833 |         0.09305 |     10747479.64 |          897024 |
+|DemoSimple      | Complex2        |            Null |              30 |          710000 |         0.97898 |         0.09124 |     10959834.52 |          897024 |
+|DemoSimple      | Complex3        |            Null |              60 |          710000 |         0.98547 |         0.09185 |     10887733.66 |          897024 |
 Completed in 00:00:10.315012
 ```
 
@@ -282,14 +283,14 @@ Now, when this executes, you will see a different number automatically computed 
 
 ```
 Celero
-Timer resolution: 0.277056 us
-|     Group      |   Experiment    |   Prob. Space   |     Samples     |   Iterations    |    Baseline     |  us/Iteration   | Iterations/sec  |
-|:--------------:|:---------------:|:---------------:|:---------------:|:---------------:|:---------------:|:---------------:|:---------------:|
-|DemoSimple      | Baseline        |            Null |              30 |         1000000 |         1.00000 |         0.09177 |     10897044.72 |
-|DemoSimple      | Complex1        |            Null |              30 |         8388608 |         1.01211 |         0.09288 |     10766703.67 |
-|DemoSimple      | Complex2        |            Null |              30 |          710000 |         0.99559 |         0.09136 |     10945304.31 |
-|DemoSimple      | Complex3        |            Null |              60 |          710000 |         0.99671 |         0.09147 |     10933000.72 |
-Completed in 00:00:37.583872
+Timer resolution: 0.100000 us
+|     Group      |   Experiment    |   Prob. Space   |     Samples     |   Iterations    |    Baseline     |  us/Iteration   | Iterations/sec  |   RAM (bytes)   |
+|:--------------:|:---------------:|:---------------:|:---------------:|:---------------:|:---------------:|:---------------:|:---------------:|:---------------:|
+|DemoSimple      | Baseline        |            Null |              30 |         1000000 |         1.00000 |         0.09076 |     11017948.24 |          892928 |
+|DemoSimple      | Complex1        |            Null |              30 |         2097152 |         1.01148 |         0.09180 |     10892938.02 |          897024 |
+|DemoSimple      | Complex2        |            Null |              30 |          710000 |         0.98926 |         0.08979 |     11137604.32 |          897024 |
+|DemoSimple      | Complex3        |            Null |              60 |          710000 |         0.99908 |         0.09068 |     11028098.35 |          897024 |
+Completed in 00:00:15.889099
 ```
 
 #### Statistically Sound Results
@@ -619,78 +620,90 @@ While not particularly surprising `std::sort` is by far the best option with any
 
 ```
 Celero
-Celero: CPU processor throttling disabled.
-Timer resolution: 0.254288 us
+Timer resolution: 0.100000 us
 Writing results to: results.csv
------------------------------------------------------------------------------------------------------------------------------------------------
-     Group      |   Experiment    |   Prob. Space   |     Samples     |   Iterations    |    Baseline     |  us/Iteration   | Iterations/sec  |
------------------------------------------------------------------------------------------------------------------------------------------------
-SortRandInts    | BubbleSort      |               2 |              30 |           10000 |         1.00000 |         0.05270 |     18975332.07 |
-SortRandInts    | BubbleSort      |               4 |              30 |           10000 |         1.00000 |         0.12060 |      8291873.96 |
-SortRandInts    | BubbleSort      |               8 |              30 |           10000 |         1.00000 |         0.31420 |      3182686.19 |
-SortRandInts    | BubbleSort      |              16 |              30 |           10000 |         1.00000 |         1.09130 |       916338.31 |
-SortRandInts    | BubbleSort      |              32 |              30 |           10000 |         1.00000 |         3.23470 |       309147.68 |
-SortRandInts    | BubbleSort      |              64 |              30 |           10000 |         1.00000 |        10.82530 |        92376.19 |
-SortRandInts    | SelectionSort   |               2 |              30 |           10000 |         1.09108 |         0.05750 |     17391304.35 |
-SortRandInts    | SelectionSort   |               4 |              30 |           10000 |         1.03317 |         0.12460 |      8025682.18 |
-SortRandInts    | SelectionSort   |               8 |              30 |           10000 |         1.01464 |         0.31880 |      3136762.86 |
-SortRandInts    | SelectionSort   |              16 |              30 |           10000 |         0.72253 |         0.78850 |      1268230.82 |
-SortRandInts    | SelectionSort   |              32 |              30 |           10000 |         0.63771 |         2.06280 |       484777.97 |
-SortRandInts    | SelectionSort   |              64 |              30 |           10000 |         0.54703 |         5.92180 |       168867.57 |
-SortRandInts    | InsertionSort   |               2 |              30 |           10000 |         1.07021 |         0.05640 |     17730496.45 |
-SortRandInts    | InsertionSort   |               4 |              30 |           10000 |         1.05970 |         0.12780 |      7824726.13 |
-SortRandInts    | InsertionSort   |               8 |              30 |           10000 |         1.00382 |         0.31540 |      3170577.05 |
-SortRandInts    | InsertionSort   |              16 |              30 |           10000 |         0.74104 |         0.80870 |      1236552.49 |
-SortRandInts    | InsertionSort   |              32 |              30 |           10000 |         0.61508 |         1.98960 |       502613.59 |
-SortRandInts    | InsertionSort   |              64 |              30 |           10000 |         0.45097 |         4.88190 |       204838.28 |
-SortRandInts    | QuickSort       |               2 |              30 |           10000 |         1.18027 |         0.06220 |     16077170.42 |
-SortRandInts    | QuickSort       |               4 |              30 |           10000 |         1.16169 |         0.14010 |      7137758.74 |
-SortRandInts    | QuickSort       |               8 |              30 |           10000 |         1.01400 |         0.31860 |      3138731.95 |
-SortRandInts    | QuickSort       |              16 |              30 |           10000 |         0.65060 |         0.71000 |      1408450.70 |
-SortRandInts    | QuickSort       |              32 |              30 |           10000 |         0.48542 |         1.57020 |       636861.55 |
-SortRandInts    | QuickSort       |              64 |              30 |           10000 |         0.34431 |         3.72730 |       268290.72 |
-SortRandInts    | stdSort         |               2 |              30 |           10000 |         1.08539 |         0.05720 |     17482517.48 |
-SortRandInts    | stdSort         |               4 |              30 |           10000 |         0.94776 |         0.11430 |      8748906.39 |
-SortRandInts    | stdSort         |               8 |              30 |           10000 |         0.76926 |         0.24170 |      4137360.36 |
-SortRandInts    | stdSort         |              16 |              30 |           10000 |         0.45954 |         0.50150 |      1994017.95 |
-SortRandInts    | stdSort         |              32 |              30 |           10000 |         0.33573 |         1.08600 |       920810.31 |
-SortRandInts    | stdSort         |              64 |              30 |           10000 |         0.23979 |         2.59580 |       385237.69 |
+|     Group      |   Experiment    |   Prob. Space   |     Samples     |   Iterations    |    Baseline     |  us/Iteration   | Iterations/sec  |   RAM (bytes)   |
+|:--------------:|:---------------:|:---------------:|:---------------:|:---------------:|:---------------:|:---------------:|:---------------:|:---------------:|
+|SortRandInts    | BubbleSort      |              64 |            2000 |               2 |         1.00000 |         6.50000 |       153846.15 |          905216 |
+|SortRandInts    | BubbleSort      |             128 |            2000 |               2 |         1.00000 |        21.50000 |        46511.63 |          909312 |
+|SortRandInts    | BubbleSort      |             256 |            2000 |               2 |         1.00000 |        72.50000 |        13793.10 |          909312 |
+|SortRandInts    | BubbleSort      |             512 |            2000 |               2 |         1.00000 |       248.50000 |         4024.14 |          917504 |
+|SortRandInts    | BubbleSort      |            1024 |            2000 |               2 |         1.00000 |       917.00000 |         1090.51 |          917504 |
+|SortRandInts    | BubbleSort      |            2048 |            2000 |               2 |         1.00000 |      3607.50000 |          277.20 |          937984 |
+|SortRandInts    | BubbleSort      |            4096 |            2000 |               2 |         1.00000 |     16567.00000 |           60.36 |          909312 |
+|SortRandInts    | SelectionSort   |              64 |            2000 |               2 |         0.46154 |         3.00000 |       333333.33 |          909312 |
+|SortRandInts    | SelectionSort   |             128 |            2000 |               2 |         0.44186 |         9.50000 |       105263.16 |          909312 |
+|SortRandInts    | SelectionSort   |             256 |            2000 |               2 |         0.44138 |        32.00000 |        31250.00 |          909312 |
+|SortRandInts    | SelectionSort   |             512 |            2000 |               2 |         0.43863 |       109.00000 |         9174.31 |          917504 |
+|SortRandInts    | SelectionSort   |            1024 |            2000 |               2 |         0.43730 |       401.00000 |         2493.77 |          987136 |
+|SortRandInts    | SelectionSort   |            2048 |            2000 |               2 |         0.42245 |      1524.00000 |          656.17 |         1122304 |
+|SortRandInts    | SelectionSort   |            4096 |            2000 |               2 |         0.35749 |      5922.50000 |          168.85 |         1159168 |
+|SortRandInts    | InsertionSort   |              64 |            2000 |               2 |         0.23077 |         1.50000 |       666666.67 |         1159168 |
+|SortRandInts    | InsertionSort   |             128 |            2000 |               2 |         0.18605 |         4.00000 |       250000.00 |         1159168 |
+|SortRandInts    | InsertionSort   |             256 |            2000 |               2 |         0.12414 |         9.00000 |       111111.11 |         1159168 |
+|SortRandInts    | InsertionSort   |             512 |            2000 |               2 |         0.09256 |        23.00000 |        43478.26 |         1159168 |
+|SortRandInts    | InsertionSort   |            1024 |            2000 |               2 |         0.06161 |        56.50000 |        17699.12 |         1159168 |
+|SortRandInts    | InsertionSort   |            2048 |            2000 |               2 |         0.04435 |       160.00000 |         6250.00 |         1159168 |
+|SortRandInts    | InsertionSort   |            4096 |            2000 |               2 |         0.03084 |       511.00000 |         1956.95 |         1159168 |
+|SortRandInts    | QuickSort       |              64 |            2000 |               2 |         0.15385 |         1.00000 |      1000000.00 |         1159168 |
+|SortRandInts    | QuickSort       |             128 |            2000 |               2 |         0.11628 |         2.50000 |       400000.00 |         1159168 |
+|SortRandInts    | QuickSort       |             256 |            2000 |               2 |         0.07586 |         5.50000 |       181818.18 |         1159168 |
+|SortRandInts    | QuickSort       |             512 |            2000 |               2 |         0.05433 |        13.50000 |        74074.07 |         1159168 |
+|SortRandInts    | QuickSort       |            1024 |            2000 |               2 |         0.03162 |        29.00000 |        34482.76 |         1159168 |
+|SortRandInts    | QuickSort       |            2048 |            2000 |               2 |         0.01746 |        63.00000 |        15873.02 |         1159168 |
+|SortRandInts    | QuickSort       |            4096 |            2000 |               2 |         0.00803 |       133.00000 |         7518.80 |         1159168 |
+|SortRandInts    | stdSort         |              64 |            2000 |               2 |         0.07692 |         0.50000 |      2000000.00 |         1159168 |
+|SortRandInts    | stdSort         |             128 |            2000 |               2 |         0.09302 |         2.00000 |       500000.00 |         1159168 |
+|SortRandInts    | stdSort         |             256 |            2000 |               2 |         0.06207 |         4.50000 |       222222.22 |         1159168 |
+|SortRandInts    | stdSort         |             512 |            2000 |               2 |         0.04225 |        10.50000 |        95238.10 |         1159168 |
+|SortRandInts    | stdSort         |            1024 |            2000 |               2 |         0.02508 |        23.00000 |        43478.26 |         1159168 |
+|SortRandInts    | stdSort         |            2048 |            2000 |               2 |         0.01358 |        49.00000 |        20408.16 |         1159168 |
+|SortRandInts    | stdSort         |            4096 |            2000 |               2 |         0.00637 |       105.50000 |         9478.67 |         1159168 |
+Completed in 00:02:09.698721
 ```
 
 The data shows first the test group name. Next, all of the data sizes are output. Then each row shows the baseline or benchmark name and the corresponding time for the algorithm to complete measured in useconds. This data, in CSV format, can be directly read by programs such as Microsoft Excel and plotted without any modification.  The CSV contains the following data:
 
-Group | Experiment | Problem Space | Samples | Iterations | Baseline | us/Iteration | Iterations/sec | Min (us) | Mean (us) | Max (us) | Variance | Standard Deviation | Skewness | Kurtosis | Z Score
------ | ---------- | ------------- | ------- | ---------- | -------- | ------------ | -------------- | -------- | --------- | -------- | -------- | ------------------ | -------- | -------- | -------
-SortRandInts | BubbleSort | 2 | 30 | 10000 | 1 | 0.0527 | 1.89753e+07 | 527 | 532.533 | 582 | 118.74 | 10.8968 | 3.64316 | 13.0726 | 0.507794
-SortRandInts | BubbleSort | 4 | 30 | 10000 | 1 | 0.1206 | 8.29187e+06 | 1206 | 1230.77 | 1455 | 1941.22 | 44.0593 | 4.60056 | 20.9542 | 0.562122
-SortRandInts | BubbleSort | 8 | 30 | 10000 | 1 | 0.3142 | 3.18269e+06 | 3142 | 3195.73 | 3425 | 3080.41 | 55.5014 | 2.48383 | 7.72605 | 0.968143
-SortRandInts | BubbleSort | 16 | 30 | 10000 | 1 | 1.0913 | 916338 | 10913 | 11022.1 | 11228 | 5450.26 | 73.8259 | 0.71778 | 0.387441 | 1.47825
-SortRandInts | BubbleSort | 32 | 30 | 10000 | 1 | 3.2347 | 309148 | 32347 | 32803.9 | 36732 | 650545 | 806.563 | 4.1236 | 17.2616 | 0.566519
-SortRandInts | BubbleSort | 64 | 30 | 10000 | 1 | 10.8253 | 92376.2 | 108253 | 110999 | 133389 | 2.8152e+07 | 5305.85 | 3.15455 | 9.60246 | 0.517542
-SortRandInts | SelectionSort | 2 | 30 | 10000 | 1.09108 | 0.0575 | 1.73913e+07 | 575 | 620.167 | 753 | 2170.97 | 46.5937 | 1.33794 | 1.19871 | 0.969373
-SortRandInts | SelectionSort | 4 | 30 | 10000 | 1.03317 | 0.1246 | 8.02568e+06 | 1246 | 1339.57 | 1413 | 2261.7 | 47.5574 | -0.263592 | -0.727621 | 1.96745
-SortRandInts | SelectionSort | 8 | 30 | 10000 | 1.01464 | 0.3188 | 3.13676e+06 | 3188 | 3500.63 | 3742 | 20181.2 | 142.061 | -0.438792 | -0.522354 | 2.2007
-SortRandInts | SelectionSort | 16 | 30 | 10000 | 0.722533 | 0.7885 | 1.26823e+06 | 7885 | 8504.67 | 9482 | 322584 | 567.965 | 0.274438 | -1.43741 | 1.09103
-SortRandInts | SelectionSort | 32 | 30 | 10000 | 0.63771 | 2.0628 | 484778 | 20628 | 20826.7 | 21378 | 26307.7 | 162.196 | 1.64431 | 2.96239 | 1.22526
-SortRandInts | SelectionSort | 64 | 30 | 10000 | 0.547033 | 5.9218 | 168868 | 59218 | 59517.7 | 60308 | 55879.5 | 236.389 | 1.42419 | 2.38341 | 1.26783
-SortRandInts | InsertionSort | 2 | 30 | 10000 | 1.07021 | 0.0564 | 1.77305e+07 | 564 | 585.4 | 814 | 2239.42 | 47.3225 | 4.06868 | 16.6254 | 0.452216
-SortRandInts | InsertionSort | 4 | 30 | 10000 | 1.0597 | 0.1278 | 7.82473e+06 | 1278 | 1312 | 1574 | 3857.17 | 62.1061 | 3.06791 | 9.38706 | 0.54745
-SortRandInts | InsertionSort | 8 | 30 | 10000 | 1.00382 | 0.3154 | 3.17058e+06 | 3154 | 3208.57 | 3617 | 8053.91 | 89.7436 | 3.40649 | 12.5161 | 0.608029
-SortRandInts | InsertionSort | 16 | 30 | 10000 | 0.741043 | 0.8087 | 1.23655e+06 | 8087 | 8198.43 | 8556 | 11392.8 | 106.737 | 1.66984 | 3.10417 | 1.044
-SortRandInts | InsertionSort | 32 | 30 | 10000 | 0.61508 | 1.9896 | 502614 | 19896 | 20088.9 | 20593 | 20955.8 | 144.761 | 1.97818 | 4.12296 | 1.33254
-SortRandInts | InsertionSort | 64 | 30 | 10000 | 0.450971 | 4.8819 | 204838 | 48819 | 49152 | 50253 | 129327 | 359.62 | 1.7583 | 2.51588 | 0.925884
-SortRandInts | QuickSort | 2 | 30 | 10000 | 1.18027 | 0.0622 | 1.60772e+07 | 622 | 647.4 | 836 | 2492.52 | 49.9252 | 2.83628 | 7.08836 | 0.508761
-SortRandInts | QuickSort | 4 | 30 | 10000 | 1.16169 | 0.1401 | 7.13776e+06 | 1401 | 1450 | 1655 | 4476.21 | 66.9045 | 1.94538 | 2.90363 | 0.732388
-SortRandInts | QuickSort | 8 | 30 | 10000 | 1.014 | 0.3186 | 3.13873e+06 | 3186 | 3245.8 | 3549 | 5043.89 | 71.0203 | 2.88396 | 9.36231 | 0.842012
-SortRandInts | QuickSort | 16 | 30 | 10000 | 0.6506 | 0.71 | 1.40845e+06 | 7100 | 7231.07 | 7670 | 17248.2 | 131.332 | 1.93858 | 3.21011 | 0.997977
-SortRandInts | QuickSort | 32 | 30 | 10000 | 0.485424 | 1.5702 | 636862 | 15702 | 15863.2 | 16469 | 33518 | 183.079 | 2.01833 | 3.2763 | 0.880494
-SortRandInts | QuickSort | 64 | 30 | 10000 | 0.344314 | 3.7273 | 268291 | 37273 | 37554.4 | 37999 | 34113.3 | 184.698 | 0.822276 | -0.0186633 | 1.52339
-SortRandInts | stdSort | 2 | 30 | 10000 | 1.08539 | 0.0572 | 1.74825e+07 | 572 | 591.233 | 764 | 1863.15 | 43.1642 | 2.86875 | 7.63924 | 0.445585
-SortRandInts | stdSort | 4 | 30 | 10000 | 0.947761 | 0.1143 | 8.74891e+06 | 1143 | 1185.33 | 1385 | 3435.4 | 58.6123 | 2.53277 | 5.69826 | 0.72226
-SortRandInts | stdSort | 8 | 30 | 10000 | 0.769255 | 0.2417 | 4.13736e+06 | 2417 | 2459.47 | 2838 | 6555.84 | 80.9682 | 3.78132 | 14.5264 | 0.524486
-SortRandInts | stdSort | 16 | 30 | 10000 | 0.459544 | 0.5015 | 1.99402e+06 | 5015 | 5120.97 | 5283 | 6486.65 | 80.5398 | 0.55161 | -0.798651 | 1.31571
-SortRandInts | stdSort | 32 | 30 | 10000 | 0.335734 | 1.086 | 920810 | 10860 | 13398 | 24592 | 8.85889e+06 | 2976.39 | 2.1597 | 4.93241 | 0.852722
-SortRandInts | stdSort | 64 | 30 | 10000 | 0.23979 | 2.5958 | 385238 | 25958 | 27384.8 | 35800 | 4.88819e+06 | 2210.92 | 2.24632 | 5.15422 | 0.645326
+```
+Group,Experiment,Problem Space,Samples,Iterations,Failure,Baseline,us/Iteration,Iterations/sec,T Min (us),T Mean (us),T Max (us),T Variance,T Standard Deviation,T Skewness,T Kurtosis,T Z Score,R Min (us),R Mean (us),R Max (us),R Variance,R Standard Deviation,R Skewness,R Kurtosis,R Z Score,
+SortRandInts,BubbleSort,64,2000,2,0,1,6.5,153846,13,14.2415,32,2.30133,1.51701,5.71041,47.2301,0.818385,905216,905216,905216,0,0,-nan(ind),0,0,
+SortRandInts,BubbleSort,128,2000,2,0,1,21.5,46511.6,43,49.269,267,91.7625,9.57928,7.62785,136.8,0.654434,909312,909312,909312,0,0,-nan(ind),0,0,
+SortRandInts,BubbleSort,256,2000,2,0,1,72.5,13793.1,145,158.413,645,1031.51,32.1171,5.04721,38.9898,0.417612,909312,909312,909312,0,0,-nan(ind),0,0,
+SortRandInts,BubbleSort,512,2000,2,0,1,248.5,4024.14,497,577.158,1790,18081.1,134.466,2.67151,8.19469,0.59612,917504,917504,917504,0,0,-nan(ind),0,0,
+SortRandInts,BubbleSort,1024,2000,2,0,1,917,1090.51,1834,1982.06,4802,76681.5,276.914,4.82492,27.7115,0.534671,917504,917504,917504,0,0,-nan(ind),0,0,
+SortRandInts,BubbleSort,2048,2000,2,0,1,3607.5,277.2,7215,7684.98,14256,353860,594.862,5.38843,37.5894,0.790058,937984,937984,937984,0,0,-nan(ind),0,0,
+SortRandInts,BubbleSort,4096,2000,2,0,1,16567,60.361,33134,34810.3,46135,2.0815e+06,1442.74,2.56028,8.76086,1.16188,909312,945914,974848,1.05957e+09,32551.1,-0.235618,-1.94448,1.12444,
+SortRandInts,SelectionSort,64,2000,2,0,0.461538,3,333333,6,7.1075,19,2.17303,1.47412,3.61017,16.7992,0.751296,909312,909312,909312,0,0,-nan(ind),0,0,
+SortRandInts,SelectionSort,128,2000,2,0,0.44186,9.5,105263,19,21.222,86,14.62,3.82361,5.59879,54.0056,0.581126,909312,909312,909312,0,0,-nan(ind),0,0,
+SortRandInts,SelectionSort,256,2000,2,0,0.441379,32,31250,64,66.1445,169,29.8065,5.45954,10.3044,130.96,0.392799,909312,909312,909312,0,0,-nan(ind),0,0,
+SortRandInts,SelectionSort,512,2000,2,0,0.438632,109,9174.31,218,233.505,693,1386.03,37.2294,5.6463,40.5119,0.416485,917504,985813,987136,9.04186e+07,9508.87,-7.04634,47.6509,7.18372,
+SortRandInts,SelectionSort,1024,2000,2,0,0.437296,401,2493.77,802,851.35,1897,11262.6,106.125,4.88785,29.1835,0.465021,987136,1.11974e+06,1122304,3.40712e+08,18458.4,-7.04634,47.6509,7.18372,
+SortRandInts,SelectionSort,2048,2000,2,0,0.422453,1524,656.168,3048,3222.06,6809,102590,320.296,5.38706,35.6438,0.543445,1122304,1.1223e+06,1122304,0,0,-nan(ind),0,0,
+SortRandInts,SelectionSort,4096,2000,2,0,0.357488,5922.5,168.848,11845,12433,22307,496117,704.356,5.3611,45.0827,0.834836,1159168,1.15917e+06,1159168,0,0,-nan(ind),0,0,
+SortRandInts,InsertionSort,64,2000,2,0,0.230769,1.5,666667,3,4.0455,35,3.19703,1.78802,9.90047,117.897,0.584724,1159168,1.15917e+06,1159168,0,0,-nan(ind),0,0,
+SortRandInts,InsertionSort,128,2000,2,0,0.186047,4,250000,8,8.9535,33,2.88378,1.69817,8.06333,79.4729,0.561487,1159168,1.15917e+06,1159168,0,0,-nan(ind),0,0,
+SortRandInts,InsertionSort,256,2000,2,0,0.124138,9,111111,18,20.2965,76,12.785,3.57561,8.84815,92.6753,0.642268,1159168,1.15917e+06,1159168,0,0,-nan(ind),0,0,
+SortRandInts,InsertionSort,512,2000,2,0,0.0925553,23,43478.3,46,47.7135,135,8.70777,2.95089,17.2353,424.804,0.580672,1159168,1.15917e+06,1159168,0,0,-nan(ind),0,0,
+SortRandInts,InsertionSort,1024,2000,2,0,0.061614,56.5,17699.1,113,122.459,281,181.528,13.4732,5.50879,38.689,0.702021,1159168,1.15917e+06,1159168,0,0,-nan(ind),0,0,
+SortRandInts,InsertionSort,2048,2000,2,0,0.044352,160,6250,320,343.419,1097,1453.69,38.1273,7.47519,94.9702,0.614245,1159168,1.15917e+06,1159168,0,0,-nan(ind),0,0,
+SortRandInts,InsertionSort,4096,2000,2,0,0.0308444,511,1956.95,1022,1096.62,2287,13493.9,116.163,4.56136,24.6204,0.642346,1159168,1.15917e+06,1159168,0,0,-nan(ind),0,0,
+SortRandInts,QuickSort,64,2000,2,0,0.153846,1,1e+06,2,2.707,24,1.92111,1.38604,9.99569,121.501,0.510086,1159168,1.15917e+06,1159168,0,0,-nan(ind),0,0,
+SortRandInts,QuickSort,128,2000,2,0,0.116279,2.5,400000,5,6.5185,127,22.679,4.76225,12.6619,242.207,0.318862,1159168,1.15917e+06,1159168,0,0,-nan(ind),0,0,
+SortRandInts,QuickSort,256,2000,2,0,0.0758621,5.5,181818,11,13.391,44,10.8485,3.29371,5.97373,39.729,0.725929,1159168,1.15917e+06,1159168,0,0,-nan(ind),0,0,
+SortRandInts,QuickSort,512,2000,2,0,0.054326,13.5,74074.1,27,28.759,68,6.08096,2.46596,8.39068,86.394,0.713312,1159168,1.15917e+06,1159168,0,0,-nan(ind),0,0,
+SortRandInts,QuickSort,1024,2000,2,0,0.0316249,29,34482.8,58,63.3975,173,158.95,12.6075,4.68878,24.3046,0.428117,1159168,1.15917e+06,1159168,0,0,-nan(ind),0,0,
+SortRandInts,QuickSort,2048,2000,2,0,0.0174636,63,15873,126,133.461,432,197.08,14.0385,11.1413,188.347,0.531431,1159168,1.15917e+06,1159168,0,0,-nan(ind),0,0,
+SortRandInts,QuickSort,4096,2000,2,0,0.00802801,133,7518.8,266,283.615,712,1298.55,36.0354,5.49854,37.6957,0.488825,1159168,1.15917e+06,1159168,0,0,-nan(ind),0,0,
+SortRandInts,stdSort,64,2000,2,0,0.0769231,0.5,2e+06,1,2.099,11,0.260329,0.510225,4.56389,61.291,2.15395,1159168,1.15917e+06,1159168,0,0,-nan(ind),0,0,
+SortRandInts,stdSort,128,2000,2,0,0.0930233,2,500000,4,4.6665,16,0.436496,0.660678,4.7649,73.3782,1.00881,1159168,1.15917e+06,1159168,0,0,-nan(ind),0,0,
+SortRandInts,stdSort,256,2000,2,0,0.062069,4.5,222222,9,10.2385,22,0.999117,0.999559,6.39067,60.557,1.23905,1159168,1.15917e+06,1159168,0,0,-nan(ind),0,0,
+SortRandInts,stdSort,512,2000,2,0,0.0422535,10.5,95238.1,21,22.289,43,3.45621,1.85909,6.25736,46.5365,0.693351,1159168,1.15917e+06,1159168,0,0,-nan(ind),0,0,
+SortRandInts,stdSort,1024,2000,2,0,0.0250818,23,43478.3,46,51.6485,126,140.764,11.8644,2.89854,7.49573,0.476088,1159168,1.15917e+06,1159168,0,0,-nan(ind),0,0,
+SortRandInts,stdSort,2048,2000,2,0,0.0135828,49,20408.2,98,104.369,282,180.859,13.4484,6.58622,56.2908,0.473551,1159168,1.15917e+06,1159168,0,0,-nan(ind),0,0,
+SortRandInts,stdSort,4096,2000,2,0,0.00636808,105.5,9478.67,211,221.056,468,392.122,19.8021,6.47829,52.0453,0.507826,1159168,1.15917e+06,1159168,0,0,-nan(ind),0,0,
+```
+
+Note that in this data, there are `T` statistics and there are `R` stastics.  `T` represents _Time_ and `R` represents _RAM_.
 
 The point here is not that `std::sort` is better than more elementary sorting methods, but how easily measurable results can be obtained. In making such measurements more accessible and easier to code, they can become part of the way we code just as automated testing has become.
 

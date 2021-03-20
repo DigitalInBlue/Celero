@@ -22,6 +22,7 @@
 #include <celero/Console.h>
 #include <celero/Exceptions.h>
 #include <celero/Executor.h>
+#include <celero/Memory.h>
 #include <celero/Print.h>
 #include <celero/TestVector.h>
 #include <celero/UserDefinedMeasurementCollector.h>
@@ -107,7 +108,8 @@ bool ExecuteProblemSpace(std::shared_ptr<celero::ExperimentResult> r)
 		// Save test results
 		if(record == true)
 		{
-			r->getTimeStatistics()->addSample(testTime);
+			r->addRunTimeSample(testTime);
+			r->addMemorySample(celero::GetRAMVirtualUsedByCurrentProcess());
 			r->getExperiment()->incrementTotalRunTime(testTime);
 
 			if(udmCollector != nullptr)
