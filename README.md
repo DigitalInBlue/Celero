@@ -28,15 +28,17 @@ Celero has been successfully built on the following platforms during development
 -   GCC v6.0.0
 -   GCC v7.0.0
 -   GCC v8.0.0
+-   GCC v9.0.0
 -   LLVM v3.9.0
 -   LLVM v5.0.1
 -   LLVM v7.0.0
 -   LLVM v8.0.0
--   Visual Studio 2017
--   Visual Studio 2019
+-   LLVM v9.0.0
+-   Visual Studio 2019 (16.8.4)
 -   XCode v10.1
 -   XCode v10.3
 -   XCode v11.0
+-   XCode v12.0
 
 As of v2.7, Celero requres the developer to provide GoogleTest in order to build unit tests.  We suggest using a package manager such as VCPKG or Conan to provide the latest version of the library.
 
