@@ -28,7 +28,6 @@ addons:
       - g++-7
       - g++-8
       - g++-9
-      - g++-10
 
     sources: &sources
       - ubuntu-toolchain-r-test
@@ -122,15 +121,10 @@ matrix:
       env: COMPILER=g++-9 CMAKE_OPTIONS=""
       compiler: gcc
 
-    # GCC 10
-    - os: linux
-      env: COMPILER=g++-10 CMAKE_OPTIONS=""
-      compiler: gcc
-
-     # GCC 10
+     # GCC 9
     - os: linux
       name: Complete Build
-      env: COMPILER=g++-10 CMAKE_OPTIONS="-DCELERO_ENABLE_EXPERIMENTS=1"
+      env: COMPILER=g++-9 CMAKE_OPTIONS="-DCELERO_ENABLE_EXPERIMENTS=1"
       compiler: gcc
 
     ##########################################################################
