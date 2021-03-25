@@ -41,8 +41,6 @@ macro(CeleroSetDefaultCompilerOptions)
         if(CELERO_TREAT_WARNINGS_AS_ERRORS)
             target_compile_options(${PROJECT_NAME} PRIVATE /WX)
 		endif()
-		set_target_properties(${PROJECT_NAME} PROPERTIES
-			ARCHIVE_OUTPUT_NAME "${PROJECT_NAME}$<$<CONFIG:Debug>:d>$<$<BOOL:${CELERO_COMPILE_DYNAMIC_LIBRARIES}>:.dll>")
 
 	elseif(${CMAKE_CXX_COMPILER_ID} STREQUAL GNU)
 		target_compile_options(${PROJECT_NAME} PRIVATE -Wall)
@@ -92,10 +90,8 @@ option(CELERO_TREAT_WARNINGS_AS_ERRORS "Treat compile warnings as errors." ON)
 
 if(CELERO_COMPILE_DYNAMIC_LIBRARIES)
 	SET(CELERO_USER_DEFINED_SHARED_OR_STATIC "SHARED")
-	message(STATUS "Celero: Shared lib build")
 else()
 	SET(CELERO_USER_DEFINED_SHARED_OR_STATIC "STATIC")
-	message(STATUS "Celero: Static lib build")
 endif()
 
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
@@ -107,10 +103,10 @@ set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
-set(CMAKE_DEBUG_POSTFIX          "d" CACHE STRING "add a postfix, usually d on windows")
-set(CMAKE_RELEASE_POSTFIX        ""  CACHE STRING "add a postfix, usually empty on windows")
-set(CMAKE_RELWITHDEBINFO_POSTFIX ""  CACHE STRING "add a postfix, usually empty on windows")
-set(CMAKE_MINSIZEREL_POSTFIX     ""  CACHE STRING "add a postfix, usually empty on windows")
+set(CMAKE_DEBUG_POSTFIX          "-d" CACHE STRING "add a postfix, usually d on windows")
+set(CMAKE_RELEASE_POSTFIX        "" CACHE STRING "add a postfix, usually empty on windows")
+set(CMAKE_RELWITHDEBINFO_POSTFIX "-rd" CACHE STRING "add a postfix, usually empty on windows")
+set(CMAKE_MINSIZEREL_POSTFIX     "" CACHE STRING "add a postfix, usually empty on windows")
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 

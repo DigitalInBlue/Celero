@@ -17,17 +17,19 @@
 ///
 
 #include <celero/Memory.h>
+
 #include <sstream>
 
 #ifdef _WIN32
 #include <windows.h>
-
+//
 #include <psapi.h>
 #elif defined(__APPLE__)
 #include <sys/param.h>
 #include <sys/sysctl.h>
 #include <sys/types.h>
 #include <unistd.h>
+
 #include <array>
 #include <cstring>
 #else
@@ -257,6 +259,8 @@ int64_t celero::GetRAMPhysicalUsedByCurrentProcess()
 	PROCESS_MEMORY_COUNTERS_EX pmc;
 	GetProcessMemoryInfo(GetCurrentProcess(), reinterpret_cast<PPROCESS_MEMORY_COUNTERS>(&pmc), sizeof(pmc));
 	return static_cast<int64_t>(pmc.WorkingSetSize);
+#elif defined(__APPLE__)
+	return -1;
 #else
 	constexpr int BufferSize{128};
 	int64_t result = 0;
@@ -353,6 +357,8 @@ int64_t celero::GetRAMVirtualUsedByCurrentProcess()
 	PROCESS_MEMORY_COUNTERS_EX pmc;
 	GetProcessMemoryInfo(GetCurrentProcess(), reinterpret_cast<PPROCESS_MEMORY_COUNTERS>(&pmc), sizeof(pmc));
 	return pmc.PrivateUsage;
+#elif defined(__APPLE__)
+	return -1;
 #else
 	// Verified Correct.
 	constexpr int BufferSize{128};
