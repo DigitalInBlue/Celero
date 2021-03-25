@@ -126,6 +126,36 @@ public:
 		}
 	};
 
+	/// Used for debugging multiple UDM's
+	class RandomUDM : public celero::UserDefinedMeasurementTemplate<size_t>
+	{
+		std::string getName() const override
+		{
+			return "Random";
+		}
+
+		// Turn off some of the output reporting.
+		bool reportStandardDeviation() const override
+		{
+			return false;
+		}
+
+		bool reportSkewness() const override
+		{
+			return false;
+		}
+
+		bool reportKurtosis() const override
+		{
+			return false;
+		}
+
+		bool reportZScore() const override
+		{
+			return false;
+		}
+	};
+
 	SortFixture()
 	{
 	}
@@ -173,17 +203,20 @@ public:
 
 		this->copyCountUDM->addValue(CopyCountingInt::getCount());
 		CopyCountingInt::resetCount();
+
+		this->randomUDM->addValue(static_cast<size_t>(rand()));
 	}
 
 	std::vector<std::shared_ptr<celero::UserDefinedMeasurement>> getUserDefinedMeasurements() const override
 	{
-		return {this->copyCountUDM};
+		return {this->copyCountUDM, this->randomUDM};
 	}
 
 	std::vector<CopyCountingInt> array;
 	int64_t arraySize{0};
 
 	std::shared_ptr<CopyCountUDM> copyCountUDM{new CopyCountUDM};
+	std::shared_ptr<RandomUDM> randomUDM{new RandomUDM};
 };
 
 static const int SamplesCount = 2000;
