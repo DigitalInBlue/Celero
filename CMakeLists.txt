@@ -278,6 +278,18 @@ if(CELERODEVOPS_ENABLE_CPPCHECK)
 
 endif()
 
+if (WIN32)
+	if(${VCPKG_CRT_LINKAGE} STREQ "dynamic")
+	    if(${VCPKG_LIBRARY_LINKAGE} STREQ "dynamic")
+			set (CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /MT")
+    		set (CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /MTd")
+    	else()
+			set (CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /MD")
+			set (CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /MDd")
+		endif()
+	endif()
+endif()
+
 # ------------------------------------------------------------------------------
 # Coverage
 # ------------------------------------------------------------------------------
