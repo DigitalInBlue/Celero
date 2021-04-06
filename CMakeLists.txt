@@ -85,6 +85,7 @@ PROJECT(CeleroProject)
 include(CheckFunctionExists)
 include(CheckCXXSourceCompiles)
 include(CheckIncludeFile)
+include(CMakePackageConfigHelpers)
 
 #
 # User Options
@@ -210,23 +211,32 @@ target_include_directories(${PROJECT_NAME} PUBLIC
 # Install and exports
 # ---------------------------------------------------------------------------
 
-install(TARGETS ${PROJECT_NAME}
-  EXPORT ${PROJECT_NAME}-target
-  RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}/bin
-  LIBRARY DESTINATION ${CMAKE_INSTALL_PREFIX}/lib
-  ARCHIVE DESTINATION ${CMAKE_INSTALL_PREFIX}/lib
+install(
+	DIRECTORY   include/
+	DESTINATION include
 )
-
-install(DIRECTORY include DESTINATION ${CMAKE_INSTALL_PREFIX})
-
-# export to be used from install location
-install(EXPORT ${PROJECT_NAME}-target
-  DESTINATION ${CMAKE_INSTALL_PREFIX}/share
+install(
+	TARGETS     celero
+	DESTINATION lib
+	EXPORT      celero-targets
 )
-
-# export to be used from build directory
-export(EXPORT ${PROJECT_NAME}-target
-  FILE ${PROJECT_NAME}-target.cmake
+install(
+	EXPORT      celero-targets
+	FILE        celero-targets.cmake
+	DESTINATION lib/cmake/celero
+)
+export(
+	EXPORT 		celero-targets
+    FILE   		celero-targets.cmake
+)
+configure_package_config_file(
+	${CMAKE_CURRENT_SOURCE_DIR}/config.cmake.in
+	${CMAKE_CURRENT_BINARY_DIR}/celero-config.cmake
+	INSTALL_DESTINATION lib/cmake/celero
+)
+install(
+	FILES 		${CMAKE_CURRENT_BINARY_DIR}/celero-config.cmake
+	DESTINATION lib/cmake/celero
 )
 
 if(CELERO_ENABLE_FOLDERS)
