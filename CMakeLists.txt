@@ -87,6 +87,7 @@ include(CheckCXXSourceCompiles)
 include(CheckIncludeFile)
 include(CMakePackageConfigHelpers)
 include(GNUInstallDirs)
+include(CMakeFindDependencyMacro)
 
 #
 # User Options
@@ -103,6 +104,10 @@ if(CELERO_COMPILE_DYNAMIC_LIBRARIES)
 	SET(CELERO_USER_DEFINED_SHARED_OR_STATIC "SHARED")
 else()
 	SET(CELERO_USER_DEFINED_SHARED_OR_STATIC "STATIC")
+endif()
+
+if(CELERO_ENABLE_TESTS)
+	find_dependency(GTest REQUIRED)
 endif()
 
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)

@@ -21,8 +21,6 @@ project(celero-test)
 
 add_executable(${PROJECT_NAME})
 
-find_package(GTest CONFIG REQUIRED)
-
 target_sources(${PROJECT_NAME} PRIVATE
 	Archive.test.cpp
 	Benchmark.test.cpp
