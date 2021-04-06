@@ -86,6 +86,7 @@ include(CheckFunctionExists)
 include(CheckCXXSourceCompiles)
 include(CheckIncludeFile)
 include(CMakePackageConfigHelpers)
+include(GNUInstallDirs)
 
 #
 # User Options
@@ -204,7 +205,7 @@ target_link_libraries(${PROJECT_NAME} ${SYSLIBS})
 
 target_include_directories(${PROJECT_NAME} PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-  $<INSTALL_INTERFACE:${CMAKE_INSTALL_PREFIX}/include>
+  $<INSTALL_INTERFACE:${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_INCLUDEDIR}>
 )
 
 # ---------------------------------------------------------------------------
@@ -213,17 +214,17 @@ target_include_directories(${PROJECT_NAME} PUBLIC
 
 install(
 	DIRECTORY   include/
-	DESTINATION include
+	DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
 )
 install(
 	TARGETS     celero
-	DESTINATION lib
+	DESTINATION ${CMAKE_INSTALL_LIBDIR}
 	EXPORT      celero-targets
 )
 install(
 	EXPORT      celero-targets
 	FILE        celero-targets.cmake
-	DESTINATION lib/cmake/celero
+	DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/celero
 )
 export(
 	EXPORT 		celero-targets
@@ -232,11 +233,11 @@ export(
 configure_package_config_file(
 	${CMAKE_CURRENT_SOURCE_DIR}/config.cmake.in
 	${CMAKE_CURRENT_BINARY_DIR}/celero-config.cmake
-	INSTALL_DESTINATION lib/cmake/celero
+	INSTALL_DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/celero
 )
 install(
 	FILES 		${CMAKE_CURRENT_BINARY_DIR}/celero-config.cmake
-	DESTINATION lib/cmake/celero
+	DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/celero
 )
 
 if(CELERO_ENABLE_FOLDERS)
