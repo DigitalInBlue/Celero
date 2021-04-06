@@ -211,11 +211,14 @@ BENCHMARK(NonPODPass, ByRRefWithMove, SamplesCount, IterationsCount)
 	f.setNonPODByRRefWithMove(std::string("bar"));
 }
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wpessimizing-move"
 BENCHMARK(NonPODPass, ByMoveRRefWithMove, SamplesCount, IterationsCount)
 {
 	Foo f;
 	f.setNonPODByRRefWithMove(std::move(std::string("bar")));
 }
+#pragma GCC diagnostic pop
 
 BENCHMARK(NonPODPass, ByMoveRRefWithMove2, SamplesCount, IterationsCount)
 {
@@ -230,11 +233,14 @@ BENCHMARK(NonPODPass, ByRRefWithSwap, SamplesCount, IterationsCount)
 	f.setNonPODByRRefWithSwap(std::string("bar"));
 }
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wpessimizing-move"
 BENCHMARK(NonPODPass, ByMoveRRefWithSwap, SamplesCount, IterationsCount)
 {
 	Foo f;
 	f.setNonPODByRRefWithSwap(std::move(std::string("bar")));
 }
+#pragma GCC diagnostic pop
 
 // ---------------------------------------------------------------------------------------
 // Repeat some of the tests above, but use the varible after the use in the "set" function
