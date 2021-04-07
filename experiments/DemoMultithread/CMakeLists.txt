@@ -41,7 +41,6 @@ SET(PROJECT_NAME CeleroDemo-Multithread)
     )
 
     # Broiler Plate: Celero Project Dependencies
-    add_dependencies(${PROJECT_NAME} celero)
     target_link_libraries(${PROJECT_NAME} celero)
 
     CeleroSetDefaultCompilerOptions()

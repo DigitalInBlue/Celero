@@ -25,7 +25,6 @@ target_sources(${PROJECT_NAME} PRIVATE
 )
 
 CeleroSetDefaultCompilerOptions()
-add_dependencies(${PROJECT_NAME} celero)
 target_link_libraries(${PROJECT_NAME} celero)
 include_directories(${HEADER_PATH})
 

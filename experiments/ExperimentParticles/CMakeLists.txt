@@ -42,7 +42,6 @@ SET(PROJECT_NAME CeleroExperiment-Particles)
     )
     
     # Broiler Plate: Celero Project Dependencies
-    add_dependencies(${PROJECT_NAME} celero)
     target_link_libraries(${PROJECT_NAME} celero)
     
     CeleroSetDefaultCompilerOptions()
