@@ -27,7 +27,7 @@ macro(CeleroSetDefaultCompilerOptions)
 	set_target_properties(${PROJECT_NAME} PROPERTIES
 		POSITION_INDEPENDENT_CODE "${CELERO_COMPILE_PIC}"
 	)
-	if(${CMAKE_CXX_COMPILER_ID} STREQUAL MSVC)
+	if(MSVC)
 		target_compile_options(${PROJECT_NAME} PRIVATE /D_VARIADIC_MAX=10 )
 		target_compile_options(${PROJECT_NAME} PRIVATE /D_CRT_SECURE_NO_WARNINGS)
 		target_compile_options(${PROJECT_NAME} PRIVATE /wd4251)
@@ -51,10 +51,10 @@ macro(CeleroSetDefaultCompilerOptions)
             target_compile_options(${PROJECT_NAME} PRIVATE /WX)
 		endif()
 
-	elseif(${CMAKE_CXX_COMPILER_ID} STREQUAL GNU)
+	elseif(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
 		target_compile_options(${PROJECT_NAME} PRIVATE -Wall)
 
-	elseif(${CMAKE_CXX_COMPILER_ID} STREQUAL Clang)
+	elseif(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
 		if(${CMAKE_SYSTEM_NAME} STREQUAL Windows)
 			target_compile_options(${PROJECT_NAME} PRIVATE -Xclang)
 			target_compile_options(${PROJECT_NAME} PRIVATE -Wno-c++98-compat)
@@ -70,7 +70,7 @@ macro(CeleroSetDefaultCompilerOptions)
 			endif()
 		endif()
 
-	elseif(${CMAKE_CXX_COMPILER_ID} STREQUAL AppleClang)
+	elseif(CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang")
 		target_compile_options(${PROJECT_NAME} PRIVATE -Wall)
 
 		if(CELERO_TREAT_WARNINGS_AS_ERRORS)
