@@ -43,7 +43,7 @@ macro(CeleroSetDefaultCompilerOptions)
 					target_compile_options(${PROJECT_NAME} PRIVATE /MD$<$<CONFIG:Debug>:d>)
 				endif()
 			else()
-				target_compile_options(${PROJECT_NAME} PRIVATE /MD$<$<CONFIG:Debug>:d>)
+				target_compile_options(${PROJECT_NAME} PRIVATE /MT$<$<CONFIG:Debug>:d>)
 			endif()
 		endif()
 
