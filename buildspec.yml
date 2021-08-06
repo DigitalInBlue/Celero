@@ -10,10 +10,12 @@ phases:
   build:
     commands:
       - echo Build started on `date`
-      - apt-get update -y
-      - apt-get install -y software-properties-common 
-      - apt-get update -y
-      - apt-get install -y cmake
+      - ls -alt
+      - which gcc
+      - which g++
+      - which clang
+      - which cmake
+      - cmake -v
       - git clone https://github.com/DigitalInBlue/Celero.git
       - mkdir celero/build
       - cmake -B./celero/build -H./celero -DCELERO_ENABLE_TESTS
