@@ -10,7 +10,7 @@ phases:
   build:
     commands:
       - echo Build started on `date`
-      - yum install cmake
+      - yum install cmake --y
       - ls -alt
       - mkdir build
       - cmake -B./build -H./ -DCELERO_ENABLE_TESTS
@@ -24,4 +24,4 @@ phases:
       - echo Build completed on `date`
 artifacts:
   files:
-    - aws-sdk-cpp.tar
+    - celero.tar
