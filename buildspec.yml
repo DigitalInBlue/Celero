@@ -10,7 +10,7 @@ phases:
   build:
     commands:
       - echo Build started on `date`
-      - yum groupinstall "Development Tools"
+      - yum groupinstall "Development Tools" -y
       - wget https://cmake.org/files/v3.18/cmake-3.18.0.tar.gz
       - tar -xvzf cmake-3.18.0.tar.gz
       - cd cmake-3.18.0
