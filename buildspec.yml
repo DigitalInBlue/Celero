@@ -13,8 +13,8 @@ phases:
       - yum groupinstall "Development Tools" -y
       - yum install cmake -y
       - mkdir build
-      - cmake -B./build -DCELERO_ENABLE_TESTS
-      - make -C ./build
+      - cmake -S . -B .\build -DCMAKE_GENERATOR_PLATFORM=x64 -DVCPKG_TARGET_TRIPLET=x64-windows -DCELERO_ENABLE_TESTS
+      - cmake --build build --target ALL_BUILD --config Release --verbose
       - tar -c ./build > celero.tar
       - ls -alt ./build
       - ls -alt ./build/bin
