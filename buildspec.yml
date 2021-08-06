@@ -13,7 +13,7 @@ phases:
       - yum groupinstall "Development Tools" -y
       - yum install cmake -y
       - mkdir build
-      - cmake -B./build -H./ -DCELERO_ENABLE_TESTS
+      - cmake -B./build -DCELERO_ENABLE_TESTS
       - make -C ./build
       - tar -c ./build > celero.tar
       - ls -alt ./build
