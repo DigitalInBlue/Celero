@@ -19,7 +19,6 @@ phases:
       - cmake -B./celero/build -H./celero -DCELERO_ENABLE_TESTS
       - make -j3 -C celero/build
       - tar -c ./celero/build > celero.tar
-  test:
       - ./celero/build/bin/Test*
   post_build:
     commands:
