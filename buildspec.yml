@@ -1,0 +1,29 @@
+version: 1.0
+
+phases:
+  install:
+    commands:
+      - echo Nothing to do in the install phase...
+  pre_build:
+    commands:
+      - echo Nothing to do in the pre_build phase...
+  build:
+    commands:
+      - echo Build started on `date`
+      - apt-get update -y
+      - apt-get install -y software-properties-common 
+      - apt-get update -y
+      - apt-get install -y cmake
+      - git clone https://github.com/DigitalInBlue/Celero.git
+      - mkdir celero/build
+      - cmake -B./celero/build -H./celero -DCELERO_ENABLE_TESTS
+      - make -j3 -C celero/build
+      - tar -c ./celero/build > celero.tar
+  test:
+      - ./celero/build/bin/Test*
+  post_build:
+    commands:
+      - echo Build completed on `date`
+artifacts:
+  files:
+    - aws-sdk-cpp.tar
