@@ -10,6 +10,8 @@ phases:
   build:
     commands:
       - echo Build started on `date`
+      - apt update
+      - apt install cmake
       - ls -alt
       - mkdir build
       - cmake -B./build -H./ -DCELERO_ENABLE_TESTS
