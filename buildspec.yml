@@ -11,17 +11,13 @@ phases:
     commands:
       - echo Build started on `date`
       - ls -alt
-      - which gcc
-      - which g++
-      - which clang
-      - which cmake
-      - cmake -v
-      - git clone https://github.com/DigitalInBlue/Celero.git
-      - mkdir celero/build
-      - cmake -B./celero/build -H./celero -DCELERO_ENABLE_TESTS
-      - make -j3 -C celero/build
-      - tar -c ./celero/build > celero.tar
-      - ./celero/build/bin/Test*
+      - mkdir build
+      - cmake -B./build -H./ -DCELERO_ENABLE_TESTS
+      - make -j3 -C ./build
+      - tar -c ./build > celero.tar
+      - ls -alt ./build
+      - ls -alt ./build/bin
+      - ./build/bin/Test*
   post_build:
     commands:
       - echo Build completed on `date`
