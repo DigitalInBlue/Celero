@@ -10,11 +10,16 @@ phases:
   build:
     commands:
       - echo Build started on `date`
-      - yum --y install cmake
-      - ls -alt
+      - sudo yum groupinstall "Development Tools"
+      - wget https://cmake.org/files/v3.18/cmake-3.18.0.tar.gz
+      - tar -xvzf cmake-3.18.0.tar.gz
+      - cd cmake-3.18.0
+      - ./bootstrap
+      - make
+      - sudo make install
       - mkdir build
       - cmake -B./build -H./ -DCELERO_ENABLE_TESTS
-      - make -j3 -C ./build
+      - make -C ./build
       - tar -c ./build > celero.tar
       - ls -alt ./build
       - ls -alt ./build/bin
