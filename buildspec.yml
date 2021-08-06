@@ -11,12 +11,7 @@ phases:
     commands:
       - echo Build started on `date`
       - yum groupinstall "Development Tools" -y
-      - wget https://cmake.org/files/v3.18/cmake-3.18.0.tar.gz
-      - tar -xvzf cmake-3.18.0.tar.gz
-      - cd cmake-3.18.0
-      - ./bootstrap
-      - make
-      - make install
+      - yum install cmake -y
       - mkdir build
       - cmake -B./build -H./ -DCELERO_ENABLE_TESTS
       - make -C ./build
