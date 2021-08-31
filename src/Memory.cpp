@@ -58,7 +58,10 @@ using namespace celero;
 
 #ifdef _WIN32
 #else
+
+#ifndef __APPLE__
 constexpr int64_t Kilobytes2Bytes{1024};
+#endif
 
 namespace celero
 {
