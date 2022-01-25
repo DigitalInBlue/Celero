@@ -18,10 +18,12 @@
 
 #include <celero/Exceptions.h>
 
+//
+
 #include <celero/Console.h>
 #include <celero/TestFixture.h>
 
-#ifdef WIN32
+#ifdef _WIN32
 #include <windows.h>
 #endif // WIN32
 
@@ -210,7 +212,7 @@ namespace celero
 			celero::console::SetConsoleColor(celero::console::ConsoleColor::Default);
 			return std::make_pair(false, 0);
 		}
-#else  // CELERO_HAS_SEH
+#else // CELERO_HAS_SEH
 		return std::make_pair(true, test.run(threads, calls, experimentValue));
 #endif // CELERO_HAS_SEH
 	}
@@ -239,7 +241,7 @@ namespace celero
 			}
 
 			return std::make_pair(false, 0);
-#else  // CELERO_HAS_EXCEPTIONS
+#else // CELERO_HAS_EXCEPTIONS
 			return RunAndCatchSEHExc(test, threads, calls, experimentValue);
 #endif // CELERO_HAS_EXCEPTIONS
 		}
