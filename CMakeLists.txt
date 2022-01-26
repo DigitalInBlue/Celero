@@ -1,7 +1,7 @@
 #
 # Top level makefile for Celero
 #
-# Copyright 2015, 2016, 2017, 2018, 2019 John Farrier
+# Copyright 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022  John Farrier
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -27,7 +27,7 @@ macro(CeleroSetDefaultCompilerOptions)
 	set_target_properties(${PROJECT_NAME} PROPERTIES
 		POSITION_INDEPENDENT_CODE "${CELERO_COMPILE_PIC}"
 	)
-	if(${CMAKE_CXX_COMPILER_ID} STREQUAL MSVC)
+	if(MSVC)
 		target_compile_options(${PROJECT_NAME} PRIVATE /D_VARIADIC_MAX=10 )
 		target_compile_options(${PROJECT_NAME} PRIVATE /D_CRT_SECURE_NO_WARNINGS)
 		target_compile_options(${PROJECT_NAME} PRIVATE /wd4251)
@@ -51,10 +51,10 @@ macro(CeleroSetDefaultCompilerOptions)
             target_compile_options(${PROJECT_NAME} PRIVATE /WX)
 		endif()
 
-	elseif(${CMAKE_CXX_COMPILER_ID} STREQUAL GNU)
+	elseif(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
 		target_compile_options(${PROJECT_NAME} PRIVATE -Wall)
 
-	elseif(${CMAKE_CXX_COMPILER_ID} STREQUAL Clang)
+	elseif(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
 		if(${CMAKE_SYSTEM_NAME} STREQUAL Windows)
 			target_compile_options(${PROJECT_NAME} PRIVATE -Xclang)
 			target_compile_options(${PROJECT_NAME} PRIVATE -Wno-c++98-compat)
@@ -70,7 +70,7 @@ macro(CeleroSetDefaultCompilerOptions)
 			endif()
 		endif()
 
-	elseif(${CMAKE_CXX_COMPILER_ID} STREQUAL AppleClang)
+	elseif(CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang")
 		target_compile_options(${PROJECT_NAME} PRIVATE -Wall)
 
 		if(CELERO_TREAT_WARNINGS_AS_ERRORS)
@@ -80,11 +80,14 @@ macro(CeleroSetDefaultCompilerOptions)
 endmacro()
 
 # Project Name
-PROJECT(CeleroProject)
+PROJECT(celero)
 
 include(CheckFunctionExists)
 include(CheckCXXSourceCompiles)
 include(CheckIncludeFile)
+include(CMakePackageConfigHelpers)
+include(GNUInstallDirs)
+include(CMakeFindDependencyMacro)
 
 #
 # User Options
@@ -101,6 +104,10 @@ if(CELERO_COMPILE_DYNAMIC_LIBRARIES)
 	SET(CELERO_USER_DEFINED_SHARED_OR_STATIC "SHARED")
 else()
 	SET(CELERO_USER_DEFINED_SHARED_OR_STATIC "STATIC")
+endif()
+
+if(CELERO_ENABLE_TESTS)
+	find_dependency(GTest REQUIRED)
 endif()
 
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
@@ -121,8 +128,6 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 
 # ---------------------------------------------------------------------------
 # ---------------------------------------------------------------------------
-
-set(PROJECT_NAME celero)
 
 if(CELERO_COMPILE_DYNAMIC_LIBRARIES)
 	add_definitions(-DCELERO_EXPORTS)
@@ -203,30 +208,39 @@ target_link_libraries(${PROJECT_NAME} ${SYSLIBS})
 
 target_include_directories(${PROJECT_NAME} PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-  $<INSTALL_INTERFACE:${CMAKE_INSTALL_PREFIX}/include>
+  $<INSTALL_INTERFACE:${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_INCLUDEDIR}>
 )
 
 # ---------------------------------------------------------------------------
 # Install and exports
 # ---------------------------------------------------------------------------
 
-install(TARGETS ${PROJECT_NAME}
-  EXPORT ${PROJECT_NAME}-target
-  RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}/bin
-  LIBRARY DESTINATION ${CMAKE_INSTALL_PREFIX}/lib
-  ARCHIVE DESTINATION ${CMAKE_INSTALL_PREFIX}/lib
+install(
+	DIRECTORY   include/
+	DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
 )
-
-install(DIRECTORY include DESTINATION ${CMAKE_INSTALL_PREFIX})
-
-# export to be used from install location
-install(EXPORT ${PROJECT_NAME}-target
-  DESTINATION ${CMAKE_INSTALL_PREFIX}/share
+install(
+	TARGETS     celero
+	DESTINATION ${CMAKE_INSTALL_LIBDIR}
+	EXPORT      celero-targets
 )
-
-# export to be used from build directory
-export(EXPORT ${PROJECT_NAME}-target
-  FILE ${PROJECT_NAME}-target.cmake
+install(
+	EXPORT      celero-targets
+	FILE        celero-targets.cmake
+	DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/celero
+)
+export(
+	EXPORT 		celero-targets
+    FILE   		celero-targets.cmake
+)
+configure_package_config_file(
+	${CMAKE_CURRENT_SOURCE_DIR}/config.cmake.in
+	${CMAKE_CURRENT_BINARY_DIR}/celero-config.cmake
+	INSTALL_DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/celero
+)
+install(
+	FILES 		${CMAKE_CURRENT_BINARY_DIR}/celero-config.cmake
+	DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/celero
 )
 
 if(CELERO_ENABLE_FOLDERS)

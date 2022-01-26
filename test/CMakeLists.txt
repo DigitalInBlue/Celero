@@ -1,7 +1,7 @@
 #
 # Top level makefile for Celero
 #
-# Copyright 2015, 2016, 2017, 2018, 2019 John Farrier
+# Copyright 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022  John Farrier
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -20,8 +20,6 @@
 project(celero-test)
 
 add_executable(${PROJECT_NAME})
-
-find_package(GTest CONFIG REQUIRED)
 
 target_sources(${PROJECT_NAME} PRIVATE
 	Archive.test.cpp

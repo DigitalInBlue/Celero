@@ -1,7 +1,7 @@
 #
 # Standard Celero Experiment CMake File
 #
-# Copyright 2015, 2016, 2017, 2018, 2019 John Farrier
+# Copyright 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022  John Farrier
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -25,7 +25,6 @@ target_sources(${PROJECT_NAME} PRIVATE
 )
 
 CeleroSetDefaultCompilerOptions()
-add_dependencies(${PROJECT_NAME} celero)
 target_link_libraries(${PROJECT_NAME} celero)
 include_directories(${HEADER_PATH})
 

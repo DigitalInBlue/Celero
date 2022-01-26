@@ -2,7 +2,7 @@
 
 ### C++ Benchmarking Library
 
-Copyright 2017-2021 John Farrier 
+Copyright 2017-2022 John Farrier 
 
 Apache 2.0 License
 
@@ -25,20 +25,22 @@ A Special Thanks to the following corporations for their support:
 
 Celero has been successfully built on the following platforms during development.  See [Travis.CI](https://travis-ci.org/DigitalInBlue/Celero) for more details.
 
--   GCC v6.0.0
--   GCC v7.0.0
--   GCC v8.0.0
--   GCC v9.0.0
--   LLVM v3.9.0
--   LLVM v5.0.1
--   LLVM v7.0.0
--   LLVM v8.0.0
--   LLVM v9.0.0
--   Visual Studio 2019 (16.8.4)
--   XCode v10.1
--   XCode v10.3
--   XCode v11.0
--   XCode v12.0
+- GCC v6.0.0
+- GCC v7.0.0
+- GCC v8.0.0
+- GCC v9.0.0
+- LLVM v3.9.0
+- LLVM v5.0.1
+- LLVM v7.0.0
+- LLVM v8.0.0
+- LLVM v9.0.0
+- Visual Studio 2019 (16.8.4)
+- Visual Studio 2019 (16.11.5)
+- Visual Studio 2022 (17.0.5)
+- XCode v10.1
+- XCode v10.3
+- XCode v11.0
+- XCode v12.0
 
 As of v2.7, Celero requres the developer to provide GoogleTest in order to build unit tests.  We suggest using a package manager such as VCPKG or Conan to provide the latest version of the library.
 
@@ -339,7 +341,7 @@ BASELINE_FIXED_F(DemoTransform, FixedTime, DemoTransformFixture, 1, 100)
 { /* Nothing to do */ }
 ```
 
-It is important that if your measurements use a test fixture, that your baseline (even if fixed) should use a test fixture as well.  Features such as User-Defined Measurements (UDMs) look to the baseline class to detect if other features are present.  If the baseline does not use a test fixuture, Celero will not know that other classes do use a test fixture that offers a UDM.
+It is important that if your measurements use a test fixture, that your baseline (even if fixed) should use a test fixture as well.  Features such as User-Defined Measurements (UDMs) look to the baseline class to detect if other features are present.  If the baseline does not use a test fixture, Celero will not know that other classes do use a test fixture that offers a UDM.
 
 ### User-Defined Measurements (UDM)
 
@@ -705,7 +707,7 @@ SortRandInts,stdSort,2048,2000,2,0,0.0135828,49,20408.2,98,104.369,282,180.859,1
 SortRandInts,stdSort,4096,2000,2,0,0.00636808,105.5,9478.67,211,221.056,468,392.122,19.8021,6.47829,52.0453,0.507826,1159168,1.15917e+06,1159168,0,0,-nan(ind),0,0,
 ```
 
-Note that in this data, there are `T` statistics and there are `R` stastics.  `T` represents _Time_ and `R` represents _RAM_.
+Note that in this data, there are `T` statistics and there are `R` statistics.  `T` represents _Time_ and `R` represents _RAM_.
 
 The point here is not that `std::sort` is better than more elementary sorting methods, but how easily measurable results can be obtained. In making such measurements more accessible and easier to code, they can become part of the way we code just as automated testing has become.
 

@@ -1,7 +1,7 @@
 #
 # Standard Celero Experiment CMake File
 #
-# Copyright 2015, 2016, 2017, 2018, 2019 John Farrier 
+# Copyright 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022  John Farrier 
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -38,7 +38,6 @@ add_executable(${PROJECT_NAME}
 )
     
 # Broiler Plate: Celero Project Dependencies
-add_dependencies(${PROJECT_NAME} celero)
 target_link_libraries(${PROJECT_NAME} celero)
     
 CeleroSetDefaultCompilerOptions()
