@@ -15,14 +15,18 @@ CELERO_MAIN
 static const int SamplesCount = 10000;
 static const int IterationsCount = 10000;
 
+#ifndef WIN32
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunused-volatile-lvalue"
+#endif
 BASELINE(DNOA, Baseline, SamplesCount, IterationsCount)
 {
 	volatile std::vector<int> x(1024);
 	x;
 }
+#ifndef WIN32
 #pragma GCC diagnostic pop
+#endif
 
 BENCHMARK(DNOA, VarImpl, SamplesCount, IterationsCount)
 {
@@ -75,15 +79,19 @@ BENCHMARK(DNOA, VarThreadID2, SamplesCount, IterationsCount)
 	}
 }
 
+#ifndef WIN32
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunused-volatile-lvalue"
+#endif
 BENCHMARK(DNOA, VarVolatile, SamplesCount, IterationsCount)
 {
 	std::vector<int> x(1024);
 	volatile decltype(x) foo = x;
 	foo;
 }
+#ifndef WIN32
 #pragma GCC diagnostic pop
+#endif
 
 BENCHMARK(DNOA, LambdaImpl, SamplesCount, IterationsCount)
 {
@@ -93,8 +101,10 @@ BENCHMARK(DNOA, LambdaImpl, SamplesCount, IterationsCount)
 	});
 }
 
+#ifndef WIN32
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunused-value"
+#endif
 BENCHMARK(DNOA, LambdaVoidImpl, SamplesCount, IterationsCount)
 {
 	// Because the lambda does not return, it will be completely optimized away.
@@ -103,7 +113,9 @@ BENCHMARK(DNOA, LambdaVoidImpl, SamplesCount, IterationsCount)
 		x;
 	});
 }
+#ifndef WIN32
 #pragma GCC diagnostic pop
+#endif
 
 BENCHMARK(DNOA, LambdaChrono, SamplesCount, IterationsCount)
 {
@@ -169,8 +181,10 @@ BENCHMARK(DNOA, LambdaThreadID2, SamplesCount, IterationsCount)
 	}
 }
 
+#ifndef WIN32
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunused-volatile-lvalue"
+#endif
 BENCHMARK(DNOA, LambdaVolatile, SamplesCount, IterationsCount)
 {
 	// GCC and Clang Optimize to:
@@ -185,4 +199,6 @@ BENCHMARK(DNOA, LambdaVolatile, SamplesCount, IterationsCount)
 	volatile auto foo = x();
 	foo;
 }
+#ifndef WIN32
 #pragma GCC diagnostic pop
+#endif
