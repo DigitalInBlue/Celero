@@ -35,7 +35,6 @@ macro(CeleroSetDefaultCompilerOptions)
 		target_compile_options(${PROJECT_NAME} PRIVATE /D_SCL_SECURE_NO_WARNINGS)
 		target_compile_options(${PROJECT_NAME} PRIVATE /permissive-)
 		target_compile_options(${PROJECT_NAME} PRIVATE /MP)
-		target_compile_definitions(${PROJECT_NAME} PRIVATE /wd4251)
 
 		if (NOT CELERO_COMPILE_DYNAMIC_LIBRARIES)
 			if(VCPKG_CRT_LINKAGE)
@@ -205,7 +204,6 @@ else()
 endif()
 
 CeleroSetDefaultCompilerOptions()
-target_compile_options(${PROJECT_NAME} PRIVATE /wd4251)
 
 target_link_libraries(${PROJECT_NAME} ${SYSLIBS})
 
