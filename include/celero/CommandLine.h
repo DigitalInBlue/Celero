@@ -159,7 +159,7 @@ namespace cmdline
 		cmdline_error(const std::string &msg) : msg(msg)
 		{
 		}
-		~cmdline_error() throw()
+		~cmdline_error() noexcept
 		{
 		}
 		const char *what() const throw()

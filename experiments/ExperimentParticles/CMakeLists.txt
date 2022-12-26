@@ -45,6 +45,7 @@ SET(PROJECT_NAME CeleroExperiment-Particles)
     target_link_libraries(${PROJECT_NAME} celero)
     
     CeleroSetDefaultCompilerOptions()
+    target_compile_options(${PROJECT_NAME} PRIVATE /wd4251)
     
     # Broiler Plate: Add Celer's include directories.
     include_directories(${HEADER_PATH})

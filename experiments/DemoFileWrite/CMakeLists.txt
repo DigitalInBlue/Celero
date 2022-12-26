@@ -25,6 +25,8 @@ target_sources(${PROJECT_NAME} PRIVATE
 )
 
 CeleroSetDefaultCompilerOptions()
+target_compile_options(${PROJECT_NAME} PRIVATE /wd4251)
+
 target_link_libraries(${PROJECT_NAME} celero)
 include_directories(${HEADER_PATH})
 

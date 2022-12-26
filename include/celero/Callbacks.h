@@ -1,12 +1,11 @@
-#ifndef H_CELERO_CALLBACKS_H
-#define H_CELERO_CALLBACKS_H
+#pragma once
 
 ///
 /// \namespace celero
 ///
 /// \author	John Farrier
 ///
-/// \copyright Copyright 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022  John Farrier
+/// \copyright Copyright 2015-2023  John Farrier
 ///
 /// Licensed under the Apache License, Version 2.0 (the "License");
 /// you may not use this file except in compliance with the License.
@@ -62,4 +61,3 @@ namespace celero
 	} // namespace impl
 } // namespace celero
 
-#endif

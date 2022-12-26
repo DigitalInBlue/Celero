@@ -1,7 +1,7 @@
 #
 # Top level makefile for Celero
 #
-# Copyright 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022  John Farrier
+# Copyright 2015-2023 John Farrier
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -27,13 +27,15 @@ macro(CeleroSetDefaultCompilerOptions)
 	set_target_properties(${PROJECT_NAME} PROPERTIES
 		POSITION_INDEPENDENT_CODE "${CELERO_COMPILE_PIC}"
 	)
-	if(MSVC)
+
+	if(CMAKE_CXX_COMPILER_ID STREQUAL MSVC)
 		target_compile_options(${PROJECT_NAME} PRIVATE /D_VARIADIC_MAX=10 )
 		target_compile_options(${PROJECT_NAME} PRIVATE /D_CRT_SECURE_NO_WARNINGS)
 		target_compile_options(${PROJECT_NAME} PRIVATE /wd4251)
-		target_compile_options(${PROJECT_NAME} PRIVATE /MP)
 		target_compile_options(${PROJECT_NAME} PRIVATE /D_SCL_SECURE_NO_WARNINGS)
 		target_compile_options(${PROJECT_NAME} PRIVATE /permissive-)
+		target_compile_options(${PROJECT_NAME} PRIVATE /MP)
+		target_compile_definitions(${PROJECT_NAME} PRIVATE /wd4251)
 
 		if (NOT CELERO_COMPILE_DYNAMIC_LIBRARIES)
 			if(VCPKG_CRT_LINKAGE)
@@ -203,12 +205,13 @@ else()
 endif()
 
 CeleroSetDefaultCompilerOptions()
+target_compile_options(${PROJECT_NAME} PRIVATE /wd4251)
 
 target_link_libraries(${PROJECT_NAME} ${SYSLIBS})
 
 target_include_directories(${PROJECT_NAME} PUBLIC
-  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-  $<INSTALL_INTERFACE:${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_INCLUDEDIR}>
+	$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+	$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
 )
 
 # ---------------------------------------------------------------------------

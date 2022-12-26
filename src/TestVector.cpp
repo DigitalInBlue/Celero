@@ -1,7 +1,7 @@
 ///
 /// \author	John Farrier
 ///
-/// \copyright Copyright 2015-2021 John Farrier
+/// \copyright Copyright 2015-2023 John Farrier
 ///
 /// Licensed under the Apache License, Version 2.0 (the "License");
 /// you may not use this file except in compliance with the License.
@@ -72,6 +72,16 @@ size_t TestVector::size() const
 {
 	std::lock_guard<std::mutex> mutexLock(this->pimpl->testVectorMutex);
 	return this->pimpl->testVector.size();
+}
+
+bool TestVector::containsGroup(const std::string& x) const
+{
+	std::lock_guard<std::mutex> mutexLock(this->pimpl->testVectorMutex);
+
+	const auto found = std::find_if(std::begin(this->pimpl->testVector), std::end(this->pimpl->testVector),
+									[x](std::shared_ptr<Benchmark> const& bmark) -> bool { return (bmark->getName() == x); });
+
+	return found != std::end(this->pimpl->testVector);
 }
 
 std::shared_ptr<Benchmark> TestVector::operator[](size_t x)

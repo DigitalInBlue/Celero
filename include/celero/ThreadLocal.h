@@ -1,10 +1,9 @@
-#ifndef H_CELERO_THREADLOCAL_H
-#define H_CELERO_THREADLOCAL_H
+#pragma once
 
 ///
 /// \author	Ivan Shynkarenka
 ///
-/// \copyright Copyright 2015-2021 John Farrier
+/// \copyright Copyright 2015-2023 John Farrier
 ///
 /// Licensed under the Apache License, Version 2.0 (the "License");
 /// you may not use this file except in compliance with the License.
@@ -30,4 +29,3 @@
 #error "Cannot define thread_local"
 #endif
 
-#endif

@@ -1,10 +1,9 @@
-#ifndef H_CELERO_RESULTTABLE_H
-#define H_CELERO_RESULTTABLE_H
+#pragma once
 
 ///
 /// \author	John Farrier
 ///
-/// \copyright Copyright 2015-2021 John Farrier
+/// \copyright Copyright 2015-2023 John Farrier
 ///
 /// Licensed under the Apache License, Version 2.0 (the "License");
 /// you may not use this file except in compliance with the License.
@@ -88,4 +87,3 @@ namespace celero
 	};
 } // namespace celero
 
-#endif

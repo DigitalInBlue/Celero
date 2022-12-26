@@ -1,12 +1,11 @@
-#ifndef H_CELERO_CELERO_H
-#define H_CELERO_CELERO_H
+#pragma once
 
 ///
 /// \namespace celero
 ///
 /// \author	John Farrier
 ///
-/// \copyright Copyright 2015-2021 John Farrier
+/// \copyright Copyright 2015-2023 John Farrier
 ///
 /// Licensed under the Apache License, Version 2.0 (the "License");
 /// you may not use this file except in compliance with the License.
@@ -312,4 +311,3 @@ namespace celero
 #define BASELINE_FIXED_T(groupName, baselineName, fixtureName, iterations, threads, useconds) \
 	BASELINE_IMPL(groupName, baselineName, fixtureName, 1, iterations, threads, useconds)
 
-#endif

@@ -47,7 +47,7 @@ public:
 	void setUp(const celero::TestFixture::ExperimentValue& x) override
 	{
 		BaseFixture::setUp(x);
-		this->file = fopen("FileWrite.out", "wb");
+		fopen_s(&this->file , "FileWrite.out", "wb");
 	}
 
 	void tearDown() override

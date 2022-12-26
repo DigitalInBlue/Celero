@@ -1,7 +1,7 @@
 ///
 /// \author	John Farrier
 ///
-/// \copyright Copyright 2015-2021 John Farrier
+/// \copyright Copyright 2015-2023 John Farrier
 ///
 /// Licensed under the Apache License, Version 2.0 (the "License");
 /// you may not use this file except in compliance with the License.
@@ -129,7 +129,11 @@ void celero::Run(int argc, char** argv)
 		for(auto i = size_t(0); i < tests.size(); i++)
 		{
 			auto bm = celero::TestVector::Instance()[i];
-			testNames.push_back(bm->getName());
+
+			if(bm != nullptr)
+			{
+				testNames.push_back(bm->getName());
+			}
 		}
 
 		std::sort(std::begin(testNames), std::end(testNames));
@@ -231,15 +235,31 @@ void celero::Run(int argc, char** argv)
 
 	if(argument.empty() == false)
 	{
-		auto bmark = celero::TestVector::Instance()[argument];
-		collectFromBenchmark(bmark);
+		if(celero::TestVector::Instance().containsGroup(argument))
+		{
+			auto bmark = celero::TestVector::Instance()[argument];
+
+			if(bmark != nullptr)
+			{
+				collectFromBenchmark(bmark);
+			}
+		}
+		else
+		{
+			std::cerr << "Error. The specified group \"" << argument << "\" does not exist.\n";
+			return;
+		}
 	}
 	else
 	{
 		for(size_t i = 0; i < celero::TestVector::Instance().size(); i++)
 		{
 			auto bmark = celero::TestVector::Instance()[i];
-			collectFromBenchmark(bmark);
+
+			if(bmark != nullptr)
+			{
+				collectFromBenchmark(bmark);
+			}
 		}
 	}
 

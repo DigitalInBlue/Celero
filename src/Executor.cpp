@@ -1,7 +1,7 @@
 ///
 /// \author	John Farrier
 ///
-/// \copyright Copyright 2015-2021 John Farrier
+/// \copyright Copyright 2015-2023 John Farrier
 ///
 /// Licensed under the Apache License, Version 2.0 (the "License");
 /// you may not use this file except in compliance with the License.
@@ -166,7 +166,11 @@ void executor::RunAllBaselines()
 	for(size_t i = 0; i < celero::TestVector::Instance().size(); i++)
 	{
 		auto bmark = celero::TestVector::Instance()[i];
-		executor::RunBaseline(bmark);
+
+		if(bmark != nullptr)
+		{
+			executor::RunBaseline(bmark);
+		}
 	}
 }
 
@@ -176,7 +180,10 @@ void executor::RunAllExperiments()
 	for(size_t i = 0; i < celero::TestVector::Instance().size(); i++)
 	{
 		auto bmark = celero::TestVector::Instance()[i];
-		executor::RunExperiments(bmark);
+		if(bmark != nullptr)
+		{
+			executor::RunExperiments(bmark);
+		}
 	}
 }
 
