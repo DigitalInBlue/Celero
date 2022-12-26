@@ -205,7 +205,6 @@ else()
 endif()
 
 CeleroSetDefaultCompilerOptions()
-target_compile_options(${PROJECT_NAME} PRIVATE /wd4251)
 
 target_link_libraries(${PROJECT_NAME} ${SYSLIBS})
 
