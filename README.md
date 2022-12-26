@@ -2,7 +2,7 @@
 
 ### C++ Benchmarking Library
 
-Copyright 2017-2022 John Farrier 
+Copyright 2017-2023 John Farrier 
 
 Apache 2.0 License
 
@@ -37,6 +37,7 @@ Celero has been successfully built on the following platforms during development
 - Visual Studio 2019 (16.8.4)
 - Visual Studio 2019 (16.11.5)
 - Visual Studio 2022 (17.0.5)
+- Visual Studio 2022 (17.4.3)
 - XCode v10.1
 - XCode v10.3
 - XCode v11.0
