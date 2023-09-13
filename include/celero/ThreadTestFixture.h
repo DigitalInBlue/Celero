@@ -66,7 +66,7 @@ namespace celero
 		///
 		/// \return Returns the number of microseconds the run took.
 		///
-		uint64_t run(uint64_t threads, uint64_t calls, const celero::TestFixture::ExperimentValue& experimentValue) override;
+		uint64_t run(uint64_t threads, uint64_t calls, const celero::TestFixture::ExperimentValue* const experimentValue) override;
 
 	private:
 		class Impl;

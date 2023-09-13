@@ -45,9 +45,9 @@ public:
 	{
 	}
 
-	std::vector<celero::TestFixture::ExperimentValue> getExperimentValues() const override
+	std::vector<std::shared_ptr<celero::TestFixture::ExperimentValue>> getExperimentValues() const override
 	{
-		std::vector<celero::TestFixture::ExperimentValue> problemSpaceValues;
+		std::vector<std::shared_ptr<celero::TestFixture::ExperimentValue>> problemSpaceValues;
 
 		// We will run some total number of sets of tests all together.
 		// Each one growing by a power of 2.
@@ -60,16 +60,17 @@ public:
 			// We make the number of iterations decrease as the size of our problem space increases
 			// to demonstrate how to adjust the number of iterations per sample based on the
 			// problem space size.
-			problemSpaceValues.push_back({int64_t(pow(2, i + 1)), int64_t(pow(2, totalNumberOfTests - i))});
+			problemSpaceValues.push_back(
+				std::make_shared<celero::TestFixture::ExperimentValue>(int64_t(pow(2, i + 1)), int64_t(pow(2, totalNumberOfTests - i))));
 		}
 
 		return problemSpaceValues;
 	}
 
 	/// Before each run, build a vector of random integers.
-	void setUp(const celero::TestFixture::ExperimentValue& experimentValue) override
+	void setUp(const celero::TestFixture::ExperimentValue* const experimentValue) override
 	{
-		this->arraySize = static_cast<int>(experimentValue.Value);
+		this->arraySize = static_cast<int>(experimentValue->Value);
 
 		for(int i = 0; i < this->arraySize; i++)
 		{

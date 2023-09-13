@@ -287,9 +287,9 @@ void celero::Run(int argc, char** argv)
 	}
 
 	// Final output.
-	auto hours = std::to_string(static_cast<int>(totalTime) / 3600);
-	auto minutes = std::to_string((static_cast<int>(totalTime) % 3600) / 60);
-	auto seconds = std::to_string(fmod(totalTime, 60.0));
+	auto hours = std::to_string(static_cast<int>(totalTime) / SecondsPerHour);
+	auto minutes = std::to_string((static_cast<int>(totalTime) % SecondsPerHour) / SecondsPerMinute);
+	auto seconds = std::to_string(fmod(totalTime, static_cast<double>(SecondsPerMinute)));
 
 	if(hours.length() < 2)
 	{

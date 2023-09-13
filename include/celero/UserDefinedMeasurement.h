@@ -64,10 +64,10 @@ namespace celero
 		virtual std::string getName() const = 0;
 
 		///
-		/// \brief Combine the results of two user defined measurements.
+		/// \brief Combine the results of two user-defined measurements.
 		///
-		/// As TestFixture classes are created and destroyed, this provides a mechanisim to preserve data.  Internally, this function is used so that
-		/// each unique set of (group, experiment, problem space) has its own combined set of user defined measurements.
+		/// As TestFixture classes are created and destroyed, this provides a mechanism to preserve data.  Internally, this function is used so that
+		/// each unique set of (group, experiment, problem space) has its own combined set of user-defined measurements.
 		///
 		virtual void merge(const UserDefinedMeasurement* const x) = 0;
 

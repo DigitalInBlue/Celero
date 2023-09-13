@@ -147,6 +147,16 @@ namespace celero
 	constexpr double UsToSec{1.0e-6};
 
 	///
+	///
+	///
+	constexpr auto SecondsPerMinute{60};
+	
+	///
+	///
+	///
+	constexpr auto SecondsPerHour{SecondsPerMinute * 60};
+
+	///
 	/// Drop-in replacement for std::rand();
 	///
 	CELERO_EXPORT int Random();

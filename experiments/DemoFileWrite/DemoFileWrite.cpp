@@ -5,17 +5,17 @@ CELERO_MAIN
 class BaseFixture : public celero::TestFixture
 {
 public:
-	std::vector<celero::TestFixture::ExperimentValue> getExperimentValues() const override
+	std::vector<std::shared_ptr<celero::TestFixture::ExperimentValue>> getExperimentValues() const override
 	{
-		std::vector<celero::TestFixture::ExperimentValue> bufferSizes;
-		bufferSizes.push_back(32);
-		bufferSizes.push_back(64);
-		bufferSizes.push_back(128);
-		bufferSizes.push_back(256);
-		bufferSizes.push_back(512);
-		bufferSizes.push_back(1024);
-		bufferSizes.push_back(2048);
-		bufferSizes.push_back(4096);
+		std::vector<std::shared_ptr<celero::TestFixture::ExperimentValue>> bufferSizes;
+		bufferSizes.push_back(std::make_shared<celero::TestFixture::ExperimentValue>(32));
+		bufferSizes.push_back(std::make_shared<celero::TestFixture::ExperimentValue>(64));
+		bufferSizes.push_back(std::make_shared<celero::TestFixture::ExperimentValue>(128));
+		bufferSizes.push_back(std::make_shared<celero::TestFixture::ExperimentValue>(256));
+		bufferSizes.push_back(std::make_shared<celero::TestFixture::ExperimentValue>(512));
+		bufferSizes.push_back(std::make_shared<celero::TestFixture::ExperimentValue>(1024));
+		bufferSizes.push_back(std::make_shared<celero::TestFixture::ExperimentValue>(2048));
+		bufferSizes.push_back(std::make_shared<celero::TestFixture::ExperimentValue>(4096));
 		return bufferSizes;
 	}
 
@@ -25,11 +25,11 @@ public:
 		return 1024.0 * 1024.0;
 	}
 
-	void setUp(const celero::TestFixture::ExperimentValue& experimentValue) override
+	void setUp(const celero::TestFixture::ExperimentValue* const experimentValue) override
 	{
-		for(auto i = 0; i < experimentValue.Value; ++i)
+		for(auto i = 0; i < experimentValue->Value; ++i)
 		{
-			this->buffer.push_back(celero::Random() % 256);
+			this->buffer.push_back(std::abs(celero::Random()) % 256);
 		}
 	}
 
@@ -44,10 +44,15 @@ public:
 class StdFileFixture : public BaseFixture
 {
 public:
-	void setUp(const celero::TestFixture::ExperimentValue& x) override
+	void setUp(const celero::TestFixture::ExperimentValue* const x) override
 	{
 		BaseFixture::setUp(x);
+
+		#ifdef WIN32
 		fopen_s(&this->file , "FileWrite.out", "wb");
+		#else
+		this->file = fopen("FileWrite.out", "wb");
+		#endif
 	}
 
 	void tearDown() override

@@ -21,6 +21,7 @@
 #include <celero/Export.h>
 #include <celero/Pimpl.h>
 #include <celero/Statistics.h>
+#include <celero/TestFixture.h>
 
 #include <string>
 
@@ -49,7 +50,12 @@ namespace celero
 		///
 		///
 		///
-		void setProblemSpaceValue(int64_t x, double scale = 1.0, uint64_t iterations = 0);
+		void setProblemSpaceValue(std::shared_ptr<celero::TestFixture::ExperimentValue> x, double scale = 1.0);
+
+		///
+		///
+		///
+		std::shared_ptr<celero::TestFixture::ExperimentValue> getProblemSpace() const;
 
 		///
 		///

@@ -100,9 +100,9 @@ namespace celero
 		///
 		/// It is only guaranteed that the constructor is called prior to this function being called.
 		///
-		virtual std::vector<celero::TestFixture::ExperimentValue> getExperimentValues() const
+		virtual std::vector<std::shared_ptr<celero::TestFixture::ExperimentValue>> getExperimentValues() const
 		{
-			return std::vector<celero::TestFixture::ExperimentValue>();
+			return std::vector<std::shared_ptr<celero::TestFixture::ExperimentValue>>();
 		};
 
 		///
@@ -128,7 +128,7 @@ namespace celero
 		///
 		/// \param x The value for the experiment.  This can be ignored if the test does not utilize experiment values.
 		///
-		virtual void onExperimentStart(const celero::TestFixture::ExperimentValue& x);
+		virtual void onExperimentStart(const celero::TestFixture::ExperimentValue* const x);
 
 		///
 		/// Allows the text fixture to run code that will be executed once immediately after the benchmark.
@@ -146,7 +146,7 @@ namespace celero
 		///
 		/// \param x The celero::TestFixture::ExperimentValue for the experiment.  This can be ignored if the test does not utilize experiment values.
 		///
-		virtual void setUp(const celero::TestFixture::ExperimentValue& x);
+		virtual void setUp(const celero::TestFixture::ExperimentValue* const x);
 
 		///
 		/// Internal to Celero
@@ -185,7 +185,7 @@ namespace celero
 		///
 		/// \return Returns the number of microseconds the run took.
 		///
-		virtual uint64_t run(uint64_t threads, uint64_t iterations, const celero::TestFixture::ExperimentValue& experimentValue);
+		virtual uint64_t run(uint64_t threads, uint64_t iterations, const celero::TestFixture::ExperimentValue* const experimentValue);
 
 		///
 		/// \brief If you want to use user-defined measurements, override this method to return them

@@ -174,6 +174,7 @@ pip-log.txt
 *.png
 *.xcf
 [Bb]uild/
+[Bb]uildLinux/
 
 #############
 ## CMake

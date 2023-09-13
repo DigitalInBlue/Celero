@@ -47,9 +47,8 @@ public:
 
 	std::shared_ptr<UserDefinedMeasurementCollector> udmCollector;
 
-	int64_t problemSpaceValue{0};
+	std::shared_ptr<celero::TestFixture::ExperimentValue> problemSpace;
 	double problemSpaceValueScale{1.0};
-	uint64_t problemSpaceIterations{0};
 
 	/// A pointer back to our owning Experiment parent.
 	Experiment* parent{nullptr};
@@ -78,16 +77,20 @@ Experiment* ExperimentResult::getExperiment() const
 	return this->pimpl->parent;
 }
 
-void ExperimentResult::setProblemSpaceValue(int64_t x, double scale, uint64_t iterations)
+void ExperimentResult::setProblemSpaceValue(std::shared_ptr<celero::TestFixture::ExperimentValue> x, double scale)
 {
-	this->pimpl->problemSpaceValue = x;
+	this->pimpl->problemSpace = x;
 	this->pimpl->problemSpaceValueScale = scale;
-	this->pimpl->problemSpaceIterations = iterations;
+}
+
+std::shared_ptr<celero::TestFixture::ExperimentValue> ExperimentResult::getProblemSpace() const
+{
+	return this->pimpl->problemSpace;
 }
 
 int64_t ExperimentResult::getProblemSpaceValue() const
 {
-	return this->pimpl->problemSpaceValue;
+	return this->pimpl->problemSpace->Value;
 }
 
 double ExperimentResult::getProblemSpaceValueScale() const
@@ -97,7 +100,7 @@ double ExperimentResult::getProblemSpaceValueScale() const
 
 uint64_t ExperimentResult::getProblemSpaceIterations() const
 {
-	return this->pimpl->problemSpaceIterations;
+	return this->pimpl->problemSpace->Iterations;
 }
 
 const Statistics<int64_t>& ExperimentResult::getTimeStatistics() const
@@ -134,7 +137,7 @@ double ExperimentResult::getUsPerCall() const
 {
 	if(this->pimpl->failure == false)
 	{
-		return static_cast<double>(this->pimpl->statsTime.getMin()) / static_cast<double>(this->pimpl->problemSpaceIterations);
+		return static_cast<double>(this->pimpl->statsTime.getMin()) / static_cast<double>(this->pimpl->problemSpace->Iterations);
 	}
 
 	return 0.0;
@@ -153,7 +156,7 @@ double ExperimentResult::getCallsPerSecond() const
 double ExperimentResult::getUnitsPerSecond() const
 {
 	return (this->pimpl->problemSpaceValueScale > 0.0)
-			   ? ((this->pimpl->problemSpaceValue * this->pimpl->problemSpaceIterations / this->pimpl->problemSpaceValueScale)
+			   ? ((this->pimpl->problemSpace->Value * this->pimpl->problemSpace->Iterations / this->pimpl->problemSpaceValueScale)
 				  / (this->pimpl->statsTime.getMin() * celero::UsToSec))
 			   : 0.0;
 }

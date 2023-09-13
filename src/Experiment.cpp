@@ -270,10 +270,10 @@ std::shared_ptr<Factory> Experiment::getFactory() const
 	return this->pimpl->factory;
 }
 
-void Experiment::addProblemSpace(int64_t x, double scale, uint64_t iterations)
+void Experiment::addProblemSpace(std::shared_ptr<celero::TestFixture::ExperimentValue> x, double scale)
 {
 	auto r = std::make_shared<celero::ExperimentResult>(this);
-	r->setProblemSpaceValue(x, scale, iterations);
+	r->setProblemSpaceValue(x, scale);
 	this->pimpl->results.push_back(r);
 }
 
@@ -282,7 +282,11 @@ size_t Experiment::getResultSize()
 	if(this->pimpl->results.empty() == true)
 	{
 		auto defaultResult = std::make_shared<celero::ExperimentResult>(this);
-		defaultResult->setProblemSpaceValue(static_cast<int64_t>(TestFixture::Constants::NoProblemSpaceValue), 1.0, this->getIterations());
+
+		auto ps = std::make_shared<TestFixture::ExperimentValue>(static_cast<int64_t>(TestFixture::Constants::NoProblemSpaceValue));
+		ps->Iterations = this->getIterations();
+
+		defaultResult->setProblemSpaceValue(ps, 1.0);
 		this->pimpl->results.push_back(defaultResult);
 	}
 

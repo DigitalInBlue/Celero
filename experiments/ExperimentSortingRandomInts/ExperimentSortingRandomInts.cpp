@@ -41,33 +41,33 @@ public:
 	{
 	}
 
-	std::vector<celero::TestFixture::ExperimentValue> getExperimentValues() const override
+	std::vector<std::shared_ptr<celero::TestFixture::ExperimentValue>> getExperimentValues() const override
 	{
-		std::vector<celero::TestFixture::ExperimentValue> problemSpace;
+		std::vector<std::shared_ptr<celero::TestFixture::ExperimentValue>> problemSpace;
 
 		// ExperimentValues is part of the base class and allows us to specify
 		// some values to control various test runs to end up building a nice graph.
 		for(int64_t elements = 64; elements <= int64_t(4096); elements *= 2)
 		{
-			problemSpace.push_back(elements);
+			problemSpace.push_back(std::make_shared<celero::TestFixture::ExperimentValue>(elements));
 		}
 
 		return problemSpace;
 	}
 
 	/// Before each sample, build a vector of random integers.
-	void setUp(const celero::TestFixture::ExperimentValue& experimentValue) override
+	void setUp(const celero::TestFixture::ExperimentValue* const experimentValue) override
 	{
-		this->arraySize = experimentValue.Value;
+		this->arraySize = experimentValue->Value;
 		this->array.resize(this->arraySize);
 	}
 
 	// Before each iteration
-	void onExperimentStart(const celero::TestFixture::ExperimentValue&) override
+	void onExperimentStart(const celero::TestFixture::ExperimentValue* const) override
 	{
 		for(int i = 0; i < this->arraySize; i++)
 		{
-			this->array[i] = celero::Random();
+			this->array[i] = static_cast<int64_t>(celero::Random());
 		}
 	}
 
@@ -76,6 +76,7 @@ public:
 	{
 		/// After each iteration, clear the vector of random integers.
 		this->array.clear();
+		this->array.resize(this->arraySize);
 	}
 
 	// After each sample

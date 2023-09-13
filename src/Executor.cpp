@@ -52,7 +52,7 @@ bool AdjustSampleAndIterationSize(std::shared_ptr<celero::ExperimentResult> r)
 
 		while(testTime < minTestTime)
 		{
-			const auto runResult = RunAndCatchExc(*test, r->getExperiment()->getThreads(), testIterations, r->getProblemSpaceValue());
+			const auto runResult = RunAndCatchExc(*test, r->getExperiment()->getThreads(), testIterations, r->getProblemSpace());
 
 			if(runResult.first == false)
 			{
@@ -80,7 +80,9 @@ bool AdjustSampleAndIterationSize(std::shared_ptr<celero::ExperimentResult> r)
 			experiment->setSamples(30);
 		}
 
-		r->setProblemSpaceValue(r->getProblemSpaceValue(), r->getProblemSpaceValueScale(), iterations);
+		auto ps = r->getProblemSpace();
+		ps->Iterations = iterations;
+		r->setProblemSpaceValue(ps, r->getProblemSpaceValueScale());
 	}
 
 	return true;
@@ -92,10 +94,11 @@ bool AdjustSampleAndIterationSize(std::shared_ptr<celero::ExperimentResult> r)
 bool ExecuteProblemSpace(std::shared_ptr<celero::ExperimentResult> r)
 {
 	// Define a small internal function object to use to uniformly execute the tests.
-	auto testRunner = [r](const bool record, std::shared_ptr<UserDefinedMeasurementCollector> udmCollector) {
+	auto testRunner = [r](const bool record, std::shared_ptr<UserDefinedMeasurementCollector> udmCollector)
+	{
 		auto test = r->getExperiment()->getFactory()->Create();
 
-		const auto runResult = RunAndCatchExc(*test, r->getExperiment()->getThreads(), r->getProblemSpaceIterations(), r->getProblemSpaceValue());
+		const auto runResult = RunAndCatchExc(*test, r->getExperiment()->getThreads(), r->getProblemSpaceIterations(), r->getProblemSpace());
 
 		if(runResult.first == false)
 		{
@@ -205,13 +208,14 @@ bool executor::RunBaseline(std::shared_ptr<Benchmark> bmark)
 
 			for(auto i : testValues)
 			{
-				if(i.Iterations > 0)
+				if(i->Iterations > 0)
 				{
-					baselineExperiment->addProblemSpace(i.Value, static_cast<double>(valueResultScale), i.Iterations);
+					baselineExperiment->addProblemSpace(i, static_cast<double>(valueResultScale));
 				}
 				else
 				{
-					baselineExperiment->addProblemSpace(i.Value, static_cast<double>(valueResultScale), baselineExperiment->getIterations());
+					i->Iterations = baselineExperiment->getIterations();
+					baselineExperiment->addProblemSpace(i, static_cast<double>(valueResultScale));
 				}
 			}
 
@@ -219,7 +223,8 @@ bool executor::RunBaseline(std::shared_ptr<Benchmark> bmark)
 			// This is needed to get the result size later.
 			if(baselineExperiment->getResultSize() == 0)
 			{
-				baselineExperiment->addProblemSpace(static_cast<int64_t>(TestFixture::Constants::NoProblemSpaceValue));
+				baselineExperiment->addProblemSpace(
+					std::make_shared<celero::TestFixture::ExperimentValue>(static_cast<int64_t>(TestFixture::Constants::NoProblemSpaceValue)));
 			}
 		}
 
@@ -332,13 +337,14 @@ void executor::Run(std::shared_ptr<Experiment> e)
 
 		for(auto i : testValues)
 		{
-			if(i.Iterations > 0)
+			if(i->Iterations > 0)
 			{
-				e->addProblemSpace(i.Value, valueResultScale, i.Iterations);
+				e->addProblemSpace(i, valueResultScale);
 			}
 			else
 			{
-				e->addProblemSpace(i.Value, valueResultScale, e->getIterations());
+				i->Iterations = e->getIterations();
+				e->addProblemSpace(i, valueResultScale);
 			}
 		}
 

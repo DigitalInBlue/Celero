@@ -23,7 +23,7 @@ namespace
 	class Fixture : public celero::TestFixture
 	{
 	public:
-		void onExperimentStart(const celero::TestFixture::ExperimentValue&) override
+		void onExperimentStart(const celero::TestFixture::ExperimentValue* const) override
 		{
 			this->onStart = true;
 		}
@@ -33,7 +33,7 @@ namespace
 			this->onEnd = true;
 		}
 
-		void setUp(const celero::TestFixture::ExperimentValue&) override
+		void setUp(const celero::TestFixture::ExperimentValue* const) override
 		{
 			this->onSetUp = true;
 		}

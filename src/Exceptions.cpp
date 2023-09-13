@@ -196,29 +196,43 @@ namespace celero
 	}
 #endif // CELERO_HAS_SEH
 
+	///
+	///
+	///
 	std::pair<bool, uint64_t> RunAndCatchSEHExc(TestFixture& test, uint64_t threads, uint64_t calls,
-												const celero::TestFixture::ExperimentValue& experimentValue)
+												std::shared_ptr<celero::TestFixture::ExperimentValue> experimentValue)
 	{
 #if CELERO_HAS_SEH
-		__try
+		std::pair<bool, uint64_t> pair;
+
+		[&]()
 		{
-			return std::make_pair(true, test.run(threads, calls, experimentValue));
-		}
-		__except(HandleSEH(GetExceptionCode()))
-		{
-			const auto exceptionCode = GetExceptionCode();
-			celero::console::SetConsoleColor(celero::console::ConsoleColor::Red);
-			std::cout << "SEH exception " << ExceptionCodeToStr(exceptionCode) << std::endl;
-			celero::console::SetConsoleColor(celero::console::ConsoleColor::Default);
-			return std::make_pair(false, 0);
-		}
-#else // CELERO_HAS_SEH
-		return std::make_pair(true, test.run(threads, calls, experimentValue));
+			__try
+			{
+				[&]()
+				{
+					pair = std::make_pair(true, test.run(threads, calls, experimentValue.get()));
+				}
+				();
+			}
+			__except(HandleSEH(GetExceptionCode()))
+			{
+				const auto exceptionCode = GetExceptionCode();
+				celero::console::SetConsoleColor(celero::console::ConsoleColor::Red);
+				std::cout << "SEH exception " << ExceptionCodeToStr(exceptionCode) << std::endl;
+				celero::console::SetConsoleColor(celero::console::ConsoleColor::Default);
+				pair = std::make_pair(false, 0);
+			}
+		}();
+
+		return pair;
+#else  // CELERO_HAS_SEH
+		return std::make_pair(true, test.run(threads, calls, experimentValue.get()));
 #endif // CELERO_HAS_SEH
 	}
 
 	std::pair<bool, uint64_t> RunAndCatchExc(TestFixture& test, uint64_t threads, uint64_t calls,
-											 const celero::TestFixture::ExperimentValue& experimentValue)
+											 std::shared_ptr<celero::TestFixture::ExperimentValue> experimentValue)
 	{
 		if(ExceptionSettings::GetCatchExceptions() == true)
 		{
@@ -241,13 +255,13 @@ namespace celero
 			}
 
 			return std::make_pair(false, 0);
-#else // CELERO_HAS_EXCEPTIONS
-			return RunAndCatchSEHExc(test, threads, calls, experimentValue);
+#else  // CELERO_HAS_EXCEPTIONS
+			return RunAndCatchSEHExc(test, threads, calls, experimentValue.get());
 #endif // CELERO_HAS_EXCEPTIONS
 		}
 		else
 		{
-			return std::make_pair(true, test.run(threads, calls, experimentValue));
+			return std::make_pair(true, test.run(threads, calls, experimentValue.get()));
 		}
 	}
 } // namespace celero

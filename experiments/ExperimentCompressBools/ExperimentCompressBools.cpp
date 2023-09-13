@@ -49,9 +49,9 @@ public:
 class CompressBoolsFixture : public celero::TestFixture
 {
 public:
-	std::vector<celero::TestFixture::ExperimentValue> getExperimentValues() const override
+	std::vector<std::shared_ptr<celero::TestFixture::ExperimentValue>> getExperimentValues() const override
 	{
-		std::vector<celero::TestFixture::ExperimentValue> problemSpace;
+		std::vector<std::shared_ptr<celero::TestFixture::ExperimentValue>> problemSpace;
 
 		const auto stepCount = MaxArrayLength / BenchmarkSteps;
 
@@ -59,11 +59,11 @@ public:
 		{
 			// ExperimentValues is part of the base class and allows us to specify
 			// some values to control various test runs to end up building a nice graph.
-			MyExperimentValue ev;
-			ev.Value = stepCount + i * stepCount;
-			ev.Iterations = int64_t(i + 1);
-			ev.NumBytes = static_cast<unsigned int>((ev.Value + 7) / 8);
-			ev.NumFullBytes = static_cast<unsigned int>((ev.Value) / 8);
+			auto ev = std::make_shared<MyExperimentValue>();
+			ev->Value = stepCount + i * stepCount;
+			ev->Iterations = int64_t((i + 1) * 100);
+			ev->NumBytes = static_cast<unsigned int>((ev->Value + 7) / 8);
+			ev->NumFullBytes = static_cast<unsigned int>((ev->Value) / 8);
 			problemSpace.push_back(ev);
 		}
 
@@ -71,9 +71,9 @@ public:
 	}
 
 	/// Before each run, build a vector of random integers.
-	void setUp(const celero::TestFixture::ExperimentValue& experimentValue) override
+	void setUp(const celero::TestFixture::ExperimentValue* const experimentValue) override
 	{
-		this->arrayLength = static_cast<size_t>(experimentValue.Value);
+		this->arrayLength = static_cast<size_t>(experimentValue->Value);
 		this->inputValues.reset(new int[arrayLength]);
 		this->referenceValues.reset(new bool[arrayLength]);
 
@@ -81,7 +81,7 @@ public:
 		std::uniform_int_distribution<> dist(0, MaximumDistribution);
 
 		// set every byte, copute reference values
-		for(int64_t i = 0; i < experimentValue.Value; ++i)
+		for(int64_t i = 0; i < experimentValue->Value; ++i)
 		{
 			this->inputValues[i] = dist(gen);
 			this->referenceValues[i] = this->inputValues[i] > ThresholdValue;
@@ -90,7 +90,7 @@ public:
 
 #ifdef _DEBUG
 	static const int64_t MaxArrayLength{100};
-	static const int64_t BenchmarkSteps{1};
+	static const int64_t BenchmarkSteps{2};
 #else
 	static const int64_t MaxArrayLength{5000000};
 	static const int64_t BenchmarkSteps{5};
@@ -104,7 +104,7 @@ public:
 class NoPackingFixture : public CompressBoolsFixture
 {
 public:
-	void setUp(const celero::TestFixture::ExperimentValue& x) override
+	void setUp(const celero::TestFixture::ExperimentValue* const x) override
 	{
 		CompressBoolsFixture::setUp(x);
 		this->outputValues.reset(new bool[static_cast<unsigned int>(arrayLength)]);
@@ -156,10 +156,10 @@ BENCHMARK_F(CompressBoolsTest, StdBitset, StdBitsetFixture, SamplesCount, Iterat
 class StdVectorFixture : public CompressBoolsFixture
 {
 public:
-	void setUp(const celero::TestFixture::ExperimentValue& experimentValue) override
+	void setUp(const celero::TestFixture::ExperimentValue* const experimentValue) override
 	{
 		CompressBoolsFixture::setUp(experimentValue);
-		this->outputVector.resize(static_cast<unsigned int>(experimentValue.Value));
+		this->outputVector.resize(static_cast<unsigned int>(experimentValue->Value));
 	}
 
 	void tearDown() override
@@ -188,13 +188,13 @@ public:
 	{
 	}
 
-	void setUp(const celero::TestFixture::ExperimentValue& experimentValue) override
+	void setUp(const celero::TestFixture::ExperimentValue* const experimentValue) override
 	{
 		CompressBoolsFixture::setUp(experimentValue);
 
-		auto ev = dynamic_cast<const MyExperimentValue&>(experimentValue);
-		this->numBytes = ev.NumBytes;
-		this->numFullBytes = ev.NumFullBytes;
+		auto ev = dynamic_cast<const MyExperimentValue* const>(experimentValue);
+		this->numBytes = ev->NumBytes;
+		this->numFullBytes = ev->NumFullBytes;
 		this->outputValues.reset(new uint8_t[this->numBytes]);
 	}
 
@@ -307,12 +307,12 @@ struct bool8
 class PackedStructFixture : public CompressBoolsFixture
 {
 public:
-	void setUp(const celero::TestFixture::ExperimentValue& experimentValue) override
+	void setUp(const celero::TestFixture::ExperimentValue* const experimentValue) override
 	{
 		CompressBoolsFixture::setUp(experimentValue);
 
-		this->numBytes = static_cast<unsigned int>((experimentValue.Value + 7) / 8);
-		this->numFullBytes = static_cast<unsigned int>((experimentValue.Value) / 8);
+		this->numBytes = static_cast<unsigned int>((experimentValue->Value + 7) / 8);
+		this->numFullBytes = static_cast<unsigned int>((experimentValue->Value) / 8);
 		this->outputValues.reset(new bool8[numBytes]);
 	}
 
@@ -463,12 +463,12 @@ BENCHMARK_F(CompressBoolsTest, WithOpenMP, ManualVersionFixture, SamplesCount, I
 class SimdVersionFixture : public CompressBoolsFixture
 {
 public:
-	void setUp(const celero::TestFixture::ExperimentValue& experimentValue) override
+	void setUp(const celero::TestFixture::ExperimentValue* const experimentValue) override
 	{
 		CompressBoolsFixture::setUp(experimentValue);
 
-		this->numBytes = static_cast<unsigned int>((experimentValue.Value + 7) / 8);
-		this->numFullBytes = static_cast<unsigned int>((experimentValue.Value) / 8);
+		this->numBytes = static_cast<unsigned int>((experimentValue->Value + 7) / 8);
+		this->numFullBytes = static_cast<unsigned int>((experimentValue->Value) / 8);
 		this->alignedOutputValues = (uint8_t*)_aligned_malloc(numBytes, 16);
 		this->signedInputValues.reset(new int8_t[arrayLength]);
 

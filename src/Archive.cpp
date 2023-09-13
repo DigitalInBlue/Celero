@@ -16,7 +16,7 @@
 /// limitations under the License.
 ///
 
-#include <assert.h>
+#include <cassert>
 #include <celero/Archive.h>
 #include <celero/Benchmark.h>
 #include <celero/FileReader.h>
@@ -36,27 +36,6 @@ using namespace celero;
 ///
 struct ArchiveEntry
 {
-	ArchiveEntry()
-		: GroupName(),
-		  RunName(),
-		  ExperimentValue(0),
-		  ExperimentValueScale(0),
-		  FirstRanDate(0),
-		  TotalSamplesCollected(0),
-		  AverageBaseline(0),
-		  MinBaseline(0),
-		  MinBaseline_TimeSinceEpoch(0),
-		  MinStats(),
-		  MaxBaseline(0),
-		  MaxBaseline_TimeSinceEpoch(0),
-		  MaxStats(),
-		  CurrentBaseline(0),
-		  CurrentBaseline_TimeSinceEpoch(0),
-		  CurrentStats(),
-		  Failure(false)
-	{
-	}
-
 	static void WriteHeader(std::ostream& str)
 	{
 		str << "GroupName,RunName,Failure,ExperimentValue,ExperimentValueScale,FirstRanDate,TotalSamplesCollected,AverageBaseline,";
@@ -73,10 +52,6 @@ struct ArchiveEntry
 
 	struct Stat
 	{
-		Stat() : Size(0), Mean(0), Variance(0), StandardDeviation(0), Skewness(0), Kurtosis(0), Min(0), Max(0)
-		{
-		}
-
 		Stat& operator=(const celero::Statistics<int64_t>& s)
 		{
 			this->Size = s.getSize();
@@ -91,41 +66,41 @@ struct ArchiveEntry
 			return *this;
 		}
 
-		uint64_t Size;
-		double Mean;
-		double Variance;
-		double StandardDeviation;
-		double Skewness;
-		double Kurtosis;
-		uint64_t Min;
-		uint64_t Max;
+		uint64_t Size{0};
+		double Mean{0};
+		double Variance{0};
+		double StandardDeviation{0};
+		double Skewness{0};
+		double Kurtosis{0};
+		uint64_t Min{0};
+		uint64_t Max{0};
 	};
 
 	std::string GroupName;
 	std::string RunName;
 
 	/// The data set size, if one was specified.
-	int64_t ExperimentValue;
-	double ExperimentValueScale;
+	int64_t ExperimentValue{0};
+	double ExperimentValueScale{0};
 
-	uint64_t FirstRanDate;
-	uint32_t TotalSamplesCollected;
+	uint64_t FirstRanDate{0};
+	uint32_t TotalSamplesCollected{0};
 
-	double AverageBaseline;
+	double AverageBaseline{0};
 
-	double MinBaseline;
-	uint64_t MinBaseline_TimeSinceEpoch;
+	double MinBaseline{0};
+	uint64_t MinBaseline_TimeSinceEpoch{0};
 	Stat MinStats;
 
-	double MaxBaseline;
-	uint64_t MaxBaseline_TimeSinceEpoch;
+	double MaxBaseline{0};
+	uint64_t MaxBaseline_TimeSinceEpoch{0};
 	Stat MaxStats;
 
-	double CurrentBaseline;
-	uint64_t CurrentBaseline_TimeSinceEpoch;
+	double CurrentBaseline{0};
+	uint64_t CurrentBaseline_TimeSinceEpoch{0};
 	Stat CurrentStats;
 
-	bool Failure;
+	bool Failure{false};
 };
 
 ///

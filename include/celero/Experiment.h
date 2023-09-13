@@ -153,9 +153,8 @@ namespace celero
 		///
 		/// \param x	Can be interpreted in any way be the test fixture (i.e. index into an array, etc.)
 		/// \param scale	Used to format unit results.
-		/// \param iterations	Override the default iterations with the number here when greater than zero.
 		///
-		void addProblemSpace(int64_t x, double scale = 1.0, uint64_t iterations = 0);
+		void addProblemSpace(std::shared_ptr<celero::TestFixture::ExperimentValue> x, double scale = 1.0);
 
 		///
 		/// There is one result for each problem space.

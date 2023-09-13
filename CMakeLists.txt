@@ -21,14 +21,44 @@
 # Cmake Configuration
 #
 
-CMAKE_MINIMUM_REQUIRED(VERSION 3.0.2)
+CMAKE_MINIMUM_REQUIRED(VERSION 3.16)
+cmake_policy(SET CMP0128 NEW)
+
+enable_language(CXX)
+
+include(CheckFunctionExists)
+include(CheckCXXSourceCompiles)
+include(CheckIncludeFile)
+include(GenerateExportHeader)
+include(CMakePackageConfigHelpers)
+
+#
+# User Options
+#
+
+option(CELERO_COMPILE_DYNAMIC_LIBRARIES "Set to ON to build Celero for dynamic linking.  Use OFF for static." ON)
+option(CELERO_COMPILE_PIC "Set to ON to build Celero as a position-independent library." ON)
+option(CELERO_ENABLE_EXPERIMENTS "Set to ON to automatically build all examples." OFF)
+option(CELERO_ENABLE_FOLDERS "Enable to put Celero in its own solution folder under Visual Studio" ON)
+option(CELERO_ENABLE_TESTS "Enable building and running unit tests." OFF)
+option(CELERO_ENABLE_WARNINGS_AS_ERRORS "Treat compile warnings as errors." ON)
+option(CELERO_ENABLE_CLANG_TIDY_CHECKS "Compile with clang-tidy checks." OFF)
+option(CELERO_ENABLE_CLANG_ADDRESS_SANITIZER "Enable the Clang Address Sanitizer" OFF)
+
+#
+# Project configuration macro
+#
 
 macro(CeleroSetDefaultCompilerOptions)
+	message(STATUS "Celero: Setting default compiler options for ${PROJECT_NAME}")
+
 	set_target_properties(${PROJECT_NAME} PROPERTIES
 		POSITION_INDEPENDENT_CODE "${CELERO_COMPILE_PIC}"
 	)
 
-	if(CMAKE_CXX_COMPILER_ID STREQUAL MSVC)
+	if(${CMAKE_CXX_COMPILER_ID} STREQUAL MSVC)
+		message(STATUS "Celero: Configuring Visual Studio for ${PROJECT_NAME}")
+
 		target_compile_options(${PROJECT_NAME} PRIVATE /D_VARIADIC_MAX=10 )
 		target_compile_options(${PROJECT_NAME} PRIVATE /D_CRT_SECURE_NO_WARNINGS)
 		target_compile_options(${PROJECT_NAME} PRIVATE /wd4251)
@@ -48,33 +78,65 @@ macro(CeleroSetDefaultCompilerOptions)
 			endif()
 		endif()
 
-        if(CELERO_TREAT_WARNINGS_AS_ERRORS)
+        if(CELERO_ENABLE_WARNINGS_AS_ERRORS)
             target_compile_options(${PROJECT_NAME} PRIVATE /WX)
 		endif()
 
-	elseif(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+		if(CELERO_ENABLE_CLANG_TIDY_CHECKS)
+			message(STATUS "Celero: Enabling Clang-Tidy checks for ${PROJECT_NAME}")
+			set_target_properties(${PROJECT_NAME} PROPERTIES
+				VS_GLOBAL_RunCodeAnalysis true
+
+				# Use visual studio core guidelines
+				# VS_GLOBAL_EnableMicrosoftCodeAnalysis true
+
+				# Use clangtidy
+				VS_GLOBAL_EnableClangTidyCodeAnalysis true
+				VS_GLOBAL_ClangTidyChecks -*,modernize-*,boost-*,bugprone-*,clang-analyzer-*,concurrency-*,cppcoreguidelines-*,hicpp-*misc-*,modernize-*,performance-*,portability-*,-modernize-use-trailing-return-type,-bugprone-easily-swappable-parameters
+			)
+		endif()
+
+		if(CELERO_ENABLE_CLANG_ADDRESS_SANITIZER)
+			message(STATUS "Celero: Enabling Clang Address Sanitizer (ASAN) for the Release configuration of ${PROJECT_NAME}")
+			target_compile_options(${PROJECT_NAME} PRIVATE
+				$<$<CONFIG:Release>:-fsanitize=address /Zi>
+			)
+
+			target_link_libraries(${PROJECT_NAME} PUBLIC
+				$<$<CONFIG:Release>:clang_rt.asan_dynamic-x86_64>
+				$<$<CONFIG:Release>:clang_rt.asan_dynamic_runtime_thunk-x86_64>
+			)
+		endif()
+
+	elseif(${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU")
+		message(STATUS "Celero: Configuring GCC for ${PROJECT_NAME}")
+		
 		target_compile_options(${PROJECT_NAME} PRIVATE -Wall)
 
-	elseif(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+	elseif(${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang")
+		message(STATUS "Celero: Configuring Clang for ${PROJECT_NAME}")
+		
 		if(${CMAKE_SYSTEM_NAME} STREQUAL Windows)
 			target_compile_options(${PROJECT_NAME} PRIVATE -Xclang)
 			target_compile_options(${PROJECT_NAME} PRIVATE -Wno-c++98-compat)
 			target_compile_options(${PROJECT_NAME} PRIVATE -Wno-c++98-compat-pedantic)
 			target_compile_options(${PROJECT_NAME} PRIVATE -Wno-reserved-id-macro)
-			if(CELERO_TREAT_WARNINGS_AS_ERRORS)
+			if(CELERO_ENABLE_WARNINGS_AS_ERRORS)
 				target_compile_options(${PROJECT_NAME} PRIVATE -Werror)
 			endif()
 		else()
 			target_compile_options(${PROJECT_NAME} PRIVATE -Wall)
-			if(CELERO_TREAT_WARNINGS_AS_ERRORS)
+			if(CELERO_ENABLE_WARNINGS_AS_ERRORS)
 				target_compile_options(${PROJECT_NAME} PRIVATE -Werror)
 			endif()
 		endif()
 
-	elseif(CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang")
+	elseif(${CMAKE_CXX_COMPILER_ID} STREQUAL "AppleClang")
+		message(STATUS "Celero: Configuring Apple Clang for ${PROJECT_NAME}")
+		
 		target_compile_options(${PROJECT_NAME} PRIVATE -Wall)
 
-		if(CELERO_TREAT_WARNINGS_AS_ERRORS)
+		if(CELERO_ENABLE_WARNINGS_AS_ERRORS)
 			target_compile_options(${PROJECT_NAME} PRIVATE -Werror)
 		endif()
 	endif()
@@ -89,17 +151,6 @@ include(CheckIncludeFile)
 include(CMakePackageConfigHelpers)
 include(GNUInstallDirs)
 include(CMakeFindDependencyMacro)
-
-#
-# User Options
-#
-
-option(CELERO_COMPILE_DYNAMIC_LIBRARIES "Set to ON to build Celero for dynamic linking.  Use OFF for static." ON)
-option(CELERO_COMPILE_PIC "Set to ON to build Celero as a position-independent library." ON)
-option(CELERO_ENABLE_EXPERIMENTS "Set to ON to automatically build all examples." OFF)
-option(CELERO_ENABLE_FOLDERS "Enable to put Celero in its own solution folder under Visual Studio" ON)
-option(CELERO_ENABLE_TESTS "Enable building and running unit tests." OFF)
-option(CELERO_TREAT_WARNINGS_AS_ERRORS "Treat compile warnings as errors." ON)
 
 if(CELERO_COMPILE_DYNAMIC_LIBRARIES)
 	SET(CELERO_USER_DEFINED_SHARED_OR_STATIC "SHARED")
@@ -190,6 +241,7 @@ target_sources(${PROJECT_NAME} PRIVATE
 	src/Timer.cpp
 	src/UserDefinedMeasurementCollector.cpp
 	src/Utilities.cpp
+	README.md
 )
 
 if(WIN32)

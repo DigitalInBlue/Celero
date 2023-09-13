@@ -14,21 +14,16 @@ A Special Thanks to the following corporations for their support:
 -   [Araxis](https://www.araxis.com/)
 -   [Axosoft](https://www.gitkraken.com/)
 -   [Microsoft](https://www.microsoft.com)
--   [Travis.CI](https://travis-ci.org)
 
 #### Builds and Testing
 
-| Branch                 | Status                                                                                                                                 |
-|:-----------------------|:---------------------------------------------------------------------------------------------------------------------------------------|
-| ```origin/master: ```  | [![Build Status (Master)](https://travis-ci.org/DigitalInBlue/Celero.svg?branch=master)](https://travis-ci.org/DigitalInBlue/Celero)   |
-| ```origin/develop: ``` | [![Build Status (Develop)](https://travis-ci.org/DigitalInBlue/Celero.svg?branch=develop)](https://travis-ci.org/DigitalInBlue/Celero) |
-
-Celero has been successfully built on the following platforms during development.  See [Travis.CI](https://travis-ci.org/DigitalInBlue/Celero) for more details.
+Celero has been successfully built on the following platforms during development.
 
 - GCC v6.0.0
 - GCC v7.0.0
 - GCC v8.0.0
 - GCC v9.0.0
+- GCC v9.4.0
 - LLVM v3.9.0
 - LLVM v5.0.1
 - LLVM v7.0.0
@@ -38,6 +33,7 @@ Celero has been successfully built on the following platforms during development
 - Visual Studio 2019 (16.11.5)
 - Visual Studio 2022 (17.0.5)
 - Visual Studio 2022 (17.4.3)
+- Visual Studio 2022 (17.5.5)
 - XCode v10.1
 - XCode v10.3
 - XCode v11.0
@@ -56,13 +52,13 @@ As of v2.7, Celero requres the developer to provide GoogleTest in order to build
 
 Developing consistent and meaningful benchmark results for code is a complicated task. Measurement tools exist (Intel® VTune™ Amplifier, SmartBear AQTime, Valgrind, etc.) external to applications, but they are sometimes expensive for small teams or cumbersome to utilize. This project, Celero, aims to be a small library which can be added to a C++ project and perform benchmarks on code in a way which is easy to reproduce, share, and compare among individual runs, developers, or projects. Celero uses a framework similar to that of GoogleTest to make its API more natural to use and integrate into a project. Make automated benchmarking as much a part of your development process as automated testing.
 
-Celero uses CMake to provide cross-platform builds. It does require a modern compiler (Visual C++ 2012+, GCC 4.7+, Clang 2.9+) due to its use of C++11.
+Celero uses CMake to provide cross-platform builds. It does require a modern compiler (Visual C++ 2012+, GCC 4.7+, Clang 2.9+) due to its use of C++14.
 
 Once Celero is added to your project. You can create dedicated benchmark projects and source files. For convenience, there is single header file and a `CELERO_MAIN` macro that can be used to provide a `main()` for your benchmark project that will automatically execute all of your benchmark tests.
 
 ### Key Features
 
--   Supports Windows, Linux, and OSX using C++11.
+-   Supports Windows, Linux, and OSX using C++14.
 -   The timing utilities can be used directly in production code (independent of benchmarks).
 -   Automatically tracks RAM usage during the experiments
 -   Console table output is formatted as Markdown to easily copy/paste into documents.
