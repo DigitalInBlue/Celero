@@ -231,7 +231,12 @@ void celero::Run(int argc, char** argv)
 				userDefinedFields.insert(fieldName);
 			}
 		}
+
+		return bmark->getName().length();
 	};
+
+	// PrintConstants::ColumnWidth
+	auto maxGroupNameLength = size_t(15);
 
 	if(argument.empty() == false)
 	{
@@ -241,7 +246,8 @@ void celero::Run(int argc, char** argv)
 
 			if(bmark != nullptr)
 			{
-				collectFromBenchmark(bmark);
+				const auto groupNameLength = collectFromBenchmark(bmark);
+				maxGroupNameLength = std::max(maxGroupNameLength, groupNameLength);
 			}
 		}
 		else
@@ -258,7 +264,8 @@ void celero::Run(int argc, char** argv)
 
 			if(bmark != nullptr)
 			{
-				collectFromBenchmark(bmark);
+				const auto groupNameLength = collectFromBenchmark(bmark);
+				maxGroupNameLength = std::max(maxGroupNameLength, groupNameLength);
 			}
 		}
 	}
@@ -266,7 +273,7 @@ void celero::Run(int argc, char** argv)
 	std::vector<std::string> userDefinedFieldsOrder(userDefinedFields.begin(), userDefinedFields.end());
 
 	Printer::get().initialize(userDefinedFieldsOrder);
-	Printer::get().TableBanner();
+	Printer::get().TableBanner(maxGroupNameLength);
 
 	const auto startTime = celero::timer::GetSystemTime();
 

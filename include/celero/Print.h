@@ -46,7 +46,7 @@ namespace celero
 		void initialize(std::vector<std::string> userDefinedColumns);
 
 		void Console(const std::string& x);
-		void TableBanner();
+		void TableBanner(const size_t groupNameLength = 15);
 		void TableRowExperimentHeader(Experiment* x);
 		void TableRowFailure(const std::string& msg);
 		void TableRowProblemSpaceHeader(std::shared_ptr<celero::ExperimentResult> x);

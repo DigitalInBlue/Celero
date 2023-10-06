@@ -41,6 +41,11 @@ enum PrintConstants : size_t
 	ColumnWidth = 15
 };
 
+// Here, we demonstrate "worst-practices" my implementing a global variable.
+// This is technical debt to shoe-horn in a way to dynamically adjust the column width for the group name.
+// Public shaming is acceptable.
+size_t GlobalGroupNameColumnWidth(15);
+
 ///
 /// http://stackoverflow.com/questions/14765155/how-can-i-easily-format-my-data-table-in-c
 /// Center-aligns string within a field of width w. Pads with blank spaces to enforce alignment.
@@ -186,17 +191,24 @@ std::string PrintHRule(const size_t additionalColumns = 0)
 
 	std::stringstream ss;
 	std::string column{":"};
+	std::string groupColumn{":"};
 
 	while(column.length() < PrintConstants::ColumnWidth)
 	{
 		column += "-";
 	}
 
+	while(groupColumn.length() < GlobalGroupNameColumnWidth)
+	{
+		groupColumn += "-";
+	}
+
 	std::string firstColumn = column + ":|";
+	groupColumn = groupColumn + ":|";
 
 	column += "-:|";
 
-	ss << "|" << firstColumn;
+	ss << "|" << groupColumn;
 
 	for(size_t i = 0; i < PrintConstants::NumberOfColumns + additionalColumns - 1; ++i)
 	{
@@ -215,11 +227,14 @@ namespace celero
 		std::cout << "Celero: " << x << std::endl;
 	}
 
-	void Printer::TableBanner()
+	void Printer::TableBanner(const size_t groupNameLength)
 	{
+		GlobalGroupNameColumnWidth = groupNameLength;
+
 		celero::console::SetConsoleColor(celero::console::ConsoleColor::Default);
 
-		std::cout << "|" << PrintCenter("Group") << PrintCenter("Experiment") << PrintCenter("Prob. Space") << PrintCenter("Samples")
+		std::cout << "|" << PrintCenter("Group", GlobalGroupNameColumnWidth) << PrintCenter("Experiment") << PrintCenter("Prob. Space")
+				  << PrintCenter("Samples")
 				  << PrintCenter("Iterations") << PrintCenter("Baseline") << PrintCenter("us/Iteration") << PrintCenter("Iterations/sec")
 				  << PrintCenter("RAM (bytes)");
 
@@ -235,7 +250,7 @@ namespace celero
 	void Printer::TableRowExperimentHeader(Experiment* x)
 	{
 		celero::console::SetConsoleColor(celero::console::ConsoleColor::Default);
-		std::cout << "|" << PrintColumn(x->getBenchmark()->getName()) << PrintColumn(x->getName());
+		std::cout << "|" << PrintColumn(x->getBenchmark()->getName(), GlobalGroupNameColumnWidth) << PrintColumn(x->getName());
 	}
 
 	void Printer::TableRowFailure(const std::string& msg)
