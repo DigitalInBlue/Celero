@@ -430,7 +430,7 @@ public:
     [...] 
 
     // Reset the page fault counter.
-    virtual void setUp(const celero::TestFixture::ExperimentValue& experimentValue) override
+    virtual void setUp(const celero::TestFixture::ExperimentValue* experimentValue) override
     {
         [...]
         this->resetPageFaultCounter();
@@ -515,7 +515,7 @@ public:
     }
 
     /// Before each run, build a vector of random integers.
-    virtual void setUp(const celero::TestFixture::ExperimentValue& experimentValue)
+    virtual void setUp(const celero::TestFixture::ExperimentValue* experimentValue)
     {
         this->arraySize = experimentValue.Value;
         this->array.reserve(this->arraySize);
