@@ -69,10 +69,7 @@ jobs:
       - name: Configure
         shell: bash
         run: |
-          cmake -S . -B build \
-            ${{ steps.vcpkg.outputs.vcpkg-cmake-config }} \
-            -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} \
-            -DCELERO_ENABLE_TESTS=ON
+          cmake -S . -B build ${{ steps.vcpkg.outputs.vcpkg-cmake-config }} -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -DCELERO_ENABLE_TESTS=ON
 
       # 3. Build everything
       - name: Build
