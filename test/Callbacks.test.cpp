@@ -50,3 +50,33 @@ TEST(Callbacks, ExperimentResultComplete)
 	EXPECT_NO_THROW(celero::AddExperimentResultCompleteFunction(x));
 	EXPECT_NO_THROW(celero::impl::ExperimentResultComplete(nullptr));
 }
+
+TEST(Callbacks, ExperimentCompleteInvalidInput)
+{
+	// Test experiment completion with invalid input
+	EXPECT_NO_THROW(celero::impl::ExperimentComplete(nullptr));
+
+	// Set up a valid function and check for non-null input
+	std::function<void(std::shared_ptr<celero::Experiment>)> validFunction = [](std::shared_ptr<celero::Experiment> exp)
+	{
+		EXPECT_TRUE(exp == nullptr); // Expected to be null
+	};
+
+	celero::AddExperimentCompleteFunction(validFunction);
+	EXPECT_NO_THROW(celero::impl::ExperimentComplete(nullptr)); // Trigger with null
+}
+
+TEST(Callbacks, ExperimentResultCompleteInvalidInput)
+{
+	// Test result completion with invalid input
+	EXPECT_NO_THROW(celero::impl::ExperimentResultComplete(nullptr));
+
+	// Set up a valid function and check for non-null input
+	std::function<void(std::shared_ptr<celero::ExperimentResult>)> validFunction = [](std::shared_ptr<celero::ExperimentResult> res)
+	{
+		EXPECT_TRUE(res == nullptr); // Expected to be null
+	};
+
+	celero::AddExperimentResultCompleteFunction(validFunction);
+	EXPECT_NO_THROW(celero::impl::ExperimentResultComplete(nullptr)); // Trigger with null
+}

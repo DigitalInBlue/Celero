@@ -16,7 +16,6 @@
 /// limitations under the License.
 ///
 
-#include <assert.h>
 #include <celero/TestFixture.h>
 #include <celero/UserDefinedMeasurementCollector.h>
 
@@ -28,7 +27,7 @@ UserDefinedMeasurementCollector::UserDefinedMeasurementCollector(std::shared_ptr
 
 	if(udm.empty() == false)
 	{
-		for(auto name : fixture->getUserDefinedMeasurementNames())
+		for(const auto& name : fixture->getUserDefinedMeasurementNames())
 		{
 			this->collected[name] = nullptr;
 		}
@@ -41,7 +40,7 @@ void UserDefinedMeasurementCollector::collect(std::shared_ptr<TestFixture> fixtu
 
 	if(udms.empty() == false)
 	{
-		for(auto udm : udms)
+		for(const auto& udm : udms)
 		{
 			if(this->collected[udm->getName()] == nullptr)
 			{
@@ -62,7 +61,7 @@ std::vector<std::string> UserDefinedMeasurementCollector::getFields(std::shared_
 
 	if(udms.empty() == false)
 	{
-		for(auto udm : udms)
+		for(const auto& udm : udms)
 		{
 			for(const auto& aggDesc : udm->getAggregationInfo())
 			{

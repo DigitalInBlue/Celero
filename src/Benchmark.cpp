@@ -21,6 +21,7 @@
 #include <celero/Utilities.h>
 #include <algorithm>
 #include <cassert>
+#include <stdexcept>
 
 using namespace celero;
 
@@ -89,7 +90,14 @@ std::string Benchmark::getName() const
 
 void Benchmark::setBaseline(std::shared_ptr<Experiment> x)
 {
-	this->pimpl->baseline = x;
+	if(x != nullptr)
+	{
+		this->pimpl->baseline = x;
+	}
+	else
+	{
+		throw std::runtime_error("Attempted to set a null experiment as the baseline.");
+	}
 }
 
 std::shared_ptr<Experiment> Benchmark::getBaseline() const
@@ -99,7 +107,14 @@ std::shared_ptr<Experiment> Benchmark::getBaseline() const
 
 void Benchmark::addExperiment(std::shared_ptr<Experiment> x)
 {
-	this->pimpl->experiments.push_back(x);
+	if(x != nullptr)
+	{
+		this->pimpl->experiments.push_back(x);
+	}
+	else
+	{
+		throw std::runtime_error("Attempted to add a null experiment to a benchmark.");
+	}
 }
 
 std::shared_ptr<Experiment> Benchmark::getExperiment(size_t x)

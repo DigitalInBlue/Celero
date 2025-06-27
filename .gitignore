@@ -198,3 +198,5 @@ lib*.a
 lib*.so
 lib*.dylib
 
+
+BuildLinux/

@@ -124,7 +124,7 @@ void ResultTable::add(std::shared_ptr<celero::ExperimentResult> x)
 			}
 
 			// Purposefully flushing the buffer here.
-			this->pimpl->ofs << std::endl;
+			this->pimpl->ofs << "\n";
 
 			this->pimpl->hasWrittenHeader = true;
 		}
@@ -156,6 +156,6 @@ void ResultTable::add(std::shared_ptr<celero::ExperimentResult> x)
 		}
 
 		// Purposefully flushing the buffer here.
-		this->pimpl->ofs << std::endl;
+		this->pimpl->ofs << "\n";
 	}
 }

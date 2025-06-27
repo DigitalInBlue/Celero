@@ -28,6 +28,8 @@ LARGE_INTEGER QPCFrequency;
 #include <chrono>
 #endif
 
+constexpr double QPCFrequencyQuadPartMultiple = 1000000.0;
+
 uint64_t celero::timer::GetSystemTime()
 {
 #ifdef _WIN32
@@ -35,7 +37,7 @@ uint64_t celero::timer::GetSystemTime()
 	QueryPerformanceCounter(&timeStorage);
 	if(QPCFrequency.QuadPart != 0)
 	{
-		return static_cast<uint64_t>(timeStorage.QuadPart * 1000000) / static_cast<uint64_t>(QPCFrequency.QuadPart);
+		return static_cast<uint64_t>(timeStorage.QuadPart * QPCFrequencyQuadPartMultiple) / static_cast<uint64_t>(QPCFrequency.QuadPart);
 	}
 
 	return 0;
@@ -54,7 +56,7 @@ double celero::timer::CachePerformanceFrequency(bool quiet)
 		return 0;
 	}
 
-	auto precision = ((1.0 / static_cast<double>(QPCFrequency.QuadPart)) * 1000000.0);
+	auto precision = ((1.0 / static_cast<double>(QPCFrequency.QuadPart)) * QPCFrequencyQuadPartMultiple);
 #else
 	if(static_cast<double>(std::chrono::high_resolution_clock::period::den) == 0)
 	{
@@ -68,7 +70,7 @@ double celero::timer::CachePerformanceFrequency(bool quiet)
 
 	if(quiet == false)
 	{
-		std::cout << "Timer resolution: " << std::to_string(precision) << " us" << std::endl;
+		std::cout << "Timer resolution: " << std::to_string(precision) << " us\n";
 	}
 
 	return precision;

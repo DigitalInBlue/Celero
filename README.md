@@ -2,7 +2,7 @@
 
 ### C++ Benchmarking Library
 
-Copyright 2017-2023 John Farrier 
+Copyright 2017-2025 John Farrier 
 
 Apache 2.0 License
 
@@ -29,7 +29,7 @@ As of v2.7, Celero requires the developer to provide GoogleTest in order to buil
 #### Quality Control
 
 | Tooling          | Status                                                                                                                                                                                                                                                            |
-|:-----------------|:------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| :--------------- | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | ```Codacy```     | [![Codacy Badge](https://api.codacy.com/project/badge/Grade/2008db9f4fc4413d878474441f7a1511)](https://www.codacy.com/manual/john.farrier/Celero?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=DigitalInBlue/Celero&amp;utm_campaign=Badge_Grade) |
 | ```Statistics``` | [View on OpenHub](https://www.openhub.net/p/CeleroBenchmark)                                                                                                                                                                                                      |
 
@@ -239,12 +239,12 @@ Running Celero's simple example experiment (`celeroDemoSimple.exe`) benchmark ga
 ```
 Celero
 Timer resolution: 0.277056 us
-|     Group      |   Experiment    |   Prob. Space   |     Samples     |   Iterations    |    Baseline     |  us/Iteration   | Iterations/sec  |   RAM (bytes)   |
-|:--------------:|:---------------:|:---------------:|:---------------:|:---------------:|:---------------:|:---------------:|:---------------:|:---------------:|
-|DemoSimple      | Baseline        |            Null |              30 |         1000000 |         1.00000 |         0.09320 |     10729498.61 |          892928 |
-|DemoSimple      | Complex1        |            Null |               1 |          710000 |         0.99833 |         0.09305 |     10747479.64 |          897024 |
-|DemoSimple      | Complex2        |            Null |              30 |          710000 |         0.97898 |         0.09124 |     10959834.52 |          897024 |
-|DemoSimple      | Complex3        |            Null |              60 |          710000 |         0.98547 |         0.09185 |     10887733.66 |          897024 |
+|   Group    | Experiment | Prob. Space | Samples | Iterations | Baseline | us/Iteration | Iterations/sec | RAM (bytes) |
+| :--------: | :--------: | :---------: | :-----: | :--------: | :------: | :----------: | :------------: | :---------: |
+| DemoSimple |  Baseline  |    Null     |   30    |  1000000   | 1.00000  |   0.09320    |  10729498.61   |   892928    |
+| DemoSimple |  Complex1  |    Null     |    1    |   710000   | 0.99833  |   0.09305    |  10747479.64   |   897024    |
+| DemoSimple |  Complex2  |    Null     |   30    |   710000   | 0.97898  |   0.09124    |  10959834.52   |   897024    |
+| DemoSimple |  Complex3  |    Null     |   60    |   710000   | 0.98547  |   0.09185    |  10887733.66   |   897024    |
 Completed in 00:00:10.315012
 ```
 
@@ -272,12 +272,12 @@ Now, when this executes, you will see a different number automatically computed 
 ```
 Celero
 Timer resolution: 0.100000 us
-|     Group      |   Experiment    |   Prob. Space   |     Samples     |   Iterations    |    Baseline     |  us/Iteration   | Iterations/sec  |   RAM (bytes)   |
-|:--------------:|:---------------:|:---------------:|:---------------:|:---------------:|:---------------:|:---------------:|:---------------:|:---------------:|
-|DemoSimple      | Baseline        |            Null |              30 |         1000000 |         1.00000 |         0.09076 |     11017948.24 |          892928 |
-|DemoSimple      | Complex1        |            Null |              30 |         2097152 |         1.01148 |         0.09180 |     10892938.02 |          897024 |
-|DemoSimple      | Complex2        |            Null |              30 |          710000 |         0.98926 |         0.08979 |     11137604.32 |          897024 |
-|DemoSimple      | Complex3        |            Null |              60 |          710000 |         0.99908 |         0.09068 |     11028098.35 |          897024 |
+|   Group    | Experiment | Prob. Space | Samples | Iterations | Baseline | us/Iteration | Iterations/sec | RAM (bytes) |
+| :--------: | :--------: | :---------: | :-----: | :--------: | :------: | :----------: | :------------: | :---------: |
+| DemoSimple |  Baseline  |    Null     |   30    |  1000000   | 1.00000  |   0.09076    |  11017948.24   |   892928    |
+| DemoSimple |  Complex1  |    Null     |   30    |  2097152   | 1.01148  |   0.09180    |  10892938.02   |   897024    |
+| DemoSimple |  Complex2  |    Null     |   30    |   710000   | 0.98926  |   0.08979    |  11137604.32   |   897024    |
+| DemoSimple |  Complex3  |    Null     |   60    |   710000   | 0.99908  |   0.09068    |  11028098.35   |   897024    |
 Completed in 00:00:15.889099
 ```
 
@@ -610,43 +610,43 @@ While not surprising, `std::sort` is the best option with any meaningful problem
 Celero
 Timer resolution: 0.100000 us
 Writing results to: results.csv
-|     Group      |   Experiment    |   Prob. Space   |     Samples     |   Iterations    |    Baseline     |  us/Iteration   | Iterations/sec  |   RAM (bytes)   |
-|:--------------:|:---------------:|:---------------:|:---------------:|:---------------:|:---------------:|:---------------:|:---------------:|:---------------:|
-|SortRandInts    | BubbleSort      |              64 |            2000 |               2 |         1.00000 |         6.50000 |       153846.15 |          905216 |
-|SortRandInts    | BubbleSort      |             128 |            2000 |               2 |         1.00000 |        21.50000 |        46511.63 |          909312 |
-|SortRandInts    | BubbleSort      |             256 |            2000 |               2 |         1.00000 |        72.50000 |        13793.10 |          909312 |
-|SortRandInts    | BubbleSort      |             512 |            2000 |               2 |         1.00000 |       248.50000 |         4024.14 |          917504 |
-|SortRandInts    | BubbleSort      |            1024 |            2000 |               2 |         1.00000 |       917.00000 |         1090.51 |          917504 |
-|SortRandInts    | BubbleSort      |            2048 |            2000 |               2 |         1.00000 |      3607.50000 |          277.20 |          937984 |
-|SortRandInts    | BubbleSort      |            4096 |            2000 |               2 |         1.00000 |     16567.00000 |           60.36 |          909312 |
-|SortRandInts    | SelectionSort   |              64 |            2000 |               2 |         0.46154 |         3.00000 |       333333.33 |          909312 |
-|SortRandInts    | SelectionSort   |             128 |            2000 |               2 |         0.44186 |         9.50000 |       105263.16 |          909312 |
-|SortRandInts    | SelectionSort   |             256 |            2000 |               2 |         0.44138 |        32.00000 |        31250.00 |          909312 |
-|SortRandInts    | SelectionSort   |             512 |            2000 |               2 |         0.43863 |       109.00000 |         9174.31 |          917504 |
-|SortRandInts    | SelectionSort   |            1024 |            2000 |               2 |         0.43730 |       401.00000 |         2493.77 |          987136 |
-|SortRandInts    | SelectionSort   |            2048 |            2000 |               2 |         0.42245 |      1524.00000 |          656.17 |         1122304 |
-|SortRandInts    | SelectionSort   |            4096 |            2000 |               2 |         0.35749 |      5922.50000 |          168.85 |         1159168 |
-|SortRandInts    | InsertionSort   |              64 |            2000 |               2 |         0.23077 |         1.50000 |       666666.67 |         1159168 |
-|SortRandInts    | InsertionSort   |             128 |            2000 |               2 |         0.18605 |         4.00000 |       250000.00 |         1159168 |
-|SortRandInts    | InsertionSort   |             256 |            2000 |               2 |         0.12414 |         9.00000 |       111111.11 |         1159168 |
-|SortRandInts    | InsertionSort   |             512 |            2000 |               2 |         0.09256 |        23.00000 |        43478.26 |         1159168 |
-|SortRandInts    | InsertionSort   |            1024 |            2000 |               2 |         0.06161 |        56.50000 |        17699.12 |         1159168 |
-|SortRandInts    | InsertionSort   |            2048 |            2000 |               2 |         0.04435 |       160.00000 |         6250.00 |         1159168 |
-|SortRandInts    | InsertionSort   |            4096 |            2000 |               2 |         0.03084 |       511.00000 |         1956.95 |         1159168 |
-|SortRandInts    | QuickSort       |              64 |            2000 |               2 |         0.15385 |         1.00000 |      1000000.00 |         1159168 |
-|SortRandInts    | QuickSort       |             128 |            2000 |               2 |         0.11628 |         2.50000 |       400000.00 |         1159168 |
-|SortRandInts    | QuickSort       |             256 |            2000 |               2 |         0.07586 |         5.50000 |       181818.18 |         1159168 |
-|SortRandInts    | QuickSort       |             512 |            2000 |               2 |         0.05433 |        13.50000 |        74074.07 |         1159168 |
-|SortRandInts    | QuickSort       |            1024 |            2000 |               2 |         0.03162 |        29.00000 |        34482.76 |         1159168 |
-|SortRandInts    | QuickSort       |            2048 |            2000 |               2 |         0.01746 |        63.00000 |        15873.02 |         1159168 |
-|SortRandInts    | QuickSort       |            4096 |            2000 |               2 |         0.00803 |       133.00000 |         7518.80 |         1159168 |
-|SortRandInts    | stdSort         |              64 |            2000 |               2 |         0.07692 |         0.50000 |      2000000.00 |         1159168 |
-|SortRandInts    | stdSort         |             128 |            2000 |               2 |         0.09302 |         2.00000 |       500000.00 |         1159168 |
-|SortRandInts    | stdSort         |             256 |            2000 |               2 |         0.06207 |         4.50000 |       222222.22 |         1159168 |
-|SortRandInts    | stdSort         |             512 |            2000 |               2 |         0.04225 |        10.50000 |        95238.10 |         1159168 |
-|SortRandInts    | stdSort         |            1024 |            2000 |               2 |         0.02508 |        23.00000 |        43478.26 |         1159168 |
-|SortRandInts    | stdSort         |            2048 |            2000 |               2 |         0.01358 |        49.00000 |        20408.16 |         1159168 |
-|SortRandInts    | stdSort         |            4096 |            2000 |               2 |         0.00637 |       105.50000 |         9478.67 |         1159168 |
+|    Group     |  Experiment   | Prob. Space | Samples | Iterations | Baseline | us/Iteration | Iterations/sec | RAM (bytes) |
+| :----------: | :-----------: | :---------: | :-----: | :--------: | :------: | :----------: | :------------: | :---------: |
+| SortRandInts |  BubbleSort   |     64      |  2000   |     2      | 1.00000  |   6.50000    |   153846.15    |   905216    |
+| SortRandInts |  BubbleSort   |     128     |  2000   |     2      | 1.00000  |   21.50000   |    46511.63    |   909312    |
+| SortRandInts |  BubbleSort   |     256     |  2000   |     2      | 1.00000  |   72.50000   |    13793.10    |   909312    |
+| SortRandInts |  BubbleSort   |     512     |  2000   |     2      | 1.00000  |  248.50000   |    4024.14     |   917504    |
+| SortRandInts |  BubbleSort   |    1024     |  2000   |     2      | 1.00000  |  917.00000   |    1090.51     |   917504    |
+| SortRandInts |  BubbleSort   |    2048     |  2000   |     2      | 1.00000  |  3607.50000  |     277.20     |   937984    |
+| SortRandInts |  BubbleSort   |    4096     |  2000   |     2      | 1.00000  | 16567.00000  |     60.36      |   909312    |
+| SortRandInts | SelectionSort |     64      |  2000   |     2      | 0.46154  |   3.00000    |   333333.33    |   909312    |
+| SortRandInts | SelectionSort |     128     |  2000   |     2      | 0.44186  |   9.50000    |   105263.16    |   909312    |
+| SortRandInts | SelectionSort |     256     |  2000   |     2      | 0.44138  |   32.00000   |    31250.00    |   909312    |
+| SortRandInts | SelectionSort |     512     |  2000   |     2      | 0.43863  |  109.00000   |    9174.31     |   917504    |
+| SortRandInts | SelectionSort |    1024     |  2000   |     2      | 0.43730  |  401.00000   |    2493.77     |   987136    |
+| SortRandInts | SelectionSort |    2048     |  2000   |     2      | 0.42245  |  1524.00000  |     656.17     |   1122304   |
+| SortRandInts | SelectionSort |    4096     |  2000   |     2      | 0.35749  |  5922.50000  |     168.85     |   1159168   |
+| SortRandInts | InsertionSort |     64      |  2000   |     2      | 0.23077  |   1.50000    |   666666.67    |   1159168   |
+| SortRandInts | InsertionSort |     128     |  2000   |     2      | 0.18605  |   4.00000    |   250000.00    |   1159168   |
+| SortRandInts | InsertionSort |     256     |  2000   |     2      | 0.12414  |   9.00000    |   111111.11    |   1159168   |
+| SortRandInts | InsertionSort |     512     |  2000   |     2      | 0.09256  |   23.00000   |    43478.26    |   1159168   |
+| SortRandInts | InsertionSort |    1024     |  2000   |     2      | 0.06161  |   56.50000   |    17699.12    |   1159168   |
+| SortRandInts | InsertionSort |    2048     |  2000   |     2      | 0.04435  |  160.00000   |    6250.00     |   1159168   |
+| SortRandInts | InsertionSort |    4096     |  2000   |     2      | 0.03084  |  511.00000   |    1956.95     |   1159168   |
+| SortRandInts |   QuickSort   |     64      |  2000   |     2      | 0.15385  |   1.00000    |   1000000.00   |   1159168   |
+| SortRandInts |   QuickSort   |     128     |  2000   |     2      | 0.11628  |   2.50000    |   400000.00    |   1159168   |
+| SortRandInts |   QuickSort   |     256     |  2000   |     2      | 0.07586  |   5.50000    |   181818.18    |   1159168   |
+| SortRandInts |   QuickSort   |     512     |  2000   |     2      | 0.05433  |   13.50000   |    74074.07    |   1159168   |
+| SortRandInts |   QuickSort   |    1024     |  2000   |     2      | 0.03162  |   29.00000   |    34482.76    |   1159168   |
+| SortRandInts |   QuickSort   |    2048     |  2000   |     2      | 0.01746  |   63.00000   |    15873.02    |   1159168   |
+| SortRandInts |   QuickSort   |    4096     |  2000   |     2      | 0.00803  |  133.00000   |    7518.80     |   1159168   |
+| SortRandInts |    stdSort    |     64      |  2000   |     2      | 0.07692  |   0.50000    |   2000000.00   |   1159168   |
+| SortRandInts |    stdSort    |     128     |  2000   |     2      | 0.09302  |   2.00000    |   500000.00    |   1159168   |
+| SortRandInts |    stdSort    |     256     |  2000   |     2      | 0.06207  |   4.50000    |   222222.22    |   1159168   |
+| SortRandInts |    stdSort    |     512     |  2000   |     2      | 0.04225  |   10.50000   |    95238.10    |   1159168   |
+| SortRandInts |    stdSort    |    1024     |  2000   |     2      | 0.02508  |   23.00000   |    43478.26    |   1159168   |
+| SortRandInts |    stdSort    |    2048     |  2000   |     2      | 0.01358  |   49.00000   |    20408.16    |   1159168   |
+| SortRandInts |    stdSort    |    4096     |  2000   |     2      | 0.00637  |  105.50000   |    9478.67     |   1159168   |
 Completed in 00:02:09.698721
 ```
 

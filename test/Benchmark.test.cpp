@@ -92,3 +92,47 @@ TEST(Benchmark, getExperiment)
 	EXPECT_EQ(nullptr, x.getExperiment(size_t{999}));
 }
 
+TEST(Benchmark, ctor_invalid_string)
+{
+	// Test with an invalid or very large string to check constructor robustness
+	std::string longString(10000, 'x');
+	EXPECT_NO_THROW(celero::Benchmark(longString));
+}
+
+TEST(Benchmark, addMultipleExperiments)
+{
+	celero::Benchmark benchmark{};
+
+	auto experiment1 = std::make_shared<celero::Experiment>(std::shared_ptr<celero::Benchmark>(nullptr));
+	auto experiment2 = std::make_shared<celero::Experiment>(std::shared_ptr<celero::Benchmark>(nullptr));
+
+	EXPECT_NO_THROW(benchmark.addExperiment(experiment1));
+	EXPECT_NO_THROW(benchmark.addExperiment(experiment2));
+
+	// Ensure the experiments were added properly
+	EXPECT_EQ(benchmark.getExperimentSize(), 2);
+}
+
+TEST(Benchmark, invalidBaseline)
+{
+	celero::Benchmark benchmark{};
+
+	// Test setting a baseline with an invalid (null) experiment pointer
+	std::shared_ptr<celero::Experiment> invalidBaseline = nullptr;
+	EXPECT_NO_THROW(benchmark.setBaseline(invalidBaseline));
+	EXPECT_EQ(benchmark.getBaseline(), nullptr);
+
+	// Try setting a valid baseline after setting an invalid one
+	auto validBaseline = std::make_shared<celero::Experiment>(std::shared_ptr<celero::Benchmark>(nullptr));
+	EXPECT_NO_THROW(benchmark.setBaseline(validBaseline));
+	EXPECT_EQ(benchmark.getBaseline(), validBaseline);
+}
+
+TEST(Benchmark, addInvalidExperiment)
+{
+	celero::Benchmark benchmark{};
+
+	// Attempt to add a null experiment, which should not be allowed
+	std::shared_ptr<celero::Experiment> nullExperiment = nullptr;
+	EXPECT_THROW(benchmark.addExperiment(nullExperiment), std::runtime_error);
+}

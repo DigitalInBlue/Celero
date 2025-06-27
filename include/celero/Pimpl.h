@@ -3,7 +3,7 @@
 ///
 /// \author	John Farrier
 ///
-/// \copyright Copyright 2015-2023 John Farrier
+/// \copyright Copyright 2015-2025 John Farrier
 ///
 /// Licensed under the Apache License, Version 2.0 (the "License");
 /// you may not use this file except in compliance with the License.
@@ -19,7 +19,6 @@
 ///
 
 #include <celero/Export.h>
-
 #include <memory>
 
 namespace celero
