@@ -58,10 +58,11 @@ jobs:
       # 1. Bootstrap vcpkg (manifest mode picks up your builtin-baseline)
       - name: Setup vcpkg
         id: vcpkg
-        uses: microsoft/vcpkg-action@v1
-        # (optional) enable a local cache
+        uses: johnwason/vcpkg-action@v7.0.1
         with:
-          binaryCachePath: ~/.cache/vcpkg
+          manifest-dir: ${{ github.workspace }}
+          triplet: x64-${{ matrix.os == 'windows-latest' && 'windows' || 'linux' }}
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       # 2. Configure CMake with vcpkg's toolchain + turn tests ON
       - name: Configure
