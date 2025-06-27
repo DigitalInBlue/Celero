@@ -10,7 +10,6 @@ jobs:
   build:
     runs-on: ${{ matrix.os }}
     strategy:
-      fail-fast: false
       matrix:
         # Test on both current and supported LTS runners
         os:
@@ -54,26 +53,30 @@ jobs:
               name: clang-13
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v3
 
-        # Setup and cache vcpkg dependencies
-      - name: Bootstrap and cache vcpkg
-        uses: lukka/run-vcpkg@v11
+      # 1. Bootstrap vcpkg (manifest mode picks up your builtin-baseline)
+      - name: Setup vcpkg
+        id: vcpkg
+        uses: microsoft/vcpkg-action@v1
+        # (optional) enable a local cache
+        with:
+          binaryCachePath: ~/.cache/vcpkg
 
-      - name: Configure CMake
+      # 2. Configure CMake with vcpkg's toolchain + turn tests ON
+      - name: Configure
         run: |
-          cmake -B build \
-            -DCMAKE_TOOLCHAIN_FILE=$HOME/vcpkg/scripts/buildsystems/vcpkg.cmake \
-            -DCMAKE_CXX_STANDARD=20 \
-            -DCMAKE_C_COMPILER=${{ matrix.compiler.cc }} \
-            -DCMAKE_CXX_COMPILER=${{ matrix.compiler.cxx }} \
+          cmake -S . -B build \
+            ${{ steps.vcpkg.outputs.vcpkg-cmake-config }} \
             -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} \
-            -S .
+            -DCELERO_ENABLE_TESTS=ON
 
+      # 3. Build everything
       - name: Build
-        run: cmake --build build --config ${{ matrix.build_type }} -- -j$(nproc)
+        run: cmake --build build --config ${{ matrix.build_type }}
 
-      - name: Run Tests
-        working-directory: build
+      # 4. Run the Google Test suite
+      - name: Run tests
         run: |
-          ctest --output-on-failure --build-config ${{ matrix.build_type }}
+          cd build
+          ctest --output-on-failure -C ${{ matrix.build_type }}
