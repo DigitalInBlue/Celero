@@ -66,10 +66,25 @@ jobs:
           fetch-depth: 0
 
       # 2. Configure CMake with vcpkg's toolchain + turn tests ON
-      - name: Configure
+      - name: Configure (Linux)
+        if: runner.os != 'Windows'
         shell: bash
         run: |
-          cmake -S . -B build ${{ steps.vcpkg.outputs.vcpkg-cmake-config }} -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -DCELERO_ENABLE_TESTS=ON
+          cmake -S . -B build \
+            ${{ steps.vcpkg.outputs.vcpkg-cmake-config }} \
+            -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} \
+            -DCELERO_ENABLE_TESTS=ON
+
+      - name: Configure (Windows)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          cmake -S . -B build `
+            -DCMAKE_TOOLCHAIN_FILE="$env:VCPKG_ROOT/scripts/buildsystems/vcpkg.cmake" `
+            -DVCPKG_TARGET_TRIPLET=x64-windows `
+            -DVCPKG_MANIFEST_MODE=OFF `
+            -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} `
+            -DCELERO_ENABLE_TESTS=ON
 
       # 3. Build everything
       - name: Build
