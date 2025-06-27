@@ -59,9 +59,6 @@ jobs:
         # Setup and cache vcpkg dependencies
       - name: Bootstrap and cache vcpkg
         uses: lukka/run-vcpkg@v11
-        with:
-          # Automatically restore and cache built ports
-          binary-caching: true
 
       - name: Configure CMake
         run: |
