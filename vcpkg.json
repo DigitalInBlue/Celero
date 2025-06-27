@@ -5,5 +5,5 @@
     "gtest"
   ],
   "description": "Celero is a C++ micro-benchmarking library to measure the performance of C++ code.",
-  "builtin-baseline": "5b1214315250939257ef5d62ecdcbca18cf4fb1c"
+  "builtin-baseline": "7066011e27c97dbcfff739be2b69b592a41fc74a"
 }
