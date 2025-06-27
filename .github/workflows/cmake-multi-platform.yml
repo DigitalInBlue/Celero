@@ -56,18 +56,12 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Cache vcpkg
-        uses: actions/cache@v3
+        # Setup and cache vcpkg dependencies
+      - name: Bootstrap and cache vcpkg
+        uses: lukka/run-vcpkg@v11
         with:
-          path: |
-            ~/.cache/vcpkg
-            C:/vcpkg_installed
-          key: vcpkg-${{ matrix.os }}-${{ matrix.build_type }}-${{ matrix.compiler.name }}
-
-      - name: Setup vcpkg
-        uses: microsoft/vcpkg-action@v1
-        with:
-          install: .
+          # Automatically restore and cache built ports
+          binary-caching: true
 
       - name: Configure CMake
         run: |
