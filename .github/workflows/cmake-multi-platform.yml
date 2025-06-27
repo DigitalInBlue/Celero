@@ -63,6 +63,7 @@ jobs:
           manifest-dir: ${{ github.workspace }}
           triplet: x64-${{ matrix.os == 'windows-latest' && 'windows' || 'linux' }}
           token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 0
 
       # 2. Configure CMake with vcpkg's toolchain + turn tests ON
       - name: Configure
