@@ -12,12 +12,10 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        # Test on both current and LTS runners
+        # Test on both current and supported LTS runners
         os:
-          - ubuntu-latest # current Ubuntu LTS
-          - ubuntu-22.04 # supported Ubuntu LTS
-          - windows-latest # current Windows Server
-          - windows-2019 # Windows Server 2019
+          - ubuntu-latest # default Ubuntu LTS
+          - windows-latest # default Windows Server (2022)
         build_type: [Debug, Release]
         compiler:
           - name: gcc-9
@@ -67,7 +65,7 @@ jobs:
           key: vcpkg-${{ matrix.os }}-${{ matrix.build_type }}-${{ matrix.compiler.name }}
 
       - name: Setup vcpkg
-        uses: microsoft/vcpkg-action@v2
+        uses: microsoft/vcpkg-action@v1
         with:
           install: .
 
