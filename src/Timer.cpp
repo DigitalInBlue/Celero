@@ -28,7 +28,7 @@ LARGE_INTEGER QPCFrequency;
 #include <chrono>
 #endif
 
-constexpr double QPCFrequencyQuadPartMultiple = 1000000.0;
+[[maybe_unused]] constexpr double QPCFrequencyQuadPartMultiple = 1000000.0;
 
 uint64_t celero::timer::GetSystemTime()
 {
