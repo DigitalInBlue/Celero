@@ -28,6 +28,7 @@ target_sources(${PROJECT_NAME} PRIVATE
 	Celero.test.cpp
 	Distribution.test.cpp
 	Executor.test.cpp
+	ExperimentResult.test.cpp
 	Memory.test.cpp
 	Statistics.test.cpp
 	TestFixture.test.cpp

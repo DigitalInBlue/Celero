@@ -90,7 +90,12 @@ std::shared_ptr<celero::TestFixture::ExperimentValue> ExperimentResult::getProbl
 
 int64_t ExperimentResult::getProblemSpaceValue() const
 {
-	return this->pimpl->problemSpace->Value;
+	if(this->pimpl->problemSpace)
+	{
+		return this->pimpl->problemSpace->Value;
+	}
+
+	return 0;
 }
 
 double ExperimentResult::getProblemSpaceValueScale() const
@@ -100,7 +105,12 @@ double ExperimentResult::getProblemSpaceValueScale() const
 
 uint64_t ExperimentResult::getProblemSpaceIterations() const
 {
-	return this->pimpl->problemSpace->Iterations;
+	if(this->pimpl->problemSpace)
+	{
+		return this->pimpl->problemSpace->Iterations;
+	}
+
+	return 0;
 }
 
 const Statistics<int64_t>& ExperimentResult::getTimeStatistics() const
@@ -135,7 +145,7 @@ int64_t ExperimentResult::getRAM() const
 
 double ExperimentResult::getUsPerCall() const
 {
-	if(this->pimpl->failure == false)
+	if(this->pimpl->failure == false && this->pimpl->problemSpace && this->pimpl->problemSpace->Iterations > 0)
 	{
 		return static_cast<double>(this->pimpl->statsTime.getMin()) / static_cast<double>(this->pimpl->problemSpace->Iterations);
 	}
@@ -155,10 +165,13 @@ double ExperimentResult::getCallsPerSecond() const
 
 double ExperimentResult::getUnitsPerSecond() const
 {
-	return (this->pimpl->problemSpaceValueScale > 0.0)
-			   ? ((this->pimpl->problemSpace->Value * this->pimpl->problemSpace->Iterations / this->pimpl->problemSpaceValueScale)
-				  / (this->pimpl->statsTime.getMin() * celero::UsToSec))
-			   : 0.0;
+	if(this->pimpl->problemSpace && this->pimpl->problemSpaceValueScale > 0.0)
+	{
+		return (this->pimpl->problemSpace->Value * this->pimpl->problemSpace->Iterations / this->pimpl->problemSpaceValueScale)
+			   / (this->pimpl->statsTime.getMin() * celero::UsToSec);
+	}
+
+	return 0.0;
 }
 
 double ExperimentResult::getBaselineMeasurement() const
