@@ -10,85 +10,189 @@ jobs:
   build:
     runs-on: ${{ matrix.os }}
     strategy:
+      fail-fast: false
       matrix:
-        # Test on both current and supported LTS runners
         os:
-          - ubuntu-latest # default Ubuntu LTS
-          - windows-latest # default Windows Server (2022)
+          - ubuntu-latest
+          - windows-latest
+          - macos-latest
         build_type: [Debug, Release]
         compiler:
-          - name: gcc-9
-            cc: gcc-9
-            cxx: g++-9
-          - name: gcc-10
-            cc: gcc-10
-            cxx: g++-10
           - name: gcc-11
             cc: gcc-11
             cxx: g++-11
-          - name: clang-12
-            cc: clang-12
-            cxx: clang++-12
+          - name: gcc-12
+            cc: gcc-12
+            cxx: g++-12
+          - name: gcc-13
+            cc: gcc-13
+            cxx: g++-13
+          - name: gcc-14
+            cc: gcc-14
+            cxx: g++-14
           - name: clang-13
             cc: clang-13
             cxx: clang++-13
+          - name: clang-14
+            cc: clang-14
+            cxx: clang++-14
+          - name: clang-15
+            cc: clang-15
+            cxx: clang++-15
+          - name: clang-16
+            cc: clang-16
+            cxx: clang++-16
           - name: cl
             cc: cl
             cxx: cl
+          - name: appleclang
+            cc: clang
+            cxx: clang++
         exclude:
-          - os: windows-latest
+          # MSVC only on Windows
+          - os: ubuntu-latest
             compiler:
-              name: gcc-9
-          - os: windows-latest
+              name: cl
+          - os: macos-latest
             compiler:
-              name: gcc-10
+              name: cl
+          # GCC/Clang versioned compilers not on Windows
           - os: windows-latest
             compiler:
               name: gcc-11
           - os: windows-latest
             compiler:
-              name: clang-12
+              name: gcc-12
+          - os: windows-latest
+            compiler:
+              name: gcc-13
+          - os: windows-latest
+            compiler:
+              name: gcc-14
           - os: windows-latest
             compiler:
               name: clang-13
+          - os: windows-latest
+            compiler:
+              name: clang-14
+          - os: windows-latest
+            compiler:
+              name: clang-15
+          - os: windows-latest
+            compiler:
+              name: clang-16
+          # AppleClang only on macOS
+          - os: ubuntu-latest
+            compiler:
+              name: appleclang
+          - os: windows-latest
+            compiler:
+              name: appleclang
+          # GCC/Clang versioned compilers not on macOS
+          - os: macos-latest
+            compiler:
+              name: gcc-11
+          - os: macos-latest
+            compiler:
+              name: gcc-12
+          - os: macos-latest
+            compiler:
+              name: gcc-13
+          - os: macos-latest
+            compiler:
+              name: gcc-14
+          - os: macos-latest
+            compiler:
+              name: clang-13
+          - os: macos-latest
+            compiler:
+              name: clang-14
+          - os: macos-latest
+            compiler:
+              name: clang-15
+          - os: macos-latest
+            compiler:
+              name: clang-16
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
-      # 1. Bootstrap vcpkg (manifest mode picks up your builtin-baseline)
       - name: Setup vcpkg
         id: vcpkg
         uses: johnwason/vcpkg-action@v7.0.1
         with:
           manifest-dir: ${{ github.workspace }}
-          triplet: x64-${{ matrix.os == 'windows-latest' && 'windows' || 'linux' }}
+          triplet: >-
+            ${{
+              matrix.os == 'windows-latest' && 'x64-windows' ||
+              matrix.os == 'macos-latest' && 'arm64-osx' ||
+              'x64-linux'
+            }}
           token: ${{ secrets.GITHUB_TOKEN }}
           fetch-depth: 0
 
-      # 2. Configure CMake with vcpkg's toolchain + turn tests ON
-      - name: Configure (Linux)
+      - name: Configure (Linux/macOS)
         if: runner.os != 'Windows'
         shell: bash
+        env:
+          CC: ${{ matrix.compiler.cc }}
+          CXX: ${{ matrix.compiler.cxx }}
         run: |
           cmake -S . -B build \
             ${{ steps.vcpkg.outputs.vcpkg-cmake-config }} \
             -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} \
-            -DCELERO_ENABLE_TESTS=ON
+            -DCELERO_ENABLE_TESTS=ON \
+            -DCELERO_ENABLE_EXPERIMENTS=ON
 
       - name: Configure (Windows)
         if: runner.os == 'Windows'
         shell: pwsh
         run: |
-          cmake -S . -B build ${{ steps.vcpkg.outputs.vcpkg-cmake-config }} -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -DCELERO_ENABLE_TESTS=ON
+          cmake -S . -B build ${{ steps.vcpkg.outputs.vcpkg-cmake-config }} -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -DCELERO_ENABLE_TESTS=ON -DCELERO_ENABLE_EXPERIMENTS=ON
 
-      # 3. Build everything
       - name: Build
         shell: bash
         run: cmake --build build --config ${{ matrix.build_type }}
 
-      # 4. Run the Google Test suite
       - name: Run tests
         shell: bash
         run: |
           cd build
           ctest --output-on-failure -C ${{ matrix.build_type }}
+
+  sanitizers:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup vcpkg
+        id: vcpkg
+        uses: johnwason/vcpkg-action@v7.0.1
+        with:
+          manifest-dir: ${{ github.workspace }}
+          triplet: x64-linux
+          token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 0
+
+      - name: Configure with AddressSanitizer
+        shell: bash
+        env:
+          CC: clang-16
+          CXX: clang++-16
+        run: |
+          cmake -S . -B build \
+            ${{ steps.vcpkg.outputs.vcpkg-cmake-config }} \
+            -DCMAKE_BUILD_TYPE=Debug \
+            -DCELERO_ENABLE_TESTS=ON \
+            -DCELERO_ENABLE_EXPERIMENTS=ON \
+            -DCELERO_ENABLE_CLANG_ADDRESS_SANITIZER=ON
+
+      - name: Build
+        shell: bash
+        run: cmake --build build --config Debug
+
+      - name: Run tests under ASAN
+        shell: bash
+        run: |
+          cd build
+          ctest --output-on-failure -C Debug

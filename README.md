@@ -2,7 +2,7 @@
 
 ### C++ Benchmarking Library
 
-Copyright 2017-2025 John Farrier 
+Copyright 2017-2026 John Farrier 
 
 Apache 2.0 License
 
@@ -11,27 +11,12 @@ Apache 2.0 License
 A Special Thanks to the following corporations for their support:
 
 -   [Polyrhythm Software](http://www.polyrhythm.com)
--   [Araxis (Merge)](https://www.araxis.com/)
--   [Axosoft (GitKraken)](https://www.gitkraken.com/)
+-   [GitKraken](https://www.gitkraken.com/)
 -   [Microsoft](https://www.microsoft.com)
 
 #### Builds and Testing
 
-Celero has been successfully built on the following platforms during development.
-
-- GCC v9-v11
-- LLVM v12-v13
-- Visual Studio 2022
-- XCode v10.1, v12.0
-
 As of v2.7, Celero requires the developer to provide GoogleTest in order to build unit tests.  We suggest using a package manager such as VCPKG or Conan to provide the latest version of the library.
-
-#### Quality Control
-
-| Tooling          | Status                                                                                                                                                                                                                                                            |
-| :--------------- | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| ```Codacy```     | [![Codacy Badge](https://api.codacy.com/project/badge/Grade/2008db9f4fc4413d878474441f7a1511)](https://www.codacy.com/manual/john.farrier/Celero?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=DigitalInBlue/Celero&amp;utm_campaign=Badge_Grade) |
-| ```Statistics``` | [View on OpenHub](https://www.openhub.net/p/CeleroBenchmark)                                                                                                                                                                                                      |
 
 ### Overview
 
@@ -39,7 +24,7 @@ Developing consistent and meaningful benchmark results for code is a complicated
 
 Make automated benchmarking as much a part of your development process as automated testing.
 
-Celero uses CMake to provide cross-platform builds. It does require a modern compiler (Visual C++ 2012+, GCC 4.7+, Clang 2.9+) due to its use of C++14.
+Celero uses CMake to provide cross-platform builds. It does require a modern C++ compiler supporting C++14.
 
 Once Celero is added to your project, you can create dedicated benchmark projects and source files. For convenience, there is a single header file and a `CELERO_MAIN` macro that can be used to provide a `main()` for your benchmark project that will automatically execute all of your benchmark tests.
 
@@ -88,7 +73,7 @@ Once this measurement is obtained, it has little meaning in isolation.  It is es
 
 ### Implementation
 
-Celero heavily utilizes C++11 features that are available in both Visual C++ 2012 and GCC 4.7.  C++11 greatly aided in making the code clean and portable.  To make adopting the code more manageable, all definitions needed by a user are defined in a celero namespace within a single include file: `Celero.h`.
+Celero heavily utilizes C++14 features that are available in modern compilers.  C++14 greatly aided in making the code clean and portable.  To make adopting the code more manageable, all definitions needed by a user are defined in a celero namespace within a single include file: `Celero.h`.
 
 `Celero.h` has within it the macro definitions that turn each of the user benchmark cases into its own unique class with the associated test fixture (if any) and then registers the test case within a Factory.  The macros automatically associate baseline test cases with their associated test benchmarks so that, at run time, benchmark-relative numbers can be computed.  This association is maintained by TestVector.
 
@@ -146,7 +131,7 @@ for(Each Experiment)
 
 ### Using the Code
 
-Celero uses CMake to provide cross-platform builds.  It does require a modern compiler (Visual C++ 2012 or GCC 4.7+) due to its use of C++11.
+Celero uses CMake to provide cross-platform builds.  It does require a modern compiler supporting C++14.
 
 Once Celero is added to your project, you can create dedicated benchmark projects and source files. For convenience, there is a single header file and a `CELERO_MAIN` macro that can be used to provide a `main()` for your benchmark project that will automatically execute all of your benchmark tests.
 
