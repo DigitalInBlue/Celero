@@ -342,7 +342,7 @@ int64_t celero::GetRAMVirtualAvailable()
 	MEMORYSTATUSEX memInfo;
 	memInfo.dwLength = sizeof(MEMORYSTATUSEX);
 	GlobalMemoryStatusEx(&memInfo);
-	return memInfo.ullTotalPageFile;
+	return memInfo.ullAvailPageFile;
 #else
 	return celero::GetRAMVirtualTotal() - celero::GetRAMVirtualUsed();
 #endif

@@ -140,7 +140,7 @@ uint64_t ExperimentResult::getRunTime() const
 
 int64_t ExperimentResult::getRAM() const
 {
-	return static_cast<uint64_t>(this->pimpl->statsRAM.getMin());
+	return static_cast<int64_t>(this->pimpl->statsRAM.getMin());
 }
 
 double ExperimentResult::getUsPerCall() const

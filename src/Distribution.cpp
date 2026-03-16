@@ -144,11 +144,7 @@ void celero::RunDistribution(uint64_t intArgument)
 		{
 			if(i < histograms[j].size())
 			{
-				auto element = std::begin(histograms[j]);
-				for(size_t k = 0; k < i; k++)
-				{
-					++element;
-				}
+				auto element = std::next(std::begin(histograms[j]), i);
 
 				os << element->first << "," << element->second << ",";
 			}

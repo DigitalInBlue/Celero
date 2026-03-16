@@ -203,8 +203,9 @@ bool executor::RunBaseline(std::shared_ptr<Benchmark> bmark)
 	{
 		// Populate the problem space with a test fixture instantiation.
 		{
-			const auto testValues = baselineExperiment->getFactory()->Create()->getExperimentValues();
-			const auto valueResultScale = baselineExperiment->getFactory()->Create()->getExperimentValueResultScale();
+			const auto baselineFixture = baselineExperiment->getFactory()->Create();
+			const auto testValues = baselineFixture->getExperimentValues();
+			const auto valueResultScale = baselineFixture->getExperimentValueResultScale();
 
 			for(auto i : testValues)
 			{
@@ -335,8 +336,6 @@ void executor::Run(std::shared_ptr<Experiment> e)
 		}
 
 		const auto testValues = factoryCreate->getExperimentValues();
-
-		factoryCreate = factory->Create();
 		const auto valueResultScale = factoryCreate->getExperimentValueResultScale();
 
 		for(auto i : testValues)

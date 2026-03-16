@@ -138,7 +138,7 @@ void celero::Run(int argc, char** argv)
 
 		std::sort(std::begin(testNames), std::end(testNames));
 
-		std::cout << "Avaliable tests:" << std::endl;
+		std::cout << "Available tests:" << std::endl;
 		for(auto i : testNames)
 		{
 			std::cout << "\t" << i << std::endl;
