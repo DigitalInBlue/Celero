@@ -25,6 +25,7 @@
 //
 #include <psapi.h>
 #elif defined(__APPLE__)
+#include <mach/mach.h>
 #include <sys/param.h>
 #include <sys/sysctl.h>
 #include <sys/types.h>
@@ -176,19 +177,14 @@ int64_t celero::GetRAMSystemUsed()
 #ifdef _WIN32
 	return celero::GetRAMSystemTotal() - celero::GetRAMSystemAvailable();
 #elif defined(__APPLE__)
-	int mib[2];
-	mib[0] = CTL_HW;
-	mib[1] = HW_MEMSIZE;
+	mach_port_t host = mach_host_self();
+	vm_statistics64_data_t vmStats;
+	mach_msg_type_number_t count = HOST_VM_INFO64_COUNT;
 
-	std::array<int64_t, 2> memInfo{{0, 0}};
-	auto len = sizeof(memInfo[0]);
-
-	if(sysctl(mib, 2, &memInfo[0], &len, nullptr, 0) == 0)
+	if(host_statistics64(host, HOST_VM_INFO64, reinterpret_cast<host_info64_t>(&vmStats), &count) == KERN_SUCCESS)
 	{
-		if(sysctl(mib, 2, &memInfo[1], &len, nullptr, 0) == 0)
-		{
-			return memInfo[0] + memInfo[1];
-		}
+		const int64_t pageSize = sysconf(_SC_PAGESIZE);
+		return static_cast<int64_t>(vmStats.active_count + vmStats.wire_count) * pageSize;
 	}
 
 	return -1;

@@ -220,11 +220,10 @@ public:
 			is.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 
 			// Read in existing results.
-			while((is.eof() == false) && (is.tellg() >= 0))
-			{
-				ArchiveEntry r;
-				is >> r;
+			ArchiveEntry r;
 
+			while(is >> r)
+			{
 				if(r.GroupName.empty() == false)
 				{
 					this->results.push_back(r);

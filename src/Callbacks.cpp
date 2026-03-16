@@ -18,15 +18,20 @@
 
 #include <celero/Callbacks.h>
 #include <algorithm>
+#include <mutex>
 #include <vector>
 
 using namespace celero;
 
 std::vector<std::function<void(std::shared_ptr<Experiment>)>> ExperimentFunctions;
+std::mutex ExperimentFunctionsMutex;
 std::vector<std::function<void(std::shared_ptr<celero::ExperimentResult>)>> ExperimentResultFunctions;
+std::mutex ExperimentResultFunctionsMutex;
 
 void celero::impl::ExperimentComplete(std::shared_ptr<Experiment> x)
 {
+	std::lock_guard<std::mutex> lock(ExperimentFunctionsMutex);
+
 	for(auto& i : ExperimentFunctions)
 	{
 		i(x);
@@ -35,6 +40,8 @@ void celero::impl::ExperimentComplete(std::shared_ptr<Experiment> x)
 
 void celero::impl::ExperimentResultComplete(std::shared_ptr<celero::ExperimentResult> x)
 {
+	std::lock_guard<std::mutex> lock(ExperimentResultFunctionsMutex);
+
 	for(auto& i : ExperimentResultFunctions)
 	{
 		i(x);
@@ -43,10 +50,12 @@ void celero::impl::ExperimentResultComplete(std::shared_ptr<celero::ExperimentRe
 
 void celero::AddExperimentCompleteFunction(std::function<void(std::shared_ptr<Experiment>)> x)
 {
+	std::lock_guard<std::mutex> lock(ExperimentFunctionsMutex);
 	ExperimentFunctions.push_back(x);
 }
 
 void celero::AddExperimentResultCompleteFunction(std::function<void(std::shared_ptr<celero::ExperimentResult>)> x)
 {
+	std::lock_guard<std::mutex> lock(ExperimentResultFunctionsMutex);
 	ExperimentResultFunctions.push_back(x);
 }

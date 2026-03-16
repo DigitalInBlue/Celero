@@ -155,9 +155,11 @@ double ExperimentResult::getUsPerCall() const
 
 double ExperimentResult::getCallsPerSecond() const
 {
-	if(this->pimpl->failure == false)
+	const auto usPerCall = this->getUsPerCall();
+
+	if(this->pimpl->failure == false && usPerCall > 0.0)
 	{
-		return 1.0 / (this->getUsPerCall() * celero::UsToSec);
+		return 1.0 / (usPerCall * celero::UsToSec);
 	}
 
 	return 0.0;
