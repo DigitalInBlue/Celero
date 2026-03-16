@@ -328,9 +328,12 @@ namespace celero
 		std::unordered_map<std::string, double> udmValues;
 
 		auto udmCollector = x->getUserDefinedMeasurements();
-		for(const auto& entry : udmCollector->getAggregateValues())
+		if(udmCollector != nullptr)
 		{
-			udmValues[entry.first] = entry.second;
+			for(const auto& entry : udmCollector->getAggregateValues())
+			{
+				udmValues[entry.first] = entry.second;
+			}
 		}
 
 		for(size_t i = 0; i < this->userDefinedColumns.size(); ++i)

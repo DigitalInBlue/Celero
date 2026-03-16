@@ -292,6 +292,10 @@ void executor::Run(std::shared_ptr<Experiment> e)
 	}
 
 	auto bmark = e->getBenchmark();
+	if(bmark == nullptr)
+	{
+		return;
+	}
 	auto baseline = bmark->getBaseline();
 
 	if(baseline->getResultSize() == 0 || baseline->getResult(0)->getComplete() == false)

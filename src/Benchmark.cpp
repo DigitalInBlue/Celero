@@ -129,8 +129,13 @@ std::shared_ptr<Experiment> Benchmark::getExperiment(size_t x)
 
 std::shared_ptr<Experiment> Benchmark::getExperiment(const std::string& x)
 {
-	return *std::find_if(std::begin(this->pimpl->experiments), std::end(this->pimpl->experiments),
-						 [x](decltype(*std::begin(this->pimpl->experiments)) i) -> bool { return (i->getName() == x); });
+	auto it = std::find_if(std::begin(this->pimpl->experiments), std::end(this->pimpl->experiments),
+						   [x](decltype(*std::begin(this->pimpl->experiments)) i) -> bool { return (i->getName() == x); });
+	if(it != std::end(this->pimpl->experiments))
+	{
+		return *it;
+	}
+	return nullptr;
 }
 
 size_t Benchmark::getExperimentSize() const

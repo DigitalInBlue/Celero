@@ -118,9 +118,12 @@ void ResultTable::add(std::shared_ptr<celero::ExperimentResult> x)
 
 			// User Defined Metrics
 			const auto udmCollector = x->getUserDefinedMeasurements();
-			for(const auto& entry : udmCollector->getAggregateValues())
+			if(udmCollector != nullptr)
 			{
-				this->pimpl->ofs << entry.first << ",";
+				for(const auto& entry : udmCollector->getAggregateValues())
+				{
+					this->pimpl->ofs << entry.first << ",";
+				}
 			}
 
 			// Purposefully flushing the buffer here.
@@ -150,9 +153,12 @@ void ResultTable::add(std::shared_ptr<celero::ExperimentResult> x)
 
 		// User Defined Metrics
 		const auto udmCollector = x->getUserDefinedMeasurements();
-		for(const auto& entry : udmCollector->getAggregateValues())
+		if(udmCollector != nullptr)
 		{
-			this->pimpl->ofs << entry.second << ",";
+			for(const auto& entry : udmCollector->getAggregateValues())
+			{
+				this->pimpl->ofs << entry.second << ",";
+			}
 		}
 
 		// Purposefully flushing the buffer here.
