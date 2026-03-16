@@ -27,10 +27,10 @@ TEST(Benchmark, ctor)
 
 TEST(Benchmark, ctor_string)
 {
-	EXPECT_NO_THROW(celero::Benchmark(std::string{}));
-	EXPECT_NO_THROW(celero::Benchmark(std::string{"Foo"}));
-	EXPECT_NO_THROW(celero::Benchmark(std::string{"Foo.Bar"}));
-	EXPECT_NO_THROW(celero::Benchmark(std::string{"Foo Bar"}));
+	EXPECT_NO_THROW((celero::Benchmark(std::string{})));
+	EXPECT_NO_THROW((celero::Benchmark(std::string{"Foo"})));
+	EXPECT_NO_THROW((celero::Benchmark(std::string{"Foo.Bar"})));
+	EXPECT_NO_THROW((celero::Benchmark(std::string{"Foo Bar"})));
 }
 
 TEST(Benchmark, ctor_copy)
@@ -96,7 +96,7 @@ TEST(Benchmark, ctor_invalid_string)
 {
 	// Test with an invalid or very large string to check constructor robustness
 	std::string longString(10000, 'x');
-	EXPECT_NO_THROW(celero::Benchmark(longString));
+	EXPECT_NO_THROW((celero::Benchmark(longString)));
 }
 
 TEST(Benchmark, addMultipleExperiments)
