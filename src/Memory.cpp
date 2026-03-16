@@ -268,6 +268,12 @@ int64_t celero::GetRAMPhysicalUsedByCurrentProcess()
 	constexpr int BufferSize{128};
 	int64_t result = 0;
 	auto file = fopen("/proc/self/status", "r");
+
+	if(file == nullptr)
+	{
+		return -1;
+	}
+
 	char line[BufferSize];
 
 	while(fgets(line, BufferSize, file) != nullptr)
@@ -297,6 +303,12 @@ int64_t celero::GetRAMPhysicalUsedByCurrentProcessPeak()
 	constexpr int BufferSize{128};
 	int64_t result = 0;
 	auto file = fopen("/proc/self/status", "r");
+
+	if(file == nullptr)
+	{
+		return -1;
+	}
+
 	char line[BufferSize];
 
 	while(fgets(line, BufferSize, file) != nullptr)
@@ -367,6 +379,12 @@ int64_t celero::GetRAMVirtualUsedByCurrentProcess()
 	constexpr int BufferSize{128};
 	int64_t result = 0;
 	FILE* file = fopen("/proc/self/status", "r");
+
+	if(file == nullptr)
+	{
+		return -1;
+	}
+
 	char line[BufferSize];
 
 	while(fgets(line, BufferSize, file) != NULL)
