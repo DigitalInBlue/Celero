@@ -18,9 +18,6 @@ jobs:
           - macos-latest
         build_type: [Debug, Release]
         compiler:
-          - name: gcc-11
-            cc: gcc-11
-            cxx: g++-11
           - name: gcc-12
             cc: gcc-12
             cxx: g++-12
@@ -30,18 +27,15 @@ jobs:
           - name: gcc-14
             cc: gcc-14
             cxx: g++-14
-          - name: clang-13
-            cc: clang-13
-            cxx: clang++-13
-          - name: clang-14
-            cc: clang-14
-            cxx: clang++-14
-          - name: clang-15
-            cc: clang-15
-            cxx: clang++-15
           - name: clang-16
             cc: clang-16
             cxx: clang++-16
+          - name: clang-17
+            cc: clang-17
+            cxx: clang++-17
+          - name: clang-18
+            cc: clang-18
+            cxx: clang++-18
           - name: cl
             cc: cl
             cxx: cl
@@ -59,9 +53,6 @@ jobs:
           # GCC/Clang versioned compilers not on Windows
           - os: windows-latest
             compiler:
-              name: gcc-11
-          - os: windows-latest
-            compiler:
               name: gcc-12
           - os: windows-latest
             compiler:
@@ -71,16 +62,13 @@ jobs:
               name: gcc-14
           - os: windows-latest
             compiler:
-              name: clang-13
-          - os: windows-latest
-            compiler:
-              name: clang-14
-          - os: windows-latest
-            compiler:
-              name: clang-15
-          - os: windows-latest
-            compiler:
               name: clang-16
+          - os: windows-latest
+            compiler:
+              name: clang-17
+          - os: windows-latest
+            compiler:
+              name: clang-18
           # AppleClang only on macOS
           - os: ubuntu-latest
             compiler:
@@ -91,9 +79,6 @@ jobs:
           # GCC/Clang versioned compilers not on macOS
           - os: macos-latest
             compiler:
-              name: gcc-11
-          - os: macos-latest
-            compiler:
               name: gcc-12
           - os: macos-latest
             compiler:
@@ -103,16 +88,13 @@ jobs:
               name: gcc-14
           - os: macos-latest
             compiler:
-              name: clang-13
-          - os: macos-latest
-            compiler:
-              name: clang-14
-          - os: macos-latest
-            compiler:
-              name: clang-15
-          - os: macos-latest
-            compiler:
               name: clang-16
+          - os: macos-latest
+            compiler:
+              name: clang-17
+          - os: macos-latest
+            compiler:
+              name: clang-18
 
     steps:
       - uses: actions/checkout@v4
