@@ -6,6 +6,8 @@ Copyright 2017-2026 John Farrier
 
 Apache 2.0 License
 
+[![OpenSSF Best Practices](https://www.bestpractices.dev/projects/13297/badge)](https://www.bestpractices.dev/projects/13297)
+
 #### Community Support
 
 A Special Thanks to the following corporations for their support:
