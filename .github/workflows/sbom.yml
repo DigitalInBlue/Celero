@@ -24,7 +24,7 @@ jobs:
     name: Verify committed SBOMs
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           # --pinned derives its timestamp from the commit that last modified
           # vcpkg.json, so the full history is required.
@@ -32,7 +32,7 @@ jobs:
 
       - name: Setup vcpkg
         id: vcpkg
-        uses: johnwason/vcpkg-action@v7.0.1
+        uses: johnwason/vcpkg-action@v8
         with:
           manifest-dir: ${{ github.workspace }}
           triplet: x64-linux
@@ -51,7 +51,7 @@ jobs:
             -DCMAKE_BUILD_TYPE=Release \
             -DCELERO_ENABLE_TESTS=ON
 
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v7
         with:
           python-version: "3.12"
 
@@ -85,7 +85,7 @@ jobs:
             pyspdxtools -i "${document}"
           done
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: sbom
           path: sbom/*.spdx.json
@@ -101,7 +101,7 @@ jobs:
       id-token: write
       attestations: write
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       # The committed documents are published as-is: `verify` has already
       # proven they match a fresh generation, and they are pinned to
@@ -111,7 +111,7 @@ jobs:
         run: ls -l sbom
 
       - name: Attest provenance
-        uses: actions/attest-build-provenance@v2
+        uses: actions/attest-build-provenance@v4
         with:
           subject-path: "sbom/*.spdx.json"
 

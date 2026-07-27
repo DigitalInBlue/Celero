@@ -97,11 +97,11 @@ jobs:
               name: clang-18
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Setup vcpkg
         id: vcpkg
-        uses: johnwason/vcpkg-action@v7.0.1
+        uses: johnwason/vcpkg-action@v8
         with:
           manifest-dir: ${{ github.workspace }}
           triplet: >-
@@ -145,11 +145,11 @@ jobs:
   sanitizers:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Setup vcpkg
         id: vcpkg
-        uses: johnwason/vcpkg-action@v7.0.1
+        uses: johnwason/vcpkg-action@v8
         with:
           manifest-dir: ${{ github.workspace }}
           triplet: x64-linux
