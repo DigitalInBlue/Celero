@@ -20,6 +20,15 @@ A Special Thanks to the following corporations for their support:
 
 As of v2.7, Celero requires the developer to provide GoogleTest in order to build unit tests.  We suggest using a package manager such as VCPKG or Conan to provide the latest version of the library.
 
+#### Software Bill of Materials
+
+SPDX 2.3 SBOMs are committed under [`sbom/`](sbom) and published as GitHub Release assets with build provenance attestations. CI regenerates them on every push and fails if they no longer match the project:
+
+-   `celero-<version>-<triplet>.spdx.json` describes what you link against. Celero has **no third-party runtime dependencies** — only operating-system libraries (`powrprof` and `psapi` on Windows, `pthread` elsewhere). GoogleTest is test-only and never enters the installed library, so it does not appear here.
+-   `celero-<version>-source.spdx.json` describes the source distribution, adding the vcpkg-resolved test and build dependencies, the third-party headers vendored under `experiments/`, and the GitHub Actions that build the project.
+
+See [`tools/sbom/`](tools/sbom/) to generate them locally or for details on how they are assembled.
+
 ### Overview
 
 Developing consistent and meaningful benchmark results for code is a complicated task. Measurement tools exist (Intel® VTune™ Amplifier, SmartBear AQTime, Valgrind, etc.) external to applications, but they are sometimes expensive for small teams or cumbersome to utilize. This project, Celero, aims to be a small library that can be added to a C++ project and perform benchmarks on code in a way that is easy to reproduce, share, and compare among individual runs, developers, or projects. Celero uses a framework similar to that of GoogleTest to make its API more natural to use and integrate into a project. 

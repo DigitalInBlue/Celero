@@ -1,0 +1,118 @@
+name: SBOM
+
+on:
+  push:
+    branches: ["master", "develop"]
+  pull_request:
+    branches: ["master", "develop"]
+  release:
+    types: [published]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  SPDX_TOOLS_VERSION: "0.8.3"
+
+jobs:
+  # The SBOMs under sbom/ are committed, so the job of CI is to prove they are
+  # still true: regenerate them and fail if the result differs.  Generation is
+  # deterministic (see --pinned), so any difference is a real change in the
+  # dependency set, not timestamp noise.
+  verify:
+    name: Verify committed SBOMs
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # --pinned derives its timestamp from the commit that last modified
+          # vcpkg.json, so the full history is required.
+          fetch-depth: 0
+
+      - name: Setup vcpkg
+        id: vcpkg
+        uses: johnwason/vcpkg-action@v7.0.1
+        with:
+          manifest-dir: ${{ github.workspace }}
+          triplet: x64-linux
+          token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 0
+
+      # Resolves gtest so the source SBOM reads its version, upstream URL and
+      # checksum from vcpkg rather than from a hand-maintained list.
+      - name: Configure
+        shell: bash
+        run: |
+          cmake -S . -B build \
+            ${{ steps.vcpkg.outputs.vcpkg-cmake-config }} \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DCELERO_ENABLE_TESTS=ON
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Regenerate SBOMs
+        shell: bash
+        run: python tools/sbom/generate_sbom.py --pinned --output-dir sbom-regenerated
+
+      - name: Compare against committed SBOMs
+        shell: bash
+        run: |
+          if ! diff -ru sbom sbom-regenerated; then
+            echo "::error::The SBOMs committed under sbom/ are out of date."
+            echo "Regenerate and commit them with:"
+            echo "    python tools/sbom/generate_sbom.py --pinned"
+            exit 1
+          fi
+          echo "Committed SBOMs are current."
+
+      - name: Validate SBOMs
+        shell: bash
+        run: |
+          python -m pip install --quiet "spdx-tools==${SPDX_TOOLS_VERSION}"
+          for document in sbom/*.spdx.json; do
+            echo "Validating ${document}"
+            pyspdxtools -i "${document}"
+          done
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: sbom
+          path: sbom/*.spdx.json
+          if-no-files-found: error
+
+  publish:
+    name: Attach SBOMs to release
+    if: github.event_name == 'release'
+    needs: verify
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      id-token: write
+      attestations: write
+    steps:
+      - uses: actions/checkout@v4
+
+      # The committed documents are published as-is: `verify` has already
+      # proven they match a fresh generation, and they are pinned to
+      # v<version> rather than to a commit.
+      - name: Inventory
+        shell: bash
+        run: ls -l sbom
+
+      - name: Attest provenance
+        uses: actions/attest-build-provenance@v2
+        with:
+          subject-path: "sbom/*.spdx.json"
+
+      - name: Upload to release
+        shell: bash
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release upload "${{ github.event.release.tag_name }}" \
+            sbom/*.spdx.json \
+            --clobber \
+            --repo "${{ github.repository }}"
