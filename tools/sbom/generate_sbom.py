@@ -50,7 +50,7 @@ import sys
 from datetime import datetime, timezone
 from pathlib import Path
 
-GENERATOR_VERSION = "1.0.0"
+GENERATOR_VERSION = "1.1.0"
 
 PROJECT_NAME = "celero"
 PROJECT_HOMEPAGE = "https://github.com/DigitalInBlue/Celero"
@@ -278,10 +278,11 @@ def spdx_id_for(prefix, name):
 def discover_vcpkg_spdx(project_root, explicit_root, triplet):
 	"""Locate vcpkg's per-port SPDX documents.
 
-	vcpkg writes these to <vcpkg_installed>/<triplet>/share/<port>/vcpkg.spdx.json.
-	The directory lands next to the manifest for a bare `vcpkg install`, and
-	inside the CMake binary directory for a manifest-mode configure, so both are
-	searched unless an explicit root is given.
+	vcpkg writes these to <install_root>/<triplet>/share/<port>/vcpkg.spdx.json.
+	The root lands next to the manifest for a bare `vcpkg install`, inside the
+	CMake binary directory for a manifest-mode configure, and under the vcpkg
+	checkout itself when the caller passes --x-install-root (as CI's vcpkg-action
+	does), so all three are searched unless an explicit root is given.
 	"""
 	if explicit_root:
 		roots = [Path(explicit_root)]
@@ -294,6 +295,7 @@ def discover_vcpkg_spdx(project_root, explicit_root, triplet):
 				project_root / "vcpkg_installed",
 				project_root / "build" / "vcpkg_installed",
 				project_root / "out" / "build" / "vcpkg_installed",
+				project_root / "vcpkg" / "installed",
 			)
 			if candidate.is_dir()
 		]
@@ -320,7 +322,6 @@ def parse_vcpkg_spdx(path):
 	if port is None:
 		return None
 
-	binary = packages.get("SPDXRef-binary", {})
 	resources = [
 		package
 		for spdx_id, package in sorted(packages.items())
@@ -344,14 +345,21 @@ def parse_vcpkg_spdx(path):
 		"upstream_download": primary.get("downloadLocation") or port.get("downloadLocation") or "NOASSERTION",
 		"upstream_name": primary.get("name"),
 		"checksums": checksums,
-		"abi": binary.get("versionInfo"),
 		"extra_resources": [resource.get("downloadLocation") for resource in resources[1:]],
 		"source": path,
 	}
 
 
 def collect_vcpkg_packages(spdx_paths, warnings):
-	"""Turn vcpkg's SPDX output into SPDX packages plus their relationship scope."""
+	"""Turn vcpkg's SPDX output into SPDX packages plus their relationship scope.
+
+	Only facts that hold for every platform are republished.  vcpkg's per-port
+	ABI hash is deliberately excluded: it varies with triplet, toolchain and
+	vcpkg revision, so recording it would make the source document -- which is
+	generated from whichever single triplet happens to be installed -- differ
+	between a developer's machine and CI even though the dependency set is
+	identical.
+	"""
 	collected = []
 	for path in spdx_paths:
 		parsed = parse_vcpkg_spdx(path)
@@ -372,8 +380,6 @@ def collect_vcpkg_packages(spdx_paths, warnings):
 			"Resolved by vcpkg from port {}@{}.".format(name, parsed["version"]),
 			"Port recipe: {}.".format(parsed["port_download"]),
 		]
-		if parsed["abi"]:
-			comment_parts.append("vcpkg ABI hash: {}.".format(parsed["abi"]))
 		if parsed["extra_resources"]:
 			comment_parts.append(
 				"Additional upstream resources: {}.".format(", ".join(filter(None, parsed["extra_resources"])))

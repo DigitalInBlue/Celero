@@ -39,8 +39,10 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           fetch-depth: 0
 
-      # Resolves gtest so the source SBOM reads its version, upstream URL and
-      # checksum from vcpkg rather than from a hand-maintained list.
+      # Not needed by the SBOM: vcpkg-action has already resolved the manifest,
+      # and it passes VCPKG_MANIFEST_MODE=OFF, so this configure never produces
+      # a build/vcpkg_installed tree.  Kept as a smoke test that gtest really is
+      # findable, which is what the source SBOM claims about it.
       - name: Configure
         shell: bash
         run: |
@@ -53,9 +55,15 @@ jobs:
         with:
           python-version: "3.12"
 
+      # vcpkg-action installs with --x-install-root=<workspace>/vcpkg/installed,
+      # which is none of the locations the generator auto-discovers, so the
+      # install root is named explicitly rather than inferred.
       - name: Regenerate SBOMs
         shell: bash
-        run: python tools/sbom/generate_sbom.py --pinned --output-dir sbom-regenerated
+        run: |
+          python tools/sbom/generate_sbom.py --pinned \
+            --vcpkg-installed "${{ github.workspace }}/vcpkg/installed" \
+            --output-dir sbom-regenerated
 
       - name: Compare against committed SBOMs
         shell: bash
