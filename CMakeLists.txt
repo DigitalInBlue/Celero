@@ -196,6 +196,7 @@ target_sources(${PROJECT_NAME} PRIVATE
 	include/celero/Celero.h
 	include/celero/CommandLine.h
 	include/celero/Console.h
+	include/celero/CPUInfo.h
 	include/celero/Distribution.h
 	include/celero/Exceptions.h
 	include/celero/Executor.h
@@ -226,6 +227,7 @@ target_sources(${PROJECT_NAME} PRIVATE
 	src/Callbacks.cpp
 	src/Celero.cpp
 	src/Console.cpp
+	src/CPUInfo.cpp
 	src/Distribution.cpp
 	src/Exceptions.cpp
 	src/Executor.cpp

@@ -24,11 +24,12 @@
 #ifdef _WIN32
 #include <windows.h>
 LARGE_INTEGER QPCFrequency;
+
+constexpr double QPCFrequencyQuadPartMultiple = 1000000.0;
+
 #else
 #include <chrono>
 #endif
-
-constexpr double QPCFrequencyQuadPartMultiple = 1000000.0;
 
 uint64_t celero::timer::GetSystemTime()
 {

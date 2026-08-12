@@ -13,24 +13,35 @@ jobs:
     name: Analyze
     runs-on: ubuntu-latest
 
-    strategy:
-      fail-fast: false
-      matrix:
-        language: ["cpp"]
-
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
       - name: Initialize CodeQL
-        uses: github/codeql-action/init@v2
+        uses: github/codeql-action/init@v3
         with:
-          languages: ${{ matrix.language }}
+          languages: cpp
 
-      - name: Autobuild
-        uses: github/codeql-action/autobuild@v2
+      - name: Setup vcpkg
+        id: vcpkg
+        uses: johnwason/vcpkg-action@v7.0.1
         with:
-          config-file: .github/codeql/codeql-config.yml # optional override
+          manifest-dir: ${{ github.workspace }}
+          triplet: x64-linux
+          token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 0
+
+      - name: Configure CMake
+        shell: bash
+        run: |
+          cmake -S . -B build \
+            ${{ steps.vcpkg.outputs.vcpkg-cmake-config }} \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DCELERO_ENABLE_TESTS=ON
+
+      - name: Build
+        shell: bash
+        run: cmake --build build --config Release
 
       - name: Perform CodeQL Analysis
-        uses: github/codeql-action/analyze@v2
+        uses: github/codeql-action/analyze@v3

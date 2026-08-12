@@ -107,7 +107,7 @@ BASELINE_FIXED_F(DemoTransform, FixedTime, DemoTransformFixture, 1, 100)
 
 BENCHMARK_F(DemoTransform, StdTransform, DemoTransformFixture, 30, 10000)
 {
-	std::transform(this->arrayIn.begin(), this->arrayIn.end(), this->arrayOut.begin(), std::bind1st(std::multiplies<int>(), Multiple));
+	std::transform(this->arrayIn.begin(), this->arrayIn.end(), this->arrayOut.begin(), std::bind(std::multiplies<int>(), Multiple, std::placeholders::_1));
 }
 
 BENCHMARK_F(DemoTransform, StdTransformLambda, DemoTransformFixture, 30, 10000)
@@ -125,7 +125,7 @@ BENCHMARK_F(DemoTransform, SelfForLoop, DemoTransformFixture, 30, 10000)
 
 BENCHMARK_F(DemoTransform, SelfStdTransform, DemoTransformFixture, 30, 10000)
 {
-	std::transform(this->arrayIn.begin(), this->arrayIn.end(), this->arrayIn.begin(), std::bind1st(std::multiplies<int>(), Multiple));
+	std::transform(this->arrayIn.begin(), this->arrayIn.end(), this->arrayIn.begin(), std::bind(std::multiplies<int>(), Multiple, std::placeholders::_1));
 }
 
 BENCHMARK_F(DemoTransform, SelfStdTransformLambda, DemoTransformFixture, 30, 10000)
