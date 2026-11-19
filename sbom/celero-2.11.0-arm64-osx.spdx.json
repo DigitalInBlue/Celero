@@ -2,10 +2,10 @@
   "spdxVersion": "SPDX-2.3",
   "dataLicense": "CC0-1.0",
   "SPDXID": "SPDXRef-DOCUMENT",
-  "name": "celero-2.10.0-x64-linux",
-  "documentNamespace": "https://github.com/DigitalInBlue/Celero/spdxdocs/celero/library/x64-linux/2.10.0-v2.10.0",
+  "name": "celero-2.11.0-arm64-osx",
+  "documentNamespace": "https://github.com/DigitalInBlue/Celero/spdxdocs/celero/library/arm64-osx/2.11.0-v2.11.0",
   "creationInfo": {
-    "created": "2026-11-19T13:45:24Z",
+    "created": "2026-11-19T14:15:50Z",
     "creators": [
       "Tool: celero-sbom-generator-1.2.0",
       "Person: John Farrier"
@@ -19,8 +19,8 @@
     {
       "SPDXID": "SPDXRef-Package-celero",
       "name": "celero",
-      "versionInfo": "2.10.0",
-      "downloadLocation": "git+https://github.com/DigitalInBlue/Celero.git@v2.10.0",
+      "versionInfo": "2.11.0",
+      "downloadLocation": "git+https://github.com/DigitalInBlue/Celero.git@v2.11.0",
       "homepage": "https://github.com/DigitalInBlue/Celero",
       "filesAnalyzed": false,
       "licenseConcluded": "Apache-2.0",
@@ -34,7 +34,7 @@
         {
           "referenceCategory": "PACKAGE-MANAGER",
           "referenceType": "purl",
-          "referenceLocator": "pkg:github/digitalinblue/celero@v2.10.0"
+          "referenceLocator": "pkg:github/digitalinblue/celero@v2.11.0"
         }
       ]
     },
@@ -49,7 +49,7 @@
       "copyrightText": "NOASSERTION",
       "supplier": "NOASSERTION",
       "primaryPackagePurpose": "LIBRARY",
-      "comment": "POSIX threads, linked via SYSLIBS in CMakeLists.txt and required for std::thread. Provided by the system C library (glibc or musl); not vendored by Celero. Supplied by the operating system; not distributed with Celero."
+      "comment": "POSIX threads, linked via SYSLIBS in CMakeLists.txt and required for std::thread. Provided by libSystem on macOS; not vendored by Celero. Supplied by the operating system; not distributed with Celero."
     }
   ],
   "relationships": [

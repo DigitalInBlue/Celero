@@ -59,16 +59,14 @@ TEST(Distribution, BuildDistributionEdgeCases)
 
 TEST(Distribution, ValidateBuildDistributionOutput)
 {
-	// Validate that the output is correct for given input
-	std::vector<uint64_t> dist;
+	// The second argument is how many times the measured loop runs, not a cap on
+	// the result. Each entry is that sample's elapsed time in microseconds, so a
+	// debug build can legitimately record more microseconds than iterations.
+	const auto dist = celero::BuildDistribution(10, 5);
+	ASSERT_EQ(size_t(10), dist.size());
 
-	dist = celero::BuildDistribution(10, 5);
-	EXPECT_EQ(size_t(10), dist.size());
-
-	for(auto& value : dist)
+	for(const auto value : dist)
 	{
-		// Ensure values are within expected range (0 to 5)
-		EXPECT_LE(value, 5);
-		EXPECT_GE(value, 0);
+		EXPECT_LT(value, uint64_t(1000000));
 	}
 }
