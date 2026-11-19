@@ -99,11 +99,26 @@ jobs:
     steps:
       - uses: actions/checkout@v7
 
+      # The action otherwise checks out the latest vcpkg release, which can be
+      # older than builtin-baseline. Read the baseline so the checkout and the
+      # manifest always name the same commit.
+      - name: Read vcpkg baseline
+        id: vcpkg-baseline
+        shell: bash
+        run: |
+          baseline=$(sed -n 's/.*"builtin-baseline"[[:space:]]*:[[:space:]]*"\([0-9a-f]\{40\}\)".*/\1/p' vcpkg.json)
+          if [ -z "$baseline" ]; then
+            echo "::error::vcpkg.json builtin-baseline must be a 40-character commit."
+            exit 1
+          fi
+          echo "revision=$baseline" >> "$GITHUB_OUTPUT"
+
       - name: Setup vcpkg
         id: vcpkg
         uses: johnwason/vcpkg-action@v8
         with:
           manifest-dir: ${{ github.workspace }}
+          revision: ${{ steps.vcpkg-baseline.outputs.revision }}
           triplet: >-
             ${{
               matrix.os == 'windows-latest' && 'x64-windows' ||
@@ -147,11 +162,23 @@ jobs:
     steps:
       - uses: actions/checkout@v7
 
+      - name: Read vcpkg baseline
+        id: vcpkg-baseline
+        shell: bash
+        run: |
+          baseline=$(sed -n 's/.*"builtin-baseline"[[:space:]]*:[[:space:]]*"\([0-9a-f]\{40\}\)".*/\1/p' vcpkg.json)
+          if [ -z "$baseline" ]; then
+            echo "::error::vcpkg.json builtin-baseline must be a 40-character commit."
+            exit 1
+          fi
+          echo "revision=$baseline" >> "$GITHUB_OUTPUT"
+
       - name: Setup vcpkg
         id: vcpkg
         uses: johnwason/vcpkg-action@v8
         with:
           manifest-dir: ${{ github.workspace }}
+          revision: ${{ steps.vcpkg-baseline.outputs.revision }}
           triplet: x64-linux
           token: ${{ secrets.GITHUB_TOKEN }}
           fetch-depth: 0
