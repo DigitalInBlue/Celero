@@ -162,6 +162,7 @@ jobs:
           cmake -S . -B build \
             ${{ steps.vcpkg.outputs.vcpkg-cmake-config }} \
             -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} \
+            -DCMAKE_EXPORT_COMPILE_COMMANDS=ON \
             -DCELERO_ENABLE_TESTS=ON \
             -DCELERO_ENABLE_EXPERIMENTS=ON
 
@@ -170,6 +171,73 @@ jobs:
         shell: pwsh
         run: |
           cmake -S . -B build ${{ steps.vcpkg.outputs.vcpkg-cmake-config }} -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -DCELERO_ENABLE_TESTS=ON -DCELERO_ENABLE_EXPERIMENTS=ON
+
+      - name: Verify C++11 language mode (Linux/macOS)
+        if: runner.os != 'Windows'
+        shell: bash
+        run: |
+          python3 - << 'PY'
+          import json
+          import sys
+          from pathlib import Path
+
+          path = Path("build/compile_commands.json")
+          if not path.is_file():
+              sys.exit("compile_commands.json was not generated")
+          entries = json.loads(path.read_text())
+          if not entries:
+              sys.exit("compile_commands.json is empty")
+          bad = []
+          for entry in entries:
+              command = entry.get("command")
+              if command is None:
+                  command = " ".join(entry.get("arguments", []))
+              if "-std=c++11" not in command.split():
+                  bad.append(entry["file"])
+          if bad:
+              print("These translation units are not compiled with -std=c++11:")
+              print("\n".join(bad))
+              sys.exit(1)
+          print(f"C++11 confirmed for {len(entries)} translation units")
+          PY
+
+      - name: Verify C++11 CMake standard (Windows)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          $cache = Get-Content -Raw build/CMakeCache.txt
+          if ($cache -notmatch '(?m)^CMAKE_CXX_STANDARD:STRING=11$') {
+            Write-Error "CMAKE_CXX_STANDARD is not 11"
+            exit 1
+          }
+          $projects = Get-ChildItem -Path build -Recurse -Filter *.vcxproj |
+            Where-Object { $_.FullName -notmatch '\\vcpkg' }
+          if (-not $projects) {
+            Write-Error "No Visual Studio projects were generated"
+            exit 1
+          }
+          $newer = @()
+          $missing = @()
+          foreach ($proj in $projects) {
+            $text = Get-Content -Raw $proj.FullName
+            if ($text -match 'stdcpp17|stdcpp20|stdcpp23|stdcpplatest|[/-]std:c\+\+(17|20|23|latest)') {
+              $newer += $proj.FullName
+            }
+            if ($proj.Name -match '^(celero|Celero)') {
+              if ($text -notmatch '[/-]std:c\+\+14') {
+                $missing += $proj.FullName
+              }
+            }
+          }
+          if ($newer.Count -gt 0) {
+            Write-Error ("Projects compiled above MSVC's oldest mode:`n" + ($newer -join "`n"))
+            exit 1
+          }
+          if ($missing.Count -gt 0) {
+            Write-Error ("Celero projects are missing /std:c++14:`n" + ($missing -join "`n"))
+            exit 1
+          }
+          Write-Host "MSVC projects use CMake standard 11 and /std:c++14"
 
       - name: Build
         shell: bash
@@ -225,9 +293,38 @@ jobs:
           cmake -S . -B build \
             ${{ steps.vcpkg.outputs.vcpkg-cmake-config }} \
             -DCMAKE_BUILD_TYPE=Debug \
+            -DCMAKE_EXPORT_COMPILE_COMMANDS=ON \
             -DCELERO_ENABLE_TESTS=ON \
             -DCELERO_ENABLE_EXPERIMENTS=ON \
             -DCELERO_ENABLE_CLANG_ADDRESS_SANITIZER=ON
+
+      - name: Verify C++11 language mode
+        shell: bash
+        run: |
+          python3 - << 'PY'
+          import json
+          import sys
+          from pathlib import Path
+
+          path = Path("build/compile_commands.json")
+          if not path.is_file():
+              sys.exit("compile_commands.json was not generated")
+          entries = json.loads(path.read_text())
+          if not entries:
+              sys.exit("compile_commands.json is empty")
+          bad = []
+          for entry in entries:
+              command = entry.get("command")
+              if command is None:
+                  command = " ".join(entry.get("arguments", []))
+              if "-std=c++11" not in command.split():
+                  bad.append(entry["file"])
+          if bad:
+              print("These translation units are not compiled with -std=c++11:")
+              print("\n".join(bad))
+              sys.exit(1)
+          print(f"C++11 confirmed for {len(entries)} translation units")
+          PY
 
       - name: Build
         shell: bash

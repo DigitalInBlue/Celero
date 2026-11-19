@@ -95,6 +95,14 @@ void Bar(T x)
 	}
 }
 
+// std::make_unique is C++14. The Unique_Make cases measure this factory, which
+// returns a unique_ptr the way std::make_unique does.
+template <typename T>
+std::unique_ptr<T> MakeUnique()
+{
+	return std::unique_ptr<T>(new T());
+}
+
 static const int SamplesCount = 1000;
 static const int IterationsCount = 1000;
 
@@ -115,7 +123,7 @@ BENCHMARK_F(CtorDtor, Unique_New, DemoFixture, SamplesCount, IterationsCount)
 
 BENCHMARK_F(CtorDtor, Unique_Make, DemoFixture, SamplesCount, IterationsCount)
 {
-	this->uniquePtr = std::make_unique<Foo>();
+	this->uniquePtr = MakeUnique<Foo>();
 	this->uniquePtr.reset();
 }
 
@@ -156,7 +164,7 @@ BENCHMARK_F(CtorAccessDtor, Unique_New, DemoFixture, SamplesCount, IterationsCou
 
 BENCHMARK_F(CtorAccessDtor, Unique_Make, DemoFixture, SamplesCount, IterationsCount)
 {
-	this->uniquePtr = std::make_unique<Foo>();
+	this->uniquePtr = MakeUnique<Foo>();
 	Bar(this->uniquePtr.get());
 	this->uniquePtr.reset();
 }
@@ -209,7 +217,7 @@ BENCHMARK_F(CtorCopyDtor, Unique_New, DemoFixture, SamplesCount, IterationsCount
 
 BENCHMARK_F(CtorCopyDtor, Unique_Make, DemoFixture, SamplesCount, IterationsCount)
 {
-	this->uniquePtr = std::make_unique<Foo>();
+	this->uniquePtr = MakeUnique<Foo>();
 	Bar(this->uniquePtr.get());
 
 	auto copy = this->uniquePtr.get();

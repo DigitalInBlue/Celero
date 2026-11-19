@@ -93,7 +93,7 @@ private:
 class UniquePointer
 {
 public:
-	UniquePointer() : pimpl(std::make_unique<GenericImpl>())
+	UniquePointer() : pimpl(new GenericImpl())
 	{
 	}
 
