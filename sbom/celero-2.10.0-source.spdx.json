@@ -5,7 +5,7 @@
   "name": "celero-2.10.0-source",
   "documentNamespace": "https://github.com/DigitalInBlue/Celero/spdxdocs/celero/source/2.10.0-v2.10.0",
   "creationInfo": {
-    "created": "2026-11-19T13:48:36Z",
+    "created": "2026-11-19T13:51:46Z",
     "creators": [
       "Tool: celero-sbom-generator-1.2.0",
       "Person: John Farrier"
@@ -69,20 +69,20 @@
     {
       "SPDXID": "SPDXRef-Package-vcpkg-cmake",
       "name": "vcpkg-cmake",
-      "versionInfo": "2025-08-07",
-      "downloadLocation": "git+https://github.com/Microsoft/vcpkg@16b9390dfeaca6df7288ba3f827e40e48e5fc942",
+      "versionInfo": "2026-11-09",
+      "downloadLocation": "git+https://github.com/Microsoft/vcpkg@1e30a2025bfa2124b713c32518f06398fa2badcf",
       "filesAnalyzed": false,
       "licenseConcluded": "MIT",
       "licenseDeclared": "MIT",
       "copyrightText": "NOASSERTION",
       "supplier": "NOASSERTION",
       "primaryPackagePurpose": "LIBRARY",
-      "comment": "Resolved by vcpkg from port vcpkg-cmake@2025-08-07. Port recipe: git+https://github.com/Microsoft/vcpkg@16b9390dfeaca6df7288ba3f827e40e48e5fc942.",
+      "comment": "Resolved by vcpkg from port vcpkg-cmake@2026-11-09. Port recipe: git+https://github.com/Microsoft/vcpkg@1e30a2025bfa2124b713c32518f06398fa2badcf.",
       "externalRefs": [
         {
           "referenceCategory": "PACKAGE-MANAGER",
           "referenceType": "purl",
-          "referenceLocator": "pkg:github/microsoft/vcpkg@16b9390dfeaca6df7288ba3f827e40e48e5fc942"
+          "referenceLocator": "pkg:github/microsoft/vcpkg@1e30a2025bfa2124b713c32518f06398fa2badcf"
         }
       ]
     },
