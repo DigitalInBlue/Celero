@@ -18,24 +18,25 @@ jobs:
           - macos-latest
         build_type: [Debug, Release]
         compiler:
-          - name: gcc-12
-            cc: gcc-12
-            cxx: g++-12
+          # ubuntu-latest is 26.04: GCC 13 through 15 and Clang 20 through 22.
           - name: gcc-13
             cc: gcc-13
             cxx: g++-13
           - name: gcc-14
             cc: gcc-14
             cxx: g++-14
-          - name: clang-16
-            cc: clang-16
-            cxx: clang++-16
-          - name: clang-17
-            cc: clang-17
-            cxx: clang++-17
-          - name: clang-18
-            cc: clang-18
-            cxx: clang++-18
+          - name: gcc-15
+            cc: gcc-15
+            cxx: g++-15
+          - name: clang-20
+            cc: clang-20
+            cxx: clang++-20
+          - name: clang-21
+            cc: clang-21
+            cxx: clang++-21
+          - name: clang-22
+            cc: clang-22
+            cxx: clang++-22
           - name: cl
             cc: cl
             cxx: cl
@@ -53,22 +54,22 @@ jobs:
           # GCC/Clang versioned compilers not on Windows
           - os: windows-latest
             compiler:
-              name: gcc-12
-          - os: windows-latest
-            compiler:
               name: gcc-13
           - os: windows-latest
             compiler:
               name: gcc-14
           - os: windows-latest
             compiler:
-              name: clang-16
+              name: gcc-15
           - os: windows-latest
             compiler:
-              name: clang-17
+              name: clang-20
           - os: windows-latest
             compiler:
-              name: clang-18
+              name: clang-21
+          - os: windows-latest
+            compiler:
+              name: clang-22
           # AppleClang only on macOS
           - os: ubuntu-latest
             compiler:
@@ -79,22 +80,22 @@ jobs:
           # GCC/Clang versioned compilers not on macOS
           - os: macos-latest
             compiler:
-              name: gcc-12
-          - os: macos-latest
-            compiler:
               name: gcc-13
           - os: macos-latest
             compiler:
               name: gcc-14
           - os: macos-latest
             compiler:
-              name: clang-16
+              name: gcc-15
           - os: macos-latest
             compiler:
-              name: clang-17
+              name: clang-20
           - os: macos-latest
             compiler:
-              name: clang-18
+              name: clang-21
+          - os: macos-latest
+            compiler:
+              name: clang-22
 
     steps:
       - uses: actions/checkout@v7
@@ -189,7 +190,7 @@ jobs:
         shell: bash
         run: |
           sudo apt-get update
-          sudo apt-get install -y --no-install-recommends clang-16
+          sudo apt-get install -y --no-install-recommends clang-22
 
       - name: Read vcpkg baseline
         id: vcpkg-baseline
@@ -206,8 +207,8 @@ jobs:
         id: vcpkg
         uses: johnwason/vcpkg-action@v8
         env:
-          CC: clang-16
-          CXX: clang++-16
+          CC: clang-22
+          CXX: clang++-22
         with:
           manifest-dir: ${{ github.workspace }}
           revision: ${{ steps.vcpkg-baseline.outputs.revision }}
@@ -218,8 +219,8 @@ jobs:
       - name: Configure with AddressSanitizer
         shell: bash
         env:
-          CC: clang-16
-          CXX: clang++-16
+          CC: clang-22
+          CXX: clang++-22
         run: |
           cmake -S . -B build \
             ${{ steps.vcpkg.outputs.vcpkg-cmake-config }} \
