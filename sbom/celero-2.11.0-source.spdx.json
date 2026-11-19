@@ -5,7 +5,7 @@
   "name": "celero-2.11.0-source",
   "documentNamespace": "https://github.com/DigitalInBlue/Celero/spdxdocs/celero/source/2.11.0-v2.11.0",
   "creationInfo": {
-    "created": "2026-11-19T14:15:50Z",
+    "created": "2026-11-19T23:57:30Z",
     "creators": [
       "Tool: celero-sbom-generator-1.2.0",
       "Person: John Farrier"
@@ -41,28 +41,28 @@
     {
       "SPDXID": "SPDXRef-Package-gtest",
       "name": "gtest",
-      "versionInfo": "1.18.0",
-      "downloadLocation": "git+https://github.com/google/googletest@v1.18.0",
+      "versionInfo": "1.12.1",
+      "downloadLocation": "git+https://github.com/google/googletest@release-1.12.1",
       "filesAnalyzed": false,
       "licenseConcluded": "BSD-3-Clause",
       "licenseDeclared": "BSD-3-Clause",
       "copyrightText": "NOASSERTION",
       "supplier": "NOASSERTION",
       "primaryPackagePurpose": "LIBRARY",
-      "comment": "Resolved by vcpkg from port gtest@1.18.0. Port recipe: git+https://github.com/Microsoft/vcpkg@17742fd5386949217cc8d3c0c562f25282e7fa0e. Test-only: consumed by the celero-test target behind CELERO_ENABLE_TESTS and not linked into the installed celero library.",
+      "comment": "Resolved by vcpkg from port gtest@1.12.1. Port recipe: git+https://github.com/Microsoft/vcpkg@8f4ae2732d1a648bdfe56b16ae5d68df63ecf344. Test-only: consumed by the celero-test target behind CELERO_ENABLE_TESTS and not linked into the installed celero library.",
       "externalRefs": [
         {
           "referenceCategory": "PACKAGE-MANAGER",
           "referenceType": "purl",
-          "referenceLocator": "pkg:github/google/googletest@v1.18.0"
+          "referenceLocator": "pkg:github/google/googletest@release-1.12.1"
         }
       ],
       "homepage": "https://github.com/google/googletest",
-      "description": "Google Testing and Mocking Framework",
+      "description": "GoogleTest and GoogleMock testing frameworks",
       "checksums": [
         {
           "algorithm": "SHA512",
-          "checksumValue": "ba0f5769ccf34acf1bc72d1f7e9ffb8202176d02b64f6f3d9047accfc0cf9026ff5a653d24935e2705fff8709566676452616c93ca0ca6277f1e21d79b58a10a"
+          "checksumValue": "a9104dc6c53747e36e7dd7bb93dfce51a558bd31b487a9ef08def095518e1296da140e0db263e0644d9055dbd903c0cb69380cb2322941dbfb04780ef247df9c"
         }
       ]
     },
