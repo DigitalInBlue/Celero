@@ -99,6 +99,29 @@ jobs:
     steps:
       - uses: actions/checkout@v7
 
+      - name: Install Linux compiler
+        if: runner.os == 'Linux'
+        shell: bash
+        run: |
+          sudo apt-get update
+          cxx="${{ matrix.compiler.cxx }}"
+          case "$cxx" in
+            g++-*) pkg="$cxx" ;;
+            clang++-*) pkg="clang-${cxx#clang++-}" ;;
+            *) echo "::error::No apt package for ${cxx}"; exit 1 ;;
+          esac
+          sudo apt-get install -y --no-install-recommends "$pkg"
+
+      # vcpkg must be built with the same compiler that later links the tests.
+      # A gtest archive from the image's default GCC references symbols the
+      # older matrix compilers do not provide.
+      - name: Select compiler for vcpkg
+        if: runner.os != 'Windows'
+        shell: bash
+        run: |
+          echo "CC=${{ matrix.compiler.cc }}" >> "$GITHUB_ENV"
+          echo "CXX=${{ matrix.compiler.cxx }}" >> "$GITHUB_ENV"
+
       # The action otherwise checks out the latest vcpkg release, which can be
       # older than builtin-baseline. Read the baseline so the checkout and the
       # manifest always name the same commit.
@@ -162,6 +185,12 @@ jobs:
     steps:
       - uses: actions/checkout@v7
 
+      - name: Install clang
+        shell: bash
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends clang-16
+
       - name: Read vcpkg baseline
         id: vcpkg-baseline
         shell: bash
@@ -176,6 +205,9 @@ jobs:
       - name: Setup vcpkg
         id: vcpkg
         uses: johnwason/vcpkg-action@v8
+        env:
+          CC: clang-16
+          CXX: clang++-16
         with:
           manifest-dir: ${{ github.workspace }}
           revision: ${{ steps.vcpkg-baseline.outputs.revision }}

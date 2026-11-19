@@ -27,6 +27,7 @@
 #elif defined(__APPLE__)
 #include <mach/mach.h>
 #include <sys/param.h>
+#include <sys/resource.h>
 #include <sys/sysctl.h>
 #include <sys/types.h>
 #include <unistd.h>
@@ -217,7 +218,7 @@ int64_t celero::GetRAMPhysicalTotal()
 	GlobalMemoryStatusEx(&memInfo);
 	return static_cast<int64_t>(memInfo.ullTotalPhys);
 #elif defined(__APPLE__)
-	return -1;
+	return celero::GetRAMSystemTotal();
 #else
 	struct sysinfo memInfo;
 	sysinfo(&memInfo);
@@ -242,9 +243,7 @@ int64_t celero::GetRAMPhysicalUsed()
 #ifdef _WIN32
 	return celero::GetRAMPhysicalTotal() - celero::GetRAMPhysicalAvailable();
 #elif defined(__APPLE__)
-	struct rusage rusage;
-	getrusage(RUSAGE_SELF, &rusage);
-	return (size_t)rusage.ru_maxrss;
+	return celero::GetRAMSystemUsed();
 #else
 	struct sysinfo memInfo;
 	sysinfo(&memInfo);
@@ -259,6 +258,11 @@ int64_t celero::GetRAMPhysicalUsedByCurrentProcess()
 	GetProcessMemoryInfo(GetCurrentProcess(), reinterpret_cast<PPROCESS_MEMORY_COUNTERS>(&pmc), sizeof(pmc));
 	return static_cast<int64_t>(pmc.WorkingSetSize);
 #elif defined(__APPLE__)
+	struct rusage usage;
+	if(getrusage(RUSAGE_SELF, &usage) == 0)
+	{
+		return static_cast<int64_t>(usage.ru_maxrss);
+	}
 	return -1;
 #else
 	constexpr int BufferSize{128};
