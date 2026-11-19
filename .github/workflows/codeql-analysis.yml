@@ -22,11 +22,23 @@ jobs:
         with:
           languages: cpp
 
+      - name: Read vcpkg baseline
+        id: vcpkg-baseline
+        shell: bash
+        run: |
+          baseline=$(sed -n 's/.*"builtin-baseline"[[:space:]]*:[[:space:]]*"\([0-9a-f]\{40\}\)".*/\1/p' vcpkg.json)
+          if [ -z "$baseline" ]; then
+            echo "::error::vcpkg.json builtin-baseline must be a 40-character commit."
+            exit 1
+          fi
+          echo "revision=$baseline" >> "$GITHUB_OUTPUT"
+
       - name: Setup vcpkg
         id: vcpkg
         uses: johnwason/vcpkg-action@v8
         with:
           manifest-dir: ${{ github.workspace }}
+          revision: ${{ steps.vcpkg-baseline.outputs.revision }}
           triplet: x64-linux
           token: ${{ secrets.GITHUB_TOKEN }}
           fetch-depth: 0
