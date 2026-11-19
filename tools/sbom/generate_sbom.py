@@ -809,7 +809,7 @@ def parse_args(argv):
 		help=(
 			"Git reference recorded as Celero's provenance in downloadLocation, the package URL and "
 			"the document namespace. Defaults to the HEAD commit SHA, which is right for a document "
-			"built from a working tree. Pass a tag (e.g. v2.10.0) for documents that are committed "
+			"built from a working tree. Pass a tag (e.g. v2.11.0) for documents that are committed "
 			"to the repository or attached to a release, so they pin the release rather than a "
 			"commit that moves."
 		),
