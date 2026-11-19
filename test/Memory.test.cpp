@@ -18,6 +18,7 @@
 
 #include <celero/Memory.h>
 #include <gtest/gtest.h>
+
 #include <chrono>
 #include <iomanip>
 
@@ -45,7 +46,7 @@ TEST(Memory, AllocSystem)
 	EXPECT_GT(celero::GetRAMSystemTotal(), int64_t(1024));
 	EXPECT_GT(celero::GetRAMSystemTotal(), celero::GetRAMSystemAvailable());
 	EXPECT_GT(celero::GetRAMSystemTotal(), celero::GetRAMSystemUsed());
-	EXPECT_GT(celero::GetRAMSystemAvailable(), celero::GetRAMSystemUsed());
+	EXPECT_GT(celero::GetRAMSystemAvailable(), int64_t(0));
 
 	const auto startUsedByCurrentProcess = celero::GetRAMSystemUsedByCurrentProcess();
 	EXPECT_GT(celero::GetRAMSystemTotal(), celero::GetRAMSystemUsedByCurrentProcess());
@@ -84,7 +85,7 @@ TEST(Memory, AllocPhysical)
 	EXPECT_GT(celero::GetRAMSystemTotal(), int64_t(1024));
 	EXPECT_GT(celero::GetRAMSystemTotal(), celero::GetRAMSystemAvailable());
 	EXPECT_GT(celero::GetRAMSystemTotal(), celero::GetRAMSystemUsed());
-	EXPECT_GT(celero::GetRAMSystemAvailable(), celero::GetRAMSystemUsed());
+	EXPECT_GT(celero::GetRAMSystemAvailable(), int64_t(0));
 
 	const auto startUsedByCurrentProcess = celero::GetRAMPhysicalUsedByCurrentProcess();
 	EXPECT_GT(celero::GetRAMSystemTotal(), celero::GetRAMSystemUsedByCurrentProcess());

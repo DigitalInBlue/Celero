@@ -5,7 +5,7 @@
   "name": "celero-2.10.0-source",
   "documentNamespace": "https://github.com/DigitalInBlue/Celero/spdxdocs/celero/source/2.10.0-v2.10.0",
   "creationInfo": {
-    "created": "2026-03-16T14:15:40Z",
+    "created": "2026-11-19T13:45:24Z",
     "creators": [
       "Tool: celero-sbom-generator-1.2.0",
       "Person: John Farrier"
@@ -41,20 +41,20 @@
     {
       "SPDXID": "SPDXRef-Package-gtest",
       "name": "gtest",
-      "versionInfo": "1.17.0#1",
-      "downloadLocation": "git+https://github.com/google/googletest@v1.17.0",
+      "versionInfo": "1.18.0",
+      "downloadLocation": "git+https://github.com/google/googletest@v1.18.0",
       "filesAnalyzed": false,
       "licenseConcluded": "BSD-3-Clause",
       "licenseDeclared": "BSD-3-Clause",
       "copyrightText": "NOASSERTION",
       "supplier": "NOASSERTION",
       "primaryPackagePurpose": "LIBRARY",
-      "comment": "Resolved by vcpkg from port gtest@1.17.0#1. Port recipe: git+https://github.com/Microsoft/vcpkg@9ef57e3c1c7484e79ef8dd77e9cb7770f5331248. Test-only: consumed by the celero-test target behind CELERO_ENABLE_TESTS and not linked into the installed celero library.",
+      "comment": "Resolved by vcpkg from port gtest@1.18.0. Port recipe: git+https://github.com/Microsoft/vcpkg@17742fd5386949217cc8d3c0c562f25282e7fa0e. Test-only: consumed by the celero-test target behind CELERO_ENABLE_TESTS and not linked into the installed celero library.",
       "externalRefs": [
         {
           "referenceCategory": "PACKAGE-MANAGER",
           "referenceType": "purl",
-          "referenceLocator": "pkg:github/google/googletest@v1.17.0"
+          "referenceLocator": "pkg:github/google/googletest@v1.18.0"
         }
       ],
       "homepage": "https://github.com/google/googletest",
@@ -62,47 +62,47 @@
       "checksums": [
         {
           "algorithm": "SHA512",
-          "checksumValue": "0f57e9ef06925e5b7722df1eb92ef5850e8dce79220ea16a8aaff586a71c0b01460ef1713649ee24ffedb2e6ad5a51e9198c5a5ae1b2789e43feb1f494e7d45c"
+          "checksumValue": "ba0f5769ccf34acf1bc72d1f7e9ffb8202176d02b64f6f3d9047accfc0cf9026ff5a653d24935e2705fff8709566676452616c93ca0ca6277f1e21d79b58a10a"
         }
       ]
     },
     {
       "SPDXID": "SPDXRef-Package-vcpkg-cmake",
       "name": "vcpkg-cmake",
-      "versionInfo": "2024-04-23",
-      "downloadLocation": "git+https://github.com/Microsoft/vcpkg@e74aa1e8f93278a8e71372f1fa08c3df420eb840",
+      "versionInfo": "2026-11-09",
+      "downloadLocation": "git+https://github.com/Microsoft/vcpkg@1e30a2025bfa2124b713c32518f06398fa2badcf",
       "filesAnalyzed": false,
       "licenseConcluded": "MIT",
       "licenseDeclared": "MIT",
       "copyrightText": "NOASSERTION",
       "supplier": "NOASSERTION",
       "primaryPackagePurpose": "LIBRARY",
-      "comment": "Resolved by vcpkg from port vcpkg-cmake@2024-04-23. Port recipe: git+https://github.com/Microsoft/vcpkg@e74aa1e8f93278a8e71372f1fa08c3df420eb840.",
+      "comment": "Resolved by vcpkg from port vcpkg-cmake@2026-11-09. Port recipe: git+https://github.com/Microsoft/vcpkg@1e30a2025bfa2124b713c32518f06398fa2badcf.",
       "externalRefs": [
         {
           "referenceCategory": "PACKAGE-MANAGER",
           "referenceType": "purl",
-          "referenceLocator": "pkg:github/microsoft/vcpkg@e74aa1e8f93278a8e71372f1fa08c3df420eb840"
+          "referenceLocator": "pkg:github/microsoft/vcpkg@1e30a2025bfa2124b713c32518f06398fa2badcf"
         }
       ]
     },
     {
       "SPDXID": "SPDXRef-Package-vcpkg-cmake-config",
       "name": "vcpkg-cmake-config",
-      "versionInfo": "2024-05-23",
-      "downloadLocation": "git+https://github.com/Microsoft/vcpkg@97a63e4bc1a17422ffe4eff71da53b4b561a7841",
+      "versionInfo": "2026-07-21",
+      "downloadLocation": "git+https://github.com/Microsoft/vcpkg@51befcb03097f8d19c1c59f9ec3625e69d85322a",
       "filesAnalyzed": false,
       "licenseConcluded": "MIT",
       "licenseDeclared": "MIT",
       "copyrightText": "NOASSERTION",
       "supplier": "NOASSERTION",
       "primaryPackagePurpose": "LIBRARY",
-      "comment": "Resolved by vcpkg from port vcpkg-cmake-config@2024-05-23. Port recipe: git+https://github.com/Microsoft/vcpkg@97a63e4bc1a17422ffe4eff71da53b4b561a7841.",
+      "comment": "Resolved by vcpkg from port vcpkg-cmake-config@2026-07-21. Port recipe: git+https://github.com/Microsoft/vcpkg@51befcb03097f8d19c1c59f9ec3625e69d85322a.",
       "externalRefs": [
         {
           "referenceCategory": "PACKAGE-MANAGER",
           "referenceType": "purl",
-          "referenceLocator": "pkg:github/microsoft/vcpkg@97a63e4bc1a17422ffe4eff71da53b4b561a7841"
+          "referenceLocator": "pkg:github/microsoft/vcpkg@51befcb03097f8d19c1c59f9ec3625e69d85322a"
         }
       ]
     },

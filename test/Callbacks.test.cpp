@@ -56,14 +56,20 @@ TEST(Callbacks, ExperimentCompleteInvalidInput)
 	// Test experiment completion with invalid input
 	EXPECT_NO_THROW(celero::impl::ExperimentComplete(nullptr));
 
-	// Set up a valid function and check for non-null input
-	std::function<void(std::shared_ptr<celero::Experiment>)> validFunction = [](std::shared_ptr<celero::Experiment> exp)
+	// Callbacks are process-global and cannot be removed, so this one must not
+	// fail when a later test delivers a real experiment.
+	bool sawNull = false;
+	std::function<void(std::shared_ptr<celero::Experiment>)> validFunction = [&sawNull](std::shared_ptr<celero::Experiment> exp)
 	{
-		EXPECT_TRUE(exp == nullptr); // Expected to be null
+		if(exp == nullptr)
+		{
+			sawNull = true;
+		}
 	};
 
 	celero::AddExperimentCompleteFunction(validFunction);
-	EXPECT_NO_THROW(celero::impl::ExperimentComplete(nullptr)); // Trigger with null
+	EXPECT_NO_THROW(celero::impl::ExperimentComplete(nullptr));
+	EXPECT_TRUE(sawNull);
 }
 
 TEST(Callbacks, ExperimentResultCompleteInvalidInput)
@@ -71,12 +77,16 @@ TEST(Callbacks, ExperimentResultCompleteInvalidInput)
 	// Test result completion with invalid input
 	EXPECT_NO_THROW(celero::impl::ExperimentResultComplete(nullptr));
 
-	// Set up a valid function and check for non-null input
-	std::function<void(std::shared_ptr<celero::ExperimentResult>)> validFunction = [](std::shared_ptr<celero::ExperimentResult> res)
+	bool sawNull = false;
+	std::function<void(std::shared_ptr<celero::ExperimentResult>)> validFunction = [&sawNull](std::shared_ptr<celero::ExperimentResult> res)
 	{
-		EXPECT_TRUE(res == nullptr); // Expected to be null
+		if(res == nullptr)
+		{
+			sawNull = true;
+		}
 	};
 
 	celero::AddExperimentResultCompleteFunction(validFunction);
-	EXPECT_NO_THROW(celero::impl::ExperimentResultComplete(nullptr)); // Trigger with null
+	EXPECT_NO_THROW(celero::impl::ExperimentResultComplete(nullptr));
+	EXPECT_TRUE(sawNull);
 }

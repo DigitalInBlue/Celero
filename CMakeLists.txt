@@ -304,6 +304,7 @@ add_subdirectory(experiments)
 
 if(CELERO_ENABLE_TESTS)
 	set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
+	enable_testing()
 	add_subdirectory(test)
 endif()
 
