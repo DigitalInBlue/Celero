@@ -20,6 +20,8 @@
 #include <celero/Experiment.h>
 #include <gtest/gtest.h>
 
+#include <stdexcept>
+
 TEST(Benchmark, ctor)
 {
 	EXPECT_NO_THROW(celero::Benchmark());
@@ -64,8 +66,9 @@ TEST(Benchmark, setBaseline)
 	EXPECT_NO_THROW(x.setBaseline(baseline));
 	EXPECT_EQ(baseline, x.getBaseline());
 
-	EXPECT_NO_THROW(x.setBaseline(nullptr));
-	EXPECT_EQ(nullptr, x.getBaseline());
+	// A null baseline is rejected and the previous baseline is left in place.
+	EXPECT_THROW(x.setBaseline(nullptr), std::runtime_error);
+	EXPECT_EQ(baseline, x.getBaseline());
 }
 
 TEST(Benchmark, addExperiment)
@@ -117,9 +120,9 @@ TEST(Benchmark, invalidBaseline)
 {
 	celero::Benchmark benchmark{};
 
-	// Test setting a baseline with an invalid (null) experiment pointer
+	// A null experiment is rejected, which leaves the baseline unset.
 	std::shared_ptr<celero::Experiment> invalidBaseline = nullptr;
-	EXPECT_NO_THROW(benchmark.setBaseline(invalidBaseline));
+	EXPECT_THROW(benchmark.setBaseline(invalidBaseline), std::runtime_error);
 	EXPECT_EQ(benchmark.getBaseline(), nullptr);
 
 	// Try setting a valid baseline after setting an invalid one

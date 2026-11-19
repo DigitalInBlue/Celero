@@ -13,7 +13,7 @@ permissions:
   contents: read
 
 env:
-  SPDX_TOOLS_VERSION: "0.8.3"
+  SPDX_TOOLS_VERSION: "0.8.5"
 
 jobs:
   # The SBOMs under sbom/ are committed, so the job of CI is to prove they are
@@ -53,7 +53,7 @@ jobs:
 
       - uses: actions/setup-python@v7
         with:
-          python-version: "3.12"
+          python-version: "3.15"
 
       # vcpkg-action installs with --x-install-root=<workspace>/vcpkg/installed,
       # which is none of the locations the generator auto-discovers, so the

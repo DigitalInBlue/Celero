@@ -21,6 +21,14 @@ project(celero-test)
 
 add_executable(${PROJECT_NAME})
 
+# GoogleTest 1.18 requires C++17. The library itself stays on C++14; only the
+# test binary, which links gtest, is raised.
+set_target_properties(${PROJECT_NAME} PROPERTIES
+	CXX_STANDARD 17
+	CXX_STANDARD_REQUIRED ON
+	CXX_EXTENSIONS OFF
+)
+
 target_sources(${PROJECT_NAME} PRIVATE
 	Archive.test.cpp
 	Benchmark.test.cpp
@@ -66,8 +74,9 @@ target_include_directories(${PROJECT_NAME} PUBLIC
   ${GTEST_INCLUDE_DIR}
 )
 
+add_test(NAME ${PROJECT_NAME} COMMAND ${PROJECT_NAME})
+
 if(CELERO_ENABLE_AUTO_RUN_TESTS)
-	add_test(${PROJECT_NAME} ${PROJECT_NAME})
 	add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD COMMAND $<TARGET_FILE:${PROJECT_NAME}>)
 endif()
 

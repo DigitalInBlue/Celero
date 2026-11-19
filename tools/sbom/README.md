@@ -108,7 +108,7 @@ CI validates every document against the reference SPDX toolkit and fails the
 build on any finding:
 
 ```sh
-python -m pip install "spdx-tools==0.8.3"
+python -m pip install "spdx-tools==0.8.5"
 pyspdxtools -i sbom/celero-2.10.0-source.spdx.json
 ```
 

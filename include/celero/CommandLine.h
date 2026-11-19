@@ -162,7 +162,7 @@ namespace cmdline
 		~cmdline_error() noexcept
 		{
 		}
-		const char *what() const throw()
+		const char *what() const noexcept
 		{
 			return msg.c_str();
 		}
