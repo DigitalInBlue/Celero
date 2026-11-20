@@ -162,6 +162,7 @@ jobs:
           cmake -S . -B build \
             ${{ steps.vcpkg.outputs.vcpkg-cmake-config }} \
             -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} \
+            -DCMAKE_EXPORT_COMPILE_COMMANDS=ON \
             -DCELERO_ENABLE_TESTS=ON \
             -DCELERO_ENABLE_EXPERIMENTS=ON
 
@@ -170,6 +171,82 @@ jobs:
         shell: pwsh
         run: |
           cmake -S . -B build ${{ steps.vcpkg.outputs.vcpkg-cmake-config }} -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -DCELERO_ENABLE_TESTS=ON -DCELERO_ENABLE_EXPERIMENTS=ON
+
+      - name: Verify C++14 language mode (Linux/macOS)
+        if: runner.os != 'Windows'
+        shell: bash
+        run: |
+          python3 - << 'PY'
+          import json
+          import sys
+          from pathlib import Path
+
+          path = Path("build/compile_commands.json")
+          if not path.is_file():
+              sys.exit("compile_commands.json was not generated")
+          entries = json.loads(path.read_text())
+          if not entries:
+              sys.exit("compile_commands.json is empty")
+          bad = []
+          for entry in entries:
+              command = entry.get("command")
+              if command is None:
+                  command = " ".join(entry.get("arguments", []))
+              tokens = command.split()
+              source = entry["file"].replace("\\", "/")
+              # GoogleTest 1.18 requires C++17, so only the test binary is raised.
+              expected = "-std=c++17" if "test" in source.split("/") else "-std=c++14"
+              if expected not in tokens:
+                  bad.append(f"{source} (expected {expected})")
+          if bad:
+              print("Translation units compiled with the wrong C++ standard:")
+              print("\n".join(bad))
+              sys.exit(1)
+          print(f"C++14 confirmed for {len(entries)} translation units (tests use C++17 for GoogleTest)")
+          PY
+
+      - name: Verify C++14 language mode (Windows)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          # The language mode lives in the generated projects. CMake writes
+          # stdcpp14 for the library and experiments, and stdcpp17 for celero-test
+          # because GoogleTest 1.18 requires C++17.
+          $projects = Get-ChildItem -Path build -Recurse -Filter *.vcxproj |
+            Where-Object { $_.FullName -notmatch '\\vcpkg' }
+          if (-not $projects) {
+            Write-Error "No Visual Studio projects were generated"
+            exit 1
+          }
+          $bad = @()
+          $checked = 0
+          foreach ($proj in $projects) {
+            $name = $proj.Name
+            $text = Get-Content -Raw $proj.FullName
+            $isTest = $name -eq 'celero-test.vcxproj'
+            $isCelero = $isTest -or $name -eq 'celero.vcxproj' -or $name -like 'Celero*.vcxproj'
+            if (-not $isCelero) { continue }
+            $checked++
+            if ($isTest) {
+              $hasExpected = $text -match 'stdcpp17' -or $text -match '[/-]std:c\+\+17'
+              $tooNew = $text -match 'stdcpp20|stdcpp23|stdcpplatest|[/-]std:c\+\+(20|23|latest)'
+            } else {
+              $hasExpected = $text -match 'stdcpp14' -or $text -match '[/-]std:c\+\+14'
+              $tooNew = $text -match 'stdcpp17|stdcpp20|stdcpp23|stdcpplatest|[/-]std:c\+\+(17|20|23|latest)'
+            }
+            if (-not $hasExpected -or $tooNew) {
+              $bad += $name
+            }
+          }
+          if ($checked -eq 0) {
+            Write-Error "No Celero Visual Studio projects were generated"
+            exit 1
+          }
+          if ($bad.Count -gt 0) {
+            Write-Error ("Projects are not using the expected C++ standard:`n" + ($bad -join "`n"))
+            exit 1
+          }
+          Write-Host "MSVC library and experiments use C++14; celero-test uses C++17 for GoogleTest"
 
       - name: Build
         shell: bash
@@ -225,9 +302,42 @@ jobs:
           cmake -S . -B build \
             ${{ steps.vcpkg.outputs.vcpkg-cmake-config }} \
             -DCMAKE_BUILD_TYPE=Debug \
+            -DCMAKE_EXPORT_COMPILE_COMMANDS=ON \
             -DCELERO_ENABLE_TESTS=ON \
             -DCELERO_ENABLE_EXPERIMENTS=ON \
             -DCELERO_ENABLE_CLANG_ADDRESS_SANITIZER=ON
+
+      - name: Verify C++14 language mode
+        shell: bash
+        run: |
+          python3 - << 'PY'
+          import json
+          import sys
+          from pathlib import Path
+
+          path = Path("build/compile_commands.json")
+          if not path.is_file():
+              sys.exit("compile_commands.json was not generated")
+          entries = json.loads(path.read_text())
+          if not entries:
+              sys.exit("compile_commands.json is empty")
+          bad = []
+          for entry in entries:
+              command = entry.get("command")
+              if command is None:
+                  command = " ".join(entry.get("arguments", []))
+              tokens = command.split()
+              source = entry["file"].replace("\\", "/")
+              # GoogleTest 1.18 requires C++17, so only the test binary is raised.
+              expected = "-std=c++17" if "test" in source.split("/") else "-std=c++14"
+              if expected not in tokens:
+                  bad.append(f"{source} (expected {expected})")
+          if bad:
+              print("Translation units compiled with the wrong C++ standard:")
+              print("\n".join(bad))
+              sys.exit(1)
+          print(f"C++14 confirmed for {len(entries)} translation units (tests use C++17 for GoogleTest)")
+          PY
 
       - name: Build
         shell: bash
