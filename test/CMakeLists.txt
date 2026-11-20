@@ -21,11 +21,10 @@ project(celero-test)
 
 add_executable(${PROJECT_NAME})
 
-# The test binary uses the project C++11 standard. GoogleTest is pinned to
-# 1.12.1 in vcpkg.json because that is the last release whose headers compile
-# as C++11. On MSVC, CeleroSetDefaultCompilerOptions selects /std:c++14.
+# GoogleTest 1.18 requires C++17. The library itself stays on C++14; only the
+# test binary, which links gtest, is raised.
 set_target_properties(${PROJECT_NAME} PROPERTIES
-	CXX_STANDARD 11
+	CXX_STANDARD 17
 	CXX_STANDARD_REQUIRED ON
 	CXX_EXTENSIONS OFF
 )

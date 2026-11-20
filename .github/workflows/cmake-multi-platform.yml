@@ -172,7 +172,7 @@ jobs:
         run: |
           cmake -S . -B build ${{ steps.vcpkg.outputs.vcpkg-cmake-config }} -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -DCELERO_ENABLE_TESTS=ON -DCELERO_ENABLE_EXPERIMENTS=ON
 
-      - name: Verify C++11 language mode (Linux/macOS)
+      - name: Verify C++14 language mode (Linux/macOS)
         if: runner.os != 'Windows'
         shell: bash
         run: |
@@ -192,50 +192,61 @@ jobs:
               command = entry.get("command")
               if command is None:
                   command = " ".join(entry.get("arguments", []))
-              if "-std=c++11" not in command.split():
-                  bad.append(entry["file"])
+              tokens = command.split()
+              source = entry["file"].replace("\\", "/")
+              # GoogleTest 1.18 requires C++17, so only the test binary is raised.
+              expected = "-std=c++17" if "test" in source.split("/") else "-std=c++14"
+              if expected not in tokens:
+                  bad.append(f"{source} (expected {expected})")
           if bad:
-              print("These translation units are not compiled with -std=c++11:")
+              print("Translation units compiled with the wrong C++ standard:")
               print("\n".join(bad))
               sys.exit(1)
-          print(f"C++11 confirmed for {len(entries)} translation units")
+          print(f"C++14 confirmed for {len(entries)} translation units (tests use C++17 for GoogleTest)")
           PY
 
-      - name: Verify C++11 CMake standard (Windows)
+      - name: Verify C++14 language mode (Windows)
         if: runner.os == 'Windows'
         shell: pwsh
         run: |
-          # CMAKE_CXX_STANDARD is a normal variable in CMakeLists.txt, so it is
-          # not written to CMakeCache.txt. The generated projects are the proof:
-          # MSVC has no /std:c++11, and Celero selects /std:c++14 instead.
+          # The language mode lives in the generated projects. CMake writes
+          # stdcpp14 for the library and experiments, and stdcpp17 for celero-test
+          # because GoogleTest 1.18 requires C++17.
           $projects = Get-ChildItem -Path build -Recurse -Filter *.vcxproj |
             Where-Object { $_.FullName -notmatch '\\vcpkg' }
           if (-not $projects) {
             Write-Error "No Visual Studio projects were generated"
             exit 1
           }
-          $newer = @()
-          $missing = @()
+          $bad = @()
+          $checked = 0
           foreach ($proj in $projects) {
+            $name = $proj.Name
             $text = Get-Content -Raw $proj.FullName
-            if ($text -match 'stdcpp17|stdcpp20|stdcpp23|stdcpplatest|[/-]std:c\+\+(17|20|23|latest)') {
-              $newer += $proj.FullName
+            $isTest = $name -eq 'celero-test.vcxproj'
+            $isCelero = $isTest -or $name -eq 'celero.vcxproj' -or $name -like 'Celero*.vcxproj'
+            if (-not $isCelero) { continue }
+            $checked++
+            if ($isTest) {
+              $hasExpected = $text -match 'stdcpp17' -or $text -match '[/-]std:c\+\+17'
+              $tooNew = $text -match 'stdcpp20|stdcpp23|stdcpplatest|[/-]std:c\+\+(20|23|latest)'
+            } else {
+              $hasExpected = $text -match 'stdcpp14' -or $text -match '[/-]std:c\+\+14'
+              $tooNew = $text -match 'stdcpp17|stdcpp20|stdcpp23|stdcpplatest|[/-]std:c\+\+(17|20|23|latest)'
             }
-            if ($proj.Name -match '^(celero|Celero)') {
-              if ($text -notmatch '[/-]std:c\+\+14' -and $text -notmatch 'stdcpp14') {
-                $missing += $proj.FullName
-              }
+            if (-not $hasExpected -or $tooNew) {
+              $bad += $name
             }
           }
-          if ($newer.Count -gt 0) {
-            Write-Error ("Projects compiled above MSVC's oldest mode:`n" + ($newer -join "`n"))
+          if ($checked -eq 0) {
+            Write-Error "No Celero Visual Studio projects were generated"
             exit 1
           }
-          if ($missing.Count -gt 0) {
-            Write-Error ("Celero projects are missing /std:c++14:`n" + ($missing -join "`n"))
+          if ($bad.Count -gt 0) {
+            Write-Error ("Projects are not using the expected C++ standard:`n" + ($bad -join "`n"))
             exit 1
           }
-          Write-Host "MSVC projects use CMake standard 11 and /std:c++14"
+          Write-Host "MSVC library and experiments use C++14; celero-test uses C++17 for GoogleTest"
 
       - name: Build
         shell: bash
@@ -296,7 +307,7 @@ jobs:
             -DCELERO_ENABLE_EXPERIMENTS=ON \
             -DCELERO_ENABLE_CLANG_ADDRESS_SANITIZER=ON
 
-      - name: Verify C++11 language mode
+      - name: Verify C++14 language mode
         shell: bash
         run: |
           python3 - << 'PY'
@@ -315,13 +326,17 @@ jobs:
               command = entry.get("command")
               if command is None:
                   command = " ".join(entry.get("arguments", []))
-              if "-std=c++11" not in command.split():
-                  bad.append(entry["file"])
+              tokens = command.split()
+              source = entry["file"].replace("\\", "/")
+              # GoogleTest 1.18 requires C++17, so only the test binary is raised.
+              expected = "-std=c++17" if "test" in source.split("/") else "-std=c++14"
+              if expected not in tokens:
+                  bad.append(f"{source} (expected {expected})")
           if bad:
-              print("These translation units are not compiled with -std=c++11:")
+              print("Translation units compiled with the wrong C++ standard:")
               print("\n".join(bad))
               sys.exit(1)
-          print(f"C++11 confirmed for {len(entries)} translation units")
+          print(f"C++14 confirmed for {len(entries)} translation units (tests use C++17 for GoogleTest)")
           PY
 
       - name: Build

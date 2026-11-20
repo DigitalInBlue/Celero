@@ -65,9 +65,6 @@ macro(CeleroSetDefaultCompilerOptions)
 		target_compile_options(${PROJECT_NAME} PRIVATE /D_SCL_SECURE_NO_WARNINGS)
 		target_compile_options(${PROJECT_NAME} PRIVATE /permissive-)
 		target_compile_options(${PROJECT_NAME} PRIVATE /MP)
-		# MSVC has no /std:c++11 switch. C++14 is the oldest mode it can select,
-		# while CMAKE_CXX_STANDARD stays 11 for every other compiler.
-		target_compile_options(${PROJECT_NAME} PRIVATE /std:c++14)
 
 		if (NOT CELERO_COMPILE_DYNAMIC_LIBRARIES)
 			if(VCPKG_CRT_LINKAGE)
@@ -171,7 +168,7 @@ set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 # Build and Install Settings
 #
 
-set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
@@ -268,8 +265,8 @@ target_include_directories(${PROJECT_NAME} PUBLIC
 	$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
 )
 
-# At least C++11 for dependents. A consumer may compile as a newer standard.
-target_compile_features(${PROJECT_NAME} PUBLIC cxx_std_11)
+# At least C++14 for dependents. A consumer may compile as a newer standard.
+target_compile_features(${PROJECT_NAME} PUBLIC cxx_std_14)
 
 # ---------------------------------------------------------------------------
 # Install and exports
