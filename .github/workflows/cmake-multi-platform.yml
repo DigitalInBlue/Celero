@@ -205,11 +205,9 @@ jobs:
         if: runner.os == 'Windows'
         shell: pwsh
         run: |
-          $cache = Get-Content -Raw build/CMakeCache.txt
-          if ($cache -notmatch '(?m)^CMAKE_CXX_STANDARD:STRING=11$') {
-            Write-Error "CMAKE_CXX_STANDARD is not 11"
-            exit 1
-          }
+          # CMAKE_CXX_STANDARD is a normal variable in CMakeLists.txt, so it is
+          # not written to CMakeCache.txt. The generated projects are the proof:
+          # MSVC has no /std:c++11, and Celero selects /std:c++14 instead.
           $projects = Get-ChildItem -Path build -Recurse -Filter *.vcxproj |
             Where-Object { $_.FullName -notmatch '\\vcpkg' }
           if (-not $projects) {
@@ -224,7 +222,7 @@ jobs:
               $newer += $proj.FullName
             }
             if ($proj.Name -match '^(celero|Celero)') {
-              if ($text -notmatch '[/-]std:c\+\+14') {
+              if ($text -notmatch '[/-]std:c\+\+14' -and $text -notmatch 'stdcpp14') {
                 $missing += $proj.FullName
               }
             }
