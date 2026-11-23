@@ -143,7 +143,7 @@ macro(CeleroSetDefaultCompilerOptions)
 endmacro()
 
 # Project Name
-PROJECT(celero)
+PROJECT(celero VERSION 2.11.1)
 
 include(CheckFunctionExists)
 include(CheckCXXSourceCompiles)

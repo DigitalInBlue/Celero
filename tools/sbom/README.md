@@ -109,7 +109,7 @@ build on any finding:
 
 ```sh
 python -m pip install "spdx-tools==0.8.5"
-pyspdxtools -i sbom/celero-2.11.0-source.spdx.json
+pyspdxtools -i sbom/celero-2.11.1-source.spdx.json
 ```
 
 ## Maintenance
