@@ -2,10 +2,10 @@
   "spdxVersion": "SPDX-2.3",
   "dataLicense": "CC0-1.0",
   "SPDXID": "SPDXRef-DOCUMENT",
-  "name": "celero-2.11.0-source",
-  "documentNamespace": "https://github.com/DigitalInBlue/Celero/spdxdocs/celero/source/2.11.0-v2.11.0",
+  "name": "celero-2.11.1-source",
+  "documentNamespace": "https://github.com/DigitalInBlue/Celero/spdxdocs/celero/source/2.11.1-v2.11.1",
   "creationInfo": {
-    "created": "2026-11-23T06:16:17Z",
+    "created": "2026-11-23T13:50:37Z",
     "creators": [
       "Tool: celero-sbom-generator-1.2.0",
       "Person: John Farrier"
@@ -19,8 +19,8 @@
     {
       "SPDXID": "SPDXRef-Package-celero",
       "name": "celero",
-      "versionInfo": "2.11.0",
-      "downloadLocation": "git+https://github.com/DigitalInBlue/Celero.git@v2.11.0",
+      "versionInfo": "2.11.1",
+      "downloadLocation": "git+https://github.com/DigitalInBlue/Celero.git@v2.11.1",
       "homepage": "https://github.com/DigitalInBlue/Celero",
       "filesAnalyzed": false,
       "licenseConcluded": "Apache-2.0",
@@ -34,7 +34,7 @@
         {
           "referenceCategory": "PACKAGE-MANAGER",
           "referenceType": "purl",
-          "referenceLocator": "pkg:github/digitalinblue/celero@v2.11.0"
+          "referenceLocator": "pkg:github/digitalinblue/celero@v2.11.1"
         }
       ]
     },
